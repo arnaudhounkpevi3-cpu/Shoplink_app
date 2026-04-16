@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Commander un site Premium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --green:#1a5c38; --green-light:#eef7f1; --green-mid:#0f6e56;
+      --amber:#f59c1a; --amber-light:#fef3de;
+      --dark:#0f1f17; --bg:#fdf6ee; --white:#fff;
+      --border:#e8ddd0; --text:#1a1a1a; --muted:#6b5744; --soft:#9a7d5a;
+      --radius:12px; --radius-lg:18px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+    h1,h2,h3{font-family:'Syne',sans-serif;}
+
+    /* NAV */
+    nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;}
+    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;}
+
+    /* HERO */
+    .hero-section{background:var(--dark);padding:50px 40px;text-align:center;}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,156,26,0.2);border:1px solid rgba(245,156,26,0.4);border-radius:100px;padding:5px 16px;font-size:12px;font-weight:600;color:var(--amber);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.05em;}
+    .hero-title{font-size:36px;font-weight:800;color:#fff;margin-bottom:10px;}
+    .hero-title span{color:var(--amber);}
+    .hero-sub{font-size:15px;color:rgba(255,255,255,0.6);max-width:520px;margin:0 auto 28px;line-height:1.6;}
+    .price-display{display:inline-flex;align-items:baseline;gap:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-lg);padding:16px 32px;margin-bottom:8px;}
+    .price-amount{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;color:var(--amber);}
+    .price-currency{font-size:18px;color:rgba(255,255,255,0.7);}
+    .price-old{font-size:16px;color:rgba(255,255,255,0.35);text-decoration:line-through;}
+    .price-note{font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;}
+    .payment-steps{display:flex;gap:20px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+    .payment-step-pill{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border-radius:100px;padding:8px 18px;font-size:13px;color:rgba(255,255,255,0.8);}
+
+    /* PROGRESS STEPPER */
+    .form-stepper{max-width:820px;margin:0 auto;padding:40px 20px;}
+    .stepper-header{display:flex;align-items:center;gap:0;margin-bottom:36px;}
+    .s-step{display:flex;flex-direction:column;align-items:center;flex:1;}
+    .s-dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--soft);transition:all 0.2s;cursor:default;}
+    .s-dot.active{background:var(--green);border-color:var(--green);color:#fff;}
+    .s-dot.done{background:var(--green-light);border-color:var(--green);color:var(--green);}
+    .s-label{font-size:11px;color:var(--soft);margin-top:5px;text-align:center;}
+    .s-label.active{color:var(--green);font-weight:500;}
+    .s-line{flex:1;height:2px;background:var(--border);margin:0;margin-top:-22px;}
+    .s-line.done{background:var(--green);}
+
+    /* FORM SECTIONS */
+    .form-section{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:20px;}
+    .form-section-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+    .form-section-sub{font-size:13px;color:var(--soft);margin-bottom:20px;}
+    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:16px;}
+    .form-label{font-size:13px;color:var(--muted);font-weight:500;}
+    .form-input{padding:10px 14px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--bg);font-size:13px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;width:100%;}
+    .form-input:focus{border-color:var(--green);background:#fff;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    .error-msg{font-size:12px;color:#e24b4a;}
+    .form-hint{font-size:12px;color:var(--soft);}
+
+    /* OPTION CARDS */
+    .option-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;}
+    .option-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
+    .option-card:hover{border-color:var(--green);background:var(--green-light);}
+    .option-card.sel{border-color:var(--green);background:var(--green-light);}
+    .option-card-icon{font-size:24px;margin-bottom:6px;}
+    .option-card-label{font-size:12px;font-weight:500;color:var(--muted);}
+    .option-card.sel .option-card-label{color:var(--green);}
+
+    /* TOGGLE ROWS */
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f5f0ea;}
+    .toggle-row:last-child{border-bottom:none;}
+    .toggle-label{font-size:13px;color:var(--text);}
+    .toggle-desc{font-size:11px;color:var(--soft);}
+    .toggle{position:relative;width:38px;height:22px;display:inline-block;}
+    .toggle input{opacity:0;width:0;height:0;}
+    .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#d1d5db;border-radius:22px;transition:0.3s;}
+    .slider:before{position:absolute;content:'';height:16px;width:16px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s;}
+    input:checked+.slider{background:var(--green);}
+    input:checked+.slider:before{transform:translateX(16px);}
+
+    /* STYLE CARDS */
+    .style-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;}
+    .style-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:all 0.15s;background:#fff;}
+    .style-card:hover,.style-card.sel{border-color:var(--green);background:var(--green-light);}
+    .style-card-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;}
+    .style-card-desc{font-size:11px;color:var(--soft);}
+    .style-card.sel .style-card-name{color:var(--green);}
+
+    /* DELAI */
+    .delai-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .delai-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all 0.15s;background:#fff;}
+    .delai-card:hover,.delai-card.sel{border-color:var(--green);background:var(--green-light);}
+    .delai-card.urgent.sel{border-color:var(--amber);background:var(--amber-light);}
+    .delai-card-title{font-size:14px;font-weight:500;margin-bottom:4px;}
+    .delai-card-sub{font-size:12px;color:var(--soft);}
+    .delai-card-price{font-size:13px;font-weight:500;color:var(--green);margin-top:6px;}
+
+    /* SUMMARY */
+    .summary-box{background:var(--green-light);border:1px solid #9fe1cb;border-radius:var(--radius-lg);padding:20px 24px;}
+    .summary-title{font-size:15px;font-weight:500;color:var(--green-mid);margin-bottom:14px;}
+    .summary-row{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px dashed #c0e8d0;}
+    .summary-row:last-child{border-bottom:none;}
+    .summary-label{color:var(--muted);}
+    .summary-val{font-weight:500;color:var(--text);}
+    .summary-total{display:flex;justify-content:space-between;font-size:15px;font-weight:500;padding-top:12px;margin-top:4px;}
+    .summary-total-label{color:var(--green-mid);}
+    .summary-total-val{color:var(--green);font-size:18px;}
+
+    /* ACOMPTE BOX */
+    .acompte-box{background:var(--amber-light);border:1px solid #f5c878;border-radius:var(--radius);padding:16px 18px;margin:20px 0;}
+    .acompte-title{font-size:14px;font-weight:500;color:#854f0b;margin-bottom:4px;}
+    .acompte-text{font-size:13px;color:#9a6010;line-height:1.5;}
+
+    /* NOTE LIVRAISON */
+    .livraison-note{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:16px 0;font-size:13px;color:var(--muted);line-height:1.6;}
+
+    /* NAVIGATION BTNS */
+    .nav-btns{display:flex;gap:12px;margin-top:10px;}
+    .btn-back{flex:1;padding:13px;border-radius:var(--radius);border:1.5px solid var(--border);background:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);}
+    .btn-back:hover{background:var(--bg);}
+    .btn-next{flex:2;background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:13px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+    .btn-next:hover{background:#155030;}
+    .btn-pay{flex:2;background:var(--amber);color:#412402;border:none;border-radius:var(--radius);padding:13px;font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+    .btn-pay:hover{background:#e08a10;}
+
+    /* STEP PANELS */
+    .step-panel{display:none;}
+    .step-panel.active{display:block;}
+
+    /* UPLOAD */
+    .upload-area{border:2px dashed #c8b89a;border-radius:var(--radius);padding:20px;text-align:center;background:var(--bg);cursor:pointer;transition:all 0.2s;}
+    .upload-area:hover{border-color:var(--green);background:var(--green-light);}
+    .upload-icon{font-size:28px;margin-bottom:8px;}
+    .upload-text{font-size:13px;color:var(--soft);}
+
+    /* PRODUCT ROWS */
+    .product-entry{background:var(--bg);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;border:1px solid var(--border);}
+    .product-entry-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .product-entry-title{font-size:13px;font-weight:500;}
+    .remove-btn{font-size:12px;color:#e24b4a;cursor:pointer;background:none;border:none;}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/index.html" class="logo"><span class="logo-dot"></span>ShopLink</a>
+  <span style="color:rgba(255,255,255,0.7);font-size:13px;">Service Premium — Création sur mesure</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero-section">
+  <div class="hero-badge">⭐ Service Premium</div>
+  <div class="hero-title">Votre site professionnel<br><span>créé sur mesure</span></div>
+  <div class="hero-sub">Remplissez ce formulaire en détail. Notre équipe crée votre site et vous le livre dans les délais.</div>
+  <div class="price-display">
+    <span class="price-currency">FCFA</span>
+    <span class="price-amount" id="display-price">10 000</span>
+    <span class="price-old" id="display-old">12 000</span>
+  </div>
+  <div class="price-note" id="display-note">Offre de lancement · 10 premiers clients</div>
+  <div class="payment-steps">
+    <div class="payment-step-pill">💳 Acompte 50% pour démarrer</div>
+    <div class="payment-step-pill">🚀 Livraison sous 3 semaines</div>
+    <div class="payment-step-pill">✅ Solde à la livraison</div>
+  </div>
+</div>
+
+<!-- FORMULAIRE MULTI-ÉTAPES -->
+<div class="form-stepper">
+
+  <!-- STEPPER HEADER -->
+  <div class="stepper-header">
+    <div class="s-step"><div class="s-dot active" id="sd-1">1</div><div class="s-label active" id="sl-1">Entreprise</div></div>
+    <div class="s-line" id="sl-line-1"></div>
+    <div class="s-step"><div class="s-dot" id="sd-2">2</div><div class="s-label" id="sl-2">Produits</div></div>
+    <div class="s-line" id="sl-line-2"></div>
+    <div class="s-step"><div class="s-dot" id="sd-3">3</div><div class="s-label" id="sl-3">Design</div></div>
+    <div class="s-line" id="sl-line-3"></div>
+    <div class="s-step"><div class="s-dot" id="sd-4">4</div><div class="s-label" id="sl-4">Fonctions</div></div>
+    <div class="s-line" id="sl-line-4"></div>
+    <div class="s-step"><div class="s-dot" id="sd-5">5</div><div class="s-label" id="sl-5">Résumé</div></div>
+  </div>
+
+  <!-- ── ÉTAPE 1 : Informations entreprise ── -->
+  <div class="step-panel active" id="sp-1">
+    <div class="form-section">
+      <div class="form-section-title">🏢 Informations générales</div>
+      <div class="form-section-sub">Renseignez les informations de votre entreprise</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nom de l'entreprise *</label><input class="form-input" id="p-company" placeholder="Ex : Chez Maman Délices"/></div>
+        <div class="form-group"><label class="form-label">Nom du responsable *</label><input class="form-input" id="p-manager" placeholder="Ex : Adjovi Sèmê"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Numéro WhatsApp / Appel *</label><input class="form-input" id="p-whatsapp" placeholder="+229 97 XX XX XX"/></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="p-email" type="email" placeholder="contact@entreprise.com"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Ville</label><input class="form-input" id="p-city" placeholder="Ex : Cotonou"/></div>
+        <div class="form-group"><label class="form-label">Quartier</label><input class="form-input" id="p-district" placeholder="Ex : Cadjehoun"/></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">📋 Activité de l'entreprise</div>
+      <div class="form-section-sub">Décrivez votre activité pour un design adapté</div>
+      <div class="form-group">
+        <label class="form-label">Type d'activité *</label>
+        <div class="option-grid">
+          <div class="option-card sel" onclick="selectOpt(this,'p-activity','restaurant')"><div class="option-card-icon">🍽️</div><div class="option-card-label">Restaurant</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','boutique')"><div class="option-card-icon">👗</div><div class="option-card-label">Boutique</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','cosmetique')"><div class="option-card-icon">💄</div><div class="option-card-label">Cosmétique</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','fastfood')"><div class="option-card-icon">🍟</div><div class="option-card-label">Fast-food</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','commerce')"><div class="option-card-icon">🛒</div><div class="option-card-label">Commerce</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','autre')"><div class="option-card-icon">✨</div><div class="option-card-label">Autre</div></div>
+        </div>
+        <input type="hidden" id="p-activity" value="restaurant"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description de l'activité *</label>
+        <textarea class="form-input" id="p-description" rows="3" style="resize:none;" placeholder="Décrivez votre activité, vos spécialités, ce qui vous distingue..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cible clientèle (optionnel)</label>
+        <input class="form-input" id="p-target" placeholder="Ex : Familles, jeunes professionnels, femmes 25-45 ans..."/>
+      </div>
+    </div>
+
+    <button class="btn-next" onclick="goSP(2)">Continuer → Produits</button>
+  </div>
+
+  <!-- ── ÉTAPE 2 : Produits ── -->
+  <div class="step-panel" id="sp-2">
+    <div class="form-section">
+      <div class="form-section-title">📦 Liste de vos produits / services</div>
+      <div class="form-section-sub">Ajoutez vos produits avec prix et catégories</div>
+
+      <div id="products-container">
+        <div class="product-entry" id="pe-0">
+          <div class="product-entry-header"><span class="product-entry-title">Produit 1</span><button class="remove-btn" onclick="removeProd(0)" style="display:none;">✕ Retirer</button></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Nom du produit</label><input class="form-input" placeholder="Ex : Riz sauce arachide"/></div>
+            <div class="form-group"><label class="form-label">Prix (FCFA)</label><input class="form-input" type="number" placeholder="Ex : 1500"/></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Catégorie</label><input class="form-input" placeholder="Ex : Plats · Boissons · Desserts"/></div>
+            <div class="form-group"><label class="form-label">Description courte</label><input class="form-input" placeholder="Ex : Riz basmati sauce arachide maison"/></div>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--radius);border:1.5px dashed #c8b89a;background:var(--bg);font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;" onclick="addProduct()">+ Ajouter un produit</button>
+
+      <div class="form-group">
+        <label class="form-label">Photos des produits</label>
+        <div class="upload-area" onclick="document.getElementById('product-photos').click()">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">Cliquez pour envoyer vos photos (JPG, PNG — max 5Mo chacune)</div>
+          <input type="file" id="product-photos" multiple accept="image/*" style="display:none;" onchange="showFileNames(this,'photos-names')"/>
+        </div>
+        <div id="photos-names" style="font-size:12px;color:var(--green);margin-top:6px;"></div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="goSP(1)">← Retour</button>
+      <button class="btn-next" onclick="goSP(3)">Continuer → Design</button>
+    </div>
+  </div>
+
+  <!-- ── ÉTAPE 3 : Design ── -->
+  <div class="step-panel" id="sp-3">
+    <div class="form-section">
+      <div class="form-section-title">🎨 Logo & couleurs</div>
+      <div class="form-section-sub">Personnalisez l'apparence de votre site</div>
+
+      <div class="form-group">
+        <label class="form-label">Logo de l'entreprise (optionnel)</label>
+        <div class="upload-area" onclick="document.getElementById('logo-input').click()">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-text">Cliquez pour envoyer votre logo (PNG, SVG de préférence)</div>
+          <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="showFileNames(this,'logo-name')"/>
+        </div>
+        <div id="logo-name" style="font-size:12px;color:var(--green);margin-top:6px;"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Couleurs préférées (optionnel)</label>
+        <input class="form-input" id="p-colors" placeholder="Ex : Vert et doré · Bleu marine et blanc · Je fais confiance à votre équipe"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Style du site souhaité *</label>
+        <div class="style-grid">
+          <div class="style-card sel" onclick="selectStyle(this,'moderne')"><div class="style-card-name">Moderne</div><div class="style-card-desc">Clean, épuré, professionnel</div></div>
+          <div class="style-card" onclick="selectStyle(this,'simple')"><div class="style-card-name">Simple</div><div class="style-card-desc">Minimaliste, facile à lire</div></div>
+          <div class="style-card" onclick="selectStyle(this,'elegant')"><div class="style-card-name">Élégant</div><div class="style-card-desc">Luxueux, raffiné, premium</div></div>
+        </div>
+        <input type="hidden" id="p-style" value="moderne"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Exemple de site aimé (optionnel)</label>
+        <input class="form-input" id="p-example-site" placeholder="https://... (un site dont vous aimez le design)"/>
+        <div class="form-hint">Partagez un lien pour nous donner une idée de vos goûts</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🏗️ Structure du site</div>
+      <div class="form-section-sub">Choisissez les sections à inclure dans votre site</div>
+      <div class="form-group">
+        <label class="form-label">Type de site *</label>
+        <div class="option-grid" style="grid-template-columns:1fr 1fr 1fr;">
+          <div class="option-card sel" onclick="selectOpt(this,'p-site-type','catalogue')"><div class="option-card-icon">📋</div><div class="option-card-label">Catalogue</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-site-type','menu')"><div class="option-card-icon">🍽️</div><div class="option-card-label">Menu restaurant</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-site-type','boutique')"><div class="option-card-icon">🛍️</div><div class="option-card-label">Boutique</div></div>
+        </div>
+        <input type="hidden" id="p-site-type" value="catalogue"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sections souhaitées</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green);"> Page d'accueil</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green);"> Catalogue produits</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green);"> Page contact</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--green);"> À propos</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="goSP(2)">← Retour</button>
+      <button class="btn-next" onclick="goSP(4)">Continuer → Fonctions</button>
+    </div>
+  </div>
+
+  <!-- ── ÉTAPE 4 : Fonctionnalités + délai ── -->
+  <div class="step-panel" id="sp-4">
+    <div class="form-section">
+      <div class="form-section-title">⚙️ Fonctionnalités</div>
+      <div class="form-section-sub">Activez les options souhaitées pour votre site</div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Bouton Commander via WhatsApp</div><div class="toggle-desc">Chaque produit aura un bouton de commande WhatsApp</div></div>
+        <label class="toggle"><input type="checkbox" id="feat-whatsapp" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Option Livraison</div><div class="toggle-desc">Afficher une option livraison sur le site</div></div>
+        <label class="toggle"><input type="checkbox" id="feat-delivery"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Localisation Google Maps</div><div class="toggle-desc">Afficher votre adresse sur une carte interactive</div></div>
+        <label class="toggle"><input type="checkbox" id="feat-maps"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Numéro de téléphone secondaire</div><div class="toggle-desc">Afficher un deuxième numéro de contact</div></div>
+        <label class="toggle"><input type="checkbox" id="feat-phone2"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">⏱ Délai de livraison *</div>
+      <div class="form-section-sub">Choisissez votre délai souhaité</div>
+      <div class="delai-grid">
+        <div class="delai-card sel" id="delai-normal" onclick="selectDelai('normal')">
+          <div class="delai-card-title">Normal</div>
+          <div class="delai-card-sub">Livraison sous 3 semaines à partir du paiement de l'acompte</div>
+          <div class="delai-card-price">Inclus dans le prix</div>
+        </div>
+        <div class="delai-card urgent" id="delai-urgent" onclick="selectDelai('urgent')">
+          <div class="delai-card-title">Urgent ⚡</div>
+          <div class="delai-card-sub">Livraison sous 2 semaines — traitement prioritaire</div>
+          <div class="delai-card-price" style="color:var(--amber);">Même tarif</div>
+        </div>
+      </div>
+      <input type="hidden" id="p-delai" value="normal"/>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">💬 Informations complémentaires</div>
+      <div class="form-group">
+        <label class="form-label">Remarques ou demandes spéciales (optionnel)</label>
+        <textarea class="form-input" id="p-notes" rows="3" style="resize:none;" placeholder="Toute information utile pour la création de votre site..."></textarea>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="goSP(3)">← Retour</button>
+      <button class="btn-next" onclick="goSP(5)">Voir le résumé →</button>
+    </div>
+  </div>
+
+  <!-- ── ÉTAPE 5 : Résumé + paiement ── -->
+  <div class="step-panel" id="sp-5">
+    <div class="summary-box">
+      <div class="summary-title">✓ Résumé de votre commande</div>
+      <div class="summary-row"><span class="summary-label">Entreprise</span><span class="summary-val" id="sum-company">—</span></div>
+      <div class="summary-row"><span class="summary-label">Type d'activité</span><span class="summary-val" id="sum-activity">—</span></div>
+      <div class="summary-row"><span class="summary-label">Style souhaité</span><span class="summary-val" id="sum-style">Moderne</span></div>
+      <div class="summary-row"><span class="summary-label">Délai</span><span class="summary-val" id="sum-delai">Normal · 3 semaines</span></div>
+      <div class="summary-row"><span class="summary-label">WhatsApp</span><span class="summary-val" id="sum-wa">—</span></div>
+      <div class="summary-total">
+        <span class="summary-total-label">Prix total</span>
+        <span class="summary-total-val" id="sum-total">10 000 FCFA</span>
+      </div>
+    </div>
+
+    <div class="acompte-box">
+      <div class="acompte-title">💳 Acompte de 50% requis pour démarrer</div>
+      <div class="acompte-text">
+        Montant de l'acompte : <strong id="acompte-amount">5 000 FCFA</strong><br>
+        Le solde restant (<strong id="solde-amount">5 000 FCFA</strong>) sera demandé à la livraison de votre site.<br>
+        Votre projet sera démarré dans les 24h après validation du paiement.
+      </div>
+    </div>
+
+    <div class="livraison-note">
+      <strong>NB :</strong> Site disponible <strong id="note-delai">3 semaines</strong> après paiement de l'acompte.<br>
+      Vous serez contacté par WhatsApp et email pour le suivi de votre projet.
+    </div>
+
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Confirmation avant paiement :</div>
+      <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);cursor:pointer;">
+        <input type="checkbox" id="confirm-check" style="accent-color:var(--green);margin-top:2px;"/>
+        J'ai vérifié les informations de ma commande et j'accepte les conditions de service ShopLink.
+      </label>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="goSP(4)">← Modifier</button>
+      <button class="btn-pay" onclick="proceedPayment()" id="pay-btn">💳 Payer l'acompte → <span id="acompte-btn-amount">5 000 FCFA</span></button>
+    </div>
+  </div>
+
+</div><!-- /form-stepper -->
+
+<script>
+  let currentSP = 1;
+  const totalSteps = 5;
+  let selectedDelai = 'normal';
+  let totalPrice = 10000;
+
+  function goSP(n) {
+    // Marquer l'étape actuelle comme done
+    document.getElementById('sp-' + currentSP).classList.remove('active');
+    document.getElementById('sd-' + currentSP).classList.remove('active');
+    document.getElementById('sd-' + currentSP).classList.add('done');
+    document.getElementById('sd-' + currentSP).textContent = '✓';
+    document.getElementById('sl-' + currentSP).classList.remove('active');
+    if (currentSP < totalSteps) document.getElementById('sl-line-' + currentSP).classList.add('done');
+
+    currentSP = n;
+    document.getElementById('sp-' + n).classList.add('active');
+    document.getElementById('sd-' + n).classList.remove('done');
+    document.getElementById('sd-' + n).classList.add('active');
+    document.getElementById('sd-' + n).textContent = n;
+    document.getElementById('sl-' + n).classList.add('active');
+
+    // Si on arrive au résumé : remplir les données
+    if (n === 5) fillSummary();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function selectOpt(el, inputId, val) {
+    el.closest('.option-grid').querySelectorAll('.option-card').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById(inputId).value = val;
+  }
+
+  function selectStyle(el, val) {
+    document.querySelectorAll('.style-card').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('p-style').value = val;
+  }
+
+  function selectDelai(val) {
+    selectedDelai = val;
+    document.getElementById('p-delai').value = val;
+    document.getElementById('delai-normal').classList.toggle('sel', val === 'normal');
+    document.getElementById('delai-urgent').classList.toggle('sel', val === 'urgent');
+    document.getElementById('sum-delai').textContent = val === 'urgent' ? 'Urgent · 2 semaines' : 'Normal · 3 semaines';
+    document.getElementById('note-delai').textContent = val === 'urgent' ? '2 semaines' : '3 semaines';
+  }
+
+  let productCount = 1;
+  function addProduct() {
+    productCount++;
+    const container = document.getElementById('products-container');
+    const div = document.createElement('div');
+    div.className = 'product-entry';
+    div.id = 'pe-' + productCount;
+    div.innerHTML = `
+      <div class="product-entry-header">
+        <span class="product-entry-title">Produit ${productCount}</span>
+        <button class="remove-btn" onclick="removeProd(${productCount})">✕ Retirer</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nom du produit</label><input class="form-input" placeholder="Ex : Poulet braisé"/></div>
+        <div class="form-group"><label class="form-label">Prix (FCFA)</label><input class="form-input" type="number" placeholder="Ex : 2000"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Catégorie</label><input class="form-input" placeholder="Ex : Plats chauds"/></div>
+        <div class="form-group"><label class="form-label">Description courte</label><input class="form-input" placeholder="Ex : Poulet grillé sauce piment"/></div>
+      </div>`;
+    container.appendChild(div);
+    document.getElementById('pe-0').querySelector('.remove-btn').style.display = 'block';
+  }
+
+  function removeProd(id) {
+    const el = document.getElementById('pe-' + id);
+    if (el) el.remove();
+  }
+
+  function showFileNames(input, targetId) {
+    const names = Array.from(input.files).map(f => f.name).join(', ');
+    document.getElementById(targetId).textContent = names ? '✓ ' + names : '';
+  }
+
+  function fillSummary() {
+    document.getElementById('sum-company').textContent  = document.getElementById('p-company').value || '—';
+    document.getElementById('sum-activity').textContent = document.getElementById('p-activity').value;
+    document.getElementById('sum-style').textContent    = document.getElementById('p-style').value;
+    document.getElementById('sum-delai').textContent    = selectedDelai === 'urgent' ? 'Urgent · 2 semaines' : 'Normal · 3 semaines';
+    document.getElementById('sum-wa').textContent       = document.getElementById('p-whatsapp').value || '—';
+    const half = Math.round(totalPrice / 2).toLocaleString('fr-FR');
+    document.getElementById('sum-total').textContent       = totalPrice.toLocaleString('fr-FR') + ' FCFA';
+    document.getElementById('acompte-amount').textContent  = half + ' FCFA';
+    document.getElementById('solde-amount').textContent    = half + ' FCFA';
+    document.getElementById('acompte-btn-amount').textContent = half + ' FCFA';
+  }
+
+  function proceedPayment() {
+    if (!document.getElementById('confirm-check').checked) {
+      alert('Veuillez cocher la case de confirmation avant de procéder au paiement.');
+      return;
+    }
+    // Enregistrer les données du formulaire et rediriger vers la page de paiement
+    const formData = {
+      company:    document.getElementById('p-company').value,
+      manager:    document.getElementById('p-manager').value,
+      whatsapp:   document.getElementById('p-whatsapp').value,
+      email:      document.getElementById('p-email').value,
+      activity:   document.getElementById('p-activity').value,
+      style:      document.getElementById('p-style').value,
+      delai:      selectedDelai,
+      siteType:   document.getElementById('p-site-type').value,
+      totalPrice: totalPrice,
+      step:       'acompte',
+      amount:     totalPrice / 2,
+      type:       'premium'
+    };
+    localStorage.setItem('shoplink_order', JSON.stringify(formData));
+    window.location.href = '/payment.html?type=premium&step=acompte&amount=' + (totalPrice/2);
+  }
+
+  // Charger le prix promo depuis l'API
+  async function loadPrice() {
+    try {
+      const res = await fetch('/api/payments/promo-count');
+      const data = await res.json();
+      if (data.premiumCount >= 10) {
+        totalPrice = 12000;
+        document.getElementById('display-price').textContent = '12 000';
+        document.getElementById('display-old').style.display = 'none';
+        document.getElementById('display-note').textContent = 'Prix standard';
+      }
+    } catch(e) { /* utiliser les valeurs par défaut */ }
+  }
+  loadPrice();
+</script>
+</body>
+</html>

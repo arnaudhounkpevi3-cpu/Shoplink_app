@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --brand: #1a6b4a;
+    --brand-light: #e8f5ee;
+    --brand-mid: #2e9967;
+    --accent: #f59c1a;
+    --accent-light: #fff6e0;
+    --dark: #0f1f17;
+    --gray: #6b7280;
+    --light: #f9fafb;
+    --white: #ffffff;
+    --border: #e5e7eb;
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #fff;
+    color: #1a1a2e;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Syne', sans-serif;
+    line-height: 1.2;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--brand);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--gray);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--brand); }
+
+  .nav-cta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--brand);
+    color: var(--brand);
+  }
+
+  .btn-outline:hover {
+    background: var(--brand-light);
+  }
+
+  .btn-primary {
+    background: var(--brand);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #155c3d;
+    transform: translateY(-1px);
+  }
+
+  .btn-accent {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-accent:hover {
+    background: #e08a10;
+    transform: translateY(-1px);
+  }
+
+  .btn-lg {
+    padding: 14px 28px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(160deg, #f0fbf5 0%, #fff 50%, #fff8ee 100%);
+    padding: 80px 40px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--brand-light);
+    color: var(--brand);
+    border: 1px solid #c0e8d0;
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .hero h1 {
+    font-size: 46px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 20px;
+  }
+
+  .hero h1 span {
+    color: var(--brand);
+    position: relative;
+  }
+
+  .hero p {
+    color: var(--gray);
+    font-size: 17px;
+    margin-bottom: 32px;
+    line-height: 1.7;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 28px;
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-item { text-align: left; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--dark);
+  }
+  .stat-label { font-size: 12px; color: var(--gray); }
+
+  /* MOCKUP PHONE */
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .phone-mockup {
+    width: 260px;
+    background: var(--dark);
+    border-radius: 36px;
+    padding: 12px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.05);
+    position: relative;
+  }
+
+  .phone-screen {
+    background: #fff;
+    border-radius: 26px;
+    overflow: hidden;
+    min-height: 480px;
+  }
+
+  .phone-bar {
+    background: var(--brand);
+    padding: 14px 16px 10px;
+    color: white;
+  }
+
+  .phone-bar-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .phone-bar-desc { font-size: 10px; opacity: 0.8; }
+
+  .phone-logo-placeholder {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    float: right;
+    margin-top: -32px;
+  }
+
+  .phone-products {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .phone-product {
+    background: var(--light);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .phone-product-img {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+
+  .phone-product-info {
+    padding: 6px 8px 8px;
+  }
+
+  .phone-product-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--dark);
+  }
+
+  .phone-product-price {
+    font-size: 11px;
+    color: var(--brand);
+    font-weight: 700;
+  }
+
+  .phone-product-btn {
+    width: 100%;
+    margin-top: 4px;
+    background: var(--brand);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 4px;
+    font-size: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+  }
+
+  /* TARGETS */
+  .targets-section {
+    background: var(--dark);
+    padding: 60px 40px;
+    text-align: center;
+  }
+
+  .targets-section h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 32px;
+  }
+
+  .targets-grid {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .target-pill {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 100px;
+    padding: 10px 22px;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .target-pill:hover {
+    background: rgba(46,153,103,0.25);
+    border-color: var(--brand-mid);
+  }
+
+  .target-icon { font-size: 18px; }
+
+  /* HOW IT WORKS */
+  .how-section {
+    padding: 80px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .section-label {
+    display: inline-block;
+    background: var(--brand-light);
+    color: var(--brand);
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 12px;
+  }
+
+  .section-sub {
+    color: var(--gray);
+    font-size: 16px;
+    margin-bottom: 52px;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+  }
+
+  .steps-grid::before {
+    content: '';
+    position: absolute;
+    top: 32px;
+    left: 12.5%;
+    width: 75%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--brand-light), var(--brand-light));
+    background: repeating-linear-gradient(90deg, var(--brand) 0, var(--brand) 6px, transparent 6px, transparent 14px);
+    z-index: 0;
+  }
+
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-circle {
+    width: 64px;
+    height: 64px;
+    background: var(--white);
+    border: 2px solid var(--brand);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(26,107,74,0.15);
+  }
+
+  .step-num {
+    position: absolute;
+    top: -6px;
+    right: calc(50% - 40px);
+    background: var(--accent);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+  }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+
+  /* EXAMPLES */
+  .examples-section {
+    background: var(--light);
+    padding: 80px 40px;
+  }
+
+  .examples-section .inner {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .examples-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .example-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .example-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.09);
+  }
+
+  .example-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .example-logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .example-logo.restaurant { background: #fef2e0; }
+  .example-logo.boutique { background: #e8f5ee; }
+  .example-logo.cosmetique { background: #fce8f0; }
+
+  .example-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .example-type {
+    font-size: 12px;
+    color: var(--gray);
+  }
+
+  .example-products {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .example-product-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--light);
+    border-radius: 8px;
+  }
+
+  .product-name-ex { font-size: 13px; font-weight: 500; }
+  .product-price-ex { font-size: 13px; color: var(--brand); font-weight: 700; }
+
+  .example-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .example-link {
+    font-size: 12px;
+    color: var(--gray);
+    font-family: 'DM Sans', monospace;
+  }
+
+  .whatsapp-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* PRICING */
+  .pricing-section {
+    padding: 80px 40px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .pricing-header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .pricing-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .pricing-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.09);
+  }
+
+  .pricing-card.featured {
+    border-color: var(--brand);
+    border-width: 2px;
+    position: relative;
+  }
+
+  .pricing-badge {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--brand);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 0 0 10px 10px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .pricing-card-header {
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pricing-type {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+
+  .pricing-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 16px;
+  }
+
+  .pricing-price-block {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .promo-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--brand);
+    line-height: 1;
+  }
+
+  .promo-currency {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--brand);
+    line-height: 2;
+  }
+
+  .old-price {
+    font-size: 15px;
+    color: var(--gray);
+    text-decoration: line-through;
+    line-height: 2.2;
+  }
+
+  .promo-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--accent-light);
+    color: #c47a0a;
+    border-radius: 100px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  .countdown-bar {
+    background: var(--brand-light);
+    border: 1px solid #c0e8d0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--brand);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .places-left {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .place-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--brand);
+  }
+
+  .place-dot.empty {
+    background: #d1fae5;
+    border: 1px solid var(--brand);
+  }
+
+  .pricing-body {
+    padding: 22px 28px 28px;
+  }
+
+  .pricing-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .pricing-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: #374151;
+  }
+
+  .check {
+    width: 18px;
+    height: 18px;
+    background: var(--brand-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: var(--brand);
+    margin-top: 1px;
+  }
+
+  .pricing-note {
+    font-size: 12px;
+    color: var(--gray);
+    background: var(--light);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    background: var(--dark);
+    padding: 80px 40px;
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    font-size: 42px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 16px;
+  }
+
+  .cta-section p {
+    color: rgba(255,255,255,0.6);
+    font-size: 17px;
+    margin-bottom: 36px;
+  }
+
+  .cta-btns {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* FOOTER */
+  footer {
+    background: #0a1510;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  footer .logo { color: rgba(255,255,255,0.8); }
+  footer p { font-size: 13px; color: rgba(255,255,255,0.4); }
+
+  /* TAB SWITCH for paths */
+  .path-tabs {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
+  .path-tab {
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--gray);
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .path-tab.active {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+  }
+
+  .path-content { display: none; }
+  .path-content.active { display: block; }
+
+  .path-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .path-step {
+    text-align: center;
+    padding: 0 12px;
+    position: relative;
+  }
+
+  .path-step::after {
+    content: '→';
+    position: absolute;
+    right: -8px;
+    top: 16px;
+    color: var(--brand);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  .path-step:last-child::after { display: none; }
+
+  .path-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--brand-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin: 0 auto 10px;
+    border: 2px solid #c0e8d0;
+  }
+
+  .path-step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 4px;
+  }
+
+  .path-step-desc {
+    font-size: 11px;
+    color: var(--gray);
+  }
+
+  .premium-path .path-icon {
+    background: var(--accent-light);
+    border-color: #fcd88a;
+  }
+
+  /* SCROLL indicator */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    color: var(--gray);
+    font-size: 13px;
+    gap: 12px;
+  }
+
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 200px;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="logo">
+    <span class="logo-dot"></span>
+    ShopLink
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Fonctionnalités</a></li>
+    <li><a href="#how-it-works">Comment ça marche</a></li>
+    <li><a href="#examples">Exemples</a></li>
+    <li><a href="#pricing">Tarifs</a></li>
+    <li><a href="/faq.html">FAQ</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="/login.html" class="btn btn-outline">Connexion</a>
+    <a href="/register.html" class="btn btn-primary">Créer mon site →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="background: linear-gradient(160deg, #f0fbf5 0%, #fff 55%, #fff8ee 100%);">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        ✦ Solution de digitalisation pour le Bénin
+      </div>
+      <h1>
+        Fais connaître ta boutique<br><span>en ligne en minutes</span>
+      </h1>
+      <p>
+        Crée ton site vitrine, présente tes produits et reçois des commandes directement via WhatsApp — sans coder, sans technicien.
+      </p>
+      <div class="hero-btns">
+        <a href="/register.html" class="btn btn-primary btn-lg">🚀 Créer mon site</a>
+        <a href="/premium.html" class="btn btn-accent btn-lg">Confier mon projet →</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">5 min</div>
+          <div class="stat-label">Pour créer son site</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">0 CFA</div>
+          <div class="stat-label">Pour démarrer</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">WhatsApp</div>
+          <div class="stat-label">Commandes directes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHONE MOCKUP -->
+    <div class="hero-visual">
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="phone-bar">
+            <div class="phone-logo-placeholder">🍔</div>
+            <div class="phone-bar-name">Chez Maman Délices</div>
+            <div class="phone-bar-desc">Restaurant • Cotonou, Gbèdjromèdé</div>
+          </div>
+          <div style="padding: 8px 10px 0; display: flex; gap: 6px; overflow: hidden;">
+            <div style="background: var(--brand); color: white; border-radius: 100px; padding: 4px 12px; font-size: 10px; font-weight: 600; white-space: nowrap;">Tout</div>
+            <div style="background: var(--light); border-radius: 100px; padding: 4px 10px; font-size: 10px; color: var(--gray); white-space: nowrap;">Plats</div>
+            <div style="background: var(--light); border-radius: 100px; padding: 4px 10px; font-size: 10px; color: var(--gray); white-space: nowrap;">Boissons</div>
+          </div>
+          <div class="phone-products">
+            <div class="phone-product">
+              <div class="phone-product-img" style="background: #fff8e0;">🍛</div>
+              <div class="phone-product-info">
+                <div class="phone-product-name">Riz sauce arachide</div>
+                <div class="phone-product-price">1 500 FCFA</div>
+                <button class="phone-product-btn">📲 Commander</button>
+              </div>
+            </div>
+            <div class="phone-product">
+              <div class="phone-product-img" style="background: #fce8e8;">🍗</div>
+              <div class="phone-product-info">
+                <div class="phone-product-name">Poulet braisé</div>
+                <div class="phone-product-price">2 000 FCFA</div>
+                <button class="phone-product-btn">📲 Commander</button>
+              </div>
+            </div>
+            <div class="phone-product">
+              <div class="phone-product-img" style="background: #e8f5ee;">🥤</div>
+              <div class="phone-product-info">
+                <div class="phone-product-name">Bissap glacé</div>
+                <div class="phone-product-price">500 FCFA</div>
+                <button class="phone-product-btn">📲 Commander</button>
+              </div>
+            </div>
+            <div class="phone-product">
+              <div class="phone-product-img" style="background: #f0e8fc;">🍲</div>
+              <div class="phone-product-info">
+                <div class="phone-product-name">Gboma dessi</div>
+                <div class="phone-product-price">1 800 FCFA</div>
+                <button class="phone-product-btn">📲 Commander</button>
+              </div>
+            </div>
+          </div>
+          <div style="padding: 10px 10px; text-align: center;">
+            <div style="font-size: 10px; color: var(--gray);">shoplink.bj/chezmamamelices</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CIBLES -->
+<section id="features" class="targets-section">
+  <h2>Pour qui est ShopLink ?</h2>
+  <div class="targets-grid">
+    <div class="target-pill"><span class="target-icon">🍽️</span> Restaurants</div>
+    <div class="target-pill"><span class="target-icon">🍟</span> Fast-food</div>
+    <div class="target-pill"><span class="target-icon">👗</span> Boutiques</div>
+    <div class="target-pill"><span class="target-icon">🛒</span> Commerçants</div>
+    <div class="target-pill"><span class="target-icon">💄</span> Cosmétiques</div>
+    <div class="target-pill"><span class="target-icon">📱</span> Vendeurs WhatsApp</div>
+    <div class="target-pill"><span class="target-icon">📸</span> Vendeurs Instagram</div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" style="padding: 80px 40px; max-width: 1000px; margin: 0 auto; text-align: center;">
+  <div class="section-label">Parcours</div>
+  <h2 class="section-title">Comment ça marche ?</h2>
+  <p class="section-sub">Choisissez votre mode de création et lancez-vous</p>
+
+  <div class="path-tabs">
+    <button class="path-tab active" onclick="switchTab('autonome', this)">🧑‍💻 Création autonome</button>
+    <button class="path-tab" onclick="switchTab('premium', this)">⭐ Service Premium</button>
+  </div>
+
+  <div id="autonome" class="path-content active">
+    <div class="path-grid">
+      <div class="path-step">
+        <div class="path-icon">📝</div>
+        <div class="path-step-title">Inscription</div>
+        <div class="path-step-desc">Créez votre compte gratuitement</div>
+      </div>
+      <div class="path-step">
+        <div class="path-icon">🏪</div>
+        <div class="path-step-title">Configurez</div>
+        <div class="path-step-desc">Nom, logo, couleurs, description</div>
+      </div>
+      <div class="path-step">
+        <div class="path-icon">📦</div>
+        <div class="path-step-title">Ajoutez produits</div>
+        <div class="path-step-desc">Photos, prix, descriptions</div>
+      </div>
+      <div class="path-step">
+        <div class="path-icon">💳</div>
+        <div class="path-step-title">Payez</div>
+        <div class="path-step-desc">4 000 FCFA (offre lancement)</div>
+      </div>
+      <div class="path-step">
+        <div class="path-icon">🚀</div>
+        <div class="path-step-title">En ligne !</div>
+        <div class="path-step-desc">Partagez votre lien unique</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="premium" class="path-content premium-path">
+    <div class="path-grid">
+      <div class="path-step">
+        <div class="path-icon">📋</div>
+        <div class="path-step-title">Formulaire</div>
+        <div class="path-step-desc">Remplissez vos besoins détaillés</div>
+      </div>
+      <div class="path-step">
+        <div class="path-icon">💰</div>
+        <div class="path-step-title">Acompte 50%</div>
+        <div class="path-step-desc">5 000 FCFA pour démarrer</div>
+      </div>
+      <div class="path-step">
+        <div class="path-icon">🎨</div>
+        <div class="path-step-title">Création</div>
+        <div class="path-step-desc">Nous créons votre site pro</div>
+      </div>
+      <div class="path-step">
+        <div class="path-icon">✅</div>
+        <div class="path-step-title">Validation</div>
+        <div class="path-step-desc">Solde final + retouches</div>
+      </div>
+      <div class="path-step">
+        <div class="path-icon">🔗</div>
+        <div class="path-step-title">Livraison</div>
+        <div class="path-step-desc">Lien envoyé par email / WhatsApp</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXAMPLES -->
+<section id="examples" class="examples-section">
+  <div class="inner">
+    <div class="examples-header">
+      <div class="section-label">Exemples</div>
+      <h2 class="section-title">Des sites créés sur ShopLink</h2>
+      <p class="section-sub">Aperçu de ce que vous pouvez créer en quelques minutes</p>
+    </div>
+    <div class="examples-grid">
+      <!-- Restaurant -->
+      <div class="example-card">
+        <div class="example-header">
+          <div class="example-logo restaurant">🍽️</div>
+          <div>
+            <div class="example-name">Le Jardin d'Akpakpa</div>
+            <div class="example-type">Restaurant — Cotonou</div>
+          </div>
+        </div>
+        <div class="example-products">
+          <div class="example-product-row">
+            <span class="product-name-ex">🍛 Riz sauce graine</span>
+            <span class="product-price-ex">1 200 F</span>
+          </div>
+          <div class="example-product-row">
+            <span class="product-name-ex">🍗 Poulet yassa</span>
+            <span class="product-price-ex">2 500 F</span>
+          </div>
+          <div class="example-product-row">
+            <span class="product-name-ex">🥤 Jus de gingembre</span>
+            <span class="product-price-ex">600 F</span>
+          </div>
+        </div>
+        <div class="example-footer">
+          <span class="example-link">shoplink.bj/jardinakpakpa</span>
+          <button class="whatsapp-btn">📲 WhatsApp</button>
+        </div>
+      </div>
+
+      <!-- Boutique -->
+      <div class="example-card">
+        <div class="example-header">
+          <div class="example-logo boutique">👗</div>
+          <div>
+            <div class="example-name">Boutique Grâce Mode</div>
+            <div class="example-type">Vêtements — Porto-Novo</div>
+          </div>
+        </div>
+        <div class="example-products">
+          <div class="example-product-row">
+            <span class="product-name-ex">👗 Robe pagne</span>
+            <span class="product-price-ex">8 500 F</span>
+          </div>
+          <div class="example-product-row">
+            <span class="product-name-ex">👒 Headband assorti</span>
+            <span class="product-price-ex">1 500 F</span>
+          </div>
+          <div class="example-product-row">
+            <span class="product-name-ex">👜 Sac wax</span>
+            <span class="product-price-ex">5 000 F</span>
+          </div>
+        </div>
+        <div class="example-footer">
+          <span class="example-link">shoplink.bj/gracemode</span>
+          <button class="whatsapp-btn">📲 WhatsApp</button>
+        </div>
+      </div>
+
+      <!-- Cosmétiques -->
+      <div class="example-card">
+        <div class="example-header">
+          <div class="example-logo cosmetique">💄</div>
+          <div>
+            <div class="example-name">Beauty by Sèmè</div>
+            <div class="example-type">Cosmétiques — Sèmè-Kpodji</div>
+          </div>
+        </div>
+        <div class="example-products">
+          <div class="example-product-row">
+            <span class="product-name-ex">🧴 Crème karité naturelle</span>
+            <span class="product-price-ex">3 500 F</span>
+          </div>
+          <div class="example-product-row">
+            <span class="product-name-ex">💆 Huile de coco</span>
+            <span class="product-price-ex">2 000 F</span>
+          </div>
+          <div class="example-product-row">
+            <span class="product-name-ex">✨ Savon au miel</span>
+            <span class="product-price-ex">1 000 F</span>
+          </div>
+        </div>
+        <div class="example-footer">
+          <span class="example-link">shoplink.bj/beautyseme</span>
+          <button class="whatsapp-btn">📲 WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="pricing-section">
+  <div class="pricing-header">
+    <div class="section-label">Tarifs</div>
+    <h2 class="section-title">Des prix accessibles</h2>
+    <p class="section-sub">Offre de lancement limitée aux 10 premiers utilisateurs</p>
+  </div>
+
+  <div class="pricing-grid">
+    <!-- Autonome -->
+    <div class="pricing-card featured">
+      <div class="pricing-badge">⚡ Offre de lancement</div>
+      <div class="pricing-card-header" style="padding-top: 36px;">
+        <div class="pricing-type">Création autonome</div>
+        <div class="pricing-name">ShopLink Starter</div>
+        <div class="pricing-price-block">
+          <span class="promo-currency">FCFA</span>
+          <span class="promo-price">4 000</span>
+          <span class="old-price">5 000</span>
+        </div>
+        <div class="promo-tag">⚡ Valable pour les 10 premiers</div>
+        <div class="countdown-bar">
+          <span>Places restantes</span>
+          <div class="places-left">
+            <div class="place-dot"></div>
+            <div class="place-dot"></div>
+            <div class="place-dot"></div>
+            <div class="place-dot empty"></div>
+            <div class="place-dot empty"></div>
+            <div class="place-dot empty"></div>
+            <div class="place-dot empty"></div>
+            <div class="place-dot empty"></div>
+            <div class="place-dot empty"></div>
+            <div class="place-dot empty"></div>
+            <span style="margin-left: 4px; font-size: 11px;">3/10</span>
+          </div>
+        </div>
+      </div>
+      <div class="pricing-body">
+        <ul class="pricing-features">
+          <li><div class="check">✓</div> Site vitrine en ligne instantanément</li>
+          <li><div class="check">✓</div> Jusqu'à 20+ produits avec photos</li>
+          <li><div class="check">✓</div> Lien unique personnalisé</li>
+          <li><div class="check">✓</div> Bouton Commander via WhatsApp</li>
+          <li><div class="check">✓</div> Catégories de produits</li>
+          <li><div class="check">✓</div> Gestion autonome des produits</li>
+          <li><div class="check">✓</div> Tableau de bord statistiques</li>
+        </ul>
+        <button class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
+          Payer et publier mon site →
+        </button>
+      </div>
+    </div>
+
+    <!-- Premium -->
+    <div class="pricing-card">
+      <div class="pricing-card-header">
+        <div class="pricing-type">Service premium</div>
+        <div class="pricing-name">ShopLink Pro</div>
+        <div class="pricing-price-block">
+          <span class="promo-currency">FCFA</span>
+          <span class="promo-price" style="color: var(--accent);">10 000</span>
+          <span class="old-price">12 000</span>
+        </div>
+        <div class="promo-tag" style="background: var(--accent-light); color: #9a5c00;">⭐ 10 premiers clients</div>
+        <div class="countdown-bar" style="background: var(--accent-light); border-color: #fcd88a; color: #9a5c00;">
+          <span>Paiement en 2 étapes</span>
+          <span style="font-weight: 700;">50% acompte + 50% livraison</span>
+        </div>
+      </div>
+      <div class="pricing-body">
+        <div class="pricing-note">
+          <strong>Acompte :</strong> 5 000 FCFA pour démarrer<br>
+          <strong>Solde :</strong> 5 000 FCFA à la livraison du site<br>
+          <strong>Délai :</strong> 3 semaines (2 semaines en urgent)
+        </div>
+        <ul class="pricing-features">
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Design professionnel sur mesure</li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Organisation avancée des produits</li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Section À propos, Contact, Accueil</li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Intégration Google Maps</li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Support et suivi personnalisé</li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Livraison par email & WhatsApp</li>
+        </ul>
+        <button class="btn btn-accent btn-lg" style="width: 100%; justify-content: center;">
+          Commander mon site ⭐
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+  <h2>Prêt à te lancer ?</h2>
+  <p>Rejoins les commerçants du Bénin qui vendent en ligne avec ShopLink</p>
+  <div class="cta-btns">
+    <a href="/register.html" class="btn btn-primary btn-lg" style="font-size: 16px; padding: 16px 32px;">🚀 Créer mon site maintenant</a>
+    <a href="/premium.html" class="btn btn-lg" style="background: rgba(255,255,255,0.1); color: white; border: 1.5px solid rgba(255,255,255,0.3); text-decoration: none;">Confier mon projet →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo" style="color: rgba(255,255,255,0.8);">
+    <span class="logo-dot"></span>
+    ShopLink
+  </div>
+  <p>© 2025 ShopLink — Digitaliser les entreprises du Bénin</p>
+  <p style="color: rgba(255,255,255,0.3); font-size: 12px;">Cotonou, Bénin 🇧🇯</p>
+</footer>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.path-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.path-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

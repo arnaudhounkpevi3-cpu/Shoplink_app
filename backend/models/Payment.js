@@ -1,0 +1,41 @@
+const mongoose = require('mongoose')
+
+const paymentSchema = new mongoose.Schema(
+  {
+    _id: { type: String, required: true },
+    userId: { type: String, required: true, index: true },
+    type: { type: String, required: true },
+    amount: { type: Number, required: true },
+    step: { type: String, default: 'full' },
+    siteId: { type: String, default: '' },
+    urgency: { type: String, default: 'normal' },
+    status: { type: String, default: 'pending' },
+    validationStatus: { type: String, default: 'pending' },
+    reference: { type: String, default: '' },
+    siteName: { type: String },
+    siteDescription: { type: String },
+    whatsappNumber: { type: String },
+    secondaryPhone: { type: String },
+    address: { type: String },
+    activityType: { type: String },
+    slogan: { type: String },
+    primaryColor: { type: String },
+    secondaryColor: { type: String },
+    logo: { type: String },
+    deliveryTargetAt: { type: Date },
+    mobileMoneyPhone: { type: String },
+    mobileMoneyProvider: { type: String },
+    transactionId: { type: String },
+    smsCode: { type: String },
+    validatedAt: { type: Date },
+    clientName: { type: String },
+    email: { type: String },
+    clientReference: { type: String },
+    fedapayTransactionId: { type: String },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date },
+  },
+  { _id: false },
+)
+
+module.exports = mongoose.models.Payment || mongoose.model('Payment', paymentSchema)

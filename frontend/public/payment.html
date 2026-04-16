@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Paiement sécurisé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --green:#1a5c38;--green-light:#eef7f1;--green-mid:#0f6e56;
+      --amber:#f59c1a;--amber-light:#fef3de;
+      --dark:#0f1f17;--bg:#fdf6ee;--white:#fff;
+      --border:#e8ddd0;--text:#1a1a1a;--muted:#6b5744;--soft:#9a7d5a;
+      --radius:12px;--radius-lg:18px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+    nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;}
+    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;}
+    .timer-bar{background:var(--amber-light);border-bottom:1px solid #f5c878;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;font-size:13px;}
+    .timer-label{color:#854f0b;}
+    .timer-val{font-weight:500;color:#854f0b;font-family:'Syne',sans-serif;font-size:15px;}
+    .pay-layout{max-width:980px;margin:0 auto;padding:36px 20px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;}
+    .pay-col{display:flex;flex-direction:column;gap:18px;}
+    .pay-section{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+    .pay-section-header{padding:14px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .pay-section-num{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .pay-section-title{font-size:15px;font-weight:500;}
+    .pay-section-body{padding:20px 22px;}
+    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:15px;}
+    .form-group:last-child{margin-bottom:0;}
+    .form-label{font-size:13px;color:var(--muted);font-weight:500;}
+    .form-input{padding:11px 14px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--bg);font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;width:100%;}
+    .form-input:focus{border-color:var(--green);background:#fff;}
+    .form-input.err{border-color:#e24b4a;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .err-msg{font-size:12px;color:#e24b4a;margin-top:3px;}
+    .form-hint{font-size:12px;color:var(--soft);margin-top:3px;}
+    .methods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+    .method-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
+    .method-card:hover{border-color:var(--amber);}
+    .method-card.sel{border-color:var(--amber);background:var(--amber-light);}
+    .method-icon{font-size:28px;margin-bottom:6px;}
+    .method-name{font-size:12px;font-weight:500;color:var(--muted);}
+    .method-card.sel .method-name{color:#854f0b;}
+    .method-tag{display:inline-block;font-size:10px;background:var(--amber-light);color:#854f0b;border-radius:4px;padding:1px 6px;margin-top:3px;}
+    .momo-instructions{background:var(--bg);border-radius:var(--radius);padding:18px;border:1px solid var(--border);}
+    .owner-number-box{background:var(--dark);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .owner-number-label{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:4px;}
+    .owner-number{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--amber);letter-spacing:0.05em;}
+    .owner-name{font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;}
+    .copy-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;padding:8px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;}
+    .copy-btn:hover{background:rgba(255,255,255,0.2);}
+    .copy-btn.copied{background:rgba(26,107,74,0.4);border-color:var(--green);}
+    .amount-to-send{background:var(--green-light);border:1px solid #9fe1cb;border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .amount-label{font-size:12px;color:var(--green-mid);}
+    .amount-value{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--green);}
+    .payment-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:4px;}
+    .payment-step{display:flex;align-items:flex-start;gap:10px;}
+    .step-badge{width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .step-text{font-size:13px;color:var(--text);line-height:1.5;}
+    .active-op-badge{display:inline-flex;align-items:center;gap:6px;background:var(--amber-light);border:1px solid #f5c878;border-radius:100px;padding:4px 12px;font-size:12px;font-weight:500;color:#854f0b;margin-bottom:14px;}
+    .ref-wrap{position:relative;}
+    .ref-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;}
+    .ref-input{padding-left:40px;}
+    .pay-recap{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+    .recap-header{padding:18px 22px;background:var(--dark);}
+    .recap-title{font-size:16px;font-weight:500;color:#fff;}
+    .recap-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-top:3px;}
+    .recap-body{padding:18px 22px;}
+    .recap-row{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid #f5f0ea;}
+    .recap-row:last-of-type{border-bottom:none;}
+    .recap-label{color:var(--muted);}
+    .recap-val{font-weight:500;}
+    .recap-total{padding:14px 22px;background:var(--green-light);border-top:1px solid #c0e8d0;display:flex;justify-content:space-between;align-items:center;}
+    .recap-total-label{font-size:14px;font-weight:500;color:var(--green-mid);}
+    .recap-total-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--green);}
+    .acompte-note{margin:0 22px;background:var(--amber-light);border-radius:0 0 10px 10px;padding:10px 14px;font-size:12px;color:#854f0b;border:1px solid #f5c878;border-top:none;}
+    .pay-btn-wrap{padding:16px 22px;}
+    .btn-pay{width:100%;background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;}
+    .btn-pay:hover{background:#155030;}
+    .btn-pay:disabled{opacity:0.6;cursor:not-allowed;}
+    .secure-badges{display:flex;justify-content:center;gap:14px;padding:12px 22px 18px;border-top:1px solid var(--border);}
+    .secure-badge{font-size:11px;color:var(--soft);display:flex;align-items:center;gap:4px;}
+    .loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+    .loading-overlay.show{display:flex;}
+    .spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .loading-text{color:#fff;font-size:15px;}
+    .pending-page{display:none;max-width:580px;margin:60px auto;padding:0 20px;text-align:center;}
+    .pending-page.show{display:block;}
+    .pending-icon{width:80px;height:80px;background:var(--amber-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;}
+    .detail-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;text-align:left;margin-bottom:22px;}
+    .detail-row{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid #f5f0ea;}
+    .detail-row:last-child{border-bottom:none;}
+    .detail-label{color:var(--muted);}
+    .success-page{display:none;max-width:580px;margin:60px auto;padding:0 20px;text-align:center;}
+    .success-page.show{display:block;}
+    .success-icon{width:80px;height:80px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;}
+    .btn-main{background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:13px 26px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;}
+    .btn-out{background:#fff;color:var(--green);border:1.5px solid var(--green);border-radius:var(--radius);padding:11px 20px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/index.html" class="logo"><span class="logo-dot"></span>ShopLink</a>
+  <span style="color:rgba(255,255,255,0.75);font-size:13px;">🔒 Paiement sécurisé</span>
+</nav>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Enregistrement en cours...</div>
+</div>
+
+<div id="payment-page">
+  <div class="timer-bar">
+    <span class="timer-label">⏱ Cette session expire dans</span>
+    <span class="timer-val" id="timer">15:00</span>
+  </div>
+  <div class="pay-layout">
+    <div class="pay-col">
+
+      <!-- 1. COORDONNÉES -->
+      <div class="pay-section">
+        <div class="pay-section-header">
+          <div class="pay-section-num">1</div>
+          <div class="pay-section-title">Vos coordonnées</div>
+        </div>
+        <div class="pay-section-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nom complet *</label>
+              <input class="form-input" id="pay-name" placeholder="Prénom et nom"/>
+              <div class="err-msg" id="err-name"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Votre numéro de téléphone *</label>
+              <input class="form-input" id="pay-phone" placeholder="+229 01 XX XX XX" oninput="formatPhone(this)"/>
+              <div class="form-hint">Format béninois : +229 01 XX XX XX</div>
+              <div class="err-msg" id="err-phone"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-input" id="pay-email" type="email" placeholder="votre@email.com"/>
+            <div class="form-hint">La confirmation vous sera envoyée par email</div>
+            <div class="err-msg" id="err-email"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. OPÉRATEUR -->
+      <div class="pay-section">
+        <div class="pay-section-header">
+          <div class="pay-section-num">2</div>
+          <div class="pay-section-title">Choisissez votre opérateur Mobile Money</div>
+        </div>
+        <div class="pay-section-body">
+          <div class="methods-grid">
+            <div class="method-card sel" id="mc-mtn" onclick="selectOp('mtn')">
+              <div class="method-icon">🟡</div>
+              <div class="method-name">MTN MoMo</div>
+              <div class="method-tag">Recommandé</div>
+            </div>
+            <div class="method-card" id="mc-moov" onclick="selectOp('moov')">
+              <div class="method-icon">🔵</div>
+              <div class="method-name">Moov Money</div>
+            </div>
+            <div class="method-card" id="mc-wave" onclick="selectOp('wave')">
+              <div class="method-icon">🌊</div>
+              <div class="method-name">Wave</div>
+            </div>
+          </div>
+          <div class="active-op-badge" id="op-badge">🟡 MTN Mobile Money sélectionné</div>
+        </div>
+      </div>
+
+      <!-- 3. INSTRUCTIONS -->
+      <div class="pay-section">
+        <div class="pay-section-header">
+          <div class="pay-section-num">3</div>
+          <div class="pay-section-title">Effectuez le transfert puis entrez la référence</div>
+        </div>
+        <div class="pay-section-body">
+          <div class="momo-instructions">
+            <div class="amount-to-send">
+              <div class="amount-label">Montant exact à envoyer</div>
+              <div class="amount-value" id="send-amount">4 000 FCFA</div>
+            </div>
+            <div class="owner-number-box">
+              <div>
+                <div class="owner-number-label" id="op-label">Numéro MTN MoMo ShopLink</div>
+                <div class="owner-number">+229 01 67 16 34 81</div>
+                <div class="owner-name">ShopLink Bénin — Administrateur</div>
+              </div>
+              <button class="copy-btn" id="copy-btn" onclick="copyNumber()">📋 Copier</button>
+            </div>
+            <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">📋 Étapes :</div>
+            <div class="payment-steps" id="steps-list"></div>
+          </div>
+
+          <div class="form-group" style="margin-top:18px;">
+            <label class="form-label">Référence / Code de transaction *</label>
+            <div class="ref-wrap">
+              <span class="ref-icon">🧾</span>
+              <input class="form-input ref-input" id="transaction-ref" placeholder="Ex : 241031XXXXXXX ou code SMS reçu"/>
+            </div>
+            <div class="form-hint">Copiez le code de confirmation reçu par SMS après votre transfert</div>
+            <div class="err-msg" id="err-ref"></div>
+          </div>
+
+          <div style="background:var(--green-light);border-radius:var(--radius);padding:14px 16px;font-size:13px;color:var(--green-mid);line-height:1.6;">
+            ✓ Notre équipe vérifie votre paiement sous <strong>15 min à 1 heure</strong>.<br>
+            ✓ Vous recevrez une confirmation par <strong>SMS et email</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RÉCAPITULATIF -->
+    <div>
+      <div class="pay-recap">
+        <div class="recap-header">
+          <div class="recap-title">Récapitulatif</div>
+          <div class="recap-sub">ShopLink — Bénin 🇧🇯</div>
+        </div>
+        <div class="recap-body">
+          <div class="recap-row"><span class="recap-label">Service</span><span class="recap-val" id="r-service">Création autonome</span></div>
+          <div class="recap-row"><span class="recap-label">Plan</span><span class="recap-val" id="r-plan">ShopLink Starter</span></div>
+          <div class="recap-row" id="r-step-row" style="display:none;"><span class="recap-label">Étape</span><span class="recap-val" id="r-step">Acompte 50%</span></div>
+          <div class="recap-row"><span class="recap-label">Opérateur</span><span class="recap-val" id="r-op">MTN MoMo</span></div>
+          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" style="font-family:monospace;color:var(--amber);">+229 01 67 16 34 81</span></div>
+        </div>
+        <div class="recap-total">
+          <div class="recap-total-label">À payer</div>
+          <div class="recap-total-val" id="r-amount">4 000 FCFA</div>
+        </div>
+        <div class="acompte-note" id="r-acompte" style="display:none;">Acompte 50% — le solde sera demandé à la livraison.</div>
+        <div class="pay-btn-wrap">
+          <button class="btn-pay" id="pay-btn" onclick="submit()">
+            ✅ Confirmer mon paiement — <span id="btn-amt">4 000 FCFA</span>
+          </button>
+        </div>
+        <div class="secure-badges">
+          <div class="secure-badge">🔒 HTTPS</div>
+          <div class="secure-badge">✅ Vérification manuelle</div>
+          <div class="secure-badge">🇧🇯 Bénin</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-top:14px;text-align:center;">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Un problème ? Contactez-nous</div>
+        <a href="https://wa.me/22901671634811?text=Bonjour ShopLink, j'ai un problème avec mon paiement."
+           target="_blank"
+           style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border-radius:var(--radius);padding:10px 20px;font-size:13px;font-weight:500;text-decoration:none;">
+          📲 Support WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE EN ATTENTE -->
+<div class="pending-page" id="pending-page">
+  <div class="pending-icon">⏳</div>
+  <h2 style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:10px;">Demande envoyée !</h2>
+  <p style="font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.7;">
+    Votre paiement est en cours de vérification. Votre site sera activé dès validation.
+  </p>
+  <div class="detail-card">
+    <div style="font-size:14px;font-weight:500;color:var(--green-mid);margin-bottom:14px;">Détails de votre demande</div>
+    <div class="detail-row"><span class="detail-label">Nom</span><span id="p-name" style="font-weight:500;">—</span></div>
+    <div class="detail-row"><span class="detail-label">Service</span><span id="p-service" style="font-weight:500;">—</span></div>
+    <div class="detail-row"><span class="detail-label">Montant</span><span id="p-amount" style="font-weight:500;color:var(--green);">—</span></div>
+    <div class="detail-row"><span class="detail-label">Référence</span><span id="p-ref" style="font-weight:500;font-family:monospace;">—</span></div>
+    <div class="detail-row"><span class="detail-label">Statut</span><span style="background:var(--amber-light);color:#854f0b;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:500;">En attente de validation</span></div>
+  </div>
+  <div style="background:var(--green-light);border:1px solid #9fe1cb;border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;text-align:left;font-size:13px;color:var(--green-mid);line-height:1.8;">
+    ✓ Confirmation email envoyée<br>
+    ✓ Validation sous <strong>15 min à 1 heure</strong> en heures ouvrées<br>
+    ✓ Activation automatique de votre site après validation
+  </div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <a href="https://wa.me/22901671634811" target="_blank" style="background:#25d366;color:#fff;border-radius:var(--radius);padding:12px 24px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">📲 Suivre sur WhatsApp</a>
+    <a href="/dashboard.html" class="btn-out">📊 Mon tableau de bord</a>
+  </div>
+</div>
+
+<!-- PAGE SUCCÈS -->
+<div class="success-page" id="success-page">
+  <div class="success-icon">✓</div>
+  <h2 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:10px;">Paiement validé !</h2>
+  <p style="font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.7;">
+    Salut, Cher(e) client(e) 👋<br>
+    Votre paiement a été effectué avec succès.<br>
+    Votre site est maintenant <strong>actif et accessible en ligne</strong>.
+  </p>
+  <div class="detail-card">
+    <div style="font-size:14px;font-weight:500;color:var(--green-mid);margin-bottom:14px;">Détails</div>
+    <div class="detail-row"><span class="detail-label">Service</span><span id="s-service">—</span></div>
+    <div class="detail-row"><span class="detail-label">Montant</span><span id="s-amount" style="font-weight:500;color:var(--green);">—</span></div>
+    <div class="detail-row"><span class="detail-label">Statut</span><span style="color:var(--green);font-weight:500;">✓ Payé</span></div>
+    <div class="detail-row" id="s-link-row">
+      <span class="detail-label">Votre lien</span>
+      <a id="s-link" href="#" target="_blank" style="color:var(--green);font-weight:500;font-family:monospace;font-size:13px;"></a>
+    </div>
+  </div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <a href="/dashboard.html" class="btn-main">🚀 Mon tableau de bord</a>
+    <button class="btn-out" onclick="shareWA()">📲 Partager sur WhatsApp</button>
+  </div>
+</div>
+
+<script>
+  // CONFIG
+  const OWNER_NUMBER = '+229 01 67 16 34 81';
+  const OWNER_RAW    = '22901671634811';
+
+  const OPS = {
+    mtn:  { label:'MTN Mobile Money',  badge:'🟡 MTN Mobile Money sélectionné',  opLabel:'Numéro MTN MoMo ShopLink' },
+    moov: { label:'Moov Money',        badge:'🔵 Moov Money sélectionné',         opLabel:'Numéro Moov Money ShopLink' },
+    wave: { label:'Wave',              badge:'🌊 Wave sélectionné',               opLabel:'Numéro Wave ShopLink' }
+  };
+
+  const STEPS = {
+    mtn:  ['Composez <strong>#171#</strong> sur votre téléphone MTN','Choisissez <strong>"Transfert d\'argent"</strong>','Entrez le numéro : <strong>+229 01 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN MoMo</strong>','Copiez le <strong>code SMS de confirmation</strong> et collez-le ci-dessous'],
+    moov: ['Composez <strong>#555#</strong> sur votre téléphone Moov','Choisissez <strong>"Envoi d\'argent"</strong>','Entrez le numéro : <strong>+229 01 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN Flooz</strong>','Copiez le <strong>code SMS de confirmation</strong> et collez-le ci-dessous'],
+    wave: ['Ouvrez l\'<strong>application Wave</strong>','Appuyez sur <strong>"Envoyer"</strong>','Entrez le numéro : <strong>+229 01 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez le transfert dans l\'app','Copiez l\'<strong>ID de transaction</strong> et collez-le ci-dessous']
+  };
+
+  // Paramètres URL
+  const P       = new URLSearchParams(window.location.search);
+  const payType = P.get('type')   || 'autonome';
+  const payStep = P.get('step')   || 'full';
+  const payAmt  = parseInt(P.get('amount')) || 4000;
+  let   selOp   = 'mtn';
+
+  function init() {
+    const fmt = payAmt.toLocaleString('fr-FR') + ' FCFA';
+    document.getElementById('r-amount').textContent  = fmt;
+    document.getElementById('btn-amt').textContent   = fmt;
+    document.getElementById('send-amount').textContent = fmt;
+    if (payType === 'premium') {
+      document.getElementById('r-service').textContent = 'Service Premium';
+      document.getElementById('r-plan').textContent    = 'ShopLink Pro';
+      if (payStep === 'acompte') {
+        document.getElementById('r-step-row').style.display = 'flex';
+        document.getElementById('r-acompte').style.display  = 'block';
+      }
+    }
+    // Pré-remplir utilisateur
+    const u = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+    if (u.name)  document.getElementById('pay-name').value  = u.name;
+    if (u.email) document.getElementById('pay-email').value = u.email;
+    if (u.phone) document.getElementById('pay-phone').value = toDisplay(u.phone);
+    renderSteps('mtn');
+    startTimer(900);
+  }
+
+  function formatPhone(input) {
+    let v = input.value.replace(/\D/g,'');
+    if (v.startsWith('229')) v = v.slice(3);
+    v = v.slice(0,10);
+    let f = '';
+    for (let i=0;i<v.length;i++) {
+      if (i===2||i===4||i===6||i===8) f+=' ';
+      f+=v[i];
+    }
+    input.value = v.length ? '+229 '+f : '';
+  }
+
+  function toDisplay(phone) {
+    const d = phone.replace(/\D/g,'').replace(/^229/,'').slice(0,10).padEnd(10,'X');
+    return '+229 '+d.slice(0,2)+' '+d.slice(2,4)+' '+d.slice(4,6)+' '+d.slice(6,8)+' '+d.slice(8,10);
+  }
+
+  function toRaw(phone) {
+    const d = phone.replace(/\D/g,'');
+    return d.startsWith('229') ? d : '229'+d;
+  }
+
+  function selectOp(op) {
+    selOp = op;
+    ['mtn','moov','wave'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
+    document.getElementById('op-badge').textContent   = OPS[op].badge;
+    document.getElementById('op-label').textContent   = OPS[op].opLabel;
+    document.getElementById('r-op').textContent       = OPS[op].label;
+    renderSteps(op);
+  }
+
+  function renderSteps(op) {
+    const list = document.getElementById('steps-list');
+    list.innerHTML = '';
+    STEPS[op].forEach((text, i) => {
+      const d = document.createElement('div');
+      d.className = 'payment-step';
+      d.innerHTML = `<div class="step-badge">${i+1}</div><div class="step-text">${text}</div>`;
+      list.appendChild(d);
+    });
+    const sa = list.querySelector('#sa');
+    if (sa) sa.textContent = payAmt.toLocaleString('fr-FR') + ' FCFA';
+  }
+
+  function copyNumber() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(OWNER_NUMBER).then(() => {
+        const b = document.getElementById('copy-btn');
+        b.textContent='✓ Copié !'; b.classList.add('copied');
+        setTimeout(()=>{ b.textContent='📋 Copier'; b.classList.remove('copied'); },2500);
+      });
+    } else { alert('Numéro : '+OWNER_NUMBER); }
+  }
+
+  function startTimer(sec) {
+    let r = sec;
+    const el = document.getElementById('timer');
+    const iv = setInterval(()=>{
+      r--;
+      const m=Math.floor(r/60).toString().padStart(2,'0');
+      const s=(r%60).toString().padStart(2,'0');
+      el.textContent = m+':'+s;
+      if (r<=0){ clearInterval(iv); el.textContent='Expirée'; el.style.color='#e24b4a'; }
+    },1000);
+  }
+
+  async function submit() {
+    const name  = document.getElementById('pay-name').value.trim();
+    const phone = document.getElementById('pay-phone').value.trim();
+    const email = document.getElementById('pay-email').value.trim();
+    const ref   = document.getElementById('transaction-ref').value.trim();
+    const token = localStorage.getItem('shoplink_token');
+    const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+    const site = JSON.parse(localStorage.getItem('shoplink_site') || 'null');
+    let ok = true;
+
+    if (!name)                          { setE('err-name','Nom requis'); ok=false; } else clrE('err-name');
+    if (!phone||phone.replace(/\D/g,'').length<11) { setE('err-phone','Numéro invalide — Format : +229 01 XX XX XX'); ok=false; } else clrE('err-phone');
+    if (!email||!email.includes('@'))   { setE('err-email','Email invalide'); ok=false; } else clrE('err-email');
+    if (!ref||ref.length<4)             { setE('err-ref','Référence requise (code SMS reçu après le transfert)'); ok=false; } else clrE('err-ref');
+    if (!token || !user.id)             { setE('err-ref','Reconnectez-vous avant de payer'); ok=false; }
+    if (payType === 'autonome' && (!site || !site.id)) { setE('err-ref','Aucun site brouillon trouve. Reprenez depuis l inscription.'); ok=false; }
+    if (!ok) return;
+
+    document.getElementById('loading-overlay').classList.add('show');
+    document.getElementById('pay-btn').disabled = true;
+
+    const body = {
+      userId: user.id,
+      name,
+      phone: toRaw(phone),
+      email,
+      type: payType,
+      step: payStep,
+      amount: payAmt,
+      method: selOp,
+      reference: ref,
+      siteId: site && site.id ? site.id : '',
+      siteName: site && site.name ? site.name : '',
+      slogan: site && site.slogan ? site.slogan : '',
+      siteDescription: site && site.description ? site.description : '',
+      whatsappNumber: site && site.whatsapp ? site.whatsapp : toRaw(phone),
+      secondaryPhone: site && site.secondaryPhone ? site.secondaryPhone : '',
+      address: site && site.address ? site.address : '',
+      activityType: site && site.activityType ? site.activityType : '',
+      primaryColor: site && site.primaryColor ? site.primaryColor : '',
+      secondaryColor: site && site.secondaryColor ? site.secondaryColor : '',
+      logo: site && site.logo ? site.logo : ''
+    };
+
+    try {
+      const apiBase = '/api';
+      const res = await fetch(apiBase + '/payments/initiate',{
+        method:'POST',
+        headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      document.getElementById('loading-overlay').classList.remove('show');
+      if (!res.ok) {
+        setE('err-ref', data.message || 'Impossible de lancer le paiement');
+        document.getElementById('pay-btn').disabled = false;
+        return;
+      }
+      showPending({
+        ...body,
+        paymentId: data.payment && data.payment.id ? data.payment.id : '',
+        paymentReference: data.payment && data.payment.reference ? data.payment.reference : ref
+      });
+    } catch(e) {
+      document.getElementById('loading-overlay').classList.remove('show');
+      setE('err-ref','Erreur de connexion au serveur');
+      document.getElementById('pay-btn').disabled = false;
+    }
+  }
+
+  function showPending(data) {
+    document.getElementById('payment-page').style.display = 'none';
+    document.getElementById('pending-page').classList.add('show');
+    document.getElementById('p-name').textContent    = data.name;
+    document.getElementById('p-service').textContent = data.type==='premium'?'Service Premium':'Création autonome';
+    document.getElementById('p-amount').textContent  = data.amount.toLocaleString('fr-FR')+' FCFA';
+    document.getElementById('p-ref').textContent     = data.paymentReference || data.reference;
+    localStorage.setItem('shoplink_pending', JSON.stringify({...data, at: new Date().toISOString()}));
+  }
+
+  function showSuccess(slug) {
+    document.getElementById('pending-page').classList.remove('show');
+    document.getElementById('success-page').classList.add('show');
+    document.getElementById('s-service').textContent = payType==='premium'?'Service Premium':'Création autonome';
+    document.getElementById('s-amount').textContent  = payAmt.toLocaleString('fr-FR')+' FCFA';
+    if (slug && payType!=='premium') {
+      document.getElementById('s-link').textContent = 'shoplink.bj/'+slug;
+      document.getElementById('s-link').href = 'https://shoplink.bj/'+slug;
+    } else {
+      document.getElementById('s-link-row').style.display = 'none';
+    }
+  }
+
+  function shareWA() {
+    const slug = document.getElementById('s-link').textContent;
+    const msg  = encodeURIComponent('🛍️ Venez voir ma boutique !\n👉 https://'+slug+'\nCréé avec ShopLink 🇧🇯');
+    window.open('https://wa.me/?text='+msg,'_blank');
+  }
+
+  function setE(id,msg){ document.getElementById(id).textContent=msg; }
+  function clrE(id){ document.getElementById(id).textContent=''; }
+
+  init();
+</script>
+</body>
+</html>

@@ -1,0 +1,718 @@
+===== PAGE 1 =====
+MY ONLINE STORE
+CAHIER DES CHARGES
+Projet :
+Plateforme de cr?ation de sites pour digitaliser les entreprises:
+**
+1)
+Pr?sentation du projet
+1.1
+Contexte
+De nombreuses entreprises (restaurants, boutiques, commer?ants) au B?nin ne disposent pas de sites web pour pr?senter leurs
+produits. Elles utilisent principalement WhatsApp ou les r?seaux sociaux, ce qui limite leur visibilit? et leur cr?dibilit?.
+1.2
+Objectif
+Cr?er une plateforme web permettant :
+de cr?er facilement un site vitrine de produits sans coder,
+de proposer un service professionnel de cr?ation de site sur mesure
+2)
+Objectifs du produit
+Objectifs principaux
+-
+Digitaliser les produits des entreprises
+-
+Permettre une pr?sence en ligne rapide
+Objectifs secondaires
+-
+Faciliter la prise de commande via WhatsApp
+-
+G?n?rer des revenus (abonnement + service)
+-
+Offrir une solution simple et accessible
+3)
+Cibles utilisateurs
+3.1
+Utilisateurs principaux
+Restaurants
+Fast
+-
+food
+Boutiques
+Commer?ants
+Vendeurs en ligne (WhatsApp / Instagram)
+3.2
+Administrateur
+Moi (gestion compl?te de la plateforme)
+**
+4)
+Description des fonctionnalit?s
+4.1
+Fonctionnalit?s utilisateurs (clients)
+Compte utilisateur
+Inscription
+Connexion
+Gestion du profil
+Cr?ation de site (version simple)
+-
+site automatiquement
+Personnalisation :
+Nom de la boutique
+Logo
+Couleurs
+Gestion des produits
+Ajouter un produit :
+Nom
+Prix
+Image
+Description
+Modifier / supprimer produit
+samedi 28 mars 2026
+20:43
+Nouvelle section 1 Page 1
+
+===== PAGE 2 =====
+Modifier / supprimer produit
+Publication du site
+Commande via WhatsApp
+Redirection automatique avec message pr?
+-
+rempli
+4.2
+Service premium (administrateur)
+Cr?ation de site personnalis?
+Design professionnel
+Organisation avanc?e des produits
+Support client
+4.3
+Interface administrateur (moi)
+Gestion des utilisateurs
+Gestion des sites
+Acc?s aux contenus clients
+Modification des sites
+Gestion des abonnements
+Statistiques simples
+**
+5)
+Parcours utilisateur
+Cas 1
+: utilisateur autonome
+Inscription
+Cr?ation du site
+Ajout des produits
+Publication
+Partage du lien
+Cas 2
+: service premium
+Je r?cup?re les informations
+Je cr?e le site
+Livraison au client
+**
+5.1
+Syst?me de paiement int?gr?
+Objectif
+Mettre en place un syst?me de paiement diff?renci? selon le type de service choisi :
+Paiement automatique (cr?ation autonome)
+Paiement fractionn? (service premium)
+5.5.1
+CAS 1
+: Cr?ation autonome (plateforme / algorithme)
+-
+m?me (sans mon intervention)
+Fonctionnement
+cr?e son compte
+construit son site
+1) Objectif de la version autonome
+cr?er un site simple
+pr?senter ses produits
+partager un lien
+Sans atteindre le niveau professionnel
+2) Informations ? renseigner (cr?ation du site)
+Identit? du site
+Nom de la boutique
+Slogan (optionnel)
+Logo (optionnel)
+Contact
+Num?ro WhatsApp (OBLIGATOIRE)
+T?l?phone secondaire (optionnel)
+Adresse (optionnel)
+Nouvelle section 1 Page 2
+
+===== PAGE 3 =====
+Adresse (optionnel)
+Description
+Restaurant
+Boutique
+Autre
+Produits (?l?ment central)
+Pour chaque produit :
+Nom
+Prix
+Image
+Description courte
+Limite recommand?e :
+20 ou plus
+Cat?gories (simple)
+Ajouter cat?gorie :
+Ex : Plats / Boissons / Chaussures
+Apparence (tr?s limit?)
+Choix de :
+2
+3 couleurs pr
+1 template unique
+URL : siteboutique.com/nomdusite
+4) Mise en ligne autonome
+Publier mon site
+paiement requis :
+redirection vers paiement
+lien accessible
+Voir son site
+Modifier ses produits
+Partager lien
+finalise
+Avant publication :
+Affichage :
+redirige vers paiement
+Paiement requis pour :
+publier le site
+Logique
+Payant
+UX attendue
+Message clair :
+Finalisez votre site en effectuant le paiement
+Bouton principal :
+Payer et publier
+Salut, Cher[e]
+client[e]
+Votre paiement a ?t? effectu? avec succ?s.
+Votre site est maintenant actif et accessible en ligne.
+Nouvelle section 1 Page 3
+
+===== PAGE 4 =====
+D?tails :
+-
+Service : Cr?ation de site autonome
+-
+Montant : [montant]
+-
+Statut : Pay?
+Vous pouvez d?s maintenant partager votre site.
+Merci pour votre confiance.
+Site activ? automatiquement
+Lien public g?n?r?,
+Acc?s d?bloqu?:voici votre [lien]en couleur bleu
+5.5.2
+CAS 2
+Service premium (forte valeur)
+Fonctionnement
+?tape 1 : Commande
+Remplit formulaire:
+1) Informations g?n?rales
+Nom du responsable
+Num?ro WhatsApp & appel
+de la soci?t?
+Email
+Localisation (ville / quartier) de la soci?t?
+Restaurant
+Boutique
+Cosm?tique
+Autre (pr?ciser)
+Cible client?le (optionnel)
+3) Produits / services
+Liste des produits ou menu
+Prix des produits
+Description des produits
+Cat?gories (ex : Entr?es / Plats / Desserts)
+4) M?dias
+Upload du logo
+Upload des images produits
+Couleurs pr?f?r?es (optionnel)
+5) Structure du site souhait?e
+Type de site :
+Catalogue simple
+Menu restaurant
+Boutique
+Sections souhait?es :
+Accueil
+Produits
+Contact
+? propos
+6) Fonctionnalit?s
+Bouton WhatsApp (oui/non)
+Livraison (oui/non)
+Localisation Google Maps (oui/non)
+7) Design & pr?f?rences
+Style souhait? :
+Moderne
+Simple
+?l?gant
+Exemple de site aim? (lien optionnel)
+Nouvelle section 1 Page 4
+
+===== PAGE 5 =====
+Exemple de site aim? (lien optionnel)
+8) D?lais
+Urgence
+Normal
+Urgent
+9) Validation & paiement
+Affichage du prix du service
+Message :
+Un acompte de 50% est requis pour d?marrer le projet
+Bouton :
+10) Message de confirmation avant paiement
+Votre demande a bien ?t? enregistr?e.
+NB:Site disponible trois(03) semaines apr?s paiement de l'acompte/(02) pour delai:urgent
+?tape 2 : Paiement partiel (acompte)
+Tr?s important :
+Paiement de 50% obligatoire avant d?marrage
+Bouton :
+R?sultat apr?s paiement:
+Salut, Cher[e]
+client[e]
+Nous confirmons la r?ception de votre acompte.
+Votre projet de cr?ation de site est d?sormais en cours de r?alisation.
+D?tails :
+-
+Service : Cr?ation de site professionnel
+-
+Montant pay? :[montant]
+50%
+-
+Statut : Acompte valid?
+Nous vous contacterons pour le suivi.
+Merci pour votre confiance.
+?tape 3 : Production
+Tu cr?es le site
+Tu avances sur le projet
+?tape 4 : Livraison&Paiement final
+Avant mise en ligne :
+Paiement complet valid?(? prendre en compte par messagerie entre le client et moi)
+I
+nterface utilisateur (paiement)
+Site livr? officiellement en envoyant le lien par courriel ou messagerie whatsApp
+Pour cr?ation autonome
+Bouton :
+Payer et publier
+Pour service premium
+Boutons :
+Interface administrateur (moi)
+Payer le solde
+je dois pouvoir :
+Voir :
+paiements complets
+acomptes
+soldes
+Statuts :
+en attente
+acompte pay?
+termin?
+Valider paiements
+Fais afficher un d?compte chez moi sur la page admi de mon c?t? et la page a? partir du premier acompte (affichant nombres de
+Nouvelle section 1 Page 5
+
+===== PAGE 6 =====
+Fais afficher un d?compte chez moi sur la page admi de mon c?t? et la page a? partir du premier acompte (affichant nombres de
+jours et heures restants avant livraison )
+Base de donn?es (ajout important)
+Table Paiements
+id
+user_id
+type :
+autonome
+premium
+montant
+statut :
+pay?
+en attente
+?tape :
+acompte
+solde
+S?curit?
+date
+Paiement s?curis? (HTTPS)
+V?rification automatique
+Historique complet
+POINT STRAT?GIQUE (TR?S IMPORTANT)
+6)
+Architecture technique
+Sections :
+Hero
+Titre : Cr?e ton site de vente en quelques minutes, fais connaitre ta soci?t?
+Boutons :
+Cr?er mon site
+Confier mon projet
+Cible
+Restaurants
+Boutiques
+Commer?ants
+Comment ?a marche
+Cr?er
+Ajouter produits
+Partager lien
+Exemples
+Restaurant (menu)
+Boutique (produits)
+Tarifs
+Premium (fait par moi)
+Dashboard (client)
+Menu :
+Mes produits
+Mon site
+Param?tres
+Action principale : La cr?ation autonome donne acc?s ? un tableau de bord pour voir les interactions sur le site.
+6.1 Front
+-
+end
+Interface utilisateur
+Technologies :
+HTML / CSS / JavaScript
+ou React
+6.2 Back
+-
+end
+Gestion logique
+Technologies :
+Node.js ou PHP
+6.3 Base de donn?es
+MySQL ou MongoDB
+Tables principales :
+Utilisateurs
+Nouvelle section 1 Page 6
+
+===== PAGE 7 =====
+Utilisateurs
+Sites
+Produits
+6.4 H?bergement
+Architecture globale
+Structure du syst?me
+Frontend (React)
+Backend API (Node.js / Express)
+Base de donn?es (MongoDB)
+Services externes
+-
+Paiement (Mobile Money)
+-
+Email (SMTP/API)
+-
+WhatsApp (lien direct)
+2) Modules principaux
+2.1 Authentification
+Fonctions :
+Inscription
+Connexion
+D?connexion
+S?curit? (JWT)
+Routes API
+POST /api/auth/register
+POST /api/auth/login
+2.2 Gestion des utilisateurs
+Donn?es
+nom
+email
+t?l?phone
+r?le (admin / user)
+2.3 Cr?ation de site (core du projet)
+Routes
+POST /api/sites/create
+PUT /api/sites/:id
+Donn?es Site
+user_id
+nom_site
+slug (URL)
+logo
+description
+statut (draft / published)
+2.4 Produits
+Routes
+POST /api/products
+PUT /api/products/:id
+Donn?es Produit
+site_id
+nom
+prix
+image
+description
+Nouvelle section 1 Page 7
+
+===== PAGE 8 =====
+description
+cat?gorie
+2.5 G?n?ration du site public
+Route dynamique :
+Exemple :
+site.com/nom du restaurant/nom de la soci?t?.com
+Fonctionnement
+r?cup?rer site
+r?cup?rer produits
+afficher template
+3) Syst?me de paiement
+3.1 Types de paiement
+1. Autonome
+paiement unique
+activation du site
+2. Premium
+acompte (50%)
+solde (50%)
+3.2 Routes paiement
+POST /api/payment/initiate
+POST /api/payment/callback
+3.3 Logique backend
+cr?er transaction
+appeler API paiement
+attendre confirmation
+mettre ? jour statut :
+paid
+pending
+3.4 Base de donn?es (paiement)
+Payments:
+-
+id
+-
+user_id
+-
+montant
+-
+type (auto / premium)
+-
+statut
+-
+?tape (acompte / solde)
+-
+reference
+4) Syst?me email
+4.1 Envoi automatique
+Moments :
+apr?s paiement
+apr?s inscription
+apr?s commande
+4.2 Service
+SMTP ou API (SendGrid / Mailgun)
+4.3 Fonction backend
+sendEmail(user.email, template)
+5) Dashboard utilisateur
+Pages :
+/dashboard
+/dashboard/products
+/dashboard/site
+/dashboard/settings
+Actions :
+Ajouter produit
+Modifier site
+Publier site
+Nouvelle section 1 Page 8
+
+===== PAGE 9 =====
+Publier site
+6) Dashboard admin
+Pages :
+/admin/users
+/admin/sites
+/admin/payments
+Fonctions :
+voir utilisateurs
+voir paiements
+modifier sites
+g?rer commandes premium
+7) Base de donn?es (structure compl?te)
+Users
+id
+name
+email
+password
+role
+Sites
+id
+user_id
+name
+slug
+logo
+description
+status
+Products
+id
+site_id
+name
+price
+image
+description
+category
+Payments
+id
+user_id
+type
+amount
+status
+step
+created_at
+8) S?curit?
+Hash mot de passe (bcrypt)
+JWT auth
+HTTPS obligatoire
+Validation des donn?es
+9) D?ploiement
+H?bergement :
+Front : Vercel / Netlify
+Back : Render / VPS
+DB : MongoDB Atlas
+10) Roadmap de d?veloppement
+Phase 1 (MVP)
+Auth
+CRUD produits
+Page publique
+WhatsApp
+Phase 2
+Paiement
+Nouvelle section 1 Page 9
+
+===== PAGE 10 =====
+Paiement
+Email
+Dashboard am?lior?
+Phase 3
+Templates
+SEO
+Optimisation
+11) Fonction cl? (WhatsApp)
+Lien automatique :
+https://wa.me/229XXXXXXXX?text=Bonjour
+je veux commander [Produit]
+12) Algorithme cl? (publication)
+IF paiement_valid?
+THEN publier site
+ELSE
+bloquer acc?s
+**
+7) Contraintes techniques
+Site responsive (mobile obligatoire)
+Temps de chargement rapide
+Interface simple (utilisateurs non techniques)
+S?curit? des comptes
+Optimisation pour connexions faibles
+**
+8) Design et UX
+Exigences
+Design simple et moderne
+Navigation intuitive
+Interface claire
+Priorit? mobile
+**
+##
+Pour cr?ation de site autonome:
+Tarification :
+Objectif
+Prix standard
+Proposer une offre simple, accessible et incitative pour encourager les premiers utilisateurs ? cr?er leur site eux
+-
+m?mes.
+5 000 FCFA
+7,6
+(conversion indicative)
+Donne acc?s ? :
+Publication du site
+Acc?s complet aux fonctionnalit?s de base
+Offre de lancement (promotion)
+Lien public actif
+4 000 FCFA
+6,1
+(
+-
+?
+-
+dire selon valeur de l'euro
+Valable uniquement pour :
+les 10 premiers utilisateurs
+Le syst?me doit :
+Appliquer :
+4 000 FCFA
+si compteur < 10
+Affichage c?t? utilisateur
+5 000 FCFA
+sinon
+Avant paiement
+Afficher :
+Offre de lancement : 4 000 FCFA (places restantes : X/10)
+Puis :
+Prix normal : 5 000 FCFA
+Bouton principal :
+Nouvelle section 1 Page 10
+
+===== PAGE 11 =====
+Message marketing (? afficher)
+Apr?s paiement
+Offre limit?e aux 10 premiers utilisateurs
+Activation automatique du site
+G?n?ration du lien
+Pour demande de cr?ation du site:
+SERVICE PREMIUM
+T
+arification
+Cr
+Confirmation (email + notification)
+Objectif
+Proposer une offre attractive pour :
+attirer les premiers clients
+lancer rapidement ton activit?
+Offre de lancement (promo)
+construire ta cr?dibilit?
+10 000 FCFA
+15,2
+Valable pour :
+Prix standard
+les 10 premiers clients
+12 000 FCFA
+18,3
+Appliqu? apr?s les 10 premiers clients
+Le syst?me doit :
+Compter les commandes valid?es
+Appliquer :
+10 000 FCFA
+si clients < 10
+Paiement (important)
+12 000 FCFA
+au
+-
+del?
+Paiement en 2 ?tapes :
+Acompte (50%)
+5 000 FCFA (
+7,6
+)
+promo
+6 000 FCFA (
+9,1
+)
+standard
+Solde (50%)
+? la livraison
+Sur la page service :
+Offre de lancement : 10 000 FCFA (
+15,2
+)
+Valable pour les 10 premiers clients
+Puis :
+Prix normal : 12 000 FCFA (
+18,3
+)
+Commander mon site
+Offre limit?e aux 10 premiers clients
+##
+Nombre de clients payants
+12) Risques
+Concurrence
+Nouvelle section 1 Page 11
+
+===== PAGE 12 =====
+Adaptation au march? local
+Prix accessible
+Rapidit? de cr?ation de site
+Le projet consiste ? cr?er une plateforme hybride (SaaS + service) permettant aux entreprises de :
+cr?er elles
+-
+m?mes un site simple
+ou confier la cr?ation ? un expert
+Positionnement : solution de digitalisation simple pour vendre en ligne un ou faire connaitre ces produits en lignes/plac?s s
+es
+produits en lignes.
+Nouvelle section 1 Page 12
+

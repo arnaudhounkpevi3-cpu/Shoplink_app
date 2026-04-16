@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Créer un compte</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --green:#1a5c38; --green-light:#eef7f1; --green-mid:#0f6e56;
+      --amber:#f59c1a; --amber-light:#fef3de;
+      --dark:#0f1f17; --bg:#fdf6ee; --white:#fff;
+      --border:#e8ddd0; --text:#1a1a1a; --muted:#6b5744; --soft:#9a7d5a;
+      --radius:12px; --radius-lg:18px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+    h1,h2{font-family:'Syne',sans-serif;}
+
+    /* NAV */
+    nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;}
+    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;}
+    .nav-link{color:rgba(255,255,255,0.7);font-size:13px;text-decoration:none;}
+    .nav-link:hover{color:#fff;}
+
+    /* LAYOUT */
+    .page-body{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:auto;align-items:start;}
+
+    /* LEFT PANEL */
+    .left-panel{background:var(--dark);padding:60px 50px;display:flex;flex-direction:column;justify-content:flex-start;gap:32px;min-height:100%;}
+    .left-title{font-size:32px;font-weight:800;color:#fff;line-height:1.2;}
+    .left-title span{color:var(--amber);}
+    .left-sub{font-size:15px;color:rgba(255,255,255,0.6);line-height:1.7;}
+    .feature-list{display:flex;flex-direction:column;gap:16px;}
+    .feature-item{display:flex;align-items:flex-start;gap:12px;}
+    .feature-icon{width:36px;height:36px;border-radius:50%;background:rgba(26,107,74,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .feature-text{font-size:14px;color:rgba(255,255,255,0.75);line-height:1.5;}
+    .feature-text strong{color:#fff;}
+    .promo-box{background:rgba(245,156,26,0.15);border:1px solid rgba(245,156,26,0.35);border-radius:var(--radius);padding:16px 18px;}
+    .promo-box-title{font-size:13px;font-weight:500;color:var(--amber);margin-bottom:4px;}
+    .promo-box-text{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5;}
+
+    /* RIGHT PANEL */
+    .right-panel{background:var(--bg);padding:50px 60px;display:flex;flex-direction:column;justify-content:flex-start;min-height:100%;}
+    .form-header{margin-bottom:32px;}
+    .form-title{font-size:26px;font-weight:800;color:var(--text);margin-bottom:6px;}
+    .form-sub{font-size:14px;color:var(--muted);}
+    .form-sub a{color:var(--green);text-decoration:none;font-weight:500;}
+
+    /* FORM */
+    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:16px;}
+    .form-label{font-size:13px;color:var(--muted);font-weight:500;}
+    .form-input{padding:11px 14px;border-radius:var(--radius);border:1.5px solid var(--border);background:#fff;font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;}
+    .form-input:focus{border-color:var(--green);}
+    .form-input.error{border-color:#e24b4a;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .error-msg{font-size:12px;color:#e24b4a;margin-top:3px;}
+    .form-hint{font-size:12px;color:var(--soft);margin-top:3px;}
+
+    /* ACTIVITY TYPE */
+    .activity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
+    .activity-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:12px 8px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
+    .activity-card:hover{border-color:var(--green);background:var(--green-light);}
+    .activity-card.selected{border-color:var(--green);background:var(--green-light);}
+    .activity-card-icon{font-size:22px;margin-bottom:6px;}
+    .activity-card-label{font-size:12px;font-weight:500;color:var(--muted);}
+    .activity-card.selected .activity-card-label{color:var(--green);}
+
+    /* SUBMIT */
+    .btn-submit{width:100%;background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:13px;font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px;transition:all 0.2s;}
+    .btn-submit:hover{background:#155030;transform:translateY(-1px);}
+    .btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+
+    /* DIVIDER */
+    .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--soft);font-size:13px;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    /* TERMS */
+    .terms{font-size:12px;color:var(--soft);text-align:center;margin-top:16px;line-height:1.5;}
+    .terms a{color:var(--green);text-decoration:none;}
+
+    /* SUCCESS */
+    .success-box{display:none;background:var(--green-light);border:1px solid #9fe1cb;border-radius:var(--radius);padding:16px 18px;margin-bottom:20px;}
+    .success-box.show{display:block;}
+    .success-title{font-size:14px;font-weight:500;color:var(--green-mid);margin-bottom:4px;}
+    .success-text{font-size:13px;color:var(--green-mid);}
+
+    /* GLOBAL ERROR */
+    .global-error{display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;font-size:13px;color:#a32d2d;}
+    .global-error.show{display:block;}
+
+    /* STRENGTH BAR */
+    .strength-bar{height:4px;border-radius:100px;margin-top:6px;transition:all 0.3s;}
+    .strength-label{font-size:11px;margin-top:4px;}
+
+    /* STEP INDICATOR */
+    .steps-indicator{display:flex;align-items:center;gap:8px;margin-bottom:28px;}
+    .step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;border:2px solid var(--border);color:var(--soft);transition:all 0.2s;}
+    .step-dot.active{background:var(--green);border-color:var(--green);color:#fff;}
+    .step-dot.done{background:var(--green-light);border-color:var(--green);color:var(--green);}
+    .step-line{flex:1;height:2px;background:var(--border);border-radius:100px;}
+    .step-line.done{background:var(--green);}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/index.html" class="logo"><span class="logo-dot"></span>ShopLink</a>
+  <a href="/login.html" class="nav-link">Déjà un compte ? Se connecter →</a>
+</nav>
+
+<div class="page-body">
+
+  <!-- PANNEAU GAUCHE -->
+  <div class="left-panel">
+    <div>
+      <div class="left-title">Crée ta boutique en ligne<br><span>en quelques minutes</span></div>
+      <div class="left-sub" style="margin-top:12px;">Rejoins des centaines de commerçants du Bénin qui digitalisent leur activité avec ShopLink.</div>
+    </div>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">🚀</div>
+        <div class="feature-text"><strong>Site en ligne en 5 minutes</strong><br>Remplissez le formulaire et votre boutique est prête.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📲</div>
+        <div class="feature-text"><strong>Commandes via WhatsApp</strong><br>Vos clients commandent directement sur votre numéro.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📦</div>
+        <div class="feature-text"><strong>Jusqu'à 20+ produits</strong><br>Photos, prix, catégories — tout est inclus.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div class="feature-text"><strong>Statistiques en temps réel</strong><br>Suivez les vues et clics sur votre boutique.</div>
+      </div>
+    </div>
+    <div class="promo-box">
+      <div class="promo-box-title">⚡ Offre de lancement — 4 000 FCFA</div>
+      <div class="promo-box-text">Valable pour les 10 premiers utilisateurs. Prix standard : 5 000 FCFA. Inscription gratuite, paiement uniquement à la publication.</div>
+    </div>
+  </div>
+
+  <!-- PANNEAU DROIT - FORMULAIRE -->
+  <div class="right-panel">
+    <div class="form-header">
+      <div class="form-title">Créer mon compte</div>
+      <div class="form-sub">Déjà inscrit ? <a href="/login.html">Se connecter</a></div>
+    </div>
+
+    <!-- Indicateur d'étapes -->
+    <div class="steps-indicator">
+      <div class="step-dot active" id="dot-1">1</div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-dot" id="dot-2">2</div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-dot" id="dot-3">3</div>
+    </div>
+
+    <div class="success-box" id="success-box">
+      <div class="success-title">✓ Compte créé avec succès !</div>
+      <div class="success-text">Redirection vers votre tableau de bord...</div>
+    </div>
+    <div class="global-error" id="global-error"></div>
+
+    <form id="register-form" novalidate>
+
+      <!-- ÉTAPE 1 : Informations personnelles -->
+      <div id="step-1">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Prénom *</label>
+            <input class="form-input" type="text" id="firstname" placeholder="Ex : Grace" autocomplete="given-name"/>
+            <div class="error-msg" id="err-firstname"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nom *</label>
+            <input class="form-input" type="text" id="lastname" placeholder="Ex : Koudjo" autocomplete="family-name"/>
+            <div class="error-msg" id="err-lastname"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input class="form-input" type="email" id="email" placeholder="votre@email.com" autocomplete="email"/>
+          <div class="error-msg" id="err-email"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Numéro de téléphone *</label>
+          <input class="form-input" type="tel" id="phone" placeholder="+229 97 XX XX XX" autocomplete="tel"/>
+          <div class="form-hint">Ce numéro sera utilisé pour WhatsApp</div>
+          <div class="error-msg" id="err-phone"></div>
+        </div>
+        <button type="button" class="btn-submit" onclick="goStep2()">Continuer →</button>
+      </div>
+
+      <!-- ÉTAPE 2 : Mot de passe + type d'activité -->
+      <div id="step-2" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Mot de passe *</label>
+          <input class="form-input" type="password" id="password" placeholder="Minimum 6 caractères" oninput="checkStrength(this.value)"/>
+          <div class="strength-bar" id="strength-bar" style="background:var(--border);width:0%;"></div>
+          <div class="strength-label" id="strength-label" style="color:var(--soft);"></div>
+          <div class="error-msg" id="err-password"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmer le mot de passe *</label>
+          <input class="form-input" type="password" id="password2" placeholder="Répétez votre mot de passe"/>
+          <div class="error-msg" id="err-password2"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type d'activité *</label>
+          <div class="activity-grid" id="activity-grid">
+            <div class="activity-card selected" onclick="selectActivity(this,'restaurant')"><div class="activity-card-icon">🍽️</div><div class="activity-card-label">Restaurant</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'boutique')"><div class="activity-card-icon">👗</div><div class="activity-card-label">Boutique</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'fastfood')"><div class="activity-card-icon">🍟</div><div class="activity-card-label">Fast-food</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'cosmetique')"><div class="activity-card-icon">💄</div><div class="activity-card-label">Cosmétiques</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'commerce')"><div class="activity-card-icon">🛒</div><div class="activity-card-label">Commerce</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'autre')"><div class="activity-card-icon">✨</div><div class="activity-card-label">Autre</div></div>
+          </div>
+          <input type="hidden" id="activity-type" value="restaurant"/>
+          <div class="error-msg" id="err-activity"></div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button type="button" style="flex:1;padding:13px;border-radius:var(--radius);border:1.5px solid var(--border);background:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;" onclick="goStep(1)">← Retour</button>
+          <button type="button" class="btn-submit" style="flex:2;" onclick="goStep3()">Continuer →</button>
+        </div>
+      </div>
+
+      <!-- ÉTAPE 3 : Nom boutique + confirmation -->
+      <div id="step-3" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Nom de votre boutique *</label>
+          <input class="form-input" type="text" id="shop-name" placeholder="Ex : Boutique Grâce Mode"/>
+          <div class="form-hint">Ce nom sera affiché sur votre site public</div>
+          <div class="error-msg" id="err-shop"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Slogan (optionnel)</label>
+          <input class="form-input" type="text" id="shop-slogan" placeholder="Ex : La mode africaine à votre porte"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ville / Quartier</label>
+          <input class="form-input" type="text" id="shop-city" placeholder="Ex : Cotonou, Cadjehoun"/>
+        </div>
+
+        <!-- Aperçu du lien -->
+        <div style="background:var(--green-light);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Votre futur lien public :</div>
+          <div style="font-size:13px;color:var(--green);font-weight:500;font-family:monospace;" id="slug-preview">shoplink.bj/votre-boutique</div>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button type="button" style="flex:1;padding:13px;border-radius:var(--radius);border:1.5px solid var(--border);background:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;" onclick="goStep(2)">← Retour</button>
+          <button type="submit" class="btn-submit" style="flex:2;" id="submit-btn">🚀 Créer mon compte</button>
+        </div>
+
+        <div class="terms">En créant un compte vous acceptez nos <a href="#">Conditions d'utilisation</a> et notre <a href="#">Politique de confidentialité</a></div>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  let currentStep = 1;
+  const selectedActivity = { value: 'restaurant' };
+
+  function goStep(n) {
+    document.getElementById('step-' + currentStep).style.display = 'none';
+    document.getElementById('dot-' + currentStep).classList.remove('active');
+    document.getElementById('dot-' + currentStep).classList.add('done');
+    document.getElementById('dot-' + currentStep).textContent = '✓';
+    if (currentStep < 3) document.getElementById('line-' + currentStep).classList.add('done');
+    currentStep = n;
+    document.getElementById('step-' + n).style.display = 'block';
+    document.getElementById('dot-' + n).classList.remove('done');
+    document.getElementById('dot-' + n).classList.add('active');
+    document.getElementById('dot-' + n).textContent = n;
+  }
+
+  function goStep2() {
+    const fn = document.getElementById('firstname').value.trim();
+    const ln = document.getElementById('lastname').value.trim();
+    const em = document.getElementById('email').value.trim();
+    const ph = document.getElementById('phone').value.trim();
+    let ok = true;
+    if (!fn) { showErr('err-firstname','Prénom requis'); ok=false; } else clearErr('err-firstname');
+    if (!ln) { showErr('err-lastname','Nom requis'); ok=false; } else clearErr('err-lastname');
+    if (!em || !em.includes('@')) { showErr('err-email','Email invalide'); ok=false; } else clearErr('err-email');
+    if (!ph) { showErr('err-phone','Téléphone requis'); ok=false; } else clearErr('err-phone');
+    if (ok) goStep(2);
+  }
+
+  function goStep3() {
+    const pw  = document.getElementById('password').value;
+    const pw2 = document.getElementById('password2').value;
+    let ok = true;
+    if (pw.length < 6) { showErr('err-password','Minimum 6 caractères'); ok=false; } else clearErr('err-password');
+    if (pw !== pw2) { showErr('err-password2','Les mots de passe ne correspondent pas'); ok=false; } else clearErr('err-password2');
+    if (ok) goStep(3);
+  }
+
+  function selectActivity(el, val) {
+    document.querySelectorAll('.activity-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('activity-type').value = val;
+    selectedActivity.value = val;
+  }
+
+  function checkStrength(val) {
+    const bar = document.getElementById('strength-bar');
+    const lbl = document.getElementById('strength-label');
+    let strength = 0;
+    if (val.length >= 6)  strength++;
+    if (val.length >= 10) strength++;
+    if (/[A-Z]/.test(val)) strength++;
+    if (/[0-9]/.test(val)) strength++;
+    if (/[^A-Za-z0-9]/.test(val)) strength++;
+    const levels = [
+      { w:'0%',   bg:'var(--border)', label:'' },
+      { w:'25%',  bg:'#e24b4a', label:'Faible' },
+      { w:'50%',  bg:'var(--amber)', label:'Moyen' },
+      { w:'75%',  bg:'var(--amber)', label:'Bon' },
+      { w:'100%', bg:'var(--green)', label:'Fort ✓' }
+    ];
+    const l = levels[Math.min(strength, 4)];
+    bar.style.width = l.w;
+    bar.style.background = l.bg;
+    lbl.textContent = l.label;
+    lbl.style.color = l.bg;
+  }
+
+  // Aperçu du slug
+  document.addEventListener('input', function(e) {
+    if (e.target.id === 'shop-name') {
+      const slug = e.target.value.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
+      document.getElementById('slug-preview').textContent = 'shoplink.bj/' + (slug || 'votre-boutique');
+    }
+  });
+
+  // Soumission du formulaire
+  document.getElementById('register-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const shopName = document.getElementById('shop-name').value.trim();
+    if (!shopName) { showErr('err-shop','Nom de boutique requis'); return; }
+    clearErr('err-shop');
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Création en cours...';
+    try {
+      const body = {
+        name: document.getElementById('firstname').value.trim() + ' ' + document.getElementById('lastname').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        password: document.getElementById('password').value,
+        activityType: document.getElementById('activity-type').value,
+        shopName: shopName,
+        slogan: document.getElementById('shop-slogan').value.trim(),
+        city: document.getElementById('shop-city').value.trim()
+      };
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('shoplink_token', data.token);
+        localStorage.setItem('shoplink_user', JSON.stringify(data.user));
+        if (data.site) localStorage.setItem('shoplink_site', JSON.stringify(data.site));
+        if (data.pricing) localStorage.setItem('shoplink_pricing', JSON.stringify(data.pricing));
+        document.getElementById('success-box').classList.add('show');
+        const amount = data.pricing && data.pricing.autonomousAmount ? data.pricing.autonomousAmount : 4000;
+        setTimeout(() => window.location.href = '/payment.html?type=autonome&step=full&amount=' + amount, 1500);
+      } else {
+        showGlobalError(data.message || 'Erreur lors de l\'inscription');
+        btn.disabled = false;
+        btn.textContent = '🚀 Créer mon compte';
+      }
+    } catch(err) {
+      showGlobalError('Erreur de connexion au serveur');
+      btn.disabled = false;
+      btn.textContent = '🚀 Créer mon compte';
+    }
+  });
+
+  function showErr(id, msg) { document.getElementById(id).textContent = msg; }
+  function clearErr(id) { document.getElementById(id).textContent = ''; }
+  function showGlobalError(msg) {
+    const el = document.getElementById('global-error');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  // Scroll vers le haut au chargement
+  window.addEventListener('load', function() {
+    window.scrollTo(0, 0);
+  });
+</script>
+</body>
+</html>

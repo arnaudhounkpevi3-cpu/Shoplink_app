@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Portail Principal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green: #1a5c38;
+      --green-light: #eef7f1;
+      --green-dark: #0f6e56;
+      --amber: #f59c1a;
+      --amber-light: #fef3de;
+      --dark: #0f1f17;
+      --bg: #fdf6ee;
+      --white: #fff;
+      --border: #e8ddd0;
+      --text: #1a1a1a;
+      --muted: #6b5744;
+      --soft: #9a7d5a;
+      --radius: 12px;
+      --radius-lg: 18px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, #f0ebe0 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    nav {
+      background: var(--green);
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--amber);
+      border-radius: 50%;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--dark);
+    }
+
+    .header p {
+      font-size: 18px;
+      color: var(--soft);
+      margin-bottom: 30px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--amber), var(--green));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--amber);
+      box-shadow: 0 8px 24px rgba(245, 156, 26, 0.12);
+      transform: translateY(-4px);
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .card-icon {
+      font-size: 32px;
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--soft);
+      line-height: 1.5;
+    }
+
+    .card-tag {
+      display: inline-block;
+      background: var(--green-light);
+      color: var(--green-dark);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      width: fit-content;
+      margin-top: 6px;
+    }
+
+    .category {
+      margin-bottom: 50px;
+    }
+
+    .category-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-title::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: var(--amber);
+      border-radius: 2px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--soft);
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 32px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        padding: 0 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="logo">
+      <span>ShopLink</span>
+      <span class="logo-dot"></span>
+    </a>
+  </nav>
+
+  <div class="container">
+    <div class="header">
+      <h1>Portail ShopLink</h1>
+      <p>Accédez à toutes les interfaces de votre plateforme de commerce en ligne</p>
+    </div>
+
+    <!-- Section Client -->
+    <div class="category">
+      <h2 class="category-title">👤 Interfaces Client</h2>
+      <div class="grid">
+        <a href="/homepage-shoplink.html" class="card">
+          <div class="card-icon">🏠</div>
+          <h3 class="card-title">Page d'Accueil</h3>
+          <p class="card-desc">Découvrez notre plateforme et consultez les offres disponibles</p>
+          <span class="card-tag">Public</span>
+        </a>
+
+        <a href="/login.html" class="card">
+          <div class="card-icon">🔐</div>
+          <h3 class="card-title">Connexion</h3>
+          <p class="card-desc">Connectez-vous à votre compte ShopLink</p>
+          <span class="card-tag">Authentification</span>
+        </a>
+
+        <a href="/register.html" class="card">
+          <div class="card-icon">📝</div>
+          <h3 class="card-title">Inscription</h3>
+          <p class="card-desc">Créez un nouveau compte pour commencer</p>
+          <span class="card-tag">Authentification</span>
+        </a>
+
+        <a href="/dashboard-client-shoplink.html" class="card">
+          <div class="card-icon">📊</div>
+          <h3 class="card-title">Tableau de Bord Client</h3>
+          <p class="card-desc">Gérez vos commandes et votre profil</p>
+          <span class="card-tag">Utilisateur</span>
+        </a>
+
+        <a href="/premium.html" class="card">
+          <div class="card-icon">💎</div>
+          <h3 class="card-title">Plan Premium</h3>
+          <p class="card-desc">Découvrez nos offres premium exclusives</p>
+          <span class="card-tag">Premium</span>
+        </a>
+
+        <a href="/payment.html" class="card">
+          <div class="card-icon">💳</div>
+          <h3 class="card-title">Paiement Sécurisé</h3>
+          <p class="card-desc">Effectuez vos paiements en toute sécurité</p>
+          <span class="card-tag">Paiement</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Section Admin -->
+    <div class="category">
+      <h2 class="category-title">⚙️ Interfaces Administrateur</h2>
+      <div class="grid">
+        <a href="/admin-dashboard.html" class="card">
+          <div class="card-icon">🛡️</div>
+          <h3 class="card-title">Tableau de Bord Admin</h3>
+          <p class="card-desc">Gérez votre boutique et vos produits</p>
+          <span class="card-tag">Admin</span>
+        </a>
+
+        <a href="/admin.html" class="card">
+          <div class="card-icon">⚡</div>
+          <h3 class="card-title">Admin Panel</h3>
+          <p class="card-desc">Panneau d'administration avancé</p>
+          <span class="card-tag">Admin</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Section Public -->
+    <div class="category">
+      <h2 class="category-title">🌐 Pages Publiques</h2>
+      <div class="grid">
+        <a href="/site-public.html" class="card">
+          <div class="card-icon">📱</div>
+          <h3 class="card-title">Site Public</h3>
+          <p class="card-desc">Page publique de présentation du site</p>
+          <span class="card-tag">Public</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Section Informations -->
+    <div class="category">
+      <h2 class="category-title">ℹ️ Informations</h2>
+      <div class="grid">
+        <a href="/faq.html" class="card">
+          <div class="card-icon">❓</div>
+          <h3 class="card-title">FAQ - Questions Fréquentes</h3>
+          <p class="card-desc">Trouvez réponses à vos questions sur ShopLink</p>
+          <span class="card-tag">Aide</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2026 ShopLink. Tous droits réservés.</p>
+  </footer>
+</body>
+</html>

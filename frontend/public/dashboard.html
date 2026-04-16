@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard ShopLink</title>
+  <style>
+    :root{
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "Monaco", "Courier New", monospace;
+      --color-bg: #fdf6ee;
+      --color-text-primary: #1a1a1a;
+      --color-text-secondary: #9a7d5a;
+      --color-green: #1a5c38;
+      --color-amber: #f59c1a;
+      --color-ocre: #8b5e2a;
+      --color-border: #e8ddd0;
+      --border-radius-md: 9px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:var(--font-sans);background:#fdf6ee;color:#1a1a1a;font-size:14px;}
+
+    /* TOPBAR */
+    .topnav{background:#1a5c38;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;}
+    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;}
+    .logo-dot{width:8px;height:8px;background:#f59c1a;border-radius:50%;}
+    .nav-links{display:flex;gap:2px;}
+    .nav-link{padding:8px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.65);cursor:pointer;transition:all 0.15s;font-weight:400;display:flex;align-items:center;gap:6px;}
+    .nav-link:hover{background:rgba(255,255,255,0.1);color:#fff;}
+    .nav-link.active{background:rgba(255,255,255,0.15);color:#fff;font-weight:500;}
+    .nav-link .nicon{font-size:14px;}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .site-live{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border-radius:100px;padding:5px 12px;font-size:12px;color:#fff;}
+    .live-dot{width:7px;height:7px;background:#6dd9a8;border-radius:50%;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+    .user-avatar{width:34px;height:34px;border-radius:50%;background:#f59c1a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#412402;cursor:pointer;}
+
+    /* SUBBAR */
+    .subbar{background:#fff;border-bottom:1px solid #e8ddd0;padding:0 28px;display:flex;align-items:center;gap:20px;height:46px;}
+    .subbar-greeting{font-size:13px;color:#6b5744;}
+    .subbar-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#1a5c38;font-weight:500;background:#eef7f1;border-radius:100px;padding:4px 12px;cursor:pointer;}
+    .subbar-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:#f59c1a;color:#412402;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer;}
+    .subbar-btn:hover{background:#e08a10;}
+
+    /* MAIN */
+    .main{padding:24px 28px;display:flex;flex-direction:column;gap:20px;}
+
+    /* PAGE */
+    .page{display:none;flex-direction:column;gap:20px;}
+    .page.active{display:flex;}
+
+    /* METRIC CARDS */
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
+    .mcard{border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;}
+    .mcard-green{background:#1a5c38;color:#fff;}
+    .mcard-amber{background:#f59c1a;color:#412402;}
+    .mcard-ocre{background:#8b5e2a;color:#fff;}
+    .mcard-cream{background:#fff;border:1px solid #e8ddd0;}
+    .mcard-label{font-size:11px;opacity:0.75;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
+    .mcard-val{font-size:28px;font-weight:500;line-height:1;}
+    .mcard-sub{font-size:11px;opacity:0.65;margin-top:5px;}
+    .mcard-icon{position:absolute;right:14px;top:14px;font-size:22px;opacity:0.3;}
+
+    /* TWO COL */
+    .two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;}
+
+    /* CARDS */
+    .card{background:#fff;border-radius:16px;border:1px solid #e8ddd0;overflow:hidden;}
+    .card-head{padding:14px 18px;border-bottom:1px solid #f0e8df;display:flex;align-items:center;justify-content:space-between;}
+    .card-title{font-size:14px;font-weight:500;color:#1a1a1a;}
+    .card-body{padding:16px 18px;}
+
+    /* BADGE */
+    .badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:100px;font-weight:500;}
+    .bg-green{background:#eef7f1;color:#0f6e56;}
+    .bg-amber{background:#fef3de;color:#854f0b;}
+    .bg-red{background:#fde8e8;color:#a32d2d;}
+    .bg-gray{background:#f5f0ea;color:#6b5744;}
+    .bg-ocre{background:#f5ece0;color:#8b5e2a;}
+
+    /* PRODUCT LIST */
+    .prod-row{display:grid;grid-template-columns:40px 1fr auto auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #f5f0ea;}
+    .prod-row:last-child{border-bottom:none;}
+    .prod-thumb{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:#f5f0ea;flex-shrink:0;}
+    .prod-name{font-size:13px;font-weight:500;}
+    .prod-cat{font-size:11px;color:#9a7d5a;}
+    .prod-price{font-size:13px;font-weight:500;color:#1a5c38;white-space:nowrap;}
+    .prod-views{font-size:11px;color:#9a7d5a;white-space:nowrap;}
+    .iBtn{width:28px;height:28px;border-radius:8px;border:1px solid #e8ddd0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;}
+    .iBtn:hover{background:#f5f0ea;}
+
+    /* ACTIVITY */
+    .act-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #f5f0ea;}
+    .act-item:last-child{border-bottom:none;}
+    .act-ico{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+    .act-ico.v{background:#eef7f1;}
+    .act-ico.o{background:#fef3de;}
+    .act-ico.s{background:#f5ece0;}
+    .act-text{font-size:13px;color:#1a1a1a;}
+    .act-time{font-size:11px;color:#9a7d5a;}
+
+    /* FORM */
+    .form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:14px;}
+    .form-label{font-size:12px;color:#6b5744;font-weight:500;}
+    .form-input{padding:9px 12px;border-radius:9px;border:1px solid #e8ddd0;background:#fdf6ee;font-size:13px;color:#1a1a1a;width:100%;outline:none;font-family:inherit;}
+    .form-input:focus{border-color:#1a5c38;}
+    textarea.form-input{resize:vertical;font-family:inherit;}
+
+    /* SITE PREVIEW */
+    .phone-wrap{display:flex;justify-content:center;padding:16px 0;}
+    .phone{width:200px;background:#1a1a1a;border-radius:30px;padding:8px;}
+    .phone-screen{background:#fff;border-radius:23px;overflow:hidden;min-height:340px;}
+    .phone-head{padding:14px 12px 10px;}
+    .phone-head-name{font-size:14px;font-weight:500;}
+    .phone-head-sub{font-size:10px;opacity:0.75;}
+    .phone-prods{padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+    .phone-prod{border-radius:9px;overflow:hidden;border:1px solid #f0e8df;}
+    .phone-prod-img{height:52px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+    .phone-prod-info{padding:5px 7px 7px;}
+    .phone-prod-name{font-size:9px;font-weight:500;color:#1a1a1a;}
+    .phone-prod-price{font-size:9px;font-weight:500;}
+    .phone-prod-btn{width:100%;background:#1a5c38;color:#fff;border:none;border-radius:5px;padding:3px;font-size:8px;margin-top:3px;cursor:pointer;text-align:center;}
+
+    /* COLORS */
+    .color-swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;flex-shrink:0;transition:all 0.15s;}
+    .color-swatch.sel{border-color:#1a1a1a;}
+
+    /* PUBLISH BANNER */
+    .pub-banner{background:#1a5c38;border-radius:14px;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;}
+    .pub-banner-text{color:#fff;}
+    .pub-banner-title{font-size:15px;font-weight:500;margin-bottom:3px;}
+    .pub-banner-sub{font-size:12px;opacity:0.7;}
+    .pub-btn{background:#f59c1a;color:#412402;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;}
+    .pub-btn:hover{background:#e08a10;}
+
+    /* STAT BARS */
+    .stat-bar-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+    .stat-bar-top{display:flex;justify-content:space-between;font-size:12px;}
+    .stat-bar-label{color:#6b5744;}
+    .stat-bar-val{font-weight:500;color:#1a1a1a;}
+    .bar-bg{background:#f5f0ea;border-radius:100px;height:6px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:100px;}
+    .fill-green{background:#1a5c38;}
+    .fill-amber{background:#f59c1a;}
+    .fill-ocre{background:#8b5e2a;}
+
+    /* WA BUTTON */
+    .wa-btn{display:inline-flex;align-items:center;gap:7px;background:#25d366;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:500;cursor:pointer;}
+
+    /* BUTTONS */
+    .btn-primary{background:#1a5c38;color:#fff;border:none;border-radius:9px;padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;}
+    .btn-primary:hover{background:#155030;}
+    .btn-sec{background:#fff;color:#1a1a1a;border:1px solid #e8ddd0;border-radius:9px;padding:10px 18px;font-size:13px;cursor:pointer;}
+    .btn-sec:hover{background:#f5f0ea;}
+
+    /* UPLOAD ZONE */
+    .upload-zone{border:2px dashed #c8b89a;border-radius:12px;padding:24px;text-align:center;background:#fdf6ee;cursor:pointer;transition:all 0.2s;}
+    .upload-zone:hover{border-color:#8b5e2a;background:#f5f0ea;}
+    .upload-zone-icon{font-size:28px;margin-bottom:8px;width:100%;height:120px;display:flex;align-items:center;justify-content:center;border-radius:8px;background-size:cover;background-position:center;}
+    .upload-zone-text{font-size:12px;color:#9a7d5a;transition:color 0.2s;}
+
+    /* ADD FORM */
+    .add-form{background:#fff;border:1px solid #e8ddd0;border-radius:16px;padding:20px 22px;}
+    .add-form-title{font-size:15px;font-weight:500;margin-bottom:18px;color:#1a1a1a;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .form-btn-row{display:flex;gap:10px;margin-top:6px;}
+
+    /* MODAL */
+    @keyframes slideIn{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+    .toast{position:fixed;bottom:20px;right:20px;background:#1a5c38;color:white;padding:15px 20px;border-radius:8px;z-index:2000;font-size:14px;animation:slideIn 0.3s ease-in-out;}
+  </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <div class="logo"><span class="logo-dot"></span>ShopLink</div>
+  <div class="nav-links">
+    <div class="nav-link active" onclick="nav('accueil',this)"><span class="nicon">🏠</span>Accueil</div>
+    <div class="nav-link" onclick="nav('produits',this)"><span class="nicon">📦</span>Mes produits</div>
+    <div class="nav-link" onclick="nav('monsite',this)"><span class="nicon">🌐</span>Mon site</div>
+    <div class="nav-link" onclick="nav('stats',this)"><span class="nicon">📈</span>Statistiques</div>
+    <div class="nav-link" onclick="nav('parametres',this)"><span class="nicon">⚙️</span>Paramètres</div>
+  </div>
+  <div class="nav-right">
+    <div class="site-live"><span class="live-dot"></span>Site en ligne</div>
+    <div class="user-avatar" id="userInitials">U</div>
+  </div>
+</div>
+
+<!-- SUBBAR -->
+<div class="subbar">
+  <span class="subbar-greeting" id="greeting">Bonjour 👋</span>
+  <div class="subbar-link" id="siteLink">🔗 shoplink.bj/...</div>
+  <button class="subbar-btn" onclick="nav('produits', document.querySelectorAll('.nav-link')[1])">+ Ajouter un produit</button>
+</div>
+
+<div class="main">
+
+  <!-- PAGE ACCUEIL -->
+  <div id="p-accueil" class="page active">
+    <div class="metrics">
+      <div class="mcard mcard-green">
+        <div class="mcard-icon">👁</div>
+        <div class="mcard-label">Vues du site</div>
+        <div class="mcard-val" id="metric-views">0</div>
+        <div class="mcard-sub">7 derniers jours</div>
+      </div>
+      <div class="mcard mcard-amber">
+        <div class="mcard-icon">📲</div>
+        <div class="mcard-label">Clics WhatsApp</div>
+        <div class="mcard-val" id="metric-clicks">0</div>
+        <div class="mcard-sub">Commandes initiées</div>
+      </div>
+      <div class="mcard mcard-ocre">
+        <div class="mcard-icon">📦</div>
+        <div class="mcard-label">Produits publiés</div>
+        <div class="mcard-val" id="metric-products">0</div>
+        <div class="mcard-sub">Catalogue actif</div>
+      </div>
+      <div class="mcard mcard-cream">
+        <div class="mcard-icon">🔗</div>
+        <div class="mcard-label">Partages du lien</div>
+        <div class="mcard-val" id="metric-shares">0</div>
+        <div class="mcard-sub" style="color:#9a7d5a;">Via WhatsApp & réseaux</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="pub-banner">
+          <div class="pub-banner-text">
+            <div class="pub-banner-title">Votre site est en ligne ✓</div>
+            <div class="pub-banner-sub">Partagez votre lien pour recevoir des commandes via WhatsApp</div>
+          </div>
+          <button class="pub-btn" onclick="shareLink()">📤 Partager mon lien</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">Activité récente</span><span class="badge bg-green">Données API</span></div>
+          <div class="card-body" id="activityContent">
+            <div style="color:#9a7d5a;font-size:12px;">Chargement des données...</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card">
+          <div class="card-head"><span class="card-title">Statut de la boutique</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:11px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">Statut</span><span style="font-weight:500;color:#1a5c38;">● En ligne</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">Type</span><span style="font-weight:500;" id="shopType">Boutique</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">WhatsApp</span><span style="font-weight:500;" id="shopPhone">+229 XXXXXXXX</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">Plan</span><span><span class="badge bg-green">Starter · Payé</span></span></div>
+            <div style="border-top:1px solid #f5f0ea;padding-top:11px;">
+              <div style="font-size:12px;color:#6b5744;margin-bottom:6px;">Lien public</div>
+              <div style="font-size:12px;color:#1a5c38;background:#eef7f1;border-radius:8px;padding:7px 10px;font-family:var(--font-mono);" id="publicLink">shoplink.bj/...</div>
+            </div>
+            <button class="wa-btn" style="width:100%;justify-content:center;" onclick="testWhatsApp()">📲 Tester sur WhatsApp</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">Passer au Premium</span></div>
+          <div class="card-body">
+            <div style="font-size:13px;color:#6b5744;line-height:1.6;margin-bottom:14px;">Confiez la création d'un site professionnel à notre équipe. Design avancé, Google Maps, sections personnalisées.</div>
+            <button class="btn-primary" style="width:100%;">⭐ Commander mon site Pro →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE PRODUITS -->
+  <div id="p-produits" class="page">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:16px;font-weight:500;">Mes produits <span style="font-size:13px;color:#9a7d5a;font-weight:400;" id="productCount">· 0 publiés</span></div>
+      <div style="display:flex;gap:10px;">
+        <select id="categoryFilter" style="padding:8px 12px;border-radius:9px;border:1px solid #e8ddd0;background:#fff;font-size:13px;color:#1a1a1a;">
+          <option value="">Toutes catégories</option>
+          <option value="Robes & pagnes">Robes & pagnes</option>
+          <option value="Accessoires">Accessoires</option>
+          <option value="Sacs">Sacs</option>
+          <option value="Chaussures">Chaussures</option>
+          <option value="Bijoux">Bijoux</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="add-form">
+      <div class="add-form-title">➕ Ajouter un nouveau produit</div>
+      <form id="productForm" style="display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:start;" onsubmit="submitProductForm(event)">
+        <div>
+          <div class="upload-zone" onclick="document.getElementById('productImage').click()" id="uploadZone" style="cursor:pointer;">
+            <div class="upload-zone-icon" id="imagePreview">📷</div>
+            <div class="upload-zone-text" id="uploadText">Cliquez pour sélectionner<br>une photo</div>
+          </div>
+          <input type="file" id="productImage" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+          <button type="button" class="btn-sec" id="removePhotoBtn" style="width:100%;margin-top:8px;display:none;" onclick="removePhotoSelection()">🗑 Supprimer la photo</button>
+        </div>
+        <div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Nom du produit *</label><input class="form-input" id="productName" type="text" placeholder="Ex : Robe pagne imprimé" required></div>
+            <div class="form-group"><label class="form-label">Prix (FCFA) *</label><input class="form-input" id="productPrice" type="number" placeholder="Ex : 8500" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Catégorie *</label><select class="form-input" id="productCategory" required><option value="">Sélectionner</option><option value="Robes & pagnes">Robes & pagnes</option><option value="Accessoires">Accessoires</option><option value="Sacs">Sacs</option><option value="Chaussures">Chaussures</option><option value="Bijoux">Bijoux</option></select></div>
+            <div class="form-group"><label class="form-label">Description courte</label><input class="form-input" id="productDescription" type="text" placeholder="Ex : Robe en pagne wax 100%"></div>
+          </div>
+          <div class="form-btn-row">
+            <button type="submit" class="btn-primary">✓ Publier le produit</button>
+            <button type="button" class="btn-sec" onclick="resetProductForm()">Annuler</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-title">Catalogue en ligne</span><span class="badge bg-amber" id="productBadge">0 produits</span></div>
+      <div class="card-body" style="padding:0 18px;" id="productList">
+        <div style="padding:20px;text-align:center;color:#9a7d5a;">Aucun produit pour le moment</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE MON SITE -->
+  <div id="p-monsite" class="page">
+    <div style="font-size:16px;font-weight:500;">Mon site <span style="font-size:13px;color:#9a7d5a;font-weight:400;">· Personnalisation & aperçu</span></div>
+    <div style="display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card">
+          <div class="card-head"><span class="card-title">Identité de la boutique</span></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Nom de la boutique</label><input class="form-input" id="shopName" type="text" value="Ma Boutique"></div>
+              <div class="form-group"><label class="form-label">Slogan (optionnel)</label><input class="form-input" id="shopSlogan" type="text" value=""></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Numéro WhatsApp</label><input class="form-input" id="shopWhatsapp" type="text" value="+229 XXXXXXXX"></div>
+              <div class="form-group"><label class="form-label">Adresse / Quartier</label><input class="form-input" id="shopAddress" type="text" value=""></div>
+            </div>
+            <div class="form-group"><label class="form-label">Description de l'activité</label><textarea class="form-input" id="shopDescription" rows="2" style="resize:none;"></textarea></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Apparence</span></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Couleur principale</label>
+              <div style="display:flex;gap:10px;margin-top:4px;">
+                <div class="color-swatch sel" style="background:#1a5c38;" onclick="selectColor(this,'#1a5c38')"></div>
+                <div class="color-swatch" style="background:#185fa5;" onclick="selectColor(this,'#185fa5')"></div>
+                <div class="color-swatch" style="background:#8b5e2a;" onclick="selectColor(this,'#8b5e2a')"></div>
+                <div class="color-swatch" style="background:#993556;" onclick="selectColor(this,'#993556')"></div>
+                <div class="color-swatch" style="background:#1a1a1a;" onclick="selectColor(this,'#1a1a1a')"></div>
+              </div>
+            </div>
+            <div class="form-btn-row">
+              <button class="btn-primary" onclick="saveSiteSettings()">💾 Sauvegarder</button>
+              <button class="btn-sec" onclick="viewPublicSite()">👁 Voir mon site</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:12px;color:#9a7d5a;font-weight:500;margin-bottom:10px;text-align:center;">Aperçu mobile</div>
+        <div class="phone-wrap" style="padding:0;">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-head" id="phone-head" style="background:#1a5c38;color:#fff;">
+                <div class="phone-head-name" id="phone-name">Ma Boutique</div>
+                <div class="phone-head-sub" id="phone-sub"></div>
+              </div>
+              <div style="padding:7px 8px 0;display:flex;gap:5px;overflow-x:auto;">
+                <div style="background:#1a5c38;color:#fff;border-radius:100px;padding:3px 10px;font-size:9px;font-weight:500;white-space:nowrap;">Tout</div>
+                <div style="background:#f5f0ea;border-radius:100px;padding:3px 8px;font-size:9px;color:#6b5744;white-space:nowrap;">Robes</div>
+                <div style="background:#f5f0ea;border-radius:100px;padding:3px 8px;font-size:9px;color:#6b5744;white-space:nowrap;">Sacs</div>
+              </div>
+              <div class="phone-prods" id="phone-prods">
+                <div style="padding:20px;text-align:center;color:#9a7d5a;font-size:9px;">Pas encore de produits</div>
+              </div>
+              <div style="padding:8px;text-align:center;font-size:8px;color:#9a7d5a;border-top:1px solid #f5f0ea;margin-top:4px;" id="phone-link">shoplink.bj/...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE STATS -->
+  <div id="p-stats" class="page">
+    <div style="font-size:16px;font-weight:500;">Statistiques <span style="font-size:13px;color:#9a7d5a;font-weight:400;">· 7 derniers jours</span></div>
+    <div class="metrics">
+      <div class="mcard mcard-green"><div class="mcard-icon">👁</div><div class="mcard-label">Vues totales</div><div class="mcard-val" id="stat-views">0</div></div>
+      <div class="mcard mcard-amber"><div class="mcard-icon">📲</div><div class="mcard-label">Clics WhatsApp</div><div class="mcard-val" id="stat-clicks">0</div></div>
+      <div class="mcard mcard-ocre"><div class="mcard-icon">%</div><div class="mcard-label">Taux de clic</div><div class="mcard-val" id="stat-rate">0%</div></div>
+      <div class="mcard mcard-cream"><div class="mcard-icon">🏆</div><div class="mcard-label">Top produit</div><div class="mcard-val" style="font-size:14px;color:#1a5c38;" id="stat-top">—</div></div>
+    </div>
+  </div>
+
+  <!-- PAGE PARAMETRES -->
+  <div id="p-parametres" class="page">
+    <div style="font-size:16px;font-weight:500;">Paramètres du compte</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Informations personnelles</span></div>
+        <div class="card-body">
+          <div class="form-group"><label class="form-label">Nom complet</label><input class="form-input" id="fullName" type="text" value=""></div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="userEmail" type="email" value=""></div>
+          <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" id="userPhone" type="text" value=""></div>
+          <button class="btn-primary" onclick="saveUserInfo()">Sauvegarder</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Mon abonnement</span></div>
+        <div class="card-body">
+          <div style="background:#eef7f1;border-radius:12px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:13px;font-weight:500;color:#1a5c38;margin-bottom:4px;">Plan Starter</div>
+            <div style="font-size:12px;color:#0f6e56;">Site actif · Payé · 4 000 FCFA</div>
+          </div>
+          <div style="font-size:13px;color:#6b5744;margin-bottom:14px;line-height:1.6;">Passez au Premium pour un site professionnel créé sur mesure.</div>
+          <button class="btn-primary" style="width:100%;">⭐ Passer Premium →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const API_BASE = '/api';
+  let currentUser = null;
+  let currentSite = null;
+  let allProducts = [];
+  let selectedColor = '#1a5c38';
+  let productImageBase64 = null;
+
+  // Charger les données au démarrage
+  async function init() {
+    const token = localStorage.getItem('shoplink_token');
+    const userStr = localStorage.getItem('shoplink_user');
+    
+    if (!token || !userStr) {
+      window.location.href = '/login.html';
+      return;
+    }
+
+    currentUser = JSON.parse(userStr);
+    await loadUserSites();
+    updateUI();
+  }
+
+  async function loadUserSites() {
+    try {
+      const token = localStorage.getItem('shoplink_token');
+      const res = await fetch(`${API_BASE}/sites/user/my-sites`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.sites && data.sites.length > 0) {
+        currentSite = data.sites[0];
+        localStorage.setItem('shoplink_site', JSON.stringify(currentSite));
+        await loadProducts();
+      }
+    } catch (e) {
+      console.error('Erreur chargement sites:', e);
+    }
+  }
+
+  async function loadProducts() {
+    if (!currentSite) return;
+    try {
+      const token = localStorage.getItem('shoplink_token');
+      const res = await fetch(`${API_BASE}/products/${currentSite.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      allProducts = data.products || [];
+      renderProducts(allProducts);
+    } catch (e) {
+      console.error('Erreur chargement produits:', e);
+    }
+  }
+
+  function renderProducts(products) {
+    const list = document.getElementById('productList');
+    document.getElementById('productBadge').textContent = products.length + ' produits';
+    document.getElementById('productCount').textContent = '· ' + products.length + ' publiés';
+    document.getElementById('metric-products').textContent = products.length;
+
+    if (products.length === 0) {
+      list.innerHTML = '<div style="padding:20px;text-align:center;color:#9a7d5a;">Aucun produit pour le moment</div>';
+      return;
+    }
+
+    list.innerHTML = products.map(p => {
+      // Vérifier si c'est une vraie image (base64)
+      const isRealImage = p.image && (p.image.startsWith('data:image') || p.image.length > 100);
+      const thumbContent = isRealImage 
+        ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="${p.name}">`
+        : `<span style="font-size:20px;">${p.image || '📦'}</span>`;
+      
+      return `
+        <div class="prod-row">
+          <div class="prod-thumb" style="padding:0;overflow:hidden;">${thumbContent}</div>
+          <div><div class="prod-name">${p.name}</div><div class="prod-cat">${p.category || 'Sans catégorie'}</div></div>
+          <div class="prod-price">${p.price?.toLocaleString('fr-FR') || '0'} F</div>
+          <div class="prod-views">👁 ${p.views || 0}</div>
+          <div style="display:flex;gap:6px;"><div class="iBtn" onclick="editProduct('${p.id}')">✏️</div><div class="iBtn" onclick="deleteProduct('${p.id}')">🗑</div></div>
+        </div>
+      `;
+    }).join('');
+
+    // Mettre à jour l'aperçu mobile
+    updatePhonePreview(products);
+  }
+
+  function updatePhonePreview(products) {
+    const preview = document.getElementById('phone-prods');
+    if (products.length === 0) {
+      preview.innerHTML = '<div style="padding:20px;text-align:center;color:#9a7d5a;font-size:9px;">Pas de produits</div>';
+      return;
+    }
+    preview.innerHTML = products.slice(0, 4).map(p => {
+      const isRealImage = p.image && (p.image.startsWith('data:image') || p.image.length > 100);
+      const imgContent = isRealImage
+        ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;" alt="${p.name}">`
+        : `<div style="font-size:22px;display:flex;align-items:center;justify-content:center;height:100%;">${p.image || '📦'}</div>`;
+      
+      return `
+        <div class="phone-prod">
+          <div class="phone-prod-img" style="background:#eef7f1;overflow:hidden;">
+            ${imgContent}
+          </div>
+          <div class="phone-prod-info">
+            <div class="phone-prod-name">${p.name}</div>
+            <div class="phone-prod-price" style="color:#1a5c38;">${p.price || 0} F</div>
+            <div class="phone-prod-btn">📲 Commander</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function submitProductForm(event) {
+    event.preventDefault();
+    if (!currentSite) {
+      alert('Aucun site actif');
+      return;
+    }
+
+    const token = localStorage.getItem('shoplink_token');
+
+    const productData = {
+      siteId: currentSite.id,
+      name: document.getElementById('productName').value,
+      price: parseInt(document.getElementById('productPrice').value),
+      category: document.getElementById('productCategory').value,
+      description: document.getElementById('productDescription').value,
+      image: productImageBase64 || '📦'
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(productData)
+      });
+
+      if (!res.ok) throw new Error('Erreur création');
+      
+      await loadProducts();
+      resetProductForm();
+      showToast('Produit créé! ✓');
+    } catch (e) {
+      alert('Erreur: ' + e.message);
+    }
+  }
+
+  function resetProductForm() {
+    // Réinitialiser tous les champs du formulaire
+    document.getElementById('productForm').reset();
+    
+    // Vraiment nettoyer l'input file
+    const fileInput = document.getElementById('productImage');
+    fileInput.value = '';
+    fileInput.type = 'file';  // Force le reset du type
+    
+    // Réinitialiser l'affichage
+    document.getElementById('imagePreview').style.backgroundImage = 'none';
+    document.getElementById('imagePreview').style.backgroundColor = '';
+    document.getElementById('imagePreview').textContent = '📷';
+    document.getElementById('uploadText').innerHTML = 'Cliquez pour sélectionner<br>une photo';
+    document.getElementById('uploadText').style.color = '#9a7d5a';
+    document.getElementById('removePhotoBtn').style.display = 'none';
+    
+    // Réinitialiser la variable
+    productImageBase64 = null;
+  }
+
+  async function deleteProduct(productId) {
+    if (!confirm('Êtes-vous sûr?')) return;
+    const token = localStorage.getItem('shoplink_token');
+
+    try {
+      const res = await fetch(`${API_BASE}/products/${productId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        await loadProducts();
+        showToast('Produit supprimé ✓');
+      }
+    } catch (e) {
+      alert('Erreur: ' + e.message);
+    }
+  }
+
+  function editProduct(productId) {
+    const product = allProducts.find(p => p.id === productId);
+    if (product) {
+      document.getElementById('productName').value = product.name;
+      document.getElementById('productPrice').value = product.price;
+      document.getElementById('productCategory').value = product.category;
+      document.getElementById('productDescription').value = product.description;
+      document.getElementById('p-produits').scrollIntoView({behavior: 'smooth'});
+    }
+  }
+
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Limiter à 8MB
+    if (file.size > 8 * 1024 * 1024) {
+      alert('L\'image doit faire moins de 8MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        // Créer un canvas pour compresser intelligemment
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Redimensionner si > 1200px largeur
+        if (width > 1200) {
+          height = (height * 1200) / width;
+          width = 1200;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convertir en JPEG haute qualité (0.9 = 90%)
+        productImageBase64 = canvas.toDataURL('image/jpeg', 0.9);
+        
+        // Mettre à jour le prévisualisation
+        document.getElementById('imagePreview').style.backgroundImage = `url('${productImageBase64}')`;
+        document.getElementById('imagePreview').style.backgroundSize = 'cover';
+        document.getElementById('imagePreview').style.backgroundPosition = 'center';
+        document.getElementById('imagePreview').textContent = '';
+        document.getElementById('uploadText').innerHTML = '✓ Photo sélectionnée<br><small style="font-size:10px;opacity:0.7;">(' + (productImageBase64.length / 1024).toFixed(1) + ' KB)</small>';
+        document.getElementById('uploadText').style.color = '#1a5c38';
+        
+        // Afficher le bouton de suppression
+        document.getElementById('removePhotoBtn').style.display = 'block';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removePhotoSelection() {
+    // Réinitialiser complètement
+    const fileInput = document.getElementById('productImage');
+    fileInput.value = '';
+    fileInput.type = 'file';
+    
+    document.getElementById('imagePreview').style.backgroundImage = 'none';
+    document.getElementById('imagePreview').textContent = '📷';
+    document.getElementById('uploadText').innerHTML = 'Cliquez pour sélectionner<br>une photo';
+    document.getElementById('uploadText').style.color = '#9a7d5a';
+    document.getElementById('removePhotoBtn').style.display = 'none';
+    
+    productImageBase64 = null;
+  }
+
+  function updateUI() {
+    if (currentUser) {
+      const initials = (currentUser.name || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('userInitials').textContent = initials;
+      document.getElementById('greeting').textContent = `Bonjour ${currentUser.name?.split(' ')[0] || 'User'} 👋 — Boutique ShopLink`;
+      document.getElementById('fullName').value = currentUser.name || '';
+      document.getElementById('userEmail').value = currentUser.email || '';
+      document.getElementById('userPhone').value = currentUser.phone || '';
+    }
+
+    if (currentSite) {
+      const slug = currentSite.slug || 'shop';
+      document.getElementById('siteLink').textContent = `🔗 shoplink.bj/${slug}`;
+      document.getElementById('publicLink').textContent = `shoplink.bj/${slug}`;
+      document.getElementById('phone-link').textContent = `shoplink.bj/${slug}`;
+      document.getElementById('shopName').value = currentSite.name || 'Ma Boutique';
+      document.getElementById('phone-name').textContent = currentSite.name || 'Ma Boutique';
+      document.getElementById('metric-views').textContent = currentSite.views || 0;
+      document.getElementById('metric-clicks').textContent = currentSite.clicks || 0;
+      document.getElementById('metric-shares').textContent = currentSite.shares || 0;
+      document.getElementById('stat-views').textContent = currentSite.views || 0;
+      document.getElementById('stat-clicks').textContent = currentSite.clicks || 0;
+    }
+  }
+
+  function nav(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('p-' + id).classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+  }
+
+  function selectColor(el, color) {
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('phone-head').style.background = color;
+    selectedColor = color;
+  }
+
+  function shareLink() {
+    const link = `${window.location.origin}/${currentSite?.slug || 'shop'}`;
+    if (navigator.share) {
+      navigator.share({title: 'Boutique ShopLink', text: 'Visitez ma boutique!', url: link});
+    } else {
+      alert('Lien: ' + link);
+    }
+  }
+
+  function viewPublicSite() {
+    if (!currentSite?.slug) return;
+    window.open(`/${currentSite.slug}`, '_blank');
+  }
+
+  function testWhatsApp() {
+    alert('WhatsApp ouverture...');
+  }
+
+  function saveSiteSettings() {
+    showToast('Paramètres sauvegardés ✓');
+  }
+
+  function saveUserInfo() {
+    showToast('Infos mises à jour ✓');
+  }
+
+  function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  window.addEventListener('load', init);
+</script>
+
+</body>
+</html>
