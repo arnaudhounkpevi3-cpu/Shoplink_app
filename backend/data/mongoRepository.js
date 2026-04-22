@@ -3,6 +3,7 @@ const User = require('../models/User')
 const Site = require('../models/Site')
 const Product = require('../models/Product')
 const Payment = require('../models/Payment')
+const Ticket = require('../models/Ticket')
 
 function iso(d) {
   if (!d) {
@@ -428,5 +429,70 @@ module.exports = {
       step: 'acompte',
       status: { $in: ['paid', 'paye'] },
     })
+  },
+
+  async listTickets() {
+    const tickets = await Ticket.find().lean()
+    return tickets.map(t => ({ id: t._id, ...t }))
+  },
+
+  async findTicketById(id) {
+    const ticket = await Ticket.findById(id).lean()
+    return ticket ? { id: ticket._id, ...ticket } : null
+  },
+
+  async findTicketsByUserId(userId) {
+    const tickets = await Ticket.find({ userId }).lean()
+    return tickets.map(t => ({ id: t._id, ...t }))
+  },
+
+  async createTicket(data) {
+    const doc = await Ticket.create({
+      userId: data.userId,
+      userName: data.userName,
+      userEmail: data.userEmail,
+      subject: data.subject,
+      message: data.message,
+      priority: data.priority || 'normal',
+      status: data.status || 'open',
+      replies: data.replies || [],
+      createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+    })
+    return { id: doc._id, ...doc.toObject() }
+  },
+
+  async addReplyToTicket(id, reply) {
+    const doc = await Ticket.findByIdAndUpdate(
+      id,
+      { $push: { replies: reply }, $set: { updatedAt: new Date() } },
+      { new: true }
+    ).lean()
+    return doc ? { id: doc._id, ...doc } : null
+  },
+
+  async updateTicketStatus(id, status) {
+    const doc = await Ticket.findByIdAndUpdate(
+      id,
+      { $set: { status, updatedAt: new Date() } },
+      { new: true }
+    ).lean()
+    return doc ? { id: doc._id, ...doc } : null
+  },
+
+  async deleteTicket(id) {
+    const doc = await Ticket.findByIdAndDelete(id).lean()
+    return doc ? { id: doc._id, ...doc } : null
+  },
+
+  async addTracking(data) {
+    const state = require('./state.json')
+    state.tracking.push(data)
+    require('fs').writeFileSync('./data/state.json', JSON.stringify(state, null, 2))
+    return data
+  },
+
+  async getTrackingBySite(siteId) {
+    const state = require('./state.json')
+    return state.tracking.filter(t => t.siteId === siteId)
   },
 }

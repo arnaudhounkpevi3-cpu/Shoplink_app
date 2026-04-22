@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ShopLink — Connexion</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script src="/js/api-config.js"></script>
   <style>
     :root{
       --green:#1a5c38; --green-light:#eef7f1; --green-mid:#0f6e56;
@@ -68,9 +69,10 @@
     .error-msg{font-size:12px;color:#e24b4a;}
 
     /* PASSWORD TOGGLE */
-    .password-wrap{position:relative;}
-    .password-wrap .form-input{padding-right:44px;}
-    .pwd-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;color:var(--soft);}
+    .password-wrap{display:flex;align-items:center;padding:12px 14px;border-radius:var(--radius);border:1.5px solid var(--border);background:#fff;transition:border-color 0.2s;}
+    .password-wrap:focus-within{border-color:var(--green);}
+    .pwd-toggle{cursor:pointer;font-size:16px;color:var(--soft);transition:all 0.2s;flex-shrink:0;}
+    .pwd-toggle:hover{color:var(--green);}
 
     /* SUBMIT */
     .btn-submit{width:100%;background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:13px;font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
@@ -100,7 +102,55 @@
     .remember-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
     .checkbox-label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;}
     .checkbox-label input{width:16px;height:16px;accent-color:var(--green);}
+
+    /* MOBILE RESPONSIVE */
+    @media (max-width: 768px) {
+      nav{padding:0 20px;}
+      .nav-link{font-size:12px;}
+      
+      .page-body{grid-template-columns:1fr;}
+      .left-panel{display:none;}
+      .right-panel{padding:30px 20px;}
+      
+      .form-title{font-size:24px;}
+      .form-sub{font-size:13px;}
+      
+      .phone-demo{display:none;}
+      .demo-stats{display:none;}
+      
+      .form-input{font-size:16px;} /* Prevent zoom on iOS */
+      .btn-submit{font-size:16px;padding:14px;}
+      
+      .register-box{padding:14px 16px;}
+      .register-box p{font-size:13px;}
+      .btn-outline{font-size:13px;padding:9px 20px;}
+    }
+
+    @media (max-width: 480px) {
+      nav{padding:0 16px;height:50px;}
+      .logo{font-size:15px;}
+      .nav-link{font-size:11px;}
+      
+      .right-panel{padding:24px 16px;}
+      .form-title{font-size:22px;}
+      .form-sub{font-size:12px;}
+      
+      .form-group{margin-bottom:16px;}
+      .form-label{font-size:12px;}
+      .form-input{padding:11px 13px;font-size:16px;}
+      
+      .btn-submit{padding:12px;font-size:15px;}
+      
+      .remember-row{margin-bottom:16px;font-size:12px;}
+      .checkbox-label{font-size:12px;}
+      .forgot-link{font-size:12px;}
+      
+      .register-box{padding:12px 16px;margin-top:16px;}
+      .register-box p{font-size:12px;}
+      .btn-outline{font-size:12px;padding:8px 16px;}
+    }
   </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
 
@@ -164,16 +214,13 @@
 
       <div class="form-group">
         <label class="form-label">Mot de passe</label>
-        <div class="password-wrap">
-          <input class="form-input" type="password" id="password" placeholder="Votre mot de passe" autocomplete="current-password"/>
-          <span class="pwd-toggle" onclick="togglePassword()">👁</span>
-        </div>
+        <input class="form-input" type="password" id="password" placeholder="Votre mot de passe" autocomplete="current-password"/>
         <div class="error-msg" id="err-password"></div>
       </div>
 
       <div class="remember-row">
         <label class="checkbox-label">
-          <input type="checkbox" id="remember"/> Se souvenir de moi
+          <input type="checkbox" id="remember"/> <span>Se souvenir de moi</span>
         </label>
         <a href="/forgot-password.html" class="forgot-link">Mot de passe oublié ?</a>
       </div>
@@ -198,43 +245,92 @@
 </div>
 
 <script>
-  function togglePassword() {
-    const input = document.getElementById('password');
-    input.type = input.type === 'password' ? 'text' : 'password';
-  }
+  const form = document.getElementById('login-form');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const submitBtn = document.getElementById('submit-btn');
 
-  document.getElementById('login-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const email    = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    let ok = true;
-
-    if (!email || !email.includes('@')) {
-      document.getElementById('err-email').textContent = 'Email invalide';
-      document.getElementById('email').classList.add('error');
-      ok = false;
+  // Validation
+  emailInput.addEventListener('input', () => {
+    const val = emailInput.value.trim();
+    if (!val) {
+      document.getElementById('err-email').textContent = 'Veuillez entrer votre adresse email';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      document.getElementById('err-email').textContent = 'Format email invalide (ex: nom@exemple.com)';
     } else {
       document.getElementById('err-email').textContent = '';
-      document.getElementById('email').classList.remove('error');
     }
+  });
 
-    if (!password) {
-      document.getElementById('err-password').textContent = 'Mot de passe requis';
-      document.getElementById('password').classList.add('error');
-      ok = false;
+  passwordInput.addEventListener('input', () => {
+    const val = passwordInput.value;
+    if (!val) {
+      document.getElementById('err-password').textContent = 'Veuillez entrer votre mot de passe';
+    } else if (val.length < 6) {
+      document.getElementById('err-password').textContent = 'Le mot de passe doit contenir au moins 6 caractères';
     } else {
       document.getElementById('err-password').textContent = '';
-      document.getElementById('password').classList.remove('error');
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    // Validation avant envoi
+    if (!email || !password) {
+      document.getElementById('global-error').textContent = 'Veuillez remplir tous les champs';
+      document.getElementById('global-error').classList.add('show');
+      return;
     }
 
-    if (!ok) return;
+    // DEMO MODE - Test credentials
+    if (email === 'test@commercant.bj') {
+      // Demo client login
+      localStorage.setItem('shoplink_token', 'demo-token-client');
+      localStorage.setItem('shoplink_user', JSON.stringify({
+        id: 'demo-client',
+        name: 'Test Client',
+        email: 'test@commercant.bj',
+        role: 'user'
+      }));
+      localStorage.setItem('demo_mode', 'true');
+      
+      document.getElementById('success-box').classList.add('show');
+      
+      setTimeout(() => {
+        window.location.href = '/dashboard-client-shoplink.html';
+      }, 1000);
+      return;
+    }
+    
+    if (email === 'admin@shoplink.bj') {
+      // Demo admin login
+      localStorage.setItem('shoplink_token', 'demo-token-admin');
+      localStorage.setItem('shoplink_user', JSON.stringify({
+        id: 'demo-admin',
+        name: 'Admin Demo',
+        email: 'admin@shoplink.bj',
+        role: 'admin'
+      }));
+      localStorage.setItem('demo_mode', 'true');
+      
+      document.getElementById('success-box').classList.add('show');
+      
+      setTimeout(() => {
+        window.location.href = '/admin-dashboard.html';
+      }, 1000);
+      return;
+    }
 
-    const btn = document.getElementById('submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Connexion en cours...';
+    // Normal backend login
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Connexion en cours...';
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(window.SHOPLINK_API_BASE + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -249,35 +345,35 @@
 
         setTimeout(() => {
           if (data.user.role === 'admin') {
-            window.location.href = '/admin.html';
+            window.location.href = '/admin-dashboard.html';
           } else {
-            window.location.href = '/dashboard.html';
+            window.location.href = '/dashboard-client-shoplink.html';
           }
         }, 1200);
       } else {
         document.getElementById('global-error').textContent = data.message || 'Email ou mot de passe incorrect';
         document.getElementById('global-error').classList.add('show');
-        btn.disabled = false;
-        btn.textContent = 'Se connecter →';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Se connecter →';
       }
     } catch(err) {
-      document.getElementById('global-error').textContent = 'Erreur de connexion au serveur';
+      document.getElementById('global-error').textContent = 'Erreur de connexion au serveur. Vérifiez votre connexion internet.';
       document.getElementById('global-error').classList.add('show');
-      btn.disabled = false;
-      btn.textContent = 'Se connecter →';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Se connecter →';
     }
   });
-
-  const token = localStorage.getItem('shoplink_token');
-  const user  = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
-  if (token && user.id) {
-    window.location.href = user.role === 'admin' ? '/admin.html' : '/dashboard.html';
-  }
 
   // Scroll vers le haut au chargement
   window.addEventListener('load', function() {
     window.scrollTo(0, 0);
   });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  window.scrollTo(0, 0);
+});
+</script>
+<script src="/js/mobile-nav.js"></script>
 </body>
 </html>

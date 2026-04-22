@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Admin Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --sidebar-bg:  #0f1f17;
+      --brand:       #1a6b4a;
+      --brand-light: #e8f5ee;
+      --brand-mid:   #6dd9a8;
+      --accent:      #f59c1a;
+      --white:       #ffffff;
+      --border:      #e5e7eb;
+      --bg:          #f8f9fa;
+      --text:        #1a1a1a;
+      --muted:       #6b7280;
+      --radius:      8px;
+      --radius-lg:   12px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);font-size:14px;min-height:100vh;display:flex;align-items:center;justify-content:center;}
+    
+    .login-container{width:100%;max-width:420px;padding:40px;background:#fff;border-radius:var(--radius-lg);box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+    .logo{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+    .logo-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;}
+    .logo-text{font-family:'Syne',sans-serif;font-size:22px;font-weight:600;color:var(--text);}
+    .admin-badge{display:inline-block;font-size:10px;background:var(--accent);color:#412402;border-radius:4px;padding:2px 8px;font-weight:500;}
+    .subtitle{font-size:13px;color:var(--muted);margin-bottom:32px;}
+    
+    .form-group{margin-bottom:20px;}
+    .form-label{display:block;font-size:13px;font-weight:500;margin-bottom:8px;color:var(--text);}
+    .form-input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;transition:border-color 0.15s;}
+    .form-input:focus{outline:none;border-color:var(--brand);}
+    
+    .btn{width:100%;padding:12px 20px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;border:none;background:var(--brand);color:#fff;font-family:'DM Sans',sans-serif;transition:background 0.15s;}
+    .btn:hover{background:#155c3d;}
+    
+    .back-link{display:block;text-align:center;margin-top:24px;font-size:13px;color:var(--muted);text-decoration:none;}
+    .back-link:hover{color:var(--brand);}
+  </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+      <span class="logo-dot"></span>
+      <span class="logo-text">ShopLink</span>
+      <span class="admin-badge">ADMIN</span>
+    </div>
+    <div class="subtitle">Accès réservé aux administrateurs</div>
+
+    <!-- Notifications Section -->
+    <div id="notifications-section" style="margin-bottom:24px;padding:16px;background:var(--brand-light);border-radius:var(--radius);border:1px solid var(--brand);display:none;">
+      <div style="font-size:12px;font-weight:600;color:var(--brand);margin-bottom:12px;">📬 Nouveaux éléments</div>
+      <div id="notifications-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <form id="admin-login-form">
+      <div class="form-group">
+        <label class="form-label">Email administrateur</label>
+        <input class="form-input" type="email" id="admin-email" placeholder="arnaudhounkpevi3@gmail.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input class="form-input" type="password" id="admin-password" placeholder="••••••••" required>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+        <input type="checkbox" id="remember-me" style="width:16px;height:16px;cursor:pointer;">
+        <label for="remember-me" style="font-size:13px;color:var(--muted);cursor:pointer;">Se souvenir de moi</label>
+      </div>
+      <button type="submit" class="btn">Se connecter</button>
+    </form>
+  </div>
+
+  <script>
+    // Check if already logged in (persistent session)
+    const adminLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+    const adminToken = localStorage.getItem('shoplink_token');
+
+    if (adminLoggedIn && adminToken) {
+      // Auto-redirect to dashboard if already logged in
+      window.location.href = '/admin/admin-dashboard.html';
+    }
+
+    // Fetch admin summary for notifications
+    async function fetchAdminNotifications() {
+      try {
+        const res = await fetch('http://localhost:5000/api/admin/payments/pending');
+        const data = await res.json();
+
+        if (data.success && data.count > 0) {
+          const notificationsSection = document.getElementById('notifications-section');
+          const notificationsList = document.getElementById('notifications-list');
+
+          notificationsList.innerHTML = `
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;">
+              <span style="color:var(--accent);">💳</span>
+              <span style="color:var(--text);">${data.count} paiement(s) en attente</span>
+            </div>
+          `;
+
+          notificationsSection.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    }
+
+    // Load notifications on page load
+    fetchAdminNotifications();
+
+    // Check if remember me was previously checked
+    if (localStorage.getItem('admin_remember_me') === 'true') {
+      const rememberedEmail = localStorage.getItem('admin_email');
+      if (rememberedEmail) {
+        document.getElementById('admin-email').value = rememberedEmail;
+        document.getElementById('remember-me').checked = true;
+      }
+    }
+
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('admin-email').value;
+      const password = document.getElementById('admin-password').value;
+      const rememberMe = document.getElementById('remember-me').checked;
+
+      // Hardcoded admin credentials
+      const ADMIN_EMAIL = 'arnaudhounkpevi3@gmail.com';
+      const ADMIN_PASSWORD = '/Shoplink@2007';
+
+      if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+        alert('Accès refusé. Identifiants incorrects.');
+        return;
+      }
+
+      // Direct authentication with hardcoded credentials
+      const adminUser = {
+        id: 'admin-arnaud',
+        name: 'Arnaud Hounkpevi',
+        email: ADMIN_EMAIL,
+        role: 'admin'
+      };
+
+      // Generate mock token
+      const mockToken = 'admin-token-' + Date.now();
+
+      localStorage.setItem('shoplink_token', mockToken);
+      localStorage.setItem('shoplink_user', JSON.stringify(adminUser));
+      localStorage.setItem('admin_logged_in', 'true');
+
+      // Handle remember me - save email only for security
+      if (rememberMe) {
+        localStorage.setItem('admin_remember_me', 'true');
+        localStorage.setItem('admin_email', email);
+      } else {
+        localStorage.removeItem('admin_remember_me');
+        localStorage.removeItem('admin_email');
+      }
+
+      window.location.href = '/admin/admin-dashboard.html';
+    });
+  </script>
+<script src="/js/mobile-nav.js"></script>
+</body>
+</html>

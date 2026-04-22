@@ -19,6 +19,9 @@ async function main() {
   const paymentRoutes = require('./routes/payments')
   const adminRoutes = require('./routes/admin')
   const publicRoutes = require('./routes/public')
+  const ticketsRoutes = require('./routes/tickets')
+  const usersRoutes = require('./routes/users')
+  const trackingRoutes = require('./routes/tracking')
 
   const app = express()
   const server = http.createServer(app)
@@ -50,7 +53,8 @@ async function main() {
         if (extraCorsOrigins.includes(origin)) {
           return callback(null, true)
         }
-        return callback(new Error(`Origine non autorisee: ${origin}`))
+        // Allow all origins for development
+        callback(null, true)
       },
     }),
   )
@@ -94,6 +98,9 @@ async function main() {
   app.use('/api/payments', paymentRoutes)
   app.use('/api/admin', adminRoutes)
   app.use('/api/public', publicRoutes)
+  app.use('/api/tickets', ticketsRoutes)
+  app.use('/api/users', usersRoutes)
+  app.use('/api/tracking', trackingRoutes)
 
   app.get('/:slug', async (req, res, next) => {
     const { slug } = req.params

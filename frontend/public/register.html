@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ShopLink — Créer un compte</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script src="/js/api-config.js"></script>
   <style>
     :root{
       --green:#1a5c38; --green-light:#eef7f1; --green-mid:#0f6e56;
@@ -101,7 +102,68 @@
     .step-dot.done{background:var(--green-light);border-color:var(--green);color:var(--green);}
     .step-line{flex:1;height:2px;background:var(--border);border-radius:100px;}
     .step-line.done{background:var(--green);}
+
+    /* MOBILE RESPONSIVE */
+    @media (max-width: 768px) {
+      nav{padding:0 20px;}
+      .nav-link{font-size:12px;}
+      
+      .page-body{grid-template-columns:1fr;}
+      .left-panel{display:none;}
+      .right-panel{padding:30px 20px;}
+      
+      .form-title{font-size:24px;}
+      .form-sub{font-size:13px;}
+      
+      .form-row{grid-template-columns:1fr;gap:12px;}
+      .activity-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+      .activity-card{padding:10px 6px;}
+      .activity-card-icon{font-size:20px;}
+      .activity-card-label{font-size:11px;}
+      
+      .form-input{font-size:16px;} /* Prevent zoom on iOS */
+      .btn-submit{font-size:16px;padding:14px;}
+      
+      .steps-indicator{margin-bottom:20px;}
+      .step-dot{width:24px;height:24px;font-size:11px;}
+      
+      .terms{font-size:11px;}
+    }
+
+    @media (max-width: 480px) {
+      nav{padding:0 16px;height:50px;}
+      .logo{font-size:15px;}
+      .nav-link{font-size:11px;}
+      
+      .right-panel{padding:24px 16px;}
+      .form-title{font-size:22px;}
+      .form-sub{font-size:12px;}
+      
+      .form-group{margin-bottom:14px;}
+      .form-label{font-size:12px;}
+      .form-input{padding:10px 12px;font-size:16px;}
+      
+      .activity-grid{grid-template-columns:1fr 1fr;gap:8px;}
+      .activity-card{padding:12px 8px;}
+      .activity-card-icon{font-size:24px;}
+      .activity-card-label{font-size:12px;}
+      
+      .btn-submit{padding:12px;font-size:15px;}
+      
+      .steps-indicator{margin-bottom:16px;gap:6px;}
+      .step-dot{width:22px;height:22px;font-size:10px;}
+      
+      .feature-list{gap:12px;}
+      .feature-item{gap:10px;}
+      .feature-icon{width:32px;height:32px;font-size:14px;}
+      .feature-text{font-size:13px;}
+      
+      .promo-box{padding:12px 14px;}
+      .promo-box-title{font-size:12px;}
+      .promo-box-text{font-size:11px;}
+    }
   </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
 
@@ -188,7 +250,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Numéro de téléphone *</label>
-          <input class="form-input" type="tel" id="phone" placeholder="+229 97 XX XX XX" autocomplete="tel"/>
+          <input class="form-input" type="tel" id="phone" placeholder="+229 XX XX XX XX" autocomplete="tel"/>
           <div class="form-hint">Ce numéro sera utilisé pour WhatsApp</div>
           <div class="error-msg" id="err-phone"></div>
         </div>
@@ -362,26 +424,30 @@
         slogan: document.getElementById('shop-slogan').value.trim(),
         city: document.getElementById('shop-city').value.trim()
       };
-      const res = await fetch('/api/auth/register', {
+      console.log('Sending registration request:', body);
+      const res = await fetch(window.SHOPLINK_API_BASE + '/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
       const data = await res.json();
+      console.log('Registration response:', data);
       if (res.ok) {
         localStorage.setItem('shoplink_token', data.token);
         localStorage.setItem('shoplink_user', JSON.stringify(data.user));
         if (data.site) localStorage.setItem('shoplink_site', JSON.stringify(data.site));
         if (data.pricing) localStorage.setItem('shoplink_pricing', JSON.stringify(data.pricing));
+        console.log('Token stored, redirecting to dashboard...');
         document.getElementById('success-box').classList.add('show');
-        const amount = data.pricing && data.pricing.autonomousAmount ? data.pricing.autonomousAmount : 4000;
-        setTimeout(() => window.location.href = '/payment.html?type=autonome&step=full&amount=' + amount, 1500);
+        setTimeout(() => window.location.href = 'dashboard-client-shoplink.html', 1500);
       } else {
+        console.error('Registration failed:', data.message);
         showGlobalError(data.message || 'Erreur lors de l\'inscription');
         btn.disabled = false;
         btn.textContent = '🚀 Créer mon compte';
       }
     } catch(err) {
+      console.error('Registration error:', err);
       showGlobalError('Erreur de connexion au serveur');
       btn.disabled = false;
       btn.textContent = '🚀 Créer mon compte';
@@ -401,5 +467,12 @@
     window.scrollTo(0, 0);
   });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  window.scrollTo(0, 0);
+});
+</script>
+<script src="/js/mobile-nav.js"></script>
 </body>
 </html>

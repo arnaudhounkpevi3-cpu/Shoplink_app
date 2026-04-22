@@ -23,6 +23,13 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html, body {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   body {
     font-family: 'DM Sans', sans-serif;
     background: #fff;
@@ -151,6 +158,7 @@
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
   }
 
   .hero-badge {
@@ -922,7 +930,123 @@
     max-width: 200px;
   }
 
+  /* MOBILE NAVBAR */
+  @media (max-width: 768px) {
+    html,body{width:100% !important;min-width:100% !important;max-width:100% !important;overflow-x:hidden !important;}
+    
+    nav {
+      padding: 6px 10px !important;
+      min-height: 45px !important;
+      width:100% !important;
+    }
+    .logo {
+      font-size: 14px !important;
+    }
+    .logo-dot {
+      width: 5px !important;
+      height: 5px !important;
+    }
+    .nav-links {
+      display: none !important;
+    }
+    .nav-cta {
+      gap: 4px !important;
+    }
+    .btn {
+      padding: 4px 8px !important;
+      font-size: 11px !important;
+    }
+    
+    .hero {
+      padding: 40px 16px 32px !important;
+      gap: 28px !important;
+      grid-template-columns: 1fr !important;
+      width:100% !important;
+    }
+    
+    .hero-visual {
+      order: -1;
+    }
+    
+    .hero h1 {
+      font-size: 28px !important;
+    }
+    
+    .hero p {
+      font-size: 14px !important;
+    }
+    
+    .hero-btns {
+      flex-direction: column !important;
+      gap: 10px !important;
+    }
+    
+    .hero-btns .btn-lg {
+      width: 100%;
+      justify-content: center;
+      padding: 13px 20px !important;
+    }
+    
+    .hero-stats {
+      gap: 16px !important;
+      flex-wrap: wrap;
+    }
+    
+    .stat-num {
+      font-size: 20px !important;
+    }
+    
+    .phone-mockup {
+      width: 220px !important;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 480px) {
+    html,body{width:100% !important;min-width:100% !important;max-width:100% !important;overflow-x:hidden !important;}
+    
+    nav {
+      padding: 4px 8px !important;
+      min-height: 40px !important;
+    }
+    
+    .logo {
+      font-size: 13px !important;
+    }
+    
+    .btn {
+      padding: 3px 6px !important;
+      font-size: 10px !important;
+    }
+    
+    .hero h1 {
+      font-size: 24px !important;
+    }
+    
+    .hero p {
+      font-size: 13px !important;
+    }
+    
+    .hero-badge {
+      font-size: 11px !important;
+      padding: 4px 10px !important;
+    }
+    
+    .stat-num {
+      font-size: 18px !important;
+    }
+    
+    .stat-label {
+      font-size: 11px !important;
+    }
+    
+    .phone-mockup {
+      width: 180px !important;
+    }
+  }
+
 </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
 
@@ -950,13 +1074,13 @@
   <div class="hero">
     <div class="hero-content">
       <div class="hero-badge">
-        ✦ Solution de digitalisation pour le Bénin
+        ✦ <span>Solution de digitalisation pour le Bénin</span>
       </div>
       <h1>
-        Fais connaître ta boutique<br><span>en ligne en minutes</span>
+        <span>Fais connaître ta boutique<br><span>en ligne en minutes</span></span>
       </h1>
       <p>
-        Crée ton site vitrine, présente tes produits et reçois des commandes directement via WhatsApp — sans coder, sans technicien.
+        <span>Crée ton site vitrine, présente tes produits et reçois des commandes directement via WhatsApp — sans coder, sans technicien.</span>
       </p>
       <div class="hero-btns">
         <a href="/register.html" class="btn btn-primary btn-lg">🚀 Créer mon site</a>
@@ -1039,13 +1163,13 @@
 <section id="features" class="targets-section">
   <h2>Pour qui est ShopLink ?</h2>
   <div class="targets-grid">
-    <div class="target-pill"><span class="target-icon">🍽️</span> Restaurants</div>
-    <div class="target-pill"><span class="target-icon">🍟</span> Fast-food</div>
-    <div class="target-pill"><span class="target-icon">👗</span> Boutiques</div>
-    <div class="target-pill"><span class="target-icon">🛒</span> Commerçants</div>
-    <div class="target-pill"><span class="target-icon">💄</span> Cosmétiques</div>
-    <div class="target-pill"><span class="target-icon">📱</span> Vendeurs WhatsApp</div>
-    <div class="target-pill"><span class="target-icon">📸</span> Vendeurs Instagram</div>
+    <div class="target-pill"><span class="target-icon">🍽️</span> <span>Restaurants</span></div>
+    <div class="target-pill"><span class="target-icon">🍟</span> <span>Fast-food</span></div>
+    <div class="target-pill"><span class="target-icon">👗</span> <span>Boutiques</span></div>
+    <div class="target-pill"><span class="target-icon">🛒</span> <span>Commerçants</span></div>
+    <div class="target-pill"><span class="target-icon">💄</span> <span>Cosmétiques</span></div>
+    <div class="target-pill"><span class="target-icon">📱</span> <span>Vendeurs WhatsApp</span></div>
+    <div class="target-pill"><span class="target-icon">📸</span> <span>Vendeurs Instagram</span></div>
   </div>
 </section>
 
@@ -1260,16 +1384,16 @@
       </div>
       <div class="pricing-body">
         <ul class="pricing-features">
-          <li><div class="check">✓</div> Site vitrine en ligne instantanément</li>
-          <li><div class="check">✓</div> Jusqu'à 20+ produits avec photos</li>
-          <li><div class="check">✓</div> Lien unique personnalisé</li>
-          <li><div class="check">✓</div> Bouton Commander via WhatsApp</li>
-          <li><div class="check">✓</div> Catégories de produits</li>
-          <li><div class="check">✓</div> Gestion autonome des produits</li>
-          <li><div class="check">✓</div> Tableau de bord statistiques</li>
+          <li><div class="check">✓</div> <span>Site vitrine en ligne instantanément</span></li>
+          <li><div class="check">✓</div> <span>Jusqu'à 20+ produits avec photos</span></li>
+          <li><div class="check">✓</div> <span>Lien unique personnalisé</span></li>
+          <li><div class="check">✓</div> <span>Bouton Commander via WhatsApp</span></li>
+          <li><div class="check">✓</div> <span>Catégories de produits</span></li>
+          <li><div class="check">✓</div> <span>Gestion autonome des produits</span></li>
+          <li><div class="check">✓</div> <span>Tableau de bord statistiques</span></li>
         </ul>
         <button class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
-          Payer et publier mon site →
+          <span>Payer et publier mon site →</span>
         </button>
       </div>
     </div>
@@ -1297,15 +1421,15 @@
           <strong>Délai :</strong> 3 semaines (2 semaines en urgent)
         </div>
         <ul class="pricing-features">
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Design professionnel sur mesure</li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Organisation avancée des produits</li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Section À propos, Contact, Accueil</li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Intégration Google Maps</li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Support et suivi personnalisé</li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> Livraison par email & WhatsApp</li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Design professionnel sur mesure</span></li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Organisation avancée des produits</span></li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Section À propos, Contact, Accueil</span></li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Intégration Google Maps</span></li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Support et suivi personnalisé</span></li>
+          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Livraison par email & WhatsApp</span></li>
         </ul>
         <button class="btn btn-accent btn-lg" style="width: 100%; justify-content: center;">
-          Commander mon site ⭐
+          <span>Commander mon site ⭐</span>
         </button>
       </div>
     </div>
@@ -1328,7 +1452,7 @@
     <span class="logo-dot"></span>
     ShopLink
   </div>
-  <p>© 2025 ShopLink — Digitaliser les entreprises du Bénin</p>
+  <p>© 2026 ShopLink — Digitaliser les entreprises du Bénin</p>
   <p style="color: rgba(255,255,255,0.3); font-size: 12px;">Cotonou, Bénin 🇧🇯</p>
 </footer>
 
@@ -1340,5 +1464,7 @@ function switchTab(id, btn) {
   btn.classList.add('active');
 }
 </script>
+<script src="/js/mobile-nav.js"></script>
+
 </body>
 </html>

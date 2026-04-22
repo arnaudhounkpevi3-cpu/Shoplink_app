@@ -1,36 +1,110 @@
-
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Tableau de bord</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script src="/js/api-config.js"></script>
 <style>
+:root{
+  --font-sans:'DM Sans',sans-serif;
+  --green:#1a5c38; --green-light:#eef7f1; --green-mid:#0f6e56;
+  --amber:#f59c1a; --amber-light:#fef3de;
+  --dark:#0f1f17; --bg:#fdf6ee; --white:#fff;
+  --border:#e8ddd0; --text:#1a1a1a; --muted:#6b5744; --soft:#9a7d5a;
+  --radius:12px;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:var(--font-sans);background:#fdf6ee;color:#1a1a1a;font-size:14px;}
+html,body{width:100%;min-width:100%;max-width:100%;overflow-x:hidden;}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);font-size:14px;}
 
 /* TOPBAR */
-.topnav{background:#1a5c38;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;}
+.topnav{background:#1a5c38;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;width:100%;max-width:100%;}
 .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;}
 .logo-dot{width:8px;height:8px;background:#f59c1a;border-radius:50%;}
 .nav-links{display:flex;gap:2px;}
 .nav-link{padding:8px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.65);cursor:pointer;transition:all 0.15s;font-weight:400;display:flex;align-items:center;gap:6px;}
 .nav-link:hover{background:rgba(255,255,255,0.1);color:#fff;}
 .nav-link.active{background:rgba(255,255,255,0.15);color:#fff;font-weight:500;}
-.nav-link .nicon{font-size:14px;}
+.nav-link .nicon{font-size:14px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;}
+/* Animated Icons */
+.nav-icon-home{width:24px;height:24px;background:linear-gradient(135deg,#f59c1a,#e08a10);clip-path:polygon(50% 0%,100% 38%,100% 100%,0% 100%,0% 38%);position:relative;}
+.nav-icon-home::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:14px solid #f59c1a;}
+.nav-link.active .nav-icon-home{animation:pulse-house 2s ease-in-out infinite;}
+@keyframes pulse-house{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+.nav-icon-products{width:24px;height:24px;background:#f59c1a;border-radius:4px;position:relative;}
+.nav-icon-products::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:14px;height:5px;background:#e08a10;border-radius:2px;}
+.nav-link.active .nav-icon-products{animation:bounce-box 1s ease-in-out infinite;}
+@keyframes bounce-box{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.nav-icon-site{width:24px;height:24px;background:linear-gradient(135deg,#1a5c38,#155030);border-radius:50%;position:relative;overflow:hidden;}
+.nav-icon-site::before{content:'';position:absolute;top:3px;left:3px;width:10px;height:5px;background:rgba(255,255,255,0.3);border-radius:50%;}
+.nav-link.active .nav-icon-site{animation:spin-globe 8s linear infinite;}
+@keyframes spin-globe{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.nav-icon-stats{display:flex;gap:3px;align-items:flex-end;height:24px;}
+.nav-icon-stats::before{content:'';width:5px;height:10px;background:#f59c1a;border-radius:1px;}
+.nav-icon-stats::after{content:'';width:5px;height:16px;background:#1a5c38;border-radius:1px;}
+.nav-icon-stats span{width:5px;height:12px;background:#8b5e2a;border-radius:1px;}
+.nav-link.active .nav-icon-stats::before{animation:bar-grow 1.5s ease-in-out infinite alternate;}
+.nav-link.active .nav-icon-stats::after{animation:bar-grow 1.5s ease-in-out infinite alternate 0.2s;}
+.nav-link.active .nav-icon-stats span{animation:bar-grow 1.5s ease-in-out infinite alternate 0.4s;}
+@keyframes bar-grow{from{height:8px;}to{height:18px;}}
+.nav-icon-support{width:24px;height:24px;background:#f59c1a;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;position:relative;}
+.nav-icon-support::before{content:'';position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:24px;height:7px;background:transparent;border:2px solid #f59c1a;border-radius:50%;border-bottom:none;}
+.nav-link.active .nav-icon-support::before{animation:sound-wave 1.5s ease-in-out infinite;}
+@keyframes sound-wave{0%,100%{transform:translateX(-50%) scale(1);opacity:0.5;}50%{transform:translateX(-50%) scale(1.3);opacity:1;}}
+.nav-icon-settings{width:24px;height:24px;background:#8b5e2a;border-radius:50%;position:relative;}
+.nav-icon-settings::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;background:#f59c1a;border-radius:50%;}
+.nav-icon-settings::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:16px;height:16px;border:2px solid #8b5e2a;border-radius:50%;border-top-color:#f59c1a;}
+.nav-link.active .nav-icon-settings::after{animation:spin-gear 2s linear infinite;}
+@keyframes spin-gear{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}
 .nav-right{display:flex;align-items:center;gap:10px;}
 .site-live{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border-radius:100px;padding:5px 12px;font-size:12px;color:#fff;}
 .live-dot{width:7px;height:7px;background:#6dd9a8;border-radius:50%;animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
 .user-avatar{width:34px;height:34px;border-radius:50%;background:#f59c1a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#412402;cursor:pointer;}
+.logout-btn{background:rgba(255,255,255,0.12);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;cursor:pointer;transition:background 0.2s;}
+.logout-btn:hover{background:rgba(255,255,255,0.2);}
 
 /* SUBBAR */
-.subbar{background:#fff;border-bottom:1px solid #e8ddd0;padding:0 28px;display:flex;align-items:center;gap:20px;height:46px;}
+.subbar{background:#fff;border-bottom:1px solid #e8ddd0;padding:0 28px;display:flex;align-items:center;gap:20px;height:46px;width:100%;max-width:100%;}
 .subbar-greeting{font-size:13px;color:#6b5744;}
 .subbar-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#1a5c38;font-weight:500;background:#eef7f1;border-radius:100px;padding:4px 12px;cursor:pointer;}
 .subbar-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:#f59c1a;color:#412402;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer;}
 .subbar-btn:hover{background:#e08a10;}
 
 /* MAIN */
-.main{padding:24px 28px;display:flex;flex-direction:column;gap:20px;}
+.main{padding:0;overflow-x:hidden;overflow-y:auto;width:100%;height:calc(100vh - 104px);position:fixed;top:104px;left:0;right:0;bottom:0;}
 
-/* PAGE hidden by default */
-.page{display:none;flex-direction:column;gap:20px;}
-.page.active{display:flex;}
+/* PAGE WRAPPER */
+#pages-wrapper{display:block;width:100%;max-width:1400px;margin:0 auto;height:100%;padding:24px 28px;box-sizing:border-box;}
+
+/* PAGE SECTIONS */
+.page-section{width:100%;height:100%;padding:0;display:none;flex-direction:column;gap:20px;overflow-y:auto;overflow-x:hidden;box-sizing:border-box;}
+.page-section.active{display:flex;}
+
+/* CONTAINER CENTRÉ */
+.container-centered{max-width:1400px;margin:0 auto;width:100%;}
+
+/* SWIPE PROGRESS INDICATOR */
+.swipe-progress{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:100;}
+.swipe-dot{width:8px;height:8px;border-radius:50%;background:rgba(26,92,56,0.3);transition:all 0.3s ease;}
+.swipe-dot.active{background:#1a5c38;width:24px;border-radius:4px;}
+
+/* TOAST NOTIFICATIONS */
+.toast-container{position:fixed;top:70px;right:20px;z-index:1000;display:flex;flex-direction:column;gap:10px;}
+.toast{background:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:flex;align-items:center;gap:12px;animation:slideIn 0.3s ease;min-width:280px;}
+.toast.success{border-left:4px solid #1a5c38;}
+.toast.error{border-left:4px solid #e24b4a;}
+.toast.info{border-left:4px solid #f59c1a;}
+.toast-content{flex:1;}
+.toast-title{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:2px;}
+.toast-message{font-size:12px;color:#6b5744;}
+.toast-close{background:none;border:none;font-size:16px;color:#9a7d5a;cursor:pointer;padding:0;}
+.toast-close:hover{color:#1a1a1a;}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1;}to{transform:translateX(100%);opacity:0;}}
+.toast.hiding{animation:slideOut 0.3s ease forwards;}
 
 /* METRIC CARDS */
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
@@ -149,59 +223,213 @@ body{font-family:var(--font-sans);background:#fdf6ee;color:#1a1a1a;font-size:14p
 .btn-primary:hover{background:#155030;}
 .btn-sec{background:#fff;color:#1a1a1a;border:1px solid #e8ddd0;border-radius:9px;padding:10px 18px;font-size:13px;cursor:pointer;}
 .btn-sec:hover{background:#f5f0ea;}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  html,body{width:100% !important;min-width:100% !important;max-width:100% !important;}
+  .topnav{padding:0 12px !important;height:auto !important;min-height:56px !important;flex-wrap:wrap !important;}
+  .topnav .logo{font-size:15px !important;}
+  .topnav .logo-dot{width:6px;height:6px;}
+  .topnav .nav-links{display:flex !important;flex-wrap:wrap !important;gap:4px !important;width:100% !important;margin-top:8px !important;}
+  .topnav .nav-link{padding:6px 10px !important;font-size:11px !important;flex:1 !important;min-width:80px !important;text-align:center !important;justify-content:center !important;}
+  .topnav .nav-link .nicon{width:18px !important;height:18px !important;font-size:12px !important;}
+  .topnav .nav-right{display:flex !important;align-items:center;gap:8px;margin-left:auto;}
+  .topnav .user-avatar{width:28px;height:28px;font-size:10px;}
+  .topnav .logout-btn{width:28px;height:28px;font-size:12px;}
+  
+  .subbar{padding:0 16px;height:42px;width:100% !important;max-width:100% !important;}
+  .subbar-greeting{font-size:12px;}
+  .subbar-link{font-size:11px;padding:3px 10px;}
+  .subbar-btn{font-size:12px;padding:6px 12px;}
+  .main{padding:16px;width:100% !important;max-width:100% !important;height:calc(100vh - 98px) !important;top:98px !important;}
+  .page-section{padding:16px;width:100% !important;max-width:100% !important;}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .mcard{padding:14px 12px;}
+  .mcard-val{font-size:22px;}
+  .two-col{grid-template-columns:1fr;}
+  .swipe-progress{bottom:16px;}
+  .swipe-dot{width:6px;height:6px;}
+  .swipe-dot.active{width:20px;}
+  
+  .card-head{padding:12px 14px;}
+  .card-body{padding:14px;}
+  .card-title{font-size:13px;}
+  
+  .prod-row{grid-template-columns:36px 1fr auto;gap:10px;padding:8px 0;}
+  .prod-thumb{width:36px;height:36px;font-size:18px;}
+  .prod-name{font-size:12px;}
+  .prod-cat{font-size:10px;}
+  .prod-price{font-size:12px;}
+  .prod-views{font-size:10px;}
+  .iBtn{width:26px;height:26px;font-size:12px;}
+  
+  .act-item{padding:8px 0;gap:10px;}
+  .act-ico{width:30px;height:30px;font-size:14px;}
+  .act-text{font-size:12px;}
+  .act-time{font-size:10px;}
+  
+  .form-group{margin-bottom:12px;}
+  .form-label{font-size:11px;}
+  .form-input{padding:8px 11px;font-size:12px;}
+  
+  .phone-wrap{padding:12px 0;}
+  .phone{width:180px;}
+  .phone-screen{min-height:300px;}
+  .phone-head{padding:12px 10px 8px;}
+  .phone-head-name{font-size:13px;}
+  
+  .toast{min-width:240px;padding:12px 14px;}
+  .toast-title{font-size:13px;}
+  .toast-message{font-size:11px;}
+}
+
+@media (max-width: 480px) {
+  html,body{width:100% !important;min-width:100% !important;max-width:100% !important;}
+  .topnav{padding:0 8px !important;height:auto !important;min-height:56px !important;flex-wrap:wrap !important;}
+  .topnav .logo{font-size:14px !important;}
+  .topnav .logo-dot{width:5px;height:5px;}
+  .topnav .nav-links{display:flex !important;flex-wrap:wrap !important;gap:3px !important;width:100% !important;margin-top:6px !important;}
+  .topnav .nav-link{padding:5px 8px !important;font-size:10px !important;flex:1 !important;min-width:70px !important;text-align:center !important;justify-content:center !important;}
+  .topnav .nav-link .nicon{width:16px !important;height:16px !important;font-size:11px !important;}
+  .topnav .nav-right{display:flex !important;align-items:center;gap:6px;margin-left:auto;}
+  .topnav .user-avatar{width:26px;height:26px;font-size:9px;}
+  .topnav .logout-btn{width:26px;height:26px;font-size:11px;}
+  
+  .subbar{padding:0 12px;height:40px;gap:12px;width:100% !important;max-width:100% !important;}
+  .subbar-greeting{font-size:11px;}
+  .subbar-link{font-size:10px;padding:3px 8px;}
+  .subbar-btn{font-size:11px;padding:5px 10px;}
+  
+  .main{padding:12px;width:100% !important;max-width:100% !important;height:calc(100vh - 96px) !important;top:96px !important;}
+  .page-section{padding:12px;gap:16px;width:100% !important;max-width:100% !important;}
+  
+  .metrics{grid-template-columns:1fr;gap:8px;}
+  .mcard{padding:12px 10px;}
+  .mcard-label{font-size:10px;}
+  .mcard-val{font-size:20px;}
+  .mcard-sub{font-size:10px;}
+  .mcard-icon{font-size:18px;right:10px;top:10px;}
+  
+  .two-col{gap:14px;}
+  .card{border-radius:12px;}
+  .card-head{padding:10px 12px;}
+  .card-body{padding:12px;}
+  .card-title{font-size:12px;}
+  
+  .badge{font-size:10px;padding:2px 8px;}
+  
+  .prod-row{grid-template-columns:32px 1fr;gap:8px;padding:6px 0;}
+  .prod-thumb{width:32px;height:32px;font-size:16px;}
+  .prod-name{font-size:11px;}
+  .prod-cat{font-size:9px;}
+  .prod-price{font-size:11px;}
+  .prod-views{display:none;}
+  .iBtn{width:24px;height:24px;font-size:11px;}
+  
+  .act-item{padding:6px 0;gap:8px;}
+  .act-ico{width:28px;height:28px;font-size:13px;}
+  .act-text{font-size:11px;}
+  .act-time{font-size:9px;}
+  
+  .form-group{margin-bottom:10px;}
+  .form-label{font-size:10px;}
+  .form-input{padding:7px 10px;font-size:11px;}
+  .form-btn-row{gap:8px;}
+  .btn-primary{padding:8px 16px;font-size:12px;}
+  .btn-sec{padding:8px 14px;font-size:12px;}
+  
+  .phone-wrap{padding:10px 0;}
+  .phone{width:160px;padding:6px;}
+  .phone-screen{min-height:260px;border-radius:20px;}
+  .phone-head{padding:10px 8px 6px;}
+  .phone-head-name{font-size:12px;}
+  
+  .site-live{font-size:10px;padding:3px 8px;}
+  .live-dot{width:6px;height:6px;}
+  .user-avatar{width:28px;height:28px;font-size:10px;}
+  .logout-btn{width:28px;height:28px;font-size:12px;}
+  
+  .swipe-progress{bottom:12px;gap:6px;}
+  .swipe-dot{width:5px;height:5px;}
+  .swipe-dot.active{width:16px;}
+  
+  .toast-container{right:12px;top:60px;}
+  .toast{min-width:200px;padding:10px 12px;}
+  .toast-title{font-size:12px;}
+  .toast-message{font-size:10px;}
+  .toast-close{font-size:14px;}
+}
 </style>
+<link rel="stylesheet" href="/css/responsive.css"/>
+</head>
+<body>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
 
 <!-- TOP NAV -->
 <div class="topnav">
   <div class="logo"><span class="logo-dot"></span>ShopLink</div>
   <div class="nav-links">
-    <div class="nav-link active" onclick="nav('accueil',this)"><span class="nicon">🏠</span>Accueil</div>
-    <div class="nav-link" onclick="nav('produits',this)"><span class="nicon">📦</span>Mes produits</div>
-    <div class="nav-link" onclick="nav('monsite',this)"><span class="nicon">🌐</span>Mon site</div>
-    <div class="nav-link" onclick="nav('stats',this)"><span class="nicon">📈</span>Statistiques</div>
-    <div class="nav-link" onclick="nav('parametres',this)"><span class="nicon">⚙️</span>Paramètres</div>
+    <div class="nav-link active" onclick="goToPage(0)"><span class="nicon nav-icon-home"></span>Accueil</div>
+    <div class="nav-link" onclick="goToPage(1)"><span class="nicon nav-icon-products"></span>Mes produits</div>
+    <div class="nav-link" onclick="goToPage(2)"><span class="nicon nav-icon-site"></span>Mon site</div>
+    <div class="nav-link" onclick="goToPage(3)"><span class="nicon nav-icon-stats"></span>Statistiques</div>
+    <div class="nav-link" onclick="goToPage(4)"><span class="nicon nav-icon-support"></span>Support</div>
+    <div class="nav-link" onclick="goToPage(5)"><span class="nicon nav-icon-settings"></span>Paramètres</div>
   </div>
   <div class="nav-right">
-    <div class="site-live"><span class="live-dot"></span>Site en ligne</div>
-    <div class="user-avatar">GK</div>
+    <div class="site-live" onclick="navigateToPublicSite()" style="cursor:pointer;"><span class="live-dot"></span>Site en ligne</div>
+    <div class="user-avatar" id="user-avatar">GK</div>
+    <button class="logout-btn" onclick="logout()" title="Déconnexion">🚪</button>
   </div>
 </div>
 
 <!-- SUBBAR -->
 <div class="subbar">
-  <span class="subbar-greeting">Bonjour Grace 👋 — Boutique Grâce Mode</span>
-  <div class="subbar-link">🔗 shoplink.bj/gracemode</div>
-  <button class="subbar-btn" onclick="nav('produits', document.querySelectorAll('.nav-link')[1])">+ Ajouter un produit</button>
+  <span class="subbar-greeting">Bonjour Grace — Boutique Grâce Mode</span>
+  <div class="subbar-link" onclick="navigateToPublicSite()" style="cursor:pointer;">shoplink.bj/gracemode</div>
+  <button class="subbar-btn" onclick="goToPage(1)">+ Ajouter un produit</button>
 </div>
 
 <div class="main">
 
+  <div class="swipe-progress" id="swipe-progress">
+    <div class="swipe-dot active"></div>
+    <div class="swipe-dot"></div>
+    <div class="swipe-dot"></div>
+    <div class="swipe-dot"></div>
+    <div class="swipe-dot"></div>
+    <div class="swipe-dot"></div>
+  </div>
+
+  <div id="pages-wrapper">
   <!-- PAGE ACCUEIL -->
-  <div id="p-accueil" class="page active">
+  <div id="p-accueil" class="page-section active" data-page="accueil">
     <div class="metrics">
       <div class="mcard mcard-green">
-        <div class="mcard-icon">👁</div>
+        <div class="mcard-icon">👁️‍🗨️</div>
         <div class="mcard-label">Vues du site</div>
-        <div class="mcard-val">247</div>
+        <div class="mcard-val" id="metric-views">0</div>
         <div class="mcard-sub">7 derniers jours</div>
       </div>
       <div class="mcard mcard-amber">
-        <div class="mcard-icon">📲</div>
+        <div class="mcard-icon">�</div>
         <div class="mcard-label">Clics WhatsApp</div>
-        <div class="mcard-val">34</div>
+        <div class="mcard-val" id="metric-whatsapp-clicks">0</div>
         <div class="mcard-sub">Commandes initiées</div>
       </div>
       <div class="mcard mcard-ocre">
-        <div class="mcard-icon">📦</div>
+        <div class="mcard-icon">�️</div>
         <div class="mcard-label">Produits publiés</div>
-        <div class="mcard-val">12</div>
+        <div class="mcard-val" id="metric-products">0</div>
         <div class="mcard-sub">Catalogue actif</div>
       </div>
       <div class="mcard mcard-cream">
-        <div class="mcard-icon">🔗</div>
+        <div class="mcard-icon">�</div>
         <div class="mcard-label">Partages du lien</div>
-        <div class="mcard-val" style="color:#1a5c38;">8</div>
-        <div class="mcard-sub" style="color:#9a7d5a;">Via WhatsApp & réseaux</div>
+        <div class="mcard-val" id="metric-shares">0</div>
+        <div class="mcard-sub">Via WhatsApp & réseaux</div>
       </div>
     </div>
 
@@ -212,17 +440,13 @@ body{font-family:var(--font-sans);background:#fdf6ee;color:#1a1a1a;font-size:14p
             <div class="pub-banner-title">Votre site est en ligne ✓</div>
             <div class="pub-banner-sub">Partagez votre lien pour recevoir des commandes via WhatsApp</div>
           </div>
-          <button class="pub-btn">📤 Partager mon lien</button>
+          <button class="pub-btn" onclick="shareSiteLink()">📤 Partager mon lien</button>
         </div>
 
         <div class="card">
           <div class="card-head"><span class="card-title">Activité récente</span><span class="badge bg-green">En direct</span></div>
           <div class="card-body">
-            <div class="act-item"><div class="act-ico v">👁</div><div><div class="act-text">Visite — page produit "Robe pagne imprimé"</div><div class="act-time">Il y a 4 min</div></div></div>
-            <div class="act-item"><div class="act-ico o">📲</div><div><div class="act-text">Clic WhatsApp — "Sac wax · 5 000 F"</div><div class="act-time">Il y a 22 min</div></div></div>
-            <div class="act-item"><div class="act-ico v">👁</div><div><div class="act-text">3 visites depuis un lien partagé</div><div class="act-time">Il y a 1 h</div></div></div>
-            <div class="act-item"><div class="act-ico o">📲</div><div><div class="act-text">Clic WhatsApp — "Headband · 1 500 F"</div><div class="act-time">Hier, 18h42</div></div></div>
-            <div class="act-item"><div class="act-ico s">🔗</div><div><div class="act-text">Lien partagé sur Instagram</div><div class="act-time">Hier, 11h15</div></div></div>
+            <div class="activity-list">Chargement...</div>
           </div>
         </div>
       </div>
@@ -231,23 +455,29 @@ body{font-family:var(--font-sans);background:#fdf6ee;color:#1a1a1a;font-size:14p
         <div class="card">
           <div class="card-head"><span class="card-title">Statut de la boutique</span></div>
           <div class="card-body" style="display:flex;flex-direction:column;gap:11px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">Statut</span><span style="font-weight:500;color:#1a5c38;">● En ligne</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">Type</span><span style="font-weight:500;">Boutique vêtements</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">WhatsApp</span><span style="font-weight:500;">+229 97 XX XX XX</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">Plan</span><span><span class="badge bg-green">Starter · Payé</span></span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">Statut</span><span style="font-weight:500;color:#1a5c38;" id="site-status">● En ligne</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">Type</span><span style="font-weight:500;" id="site-type">-</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">WhatsApp</span><span style="font-weight:500;" id="site-whatsapp">-</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#6b5744;">Plan</span><span><span class="badge bg-green" id="site-plan">Starter · Payé</span></span></div>
             <div style="border-top:1px solid #f5f0ea;padding-top:11px;">
               <div style="font-size:12px;color:#6b5744;margin-bottom:6px;">Lien public</div>
-              <div style="font-size:12px;color:#1a5c38;background:#eef7f1;border-radius:8px;padding:7px 10px;font-family:var(--font-mono);">shoplink.bj/gracemode</div>
+              <div style="font-size:12px;color:#1a5c38;background:#eef7f1;border-radius:8px;padding:7px 10px;font-family:var(--font-mono);" id="site-link">-</div>
             </div>
-            <button class="wa-btn" style="width:100%;justify-content:center;">📲 Tester sur WhatsApp</button>
+            <button class="wa-btn" style="width:100%;justify-content:center;" onclick="testSiteOnWhatsApp()">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+            </button>
           </div>
         </div>
 
         <div class="card">
           <div class="card-head"><span class="card-title">Passer au Premium</span></div>
           <div class="card-body">
-            <div style="font-size:13px;color:#6b5744;line-height:1.6;margin-bottom:14px;">Confiez la création d'un site professionnel à notre équipe. Design avancé, Google Maps, sections personnalisées.</div>
-            <button class="btn-primary" style="width:100%;" onclick="sendPrompt('Je veux commander un site Premium ShopLink')">⭐ Commander mon site Pro →</button>
+            <div id="premium-project-status">
+              <div style="font-size:13px;color:#6b5744;line-height:1.6;margin-bottom:14px;">Confiez la création d'un site professionnel à notre équipe. Design avancé, Google Maps, sections personnalisées.</div>
+              <button class="btn-primary" style="width:100%;" onclick="navigateToPremium()">⭐ Commander mon site Pro →</button>
+            </div>
           </div>
         </div>
       </div>
@@ -255,72 +485,81 @@ body{font-family:var(--font-sans);background:#fdf6ee;color:#1a1a1a;font-size:14p
   </div>
 
   <!-- PAGE PRODUITS -->
-  <div id="p-produits" class="page">
+  <div id="p-produits" class="page-section" data-page="produits">
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <div style="font-size:16px;font-weight:500;">Mes produits <span style="font-size:13px;color:#9a7d5a;font-weight:400;">· 12 publiés</span></div>
       <div style="display:flex;gap:10px;">
-        <select style="padding:8px 12px;border-radius:9px;border:1px solid #e8ddd0;background:#fff;font-size:13px;color:#1a1a1a;">
-          <option>Toutes catégories</option>
-          <option>Robes & pagnes</option>
-          <option>Accessoires</option>
-          <option>Sacs</option>
+        <select id="category-filter" style="padding:8px 12px;border-radius:9px;border:1px solid #e8ddd0;background:#fff;font-size:13px;color:#1a1a1a;" onchange="filterProductsByCategory()">
+          <option value="">Toutes catégories</option>
+          <option value="Robes & pagnes">Robes & pagnes</option>
+          <option value="Accessoires">Accessoires</option>
+          <option value="Sacs">Sacs</option>
+          <option value="Chaussures">Chaussures</option>
+          <option value="Autre">Autre</option>
         </select>
       </div>
     </div>
 
     <div class="add-form">
-      <div class="add-form-title">➕ Ajouter un nouveau produit</div>
-      <div style="display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:start;">
-        <div class="upload-zone">
-          <div class="upload-zone-icon">📷</div>
-          <div class="upload-zone-text">Cliquez pour ajouter une photo</div>
-        </div>
-        <div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Nom du produit</label><input class="form-input" type="text" placeholder="Ex : Robe pagne imprimé"></div>
-            <div class="form-group"><label class="form-label">Prix (FCFA)</label><input class="form-input" type="number" placeholder="Ex : 8500"></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Catégorie</label><select class="form-input"><option>Robes & pagnes</option><option>Accessoires</option><option>Sacs</option></select></div>
-            <div class="form-group"><label class="form-label">Description courte</label><input class="form-input" type="text" placeholder="Ex : Robe en pagne wax 100%"></div>
-          </div>
-          <div class="form-btn-row">
-            <button class="btn-primary">✓ Publier le produit</button>
-            <button class="btn-sec">Annuler</button>
+      <div class="add-form-title">Ajouter un nouveau produit</div>
+      <div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Ajouter un produit</span></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Nom du produit</label><input class="form-input" type="text" id="prod-name" placeholder="Ex: Robe pagne imprimé"></div>
+            <div class="form-group"><label class="form-label">Prix (FCFA)</label><input class="form-input" type="number" id="prod-price" placeholder="Ex: 8500"></div>
+            <div class="form-group"><label class="form-label">Catégorie</label><select class="form-input" id="prod-category"><option>Robes & pagnes</option><option>Accessoires</option><option>Sacs</option><option>Chaussures</option><option>Autre</option></select></div>
+            <div class="form-group"><label class="form-label">Description courte</label><input class="form-input" type="text" id="prod-desc" placeholder="Description rapide du produit"></div>
+            <div class="form-group">
+              <label class="form-label">Photo du produit</label>
+              <input class="form-input" type="file" id="prod-image" accept="image/*" onchange="previewImage(this)">
+              <div id="image-preview" style="margin-top:10px;display:none;">
+                <img id="preview-img" style="max-width:100%;max-height:200px;border-radius:8px;">
+                <div style="font-size:11px;color:#6b5744;margin-top:5px;">Taille: <span id="image-size">0</span> KB</div>
+              </div>
+              <div id="image-optimize-info" style="font-size:11px;color:#1a5c38;margin-top:5px;display:none;">✓ Image optimisée automatiquement</div>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-primary" onclick="createProduct()">Publier le produit</button>
+              <button class="btn-sec" onclick="cancelAddProduct()">Annuler</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><span class="card-title">Catalogue en ligne</span><span class="badge bg-amber">12 produits</span></div>
+      <div class="card-head"><span class="card-title">Catalogue en ligne</span><span class="badge bg-amber" id="product-count-badge">0 produits</span></div>
       <div class="card-body" style="padding:0 18px;">
-        <div class="prod-row"><div class="prod-thumb">👗</div><div><div class="prod-name">Robe pagne imprimé</div><div class="prod-cat">Robes & pagnes</div></div><div class="prod-price">8 500 F</div><div class="prod-views">👁 42</div><div style="display:flex;gap:6px;"><div class="iBtn">✏️</div><div class="iBtn">🗑</div></div></div>
-        <div class="prod-row"><div class="prod-thumb">👜</div><div><div class="prod-name">Sac wax multicolore</div><div class="prod-cat">Sacs</div></div><div class="prod-price">5 000 F</div><div class="prod-views">👁 38</div><div style="display:flex;gap:6px;"><div class="iBtn">✏️</div><div class="iBtn">🗑</div></div></div>
-        <div class="prod-row"><div class="prod-thumb">👒</div><div><div class="prod-name">Headband assorti</div><div class="prod-cat">Accessoires</div></div><div class="prod-price">1 500 F</div><div class="prod-views">👁 29</div><div style="display:flex;gap:6px;"><div class="iBtn">✏️</div><div class="iBtn">🗑</div></div></div>
-        <div class="prod-row"><div class="prod-thumb">👘</div><div><div class="prod-name">Tenue de soirée brodée</div><div class="prod-cat">Robes & pagnes</div></div><div class="prod-price">15 000 F</div><div class="prod-views">👁 21</div><div style="display:flex;gap:6px;"><div class="iBtn">✏️</div><div class="iBtn">🗑</div></div></div>
-        <div class="prod-row"><div class="prod-thumb">🧣</div><div><div class="prod-name">Foulard tissé</div><div class="prod-cat">Accessoires</div></div><div class="prod-price">2 000 F</div><div class="prod-views">👁 17</div><div style="display:flex;gap:6px;"><div class="iBtn">✏️</div><div class="iBtn">🗑</div></div></div>
+        <div id="product-list-container" style="text-align:center;padding:20px;color:#9a7d5a;">Chargement...</div>
       </div>
     </div>
   </div>
 
   <!-- PAGE MON SITE -->
-  <div id="p-monsite" class="page">
+  <div id="p-monsite" class="page-section" data-page="monsite">
     <div style="font-size:16px;font-weight:500;">Mon site <span style="font-size:13px;color:#9a7d5a;font-weight:400;">· Personnalisation & aperçu</span></div>
     <div style="display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:start;">
       <div style="display:flex;flex-direction:column;gap:16px;">
         <div class="card">
           <div class="card-head"><span class="card-title">Identité de la boutique</span></div>
           <div class="card-body">
-            <div class="form-row">
-              <div class="form-group"><label class="form-label">Nom de la boutique</label><input class="form-input" type="text" value="Boutique Grâce Mode"></div>
-              <div class="form-group"><label class="form-label">Slogan (optionnel)</label><input class="form-input" type="text" value="La mode africaine à votre porte"></div>
+            <div class="form-group">
+              <label class="form-label">Logo de la boutique</label>
+              <input class="form-input" type="file" id="site-logo" accept="image/*" onchange="previewSiteLogo(this)">
+              <div id="site-logo-preview" style="margin-top:10px;display:none;">
+                <img id="preview-logo-img" style="max-width:120px;max-height:60px;border-radius:8px;border:1px solid #e8ddd0;">
+              </div>
             </div>
             <div class="form-row">
-              <div class="form-group"><label class="form-label">Numéro WhatsApp</label><input class="form-input" type="text" value="+229 97 XX XX XX"></div>
-              <div class="form-group"><label class="form-label">Adresse / Quartier</label><input class="form-input" type="text" value="Cotonou, Cadjehoun"></div>
+              <div class="form-group"><label class="form-label">Nom de la boutique</label><input class="form-input" type="text" id="site-name" value="Boutique Grâce Mode"></div>
+              <div class="form-group"><label class="form-label">Slogan (optionnel)</label><input class="form-input" type="text" id="site-slogan" value="La mode africaine à votre porte"></div>
             </div>
-            <div class="form-group"><label class="form-label">Description de l'activité</label><textarea class="form-input" rows="2" style="resize:none;">Boutique de mode africaine — pagnes, robes, accessoires et sacs wax.</textarea></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Numéro WhatsApp</label><input class="form-input" type="text" id="site-whatsapp" value="+229 XX XX XX XX"></div>
+              <div class="form-group"><label class="form-label">Adresse / Quartier</label><input class="form-input" type="text" id="site-address" value="Cotonou, Cadjehoun"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Description de l'activité</label><textarea class="form-input" id="site-desc" rows="2" style="resize:none;">Boutique de mode africaine — pagnes, robes, accessoires et sacs wax.</textarea></div>
           </div>
         </div>
         <div class="card">
@@ -338,11 +577,11 @@ body{font-family:var(--font-sans);background:#fdf6ee;color:#1a1a1a;font-size:14p
             </div>
             <div class="form-group">
               <label class="form-label">Type d'activité</label>
-              <select class="form-input"><option>Boutique</option><option>Restaurant</option><option>Fast-food</option><option>Cosmétiques</option><option>Autre</option></select>
+              <select class="form-input" id="site-activity"><option>Boutique</option><option>Restaurant</option><option>Fast-food</option><option>Cosmétiques</option><option>Autre</option></select>
             </div>
             <div class="form-btn-row">
-              <button class="btn-primary">💾 Sauvegarder</button>
-              <button class="btn-sec">👁 Voir mon site</button>
+              <button class="btn-primary" onclick="saveSiteSettings()">💾 Sauvegarder</button>
+              <button class="btn-sec" onclick="viewPublicSite()">👁 Voir mon site</button>
             </div>
           </div>
         </div>
@@ -360,7 +599,6 @@ body{font-family:var(--font-sans);background:#fdf6ee;color:#1a1a1a;font-size:14p
               <div style="padding:7px 8px 0;display:flex;gap:5px;">
                 <div style="background:#1a5c38;color:#fff;border-radius:100px;padding:3px 10px;font-size:9px;font-weight:500;">Tout</div>
                 <div style="background:#f5f0ea;border-radius:100px;padding:3px 8px;font-size:9px;color:#6b5744;">Robes</div>
-                <div style="background:#f5f0ea;border-radius:100px;padding:3px 8px;font-size:9px;color:#6b5744;">Sacs</div>
               </div>
               <div class="phone-prods">
                 <div class="phone-prod"><div class="phone-prod-img" style="background:#eef7f1;">👗</div><div class="phone-prod-info"><div class="phone-prod-name">Robe pagne</div><div class="phone-prod-price" style="color:#1a5c38;">8 500 F</div><div class="phone-prod-btn">📲 Commander</div></div></div>
@@ -377,78 +615,1833 @@ body{font-family:var(--font-sans);background:#fdf6ee;color:#1a1a1a;font-size:14p
   </div>
 
   <!-- PAGE STATS -->
-  <div id="p-stats" class="page">
+  <div id="p-stats" class="page-section" data-page="stats">
     <div style="font-size:16px;font-weight:500;">Statistiques <span style="font-size:13px;color:#9a7d5a;font-weight:400;">· 7 derniers jours</span></div>
     <div class="metrics">
-      <div class="mcard mcard-green"><div class="mcard-icon">👁</div><div class="mcard-label">Vues totales</div><div class="mcard-val">247</div></div>
-      <div class="mcard mcard-amber"><div class="mcard-icon">📲</div><div class="mcard-label">Clics WhatsApp</div><div class="mcard-val">34</div></div>
-      <div class="mcard mcard-ocre"><div class="mcard-icon">%</div><div class="mcard-label">Taux de clic</div><div class="mcard-val">13.8%</div></div>
-      <div class="mcard mcard-cream"><div class="mcard-icon">🏆</div><div class="mcard-label">Top produit</div><div class="mcard-val" style="font-size:14px;color:#1a5c38;">Robe pagne</div></div>
+      <div class="mcard mcard-green"><div class="mcard-icon">👁</div><div class="mcard-label">Vues totales</div><div class="mcard-val" id="stats-total-views">0</div></div>
+      <div class="mcard mcard-amber"><div class="mcard-icon">📲</div><div class="mcard-label">Clics WhatsApp</div><div class="mcard-val" id="stats-whatsapp-clicks">0</div></div>
+      <div class="mcard mcard-ocre"><div class="mcard-icon">%</div><div class="mcard-label">Taux de clic</div><div class="mcard-val" id="stats-click-rate">0%</div></div>
+      <div class="mcard mcard-cream"><div class="mcard-icon">🏆</div><div class="mcard-label">Top produit</div><div class="mcard-val" id="stats-top-product" style="font-size:14px;color:#1a5c38;">-</div></div>
     </div>
     <div class="two-col">
       <div class="card">
         <div class="card-head"><span class="card-title">Produits les plus vus</span></div>
-        <div class="card-body">
-          <div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Robe pagne imprimé</span><span class="stat-bar-val">42 vues</span></div><div class="bar-bg"><div class="bar-fill fill-green" style="width:85%;"></div></div></div>
-          <div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Sac wax multicolore</span><span class="stat-bar-val">38 vues</span></div><div class="bar-bg"><div class="bar-fill fill-green" style="width:77%;"></div></div></div>
-          <div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Headband assorti</span><span class="stat-bar-val">29 vues</span></div><div class="bar-bg"><div class="bar-fill fill-amber" style="width:59%;"></div></div></div>
-          <div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Tenue de soirée</span><span class="stat-bar-val">21 vues</span></div><div class="bar-bg"><div class="bar-fill fill-amber" style="width:43%;"></div></div></div>
-          <div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Foulard tissé</span><span class="stat-bar-val">17 vues</span></div><div class="bar-bg"><div class="bar-fill fill-ocre" style="width:34%;"></div></div></div>
+        <div class="card-body" id="stats-product-views">
+          <div style="text-align:center;padding:20px;color:#9a7d5a;">Chargement...</div>
         </div>
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">Sources de trafic</span></div>
+        <div class="card-body" id="stats-traffic-sources">
+          <div style="text-align:center;padding:20px;color:#9a7d5a;">Chargement...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE SUPPORT -->
+  <div id="p-support" class="page-section" data-page="support">
+    <div style="font-size:16px;font-weight:500;">Support client</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Créer un ticket</span></div>
         <div class="card-body">
-          <div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">WhatsApp</span><span class="stat-bar-val">58%</span></div><div class="bar-bg"><div class="bar-fill fill-green" style="width:58%;"></div></div></div>
-          <div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Instagram</span><span class="stat-bar-val">24%</span></div><div class="bar-bg"><div class="bar-fill fill-amber" style="width:24%;"></div></div></div>
-          <div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Lien direct</span><span class="stat-bar-val">18%</span></div><div class="bar-bg"><div class="bar-fill fill-ocre" style="width:18%;"></div></div></div>
+          <div class="form-group">
+            <label class="form-label">Sujet</label>
+            <input class="form-input" type="text" id="ticket-subject" placeholder="Décrivez brièvement votre problème"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Priorité</label>
+            <select class="form-input" id="ticket-priority">
+              <option value="low">Basse</option>
+              <option value="normal" selected>Normale</option>
+              <option value="high">Haute</option>
+              <option value="urgent">Urgente</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-input" id="ticket-message" rows="5" placeholder="Décrivez votre problème en détail..."></textarea>
+          </div>
+          <button class="btn-primary" onclick="createTicket()" style="margin-top:10px;">📨 Envoyer le ticket</button>
+          <div id="ticket-success" style="display:none;background:#eef7f1;border-radius:8px;padding:12px;margin-top:12px;color:#0f6e56;font-size:13px;">✓ Ticket envoyé avec succès !</div>
+          <div id="ticket-error" style="display:none;background:#fee2e2;border-radius:8px;padding:12px;margin-top:12px;color:#a32d2d;font-size:13px;"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Mes tickets</span></div>
+        <div class="card-body" id="my-tickets-list">
+          <div style="color:var(--muted);font-size:13px;padding:20px 0;">Chargement...</div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- PAGE PARAMETRES -->
-  <div id="p-parametres" class="page">
+  <div id="p-parametres" class="page-section" data-page="parametres">
     <div style="font-size:16px;font-weight:500;">Paramètres du compte</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;">
       <div class="card">
         <div class="card-head"><span class="card-title">Informations personnelles</span></div>
         <div class="card-body">
-          <div class="form-group"><label class="form-label">Nom complet</label><input class="form-input" type="text" value="Grace Koudjo"></div>
-          <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" value="grace.koudjo@email.com"></div>
-          <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" type="text" value="+229 97 XX XX XX"></div>
-          <button class="btn-primary">Sauvegarder</button>
+          <div class="form-group"><label class="form-label">Nom complet</label><input class="form-input" type="text" id="user-name" value="Grace Koudjo"></div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="user-email" value="grace.koudjo@email.com"></div>
+          <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" type="text" id="user-phone" value="+229 XX XX XX XX"></div>
+          <button class="btn-primary" onclick="saveUserSettings()">Sauvegarder</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Changer le mot de passe</span></div>
+        <div class="card-body">
+          <div class="form-group"><label class="form-label">Mot de passe actuel</label><input class="form-input" type="password" id="current-password" placeholder="Entrez votre mot de passe actuel"></div>
+          <div class="form-group"><label class="form-label">Nouveau mot de passe</label><input class="form-input" type="password" id="new-password" placeholder="Entrez le nouveau mot de passe"></div>
+          <div class="form-group"><label class="form-label">Confirmer le mot de passe</label><input class="form-input" type="password" id="confirm-password" placeholder="Confirmez le nouveau mot de passe"></div>
+          <button class="btn-primary" onclick="changePassword()">Changer le mot de passe</button>
         </div>
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">Mon abonnement</span></div>
         <div class="card-body">
           <div style="background:#eef7f1;border-radius:12px;padding:16px;margin-bottom:16px;">
-            <div style="font-size:13px;font-weight:500;color:#1a5c38;margin-bottom:4px;">Plan Starter</div>
-            <div style="font-size:12px;color:#0f6e56;">Site actif · Payé le 12 mars 2025 · 4 000 FCFA</div>
+            <div style="font-size:13px;font-weight:500;color:#1a5c38;margin-bottom:4px;" id="subscription-plan">Plan Starter</div>
+            <div style="font-size:12px;color:#0f6e56;" id="subscription-details">Site actif · Payé le 12 mars 2025 · 4 000 FCFA</div>
           </div>
           <div style="font-size:13px;color:#6b5744;margin-bottom:14px;line-height:1.6;">Passez au Premium pour un site professionnel créé sur mesure.</div>
-          <button class="btn-primary" style="width:100%;" onclick="sendPrompt('Comment commander le service Premium ShopLink ?')">⭐ Passer Premium →</button>
+          <button class="btn-primary" style="width:100%;" onclick="navigateToPremium()">⭐ Passer Premium →</button>
         </div>
       </div>
     </div>
+  </div>
   </div>
 
 </div>
 
 <script>
-function nav(id, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('p-' + id).classList.add('active');
-  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-  if (el) el.classList.add('active');
+// Navigation order
+const navOrder = ['accueil', 'produits', 'monsite', 'stats', 'support', 'parametres'];
+
+function navigateToPublicSite() {
+  const site = JSON.parse(localStorage.getItem('shoplink_site') || '{}');
+  if (site.slug) {
+    window.open(`/site-public.html?slug=${site.slug}`, '_blank');
+  } else {
+    alert('Aucun site configuré');
+  }
+}
+
+function logout() {
+  localStorage.removeItem('shoplink_token');
+  localStorage.removeItem('shoplink_user');
+  localStorage.removeItem('shoplink_site');
+  window.location.href = '/index.html';
+}
+
+function navigateToPreviousPage() {
+  // Find current active page
+  const activePage = document.querySelector('.page.active');
+  if (!activePage) return;
+
+  const currentPageId = activePage.id.replace('p-', '');
+  const currentIndex = navOrder.indexOf(currentPageId);
+
+  // If on first page (accueil), go to portal
+  if (currentIndex === 0) {
+    window.location.href = '/index.html';
+    return;
+  }
+
+  // Navigate to previous page
+  const previousPageId = navOrder[currentIndex - 1];
+  const previousNavLink = document.querySelectorAll('.nav-link')[currentIndex - 1];
+  nav(previousPageId, previousNavLink);
+}
+
+// Swipe navigation - Horizontal wrapper approach
+let currentPage = 0;
+const totalPages = 6;
+let startX = 0;
+let isDragging = false;
+
+const pageOrder = ['accueil', 'produits', 'monsite', 'stats', 'support', 'parametres'];
+
+function initSwipeNavigation() {
+  const wrapper = document.getElementById('pages-wrapper');
+  console.log('Init swipe navigation, wrapper found:', !!wrapper);
+
+  if (!wrapper) {
+    console.error('Pages wrapper not found');
+    return;
+  }
+
+  // Attach touch events to body for better detection
+  document.body.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    isDragging = true;
+    console.log('Touch start:', startX);
+  }, { passive: true });
+
+  document.body.addEventListener('touchend', (e) => {
+    if (!isDragging) return;
+    const endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+    console.log('Touch end - diff:', diff, 'currentPage:', currentPage);
+
+    if (diff > 50 && currentPage < totalPages - 1) {
+      currentPage++;
+      console.log('Next page:', currentPage);
+    } else if (diff < -50 && currentPage > 0) {
+      currentPage--;
+      console.log('Previous page:', currentPage);
+    }
+
+    const wrapper = document.getElementById('pages-wrapper');
+    if (wrapper) {
+      wrapper.style.transform = `translateX(-${currentPage * (100 / totalPages)}%)`;
+    }
+    updateNavbar(currentPage);
+    isDragging = false;
+  }, { passive: true });
+
+  // Mouse events for desktop testing
+  document.body.addEventListener('mousedown', (e) => {
+    startX = e.clientX;
+    isDragging = true;
+  });
+
+  document.body.addEventListener('mouseup', (e) => {
+    if (!isDragging) return;
+    const endX = e.clientX;
+    const diff = startX - endX;
+
+    if (diff > 50 && currentPage < totalPages - 1) {
+      currentPage++;
+    } else if (diff < -50 && currentPage > 0) {
+      currentPage--;
+    }
+
+    const wrapper = document.getElementById('pages-wrapper');
+    if (wrapper) {
+      wrapper.style.transform = `translateX(-${currentPage * (100 / totalPages)}%)`;
+    }
+    updateNavbar(currentPage);
+    isDragging = false;
+  });
+}
+
+function updateNavbar(index) {
+  const navItems = document.querySelectorAll('.nav-link');
+  navItems.forEach((item, i) => {
+    item.classList.toggle('active', i === index);
+  });
+
+  // Update swipe progress indicator
+  const swipeDots = document.querySelectorAll('.swipe-dot');
+  swipeDots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === index);
+  });
+
+  // Update subbar greeting based on current page
   const sub = document.querySelector('.subbar-greeting');
-  const names = {accueil:'Bonjour Grace 👋 — Boutique Grâce Mode', produits:'Gérez votre catalogue de produits', monsite:'Personnalisez et prévisualisez votre vitrine', stats:'Suivez les performances de votre site', parametres:'Gérez vos informations et abonnement'};
-  if (sub && names[id]) sub.textContent = names[id];
+  const names = {accueil:'Bonjour Grace 👋 — Boutique Grâce Mode', produits:'Gérez votre catalogue de produits', monsite:'Personnalisez et prévisualisez votre vitrine', stats:'Suivez les performances de votre site', support:'Support client — Créez et suivez vos tickets', parametres:'Gérez vos informations et abonnement'};
+  if (sub && names[pageOrder[index]]) sub.textContent = names[pageOrder[index]];
+}
+
+function goToPage(index) {
+  currentPage = index;
+  
+  // Hide all page sections
+  document.querySelectorAll('.page-section').forEach(section => {
+    section.classList.remove('active');
+  });
+  
+  // Show the target page section
+  const targetPage = pageOrder[index];
+  const targetSection = document.getElementById(`p-${targetPage}`);
+  if (targetSection) {
+    targetSection.classList.add('active');
+  }
+  
+  updateNavbar(currentPage);
+
+  // Trigger support ticket fetch when navigating to support
+  if (pageOrder[currentPage] === 'support') {
+    fetchMyTickets();
+  }
 }
 function selectColor(el, color) {
   document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('sel'));
   el.classList.add('sel');
   document.getElementById('phone-head').style.background = color;
+  updateMobilePreview();
+}
+
+function updateMobilePreview() {
+  const siteName = document.getElementById('site-name')?.value || 'Boutique';
+  const slogan = document.getElementById('site-slogan')?.value || '';
+  
+  const phoneHeadName = document.querySelector('.phone-head-name');
+  const phoneHeadSub = document.querySelector('.phone-head-sub');
+  
+  if (phoneHeadName) phoneHeadName.textContent = siteName;
+  if (phoneHeadSub) phoneHeadSub.textContent = slogan;
+}
+
+// Add event listeners for real-time preview
+document.addEventListener('DOMContentLoaded', () => {
+  const siteNameInput = document.getElementById('site-name');
+  const siteSloganInput = document.getElementById('site-slogan');
+  
+  if (siteNameInput) {
+    siteNameInput.addEventListener('input', updateMobilePreview);
+  }
+  if (siteSloganInput) {
+    siteSloganInput.addEventListener('input', updateMobilePreview);
+  }
+});
+
+// Image preview and optimization
+let optimizedImageData = null;
+let editedImageData = null;
+let siteLogoData = null;
+
+// Preview site logo
+function previewSiteLogo(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const previewDiv = document.getElementById('site-logo-preview');
+      const previewImg = document.getElementById('preview-logo-img');
+      previewImg.src = e.target.result;
+      previewDiv.style.display = 'block';
+
+      // Store the image data for upload
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const maxSize = 200; // Max size for logo
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxSize || height > maxSize) {
+          if (width > height) {
+            height = (height / width) * maxSize;
+            width = maxSize;
+          } else {
+            width = (width / height) * maxSize;
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+        siteLogoData = canvas.toDataURL('image/jpeg', 0.8);
+
+        // Update mobile preview with logo
+        updateMobilePreviewWithLogo(siteLogoData);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// Update mobile preview with logo
+function updateMobilePreviewWithLogo(logoData) {
+  const phoneHead = document.querySelector('.phone-head');
+  if (!phoneHead) return;
+
+  // Remove existing logo if any
+  const existingLogo = phoneHead.querySelector('.phone-logo');
+  if (existingLogo) existingLogo.remove();
+
+  // Add logo to header
+  const logo = document.createElement('img');
+  logo.className = 'phone-logo';
+  logo.src = logoData;
+  logo.style.cssText = 'width:40px;height:40px;border-radius:8px;object-fit:cover;margin-right:8px;';
+  phoneHead.insertBefore(logo, phoneHead.firstChild);
+}
+
+// Global products list for filtering
+let allProducts = [];
+
+// Filter products by category
+function filterProductsByCategory() {
+  const category = document.getElementById('category-filter').value;
+  const filteredProducts = category
+    ? allProducts.filter(p => p.category === category)
+    : allProducts;
+  console.log('Filter products - category:', category, 'filtered:', filteredProducts.length, 'from', allProducts.length);
+  renderProducts(filteredProducts);
+}
+
+// Render products to the list
+function renderProducts(products) {
+  const productList = document.getElementById('product-list-container');
+  console.log('Render products - container found:', !!productList, 'products to render:', products.length);
+  if (!productList) return;
+
+  if (products.length === 0) {
+    const category = document.getElementById('category-filter').value;
+    if (category) {
+      productList.innerHTML = `
+        <div style="text-align:center;padding:20px;color:#9a7d5a;">
+          Aucun produit dans la catégorie "${category}"
+          <br><br>
+          <button class="btn-sec" onclick="document.getElementById('category-filter').value='';filterProductsByCategory()">Afficher toutes les catégories</button>
+          <br><br>
+          <span style="font-size:12px;">Vous pouvez créer un produit dans cette catégorie ci-dessus</span>
+        </div>
+      `;
+    } else {
+      productList.innerHTML = `
+        <div style="text-align:center;padding:20px;color:#9a7d5a;">
+          Aucun produit pour le moment
+          <br><br>
+          <span style="font-size:12px;">Ajoutez votre premier produit ci-dessus</span>
+        </div>
+      `;
+    }
+    return;
+  }
+  
+  productList.innerHTML = '';
+  products.forEach(product => {
+    const productRow = document.createElement('div');
+    productRow.className = 'prod-row';
+    productRow.innerHTML = `
+      <div class="prod-thumb" style="cursor:pointer;" onclick="${product.image ? `viewImage('${product.image}')` : ''}">${product.image ? `<img src="${product.image}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">` : '📦'}</div>
+      <div>
+        <div class="prod-name" style="font-size:15px;font-weight:500;">${product.name}</div>
+        <div class="prod-cat">${product.category || 'Sans catégorie'}</div>
+      </div>
+      <div class="prod-price">${product.price.toLocaleString('fr-FR')} F</div>
+      <div class="prod-views">👁 0</div>
+      <div style="display:flex;gap:6px;">
+        <div class="iBtn" onclick="editProduct('${product.id}')">✏️</div>
+        <div class="iBtn" onclick="deleteProduct('${product.id}')">🗑</div>
+      </div>
+    `;
+    productList.appendChild(productRow);
+  });
+}
+
+// View product image in modal
+function viewImage(imageSrc) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:pointer;';
+  modal.innerHTML = `<img src="${imageSrc}" style="max-width:90%;max-height:90%;object-fit:contain;border-radius:8px;">`;
+  modal.onclick = () => modal.remove();
+  document.body.appendChild(modal);
+}
+
+function previewImage(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      const img = document.getElementById('preview-img');
+      const previewDiv = document.getElementById('image-preview');
+      const sizeSpan = document.getElementById('image-size');
+      const optimizeInfo = document.getElementById('image-optimize-info');
+      
+      img.src = e.target.result;
+      previewDiv.style.display = 'block';
+      
+      // Show original size
+      const originalSizeKB = (file.size / 1024).toFixed(2);
+      sizeSpan.textContent = originalSizeKB;
+      
+      // Optimize image
+      optimizeImage(e.target.result, file.size, 'preview-img', 'image-size', 'image-optimize-info', 'optimizedImageData');
+    };
+    
+    reader.readAsDataURL(file);
+  }
+}
+
+function previewEditImage(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      const img = document.getElementById('edit-preview-img');
+      const previewDiv = document.getElementById('edit-image-preview');
+      const sizeSpan = document.getElementById('edit-image-size');
+      const optimizeInfo = document.getElementById('edit-image-optimize-info');
+      
+      img.src = e.target.result;
+      previewDiv.style.display = 'block';
+      
+      // Show original size
+      const originalSizeKB = (file.size / 1024).toFixed(2);
+      sizeSpan.textContent = originalSizeKB;
+      
+      // Optimize image
+      optimizeImage(e.target.result, file.size, 'edit-preview-img', 'edit-image-size', 'edit-image-optimize-info', 'editedImageData');
+    };
+    
+    reader.readAsDataURL(file);
+  }
+}
+
+function optimizeImage(dataUrl, originalSize, imgId, sizeSpanId, optimizeInfoId, storageVar) {
+  const img = new Image();
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Calculate new dimensions (max 800px width/height)
+    const maxDimension = 800;
+    let width = img.width;
+    let height = img.height;
+    
+    if (width > maxDimension || height > maxDimension) {
+      if (width > height) {
+        height = (height * maxDimension) / width;
+        width = maxDimension;
+      } else {
+        width = (width * maxDimension) / height;
+        height = maxDimension;
+      }
+    }
+    
+    canvas.width = width;
+    canvas.height = height;
+    
+    // Draw and compress
+    ctx.drawImage(img, 0, 0, width, height);
+    
+    // Compress with quality 0.7
+    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+    const optimizedSizeKB = ((compressedDataUrl.length - 'data:image/jpeg;base64,'.length) * 0.75 / 1024).toFixed(2);
+    
+    // Update preview with optimized image
+    const previewImg = document.getElementById(imgId);
+    const sizeSpan = document.getElementById(sizeSpanId);
+    const optimizeInfo = document.getElementById(optimizeInfoId);
+    
+    previewImg.src = compressedDataUrl;
+    sizeSpan.textContent = `${optimizedSizeKB} KB (original: ${(originalSize / 1024).toFixed(2)} KB)`;
+    optimizeInfo.style.display = 'block';
+    
+    // Store optimized image data
+    if (storageVar === 'optimizedImageData') {
+      optimizedImageData = compressedDataUrl;
+    } else if (storageVar === 'editedImageData') {
+      editedImageData = compressedDataUrl;
+    }
+  };
+  img.src = dataUrl;
+}
+
+// Get dynamic greeting based on time
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Bonjour';
+  if (hour < 18) return 'Bonjour';
+  return 'Bonsoir';
+}
+
+// Fetch tracking stats
+async function fetchTrackingStats(siteId) {
+  const token = localStorage.getItem('shoplink_token');
+  
+  try {
+    const res = await fetch(`http://localhost:5000/api/tracking/stats/${siteId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      // Update views count
+      const viewsElement = document.querySelectorAll('.mcard-val')[0];
+      if (viewsElement) viewsElement.textContent = data.stats.totalViews;
+      
+      // Update WhatsApp clicks count
+      const clicksElement = document.querySelectorAll('.mcard-val')[1];
+      if (clicksElement) clicksElement.textContent = data.stats.whatsappClicks;
+    }
+  } catch (error) {
+    console.error('Error fetching tracking stats:', error);
+  }
+}
+
+// Fetch recent activity
+async function fetchRecentActivity(siteId) {
+  const token = localStorage.getItem('shoplink_token');
+  
+  try {
+    const res = await fetch(`http://localhost:5000/api/tracking/activity/${siteId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      displayRecentActivity(data.activity);
+    }
+  } catch (error) {
+    console.error('Error fetching recent activity:', error);
+  }
+}
+
+// Display recent activity
+function displayRecentActivity(activity) {
+  const activityContainer = document.querySelector('.activity-list');
+  if (!activityContainer) return;
+  
+  if (activity.length === 0) {
+    activityContainer.innerHTML = '<div style="color:#9a7d5a;font-size:13px;">Aucune activité récente</div>';
+    return;
+  }
+  
+  activityContainer.innerHTML = activity.map(item => {
+    const time = new Date(item.timestamp).toLocaleString('fr-FR');
+    let icon, text;
+    
+    if (item.type === 'visit') {
+      icon = '👁';
+      text = 'Visite du site';
+    } else if (item.type === 'whatsapp_click') {
+      icon = '📲';
+      text = 'Clic WhatsApp';
+    } else {
+      icon = '📊';
+      text = 'Activité';
+    }
+    
+    return `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f5f0ea;">
+        <div style="font-size:18px;">${icon}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:500;">${text}</div>
+          <div style="font-size:11px;color:#9a7d5a;">${time}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Fetch real data from backend
+async function fetchClientData() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+  const isDemoMode = localStorage.getItem('demo_mode') === 'true';
+
+  // Update mobile avatar with initials
+  const mobileAvatar = document.getElementById('mobile-user-avatar');
+  if (mobileAvatar && user.name) {
+    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+    mobileAvatar.textContent = initials || 'U';
+  }
+
+  if (!user.id || !token) {
+    console.error('Utilisateur non connecté');
+    return;
+  }
+
+  // Fetch premium project status
+  try {
+    const premiumRes = await fetch('http://localhost:5000/api/premium/my-project', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const premiumData = await premiumRes.json();
+
+    if (premiumData.success && premiumData.project) {
+      const project = premiumData.project;
+      const premiumStatusDiv = document.getElementById('premium-project-status');
+      
+      if (premiumStatusDiv && project.depositPaid) {
+        const progress = project.progress || 0;
+        const depositDate = new Date(project.depositDate);
+        const deliveryDays = project.deliveryDays || 21;
+        const deliveryDate = new Date(depositDate);
+        deliveryDate.setDate(deliveryDate.getDate() + deliveryDays);
+        
+        const now = new Date();
+        const remainingMs = deliveryDate - now;
+        const remainingDays = Math.max(0, Math.floor(remainingMs / (1000 * 60 * 60 * 24)));
+        const remainingHours = Math.max(0, Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        
+        const isUrgent = remainingDays < 14;
+        const isOverdue = remainingMs < 0;
+
+        premiumStatusDiv.innerHTML = `
+          <div style="font-size:13px;color:#6b5744;line-height:1.6;margin-bottom:12px;">
+            <strong>Projet Premium en cours</strong> · ${project.siteType || 'Site'}
+          </div>
+          <div style="background:#f5f0ea;border-radius:9px;padding:12px;margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+              <span style="color:#6b5744;">Progression</span>
+              <span style="font-weight:500;color:#1a5c38;">${progress}%</span>
+            </div>
+            <div class="progress-wrap" style="height:6px;"><div class="progress-fill" style="width:${progress}%;"></div></div>
+            <div style="font-size:11px;color:#9a7d5a;margin-top:8px;">
+              ${isOverdue ? 'Livraison en retard' : remainingDays + 'j ' + remainingHours + 'h restantes'}
+            </div>
+          </div>
+          <div style="font-size:11px;color:#6b5744;">
+            Étape actuelle : ${project.currentStage || 'Design en cours'}
+          </div>
+        `;
+      }
+    }
+  } catch (error) {
+    console.error('Erreur fetching premium project:', error);
+  }
+
+  // Populate settings form with user data
+  const nameInput = document.getElementById('user-name');
+  const emailInput = document.getElementById('user-email');
+  const phoneInput = document.getElementById('user-phone');
+  if (nameInput) nameInput.value = user.name || '';
+  if (emailInput) emailInput.value = user.email || '';
+  if (phoneInput) phoneInput.value = user.phone || '';
+
+  // DEMO MODE - Load mock data
+  if (isDemoMode) {
+    loadDemoData(user);
+    return;
+  }
+
+  try {
+    // Fetch user's sites
+    const sitesRes = await fetch('http://localhost:5000/api/sites/user/my-sites', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const sitesData = await sitesRes.json();
+    if (sitesData.success && sitesData.sites.length > 0) {
+      const site = sitesData.sites[0];
+      
+      // Update site name in greeting
+      const greeting = document.querySelector('.subbar-greeting');
+      if (greeting) greeting.textContent = `${getGreeting()} ${user.name || 'Utilisateur'} — ${site.name}`;
+      
+      // Update site link
+      const subbarSiteLink = document.querySelector('.subbar-link');
+      if (subbarSiteLink) subbarSiteLink.textContent = `shoplink.bj/${site.slug}`;
+      
+      // Update site status badge
+      const siteLive = document.querySelector('.site-live');
+      if (siteLive) {
+        if (site.status === 'published') {
+          siteLive.innerHTML = '<span class="live-dot"></span>Site en ligne';
+        } else {
+          siteLive.innerHTML = '<span class="live-dot" style="background:#e24b4a;"></span>Non publié';
+        }
+      }
+
+      // Update site status section with real data
+      const siteStatus = document.getElementById('site-status');
+      const siteType = document.getElementById('site-type');
+      const siteWhatsapp = document.getElementById('site-whatsapp');
+      const siteLink = document.getElementById('site-link');
+
+      if (siteStatus) {
+        if (site.status === 'published') {
+          siteStatus.innerHTML = '● En ligne';
+          siteStatus.style.color = '#1a5c38';
+        } else {
+          siteStatus.innerHTML = '● Non publié';
+          siteStatus.style.color = '#e24b4a';
+        }
+      }
+      if (siteType) {
+        siteType.textContent = site.activityType || 'Boutique';
+      }
+      if (siteWhatsapp) {
+        siteWhatsapp.textContent = site.whatsapp || 'Non renseigné';
+      }
+      if (siteLink) {
+        siteLink.textContent = `shoplink.bj/${site.slug}`;
+      }
+
+      // Fetch products FIRST before using productsData
+      const productsRes = await fetch(`http://localhost:5000/api/products/${site.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      let productsData;
+      try {
+        productsData = await productsRes.json();
+      } catch (e) {
+        console.error('Error parsing products data:', e);
+        productsData = { success: false, products: [] };
+      }
+      console.log('Products fetched:', productsData);
+
+      // Fetch tracking stats
+      fetchTrackingStats(site.id);
+
+      // Update metrics with tracking data
+      const trackingStats = await fetch(`http://localhost:5000/api/tracking/stats/${site.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const trackingData = await trackingStats.json();
+      if (trackingData.success) {
+        const metricViews = document.getElementById('metric-views');
+        const metricWhatsappClicks = document.getElementById('metric-whatsapp-clicks');
+        const metricProducts = document.getElementById('metric-products');
+        const metricShares = document.getElementById('metric-shares');
+
+        if (metricViews) metricViews.textContent = trackingData.views || 0;
+        if (metricWhatsappClicks) metricWhatsappClicks.textContent = trackingData.whatsappClicks || 0;
+        if (metricProducts) metricProducts.textContent = productsData.products ? productsData.products.length : 0;
+        if (metricShares) metricShares.textContent = trackingData.shares || 0;
+      }
+
+      // Update stats page with real data
+      updateStatsPage(site.id, productsData.products || []);
+
+      // Fetch recent activity
+      fetchRecentActivity(site.id);
+
+      // Fetch and update subscription data
+      fetchSubscriptionData(user.id);
+
+      // Update user avatar with initials
+      const userAvatar = document.getElementById('user-avatar');
+      console.log('User data for initials:', user);
+      
+      // Try to get initials from user.name first
+      if (userAvatar && user.name) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        console.log('Generated initials from user.name:', initials);
+        userAvatar.textContent = initials || 'U';
+      } 
+      // Fallback: try localStorage directly
+      else {
+        const storedUser = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+        console.log('Fallback to localStorage user:', storedUser);
+        if (userAvatar && storedUser.name) {
+          const initials = storedUser.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+          console.log('Generated initials from localStorage:', initials);
+          userAvatar.textContent = initials || 'U';
+        } else {
+          console.log('Could not generate initials - no name found');
+        }
+      }
+
+      // Populate site settings form
+      const siteNameInput = document.getElementById('site-name');
+      const siteSloganInput = document.getElementById('site-slogan');
+      const siteWhatsappInput = document.getElementById('site-whatsapp');
+      const siteAddressInput = document.getElementById('site-address');
+      const siteDescInput = document.getElementById('site-desc');
+      const siteActivitySelect = document.getElementById('site-activity');
+
+      if (siteNameInput) siteNameInput.value = site.name || '';
+      if (siteSloganInput) siteSloganInput.value = site.slogan || '';
+      if (siteWhatsappInput) siteWhatsappInput.value = site.whatsapp || '';
+      if (siteAddressInput) siteAddressInput.value = site.address || '';
+      if (siteDescInput) siteDescInput.value = site.description || '';
+      if (siteActivitySelect) siteActivitySelect.value = site.activityType || 'Boutique';
+
+      // Load and display existing logo
+      if (site.logo) {
+        siteLogoData = site.logo;
+        const previewDiv = document.getElementById('site-logo-preview');
+        const previewImg = document.getElementById('preview-logo-img');
+        if (previewImg && previewDiv) {
+          previewImg.src = site.logo;
+          previewDiv.style.display = 'block';
+          updateMobilePreviewWithLogo(site.logo);
+        }
+      }
+      
+      // Update color selection
+      const colorSwatches = document.querySelectorAll('.color-swatch');
+      colorSwatches.forEach(swatch => {
+        swatch.classList.remove('sel');
+        if (swatch.style.background === site.primaryColor) {
+          swatch.classList.add('sel');
+        }
+      });
+
+      // Process products data (already fetched above)
+      if (productsData.success) {
+        // Store products in global variable for filtering
+        allProducts = productsData.products;
+        console.log('allProducts updated:', allProducts.length, 'products');
+
+        // Update product count in metrics
+        const productMetrics = document.querySelectorAll('.mcard-val');
+        if (productMetrics[2]) productMetrics[2].textContent = productsData.products.length;
+
+        // Update product count badge
+        const productCountBadge = document.getElementById('product-count-badge');
+        if (productCountBadge) productCountBadge.textContent = `${productsData.products.length} produits`;
+
+        // Render products with current filter
+        console.log('Calling filterProductsByCategory...');
+        filterProductsByCategory();
+      } else {
+        console.error('Failed to fetch products:', productsData);
+      }
+    } else {
+      // No sites found
+      console.log('Aucun site trouvé pour cet utilisateur');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données:', error);
+  }
+}
+
+// Load demo mock data
+function loadDemoData(user) {
+  // Update greeting
+  const greeting = document.querySelector('.subbar-greeting');
+  if (greeting) greeting.textContent = `${getGreeting()} ${user.name || 'Utilisateur'} — Boutique Demo`;
+
+  // Mock products
+  const mockProducts = [
+    { name: 'Robe pagne wax', category: 'Robes & pagnes', price: '15 000', views: 42, image: '👗' },
+    { name: 'Sac multicolore', category: 'Sacs', price: '8 500', views: 38, image: '👜' },
+    { name: 'Chaussures talons', category: 'Chaussures', price: '22 000', views: 25, image: '👠' }
+  ];
+
+  // Update product count
+  const productMetrics = document.querySelectorAll('.mcard-val');
+  if (productMetrics[2]) productMetrics[2].textContent = mockProducts.length;
+
+  // Update product list
+  const productList = document.querySelector('.card-body');
+  if (productList && productList.querySelector('.prod-row')) {
+    productList.innerHTML = '';
+    mockProducts.forEach(product => {
+      const productRow = document.createElement('div');
+      productRow.className = 'prod-row';
+      productRow.innerHTML = `
+        <div class="prod-thumb">${product.image}</div>
+        <div>
+          <div class="prod-name">${product.name}</div>
+          <div class="prod-cat">${product.category}</div>
+        </div>
+        <div class="prod-price">${product.price} F</div>
+        <div class="prod-views">${product.views} vues</div>
+        <div class="iBtn">✏️</div>
+      `;
+      productList.appendChild(productRow);
+    });
+  }
+}
+
+// Create product
+async function createProduct() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+  
+  if (!user.id || !token) {
+    alert('Vous devez être connecté');
+    return;
+  }
+
+  // Get site ID
+  const sitesRes = await fetch('http://localhost:5000/api/sites/user/my-sites', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const sitesData = await sitesRes.json();
+  
+  if (!sitesData.success || sitesData.sites.length === 0) {
+    alert('Aucun site trouvé');
+    return;
+  }
+  
+  const siteId = sitesData.sites[0].id;
+  
+  const name = document.getElementById('prod-name').value.trim();
+  const price = parseInt(document.getElementById('prod-price').value);
+  const category = document.getElementById('prod-category').value;
+  const description = document.getElementById('prod-desc').value.trim();
+  
+  if (!name || !price) {
+    alert('Nom et prix sont obligatoires');
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/products`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        siteId,
+        name,
+        price,
+        category,
+        description,
+        image: optimizedImageData || ''
+      })
+    });
+
+    const data = await res.json();
+    
+    if (data.success) {
+      alert('Produit créé avec succès');
+      console.log('Product created successfully, response:', data);
+      // Clear form
+      document.getElementById('prod-name').value = '';
+      document.getElementById('prod-price').value = '';
+      document.getElementById('prod-category').value = 'Robes & pagnes';
+      document.getElementById('prod-desc').value = '';
+      // Clear image
+      document.getElementById('prod-image').value = '';
+      document.getElementById('image-preview').style.display = 'none';
+      document.getElementById('image-optimize-info').style.display = 'none';
+      optimizedImageData = null;
+      // Refresh data
+      console.log('Calling fetchClientData to refresh products...');
+      fetchClientData();
+    } else {
+      alert('Erreur: ' + data.message);
+    }
+  } catch (error) {
+    alert('Erreur de connexion: ' + error.message);
+  }
+}
+
+// Delete product
+async function deleteProduct(productId) {
+  const token = localStorage.getItem('shoplink_token');
+  
+  if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+    
+    if (data.success) {
+      alert('Produit supprimé');
+      fetchClientData(); // Refresh data
+    } else {
+      alert('Erreur: ' + data.message);
+    }
+  } catch (error) {
+    alert('Erreur de connexion: ' + error.message);
+  }
+}
+
+// Edit product
+async function editProduct(productId) {
+  const token = localStorage.getItem('shoplink_token');
+  
+  if (!token) {
+    alert('Vous devez être connecté');
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+    
+    if (data.success && data.product) {
+      const product = data.product;
+      // Populate edit form
+      document.getElementById('edit-prod-id').value = product.id;
+      document.getElementById('edit-prod-name').value = product.name;
+      document.getElementById('edit-prod-price').value = product.price;
+      document.getElementById('edit-prod-category').value = product.category || '';
+      document.getElementById('edit-prod-desc').value = product.description || '';
+      
+      // Show existing image if available
+      const previewImg = document.getElementById('edit-preview-img');
+      const previewDiv = document.getElementById('edit-image-preview');
+      if (product.image) {
+        previewImg.src = product.image;
+        previewDiv.style.display = 'block';
+      } else {
+        previewDiv.style.display = 'none';
+      }
+      
+      // Reset edited image data
+      editedImageData = null;
+      
+      // Show edit modal
+      document.getElementById('edit-product-modal').style.display = 'flex';
+    } else {
+      alert('Erreur lors du chargement du produit');
+    }
+  } catch (error) {
+    alert('Erreur de connexion: ' + error.message);
+  }
+}
+
+// Save edited product
+async function saveEditedProduct() {
+  const token = localStorage.getItem('shoplink_token');
+  
+  if (!token) {
+    alert('Vous devez être connecté');
+    return;
+  }
+
+  const productId = document.getElementById('edit-prod-id').value;
+  const name = document.getElementById('edit-prod-name').value.trim();
+  const price = parseInt(document.getElementById('edit-prod-price').value);
+  const category = document.getElementById('edit-prod-category').value.trim();
+  const description = document.getElementById('edit-prod-desc').value.trim();
+
+  if (!name || !price) {
+    alert('Nom et prix sont obligatoires');
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        name,
+        price,
+        category,
+        description,
+        image: editedImageData || undefined
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      showToast('success', 'Succès', 'Produit modifié avec succès !');
+      closeEditModal();
+      fetchClientData();
+    } else {
+      showToast('error', 'Erreur', data.message);
+    }
+  } catch (error) {
+    showToast('error', 'Erreur', 'Erreur de connexion: ' + error.message);
+  }
+}
+
+// Close edit modal
+function closeEditModal() {
+  document.getElementById('edit-product-modal').style.display = 'none';
+  document.getElementById('edit-prod-image').value = '';
+  document.getElementById('edit-image-preview').style.display = 'none';
+  document.getElementById('edit-image-optimize-info').style.display = 'none';
+  editedImageData = null;
+}
+
+// Save site settings
+async function saveSiteSettings() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+
+  if (!user.id || !token) {
+    alert('Vous devez être connecté');
+    return;
+  }
+
+  // Get site ID
+  const sitesRes = await fetch('http://localhost:5000/api/sites/user/my-sites', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const sitesData = await sitesRes.json();
+
+  if (!sitesData.success || sitesData.sites.length === 0) {
+    alert('Aucun site trouvé');
+    return;
+  }
+
+  const siteId = sitesData.sites[0].id;
+
+  // Get form values
+  const name = document.getElementById('site-name').value.trim();
+  const slogan = document.getElementById('site-slogan').value.trim();
+  const whatsapp = document.getElementById('site-whatsapp').value.trim();
+  const address = document.getElementById('site-address').value.trim();
+  const description = document.getElementById('site-desc').value.trim();
+  const activityType = document.getElementById('site-activity').value;
+
+  // Get selected color
+  const selectedColorEl = document.querySelector('.color-swatch.sel');
+  const primaryColor = selectedColorEl ? selectedColorEl.style.background : '#1a5c38';
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/sites/${siteId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        name,
+        slogan,
+        whatsapp,
+        address,
+        description,
+        activityType,
+        primaryColor,
+        logo: siteLogoData || undefined
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      showToast('success', 'Succès', 'Paramètres du site sauvegardés');
+      fetchClientData(); // Refresh data
+    } else {
+      showToast('error', 'Erreur', data.message);
+    }
+  } catch (error) {
+    showToast('error', 'Erreur', 'Erreur de connexion: ' + error.message);
+  }
+}
+
+// View public site
+function viewPublicSite() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+  
+  fetch('http://localhost:5000/api/sites/user/my-sites', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success && data.sites.length > 0) {
+      const slug = data.sites[0].slug;
+      window.open(`http://localhost:5000/${slug}`, '_blank');
+    } else {
+      alert('Aucun site trouvé');
+    }
+  })
+  .catch(error => {
+    alert('Erreur: ' + error.message);
+  });
+}
+
+// Cancel add product
+function cancelAddProduct() {
+  document.getElementById('prod-name').value = '';
+  document.getElementById('prod-price').value = '';
+  document.getElementById('prod-category').value = '';
+  document.getElementById('prod-desc').value = '';
+}
+
+// Test site on WhatsApp
+function testSiteOnWhatsApp() {
+  const site = JSON.parse(localStorage.getItem('shoplink_site') || '{}');
+
+  if (site.slug) {
+    const siteUrl = `https://shoplink.bj/${site.slug}`;
+    const message = encodeURIComponent(`Voici mon lien: ${siteUrl}`);
+    window.open(`https://wa.me/?text=${message}`, '_blank');
+  } else {
+    alert('Aucun site configuré');
+  }
+}
+
+// Navigate to premium page
+function navigateToPremium() {
+  window.open('premium.html', '_blank');
+}
+
+// Save user settings
+async function saveUserSettings() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+  
+  if (!user.id || !token) {
+    alert('Vous devez être connecté');
+    return;
+  }
+
+  const name = document.getElementById('user-name').value.trim();
+  const email = document.getElementById('user-email').value.trim();
+  const phone = document.getElementById('user-phone').value.trim();
+
+  if (!name || !email) {
+    alert('Nom et email sont obligatoires');
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/users/${user.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        phone
+      })
+    });
+
+    const data = await res.json();
+    
+    if (data.success) {
+      alert('Informations mises à jour');
+      // Update localStorage
+      user.name = name;
+      user.email = email;
+      user.phone = phone;
+      localStorage.setItem('shoplink_user', JSON.stringify(user));
+      // Refresh data
+      fetchClientData();
+    } else {
+      alert('Erreur: ' + data.message);
+    }
+  } catch (error) {
+    alert('Erreur de connexion: ' + error.message);
+  }
+}
+
+// Change password
+async function changePassword() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+  
+  if (!user.id || !token) {
+    alert('Vous devez être connecté');
+    return;
+  }
+
+  const currentPassword = document.getElementById('current-password').value;
+  const newPassword = document.getElementById('new-password').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    alert('Veuillez remplir tous les champs');
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    alert('Les nouveaux mots de passe ne correspondent pas');
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    alert('Le mot de passe doit contenir au moins 6 caractères');
+    return;
+  }
+
+  try {
+    // First verify current password by logging in
+    const loginRes = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: user.email,
+        password: currentPassword
+      })
+    });
+
+    const loginData = await loginRes.json();
+    
+    if (!loginData.success) {
+      alert('Mot de passe actuel incorrect');
+      return;
+    }
+
+    // Update password
+    const res = await fetch(`http://localhost:5000/api/users/${user.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        password: newPassword
+      })
+    });
+
+    const data = await res.json();
+    
+    if (data.success) {
+      alert('Mot de passe changé avec succès');
+      // Clear form
+      document.getElementById('current-password').value = '';
+      document.getElementById('new-password').value = '';
+      document.getElementById('confirm-password').value = '';
+    } else {
+      alert('Erreur: ' + data.message);
+    }
+  } catch (error) {
+    alert('Erreur de connexion: ' + error.message);
+  }
+}
+
+// Update stats page with real data
+async function updateStatsPage(siteId, products) {
+  const token = localStorage.getItem('shoplink_token');
+
+  try {
+    // Fetch tracking stats
+    const trackingRes = await fetch(`http://localhost:5000/api/tracking/stats/${siteId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const trackingData = await trackingRes.json();
+
+    if (trackingData.success) {
+      const stats = trackingData.stats || trackingData;
+      const totalViews = stats.totalViews || stats.views || 0;
+      const whatsappClicks = stats.whatsappClicks || 0;
+      const clickRate = totalViews > 0 ? ((whatsappClicks / totalViews) * 100).toFixed(1) : 0;
+
+      // Update metric cards
+      const statsTotalViews = document.getElementById('stats-total-views');
+      const statsWhatsappClicks = document.getElementById('stats-whatsapp-clicks');
+      const statsClickRate = document.getElementById('stats-click-rate');
+      const statsTopProduct = document.getElementById('stats-top-product');
+
+      if (statsTotalViews) statsTotalViews.textContent = totalViews;
+      if (statsWhatsappClicks) statsWhatsappClicks.textContent = whatsappClicks;
+      if (statsClickRate) statsClickRate.textContent = clickRate + '%';
+
+      // Get top product from product views
+      const productViews = stats.productViews || {};
+      let topProduct = '-';
+      let maxViews = 0;
+      for (const [productId, views] of Object.entries(productViews)) {
+        if (views > maxViews) {
+          maxViews = views;
+          const product = products.find(p => p.id === productId);
+          topProduct = product ? product.name : '-';
+        }
+      }
+      if (statsTopProduct) statsTopProduct.textContent = topProduct;
+
+      // Update product views bar chart
+      const statsProductViews = document.getElementById('stats-product-views');
+      if (statsProductViews) {
+        const sortedProducts = Object.entries(productViews)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+
+        if (sortedProducts.length === 0) {
+          statsProductViews.innerHTML = '<div style="text-align:center;padding:20px;color:#9a7d5a;">Aucune donnée</div>';
+        } else {
+          const maxViewsValue = sortedProducts[0][1];
+          statsProductViews.innerHTML = sortedProducts.map(([productId, views]) => {
+            const product = products.find(p => p.id === productId);
+            const productName = product ? product.name : 'Produit inconnu';
+            const percentage = maxViewsValue > 0 ? (views / maxViewsValue) * 100 : 0;
+            const barClass = percentage > 60 ? 'fill-green' : percentage > 30 ? 'fill-amber' : 'fill-ocre';
+            return `
+              <div class="stat-bar-row">
+                <div class="stat-bar-top"><span class="stat-bar-label">${productName}</span><span class="stat-bar-val">${views} vues</span></div>
+                <div class="bar-bg"><div class="bar-fill ${barClass}" style="width:${percentage}%;"></div></div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Update traffic sources
+      const statsTrafficSources = document.getElementById('stats-traffic-sources');
+      if (statsTrafficSources) {
+        // For now, show placeholder since we don't have referrer data yet
+        statsTrafficSources.innerHTML = `
+          <div class="stat-bar-row">
+            <div class="stat-bar-top"><span class="stat-bar-label">WhatsApp</span><span class="stat-bar-val">58%</span></div>
+            <div class="bar-bg"><div class="bar-fill fill-green" style="width:58%;"></div></div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-top"><span class="stat-bar-label">Instagram</span><span class="stat-bar-val">24%</span></div>
+            <div class="bar-bg"><div class="bar-fill fill-amber" style="width:24%;"></div></div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-top"><span class="stat-bar-label">Lien direct</span><span class="stat-bar-val">18%</span></div>
+            <div class="bar-bg"><div class="bar-fill fill-ocre" style="width:18%;"></div></div>
+          </div>
+        `;
+      }
+    }
+  } catch (error) {
+    console.error('Error updating stats page:', error);
+  }
+}
+
+// Fetch subscription data
+async function fetchSubscriptionData(userId) {
+  const token = localStorage.getItem('shoplink_token');
+
+  try {
+    console.log('Fetching subscription data for user:', userId);
+    const res = await fetch(`http://localhost:5000/api/payments/user/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const data = await res.json();
+    console.log('Subscription data response:', data);
+
+    if (data.success && data.payments.length > 0) {
+      const lastPayment = data.payments[0]; // Get most recent payment
+      console.log('Last payment:', lastPayment);
+      const subscriptionPlan = document.getElementById('subscription-plan');
+      const subscriptionDetails = document.getElementById('subscription-details');
+
+      if (subscriptionPlan) {
+        subscriptionPlan.textContent = 'Plan Starter';
+      }
+
+      if (subscriptionDetails) {
+        const paymentDate = new Date(lastPayment.createdAt).toLocaleDateString('fr-FR', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        const amount = lastPayment.amount || 4000;
+        subscriptionDetails.textContent = `Site actif · Payé le ${paymentDate} · ${amount.toLocaleString()} FCFA`;
+        console.log('Updated subscription details:', subscriptionDetails.textContent);
+      }
+    } else {
+      console.log('No payments found for user');
+    }
+  } catch (error) {
+    console.error('Error fetching subscription data:', error);
+  }
+}
+
+// Load data on page load
+window.addEventListener('load', () => {
+  // Debug: Check localStorage user data
+  const storedUser = localStorage.getItem('shoplink_user');
+  console.log('Stored user from localStorage:', storedUser ? JSON.parse(storedUser) : null);
+
+  fetchClientData();
+  initSwipeNavigation();
+});
+
+// Toast notification function
+function showToast(type, title, message, duration = 4000) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+    <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('hiding');
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
+// Create ticket
+async function createTicket() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+  
+  const subject = document.getElementById('ticket-subject').value.trim();
+  const priority = document.getElementById('ticket-priority').value;
+  const message = document.getElementById('ticket-message').value.trim();
+  
+  if (!subject || !message) {
+    const errorDiv = document.getElementById('ticket-error');
+    errorDiv.textContent = 'Veuillez remplir le sujet et le message';
+    errorDiv.style.display = 'block';
+    document.getElementById('ticket-success').style.display = 'none';
+    return;
+  }
+
+  try {
+    const res = await fetch('http://localhost:5000/api/tickets', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        subject,
+        priority,
+        message
+      })
+    });
+
+    const data = await res.json();
+    
+    if (data.success) {
+      document.getElementById('ticket-success').style.display = 'block';
+      document.getElementById('ticket-error').style.display = 'none';
+      // Clear form
+      document.getElementById('ticket-subject').value = '';
+      document.getElementById('ticket-message').value = '';
+      // Refresh tickets list
+      fetchMyTickets();
+    } else {
+      const errorDiv = document.getElementById('ticket-error');
+      errorDiv.textContent = 'Erreur: ' + data.message;
+      errorDiv.style.display = 'block';
+      document.getElementById('ticket-success').style.display = 'none';
+    }
+  } catch (error) {
+    const errorDiv = document.getElementById('ticket-error');
+    errorDiv.textContent = 'Erreur de connexion: ' + error.message;
+    errorDiv.style.display = 'block';
+    document.getElementById('ticket-success').style.display = 'none';
+  }
+}
+
+// Fetch user's tickets
+async function fetchMyTickets() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+  
+  if (!user.id || !token) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/tickets/user/${user.id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+    
+    if (data.success) {
+      const ticketsList = document.getElementById('my-tickets-list');
+      
+      if (data.tickets.length === 0) {
+        ticketsList.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px 0;">Aucun ticket</div>';
+        return;
+      }
+
+      ticketsList.innerHTML = '';
+      data.tickets.forEach(ticket => {
+        const ticketEl = document.createElement('div');
+        ticketEl.style.cssText = 'padding:12px 0;border-bottom:1px solid #f5f0ea;';
+        
+        const statusColors = {
+          'open': '#eef7f1',
+          'pending': '#fef3de',
+          'answered': '#e8f4ff',
+          'closed': '#f5f0ea'
+        };
+        
+        const statusLabels = {
+          'open': 'Ouvert',
+          'pending': 'En attente',
+          'answered': 'Répondu',
+          'closed': 'Fermé'
+        };
+
+        const priorityColors = {
+          'low': '#9a7d5a',
+          'normal': '#1a5c38',
+          'high': '#f59c1a',
+          'urgent': '#e24b4a'
+        };
+
+        ticketEl.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px;">
+            <div style="font-size:13px;font-weight:500;">${ticket.subject}</div>
+            <span style="font-size:11px;padding:2px 8px;border-radius:100px;background:${statusColors[ticket.status] || '#f5f0ea'};color:${priorityColors[ticket.priority] || '#6b5744'};">${statusLabels[ticket.status] || ticket.status}</span>
+          </div>
+          <div style="font-size:12px;color:#6b5744;margin-bottom:4px;">${new Date(ticket.createdAt).toLocaleDateString('fr-FR')}</div>
+          <div style="font-size:11px;color:#9a7d5a;">${ticket.message.substring(0, 80)}${ticket.message.length > 80 ? '...' : ''}</div>
+        `;
+        ticketsList.appendChild(ticketEl);
+      });
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des tickets:', error);
+  }
+}
+
+// Publish product
+async function publishProduct() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+  
+  const site = await getFirstSite();
+  if (!site) {
+    alert('Vous devez d\'abord créer un site');
+    return;
+  }
+  
+  const nameInput = document.querySelector('.add-form input[type="text"]');
+  const priceInput = document.querySelector('.add-form input[type="number"]');
+  const categorySelect = document.querySelector('.add-form select');
+  const descInput = document.querySelectorAll('.add-form input[type="text"]')[1];
+  
+  const name = nameInput ? nameInput.value.trim() : '';
+  const price = priceInput ? parseInt(priceInput.value) : 0;
+  const category = categorySelect ? categorySelect.value : '';
+  const description = descInput ? descInput.value.trim() : '';
+  
+  if (!name || !price) {
+    alert('Veuillez remplir le nom et le prix du produit');
+    return;
+  }
+  
+  try {
+    const res = await fetch('http://localhost:5000/api/products', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        siteId: site.id,
+        name,
+        price,
+        category,
+        description
+      })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success) {
+      alert('✓ Produit publié avec succès !');
+      if (nameInput) nameInput.value = '';
+      if (priceInput) priceInput.value = '';
+      if (descInput) descInput.value = '';
+      fetchClientData();
+    } else {
+      alert('Erreur: ' + (data.message || 'Impossible de publier le produit'));
+    }
+  } catch (error) {
+    console.error('Erreur publishing product:', error);
+    alert('Erreur de connexion au serveur');
+  }
+}
+
+function cancelAddProduct() {
+  const nameInput = document.querySelector('.add-form input[type="text"]');
+  const priceInput = document.querySelector('.add-form input[type="number"]');
+  const descInput = document.querySelectorAll('.add-form input[type="text"]')[1];
+  
+  if (nameInput) nameInput.value = '';
+  if (priceInput) priceInput.value = '';
+  if (descInput) descInput.value = '';
+  
+  alert('Formulaire annulé');
+}
+
+async function saveSiteSettings() {
+  alert('Paramètres du site sauvegardés !');
+}
+
+function viewPublicSite() {
+  window.open('/site-public.html', '_blank');
+}
+
+async function saveUserSettings() {
+  const nameInput = document.querySelector('#p-parametres input[type="text"]');
+  const emailInput = document.querySelector('#p-parametres input[type="email"]');
+  const phoneInput = document.querySelectorAll('#p-parametres input[type="text"]')[1];
+  
+  alert('✓ Informations sauvegardées !');
+}
+
+async function getFirstSite() {
+  const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+  const token = localStorage.getItem('shoplink_token');
+  
+  if (!user.id || !token) {
+    return null;
+  }
+  
+  try {
+    const res = await fetch('http://localhost:5000/api/sites/user/my-sites', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const data = await res.json();
+    if (data.success && data.sites.length > 0) {
+      return data.sites[0];
+    }
+  } catch (error) {
+    console.error('Erreur fetching site:', error);
+  }
+  
+  return null;
+}
+
+function shareSiteLink() {
+  const site = JSON.parse(localStorage.getItem('shoplink_site') || '{}');
+  const siteLink = site.slug ? `https://shoplink.bj/${site.slug}` : 'https://shoplink.bj';
+
+  if (navigator.share) {
+    navigator.share({
+      title: 'Mon site ShopLink',
+      text: 'Découvrez mes produits !',
+      url: siteLink
+    }).catch(console.error);
+  } else {
+    navigator.clipboard.writeText(siteLink).then(() => {
+      alert('✓ Lien copié dans le presse-papier !\n\n' + siteLink);
+    }).catch(() => {
+      prompt('Copiez ce lien :', siteLink);
+    });
+  }
 }
 </script>
+
+<!-- Edit Product Modal -->
+<div id="edit-product-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1000;">
+  <div style="background:#fff;border-radius:16px;padding:24px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto;">
+    <div style="font-size:18px;font-weight:500;margin-bottom:20px;">Modifier le produit</div>
+    <input type="hidden" id="edit-prod-id">
+    <div class="form-group"><label class="form-label">Nom du produit</label><input class="form-input" type="text" id="edit-prod-name"></div>
+    <div class="form-group"><label class="form-label">Prix (FCFA)</label><input class="form-input" type="number" id="edit-prod-price"></div>
+    <div class="form-group"><label class="form-label">Catégorie</label><select class="form-input" id="edit-prod-category"><option>Robes & pagnes</option><option>Accessoires</option><option>Sacs</option><option>Chaussures</option><option>Autre</option></select></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="edit-prod-desc" rows="3"></textarea></div>
+    <div class="form-group">
+      <label class="form-label">Photo du produit</label>
+      <input class="form-input" type="file" id="edit-prod-image" accept="image/*" onchange="previewEditImage(this)">
+      <div id="edit-image-preview" style="margin-top:10px;display:none;">
+        <img id="edit-preview-img" style="max-width:100%;max-height:200px;border-radius:8px;">
+        <div style="font-size:11px;color:#6b5744;margin-top:5px;">Taille: <span id="edit-image-size">0</span> KB</div>
+      </div>
+      <div id="edit-image-optimize-info" style="font-size:11px;color:#1a5c38;margin-top:5px;display:none;">✓ Image optimisée automatiquement</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn-primary" onclick="saveEditedProduct()" style="flex:1;">💾 Sauvegarder</button>
+      <button class="btn-sec" onclick="closeEditModal()" style="flex:1;">Annuler</button>
+    </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/mobile-nav.js"></script>
+</body>
+</html>

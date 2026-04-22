@@ -10,14 +10,15 @@
       --green: #1a5c38;
       --green-light: #eef7f1;
       --green-dark: #0f6e56;
-      --amber: #f59c1a;
-      --amber-light: #fef3de;
-      --dark: #0f1f17;
-      --bg: #fdf6ee;
+      --amber: #E8620A;
+      --orange-light: #FF8C42;
+      --dark: #111111;
+      --dark2: #2A2A2A;
+      --bg: #F5F0E8;
+      --muted: rgba(17,17,17,0.38);
+      --border: rgba(17,17,17,0.10);
       --white: #fff;
-      --border: #e8ddd0;
       --text: #1a1a1a;
-      --muted: #6b5744;
       --soft: #9a7d5a;
       --radius: 12px;
       --radius-lg: 18px;
@@ -29,11 +30,157 @@
       box-sizing: border-box;
     }
 
+    html, body {
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       font-family: 'DM Sans', sans-serif;
-      background: linear-gradient(135deg, var(--bg) 0%, #f0ebe0 100%);
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      cursor: none;
+    }
+
+    /* Background Animation Elements */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--amber);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 34px; height: 34px;
+      border: 1.5px solid var(--amber);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      opacity: 0.45;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    .grain {
+      position: fixed; inset: 0; z-index: 1;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+      pointer-events: none;
+    }
+
+    /* Animated Text Background */
+    .portal-text {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 40px;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .word-line { overflow: hidden; }
+
+    .word {
+      display: block;
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--dark);
+      opacity: 0;
+      transform: translateY(110%);
+      animation: slideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: color 0.2s;
+      pointer-events: auto;
+      cursor: none;
+    }
+
+    .word.accent {
+      color: transparent;
+      -webkit-text-stroke: 2.5px var(--amber);
+    }
+
+    .word-line:nth-child(1) .word { animation-delay: 0.55s; }
+    .word-line:nth-child(2) .word { animation-delay: 0.75s; }
+    .word-line:nth-child(3) .word { animation-delay: 0.95s; }
+
+    .word:hover {
+      color: var(--amber) !important;
+      -webkit-text-stroke: 0px;
+      animation: jumpWord 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+
+    .tagline {
+      font-size: clamp(12px, 1.3vw, 15px);
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 1.4s;
+      margin-bottom: clamp(32px, 6vh, 60px);
+    }
+
+    .bottom-bar {
+      position: fixed; bottom: 26px;
+      left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 clamp(20px, 5vw, 56px);
+      z-index: 10;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 2s;
+    }
+
+    .bottom-bar span {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--amber);
+      display: inline-block;
+      margin-right: 8px;
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes jumpWord {
+      0%   { transform: translateY(0) scale(1); }
+      30%  { transform: translateY(-16px) scale(1.02); }
+      60%  { transform: translateY(5px) scale(0.99); }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
     }
 
     nav {
@@ -44,6 +191,8 @@
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 10;
     }
 
     .logo {
@@ -58,16 +207,23 @@
     }
 
     .logo-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--amber);
+      width: 16px;
+      height: 16px;
+      background: #f59c1a;
       border-radius: 50%;
+      position: fixed;
+      top: 24px;
+      left: 145px;
+      z-index: 100;
     }
 
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 60px 20px;
+      position: relative;
+      z-index: 10;
+      width: 100%;
     }
 
     .header {
@@ -91,9 +247,10 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 24px;
       margin-bottom: 40px;
+      width: 100%;
     }
 
     .card {
@@ -193,30 +350,249 @@
       border-top: 1px solid var(--border);
       color: var(--soft);
       font-size: 14px;
+      position: relative;
+      z-index: 10;
     }
 
     @media (max-width: 768px) {
+      html,body{width:100% !important;min-width:100% !important;max-width:100% !important;overflow-x:hidden;}
+      
+      .logo-dot {
+        left: 90px !important;
+        top: 20px !important;
+        width: 12px !important;
+        height: 12px !important;
+      }
+      
       .header h1 {
         font-size: 32px;
+      }
+      
+      .header p {
+        font-size: 15px;
       }
 
       .grid {
         grid-template-columns: 1fr;
+        gap: 16px;
       }
 
       nav {
         padding: 0 20px;
+        height:56px;
+      }
+
+      .logo {
+        font-size:18px;
+      }
+
+      .portal-text {
+        margin-bottom: 30px;
+      }
+
+      .word {
+        font-size: clamp(28px, 8vw, 48px);
+      }
+
+      .category-title {
+        font-size: 20px;
+      }
+
+      .container {
+        padding: 0 16px;
+        padding-top: 40px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+      
+      .card-title {
+        font-size: 16px;
+      }
+      
+      .card-desc {
+        font-size: 13px;
+      }
+      
+      .card-icon {
+        font-size: 28px;
+      }
+
+      .footer {
+        padding: 20px;
+      }
+      
+      .bottom-bar {
+        bottom:16px;
+        padding:0 16px;
       }
     }
+
+    @media (max-width: 480px) {
+      html,body{width:100% !important;min-width:100% !important;max-width:100% !important;overflow-x:hidden !important;}
+      
+      .logo-dot {
+        left: 75px !important;
+        top: 18px !important;
+        width: 10px !important;
+        height: 10px !important;
+      }
+      
+      nav {
+        padding: 0 16px !important;
+        height:52px !important;
+        width:100% !important;
+      }
+
+      .logo {
+        font-size:16px !important;
+      }
+
+      .header h1 {
+        font-size: 26px !important;
+      }
+      
+      .header p {
+        font-size: 14px !important;
+      }
+
+      .portal-text {
+        margin-bottom: 24px !important;
+      }
+
+      .word {
+        font-size: clamp(24px, 10vw, 42px) !important;
+      }
+      
+      .word.accent {
+        -webkit-text-stroke: 2px var(--amber) !important;
+      }
+
+      .tagline {
+        font-size: clamp(11px, 2.5vw, 13px) !important;
+        margin-bottom: clamp(24px, 5vh, 48px) !important;
+      }
+
+      .container {
+        padding: 0 12px !important;
+        padding-top: 32px !important;
+        width:100% !important;
+      }
+      
+      .category-title {
+        font-size: 18px !important;
+      }
+
+      .grid {
+        gap: 12px !important;
+        grid-template-columns: 1fr !important;
+        width:100% !important;
+      }
+      
+      .card {
+        padding: 16px !important;
+        width:100% !important;
+      }
+      
+      .card-title {
+        font-size: 15px !important;
+      }
+      
+      .card-desc {
+        font-size: 12px !important;
+      }
+      
+      .card-icon {
+        font-size: 24px !important;
+      }
+
+      .footer {
+        padding: 16px !important;
+      }
+      
+      .bottom-bar {
+        bottom:12px !important;
+        padding:0 12px !important;
+      }
+      
+      .bottom-bar span {
+        font-size:10px !important;
+      }
+      
+      .cursor,.cursor-ring {
+        display:none !important;
+      }
+      
+      canvas {
+        width:100% !important;
+        height:100% !important;
+      }
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideInRight 0.3s ease forwards;
+      min-width: 280px;
+    }
+
+    .toast.success { border-left: 4px solid var(--green); }
+    .toast.error { border-left: 4px solid #dc3545; }
+    .toast.info { border-left: 4px solid var(--amber); }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutRight {
+      to {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+    }
+
   </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<canvas id="bg"></canvas>
+<div class="grain"></div>
+
   <nav>
     <a href="/" class="logo">
       <span>ShopLink</span>
-      <span class="logo-dot"></span>
     </a>
   </nav>
+  <span class="logo-dot"></span>
+
+  <div class="toast-container" id="toastContainer"></div>
 
   <div class="container">
     <div class="header">
@@ -224,47 +600,48 @@
       <p>Accédez à toutes les interfaces de votre plateforme de commerce en ligne</p>
     </div>
 
+    <!-- Animated Text -->
+    <div class="portal-text">
+      <div class="word-line"><span class="word">Ta boutique.</span></div>
+      <div class="word-line"><span class="word accent">En ligne.</span></div>
+      <div class="word-line"><span class="word">Maintenant.</span></div>
+    </div>
+
     <!-- Section Client -->
     <div class="category">
-      <h2 class="category-title">👤 Interfaces Client</h2>
+      <h2 class="category-title">Interfaces Client</h2>
       <div class="grid">
-        <a href="/homepage-shoplink.html" class="card">
-          <div class="card-icon">🏠</div>
+        <a href="homepage-shoplink.html" class="card">
           <h3 class="card-title">Page d'Accueil</h3>
           <p class="card-desc">Découvrez notre plateforme et consultez les offres disponibles</p>
           <span class="card-tag">Public</span>
         </a>
 
-        <a href="/login.html" class="card">
-          <div class="card-icon">🔐</div>
+        <a href="login.html" class="card">
           <h3 class="card-title">Connexion</h3>
           <p class="card-desc">Connectez-vous à votre compte ShopLink</p>
           <span class="card-tag">Authentification</span>
         </a>
 
-        <a href="/register.html" class="card">
-          <div class="card-icon">📝</div>
+        <a href="register.html" class="card">
           <h3 class="card-title">Inscription</h3>
           <p class="card-desc">Créez un nouveau compte pour commencer</p>
           <span class="card-tag">Authentification</span>
         </a>
 
-        <a href="/dashboard-client-shoplink.html" class="card">
-          <div class="card-icon">📊</div>
+        <a href="dashboard-client-shoplink.html" class="card">
           <h3 class="card-title">Tableau de Bord Client</h3>
           <p class="card-desc">Gérez vos commandes et votre profil</p>
           <span class="card-tag">Utilisateur</span>
         </a>
 
-        <a href="/premium.html" class="card">
-          <div class="card-icon">💎</div>
+        <a href="premium.html" class="card">
           <h3 class="card-title">Plan Premium</h3>
           <p class="card-desc">Découvrez nos offres premium exclusives</p>
           <span class="card-tag">Premium</span>
         </a>
 
-        <a href="/payment.html" class="card">
-          <div class="card-icon">💳</div>
+        <a href="payment.html" class="card">
           <h3 class="card-title">Paiement Sécurisé</h3>
           <p class="card-desc">Effectuez vos paiements en toute sécurité</p>
           <span class="card-tag">Paiement</span>
@@ -272,32 +649,11 @@
       </div>
     </div>
 
-    <!-- Section Admin -->
-    <div class="category">
-      <h2 class="category-title">⚙️ Interfaces Administrateur</h2>
-      <div class="grid">
-        <a href="/admin-dashboard.html" class="card">
-          <div class="card-icon">🛡️</div>
-          <h3 class="card-title">Tableau de Bord Admin</h3>
-          <p class="card-desc">Gérez votre boutique et vos produits</p>
-          <span class="card-tag">Admin</span>
-        </a>
-
-        <a href="/admin.html" class="card">
-          <div class="card-icon">⚡</div>
-          <h3 class="card-title">Admin Panel</h3>
-          <p class="card-desc">Panneau d'administration avancé</p>
-          <span class="card-tag">Admin</span>
-        </a>
-      </div>
-    </div>
-
     <!-- Section Public -->
     <div class="category">
-      <h2 class="category-title">🌐 Pages Publiques</h2>
+      <h2 class="category-title">Pages Publiques</h2>
       <div class="grid">
-        <a href="/site-public.html" class="card">
-          <div class="card-icon">📱</div>
+        <a href="site-public.html" class="card">
           <h3 class="card-title">Site Public</h3>
           <p class="card-desc">Page publique de présentation du site</p>
           <span class="card-tag">Public</span>
@@ -307,10 +663,9 @@
 
     <!-- Section Informations -->
     <div class="category">
-      <h2 class="category-title">ℹ️ Informations</h2>
+      <h2 class="category-title">Informations</h2>
       <div class="grid">
-        <a href="/faq.html" class="card">
-          <div class="card-icon">❓</div>
+        <a href="faq.html" class="card">
           <h3 class="card-title">FAQ - Questions Fréquentes</h3>
           <p class="card-desc">Trouvez réponses à vos questions sur ShopLink</p>
           <span class="card-tag">Aide</span>
@@ -320,7 +675,154 @@
   </div>
 
   <footer class="footer">
-    <p>&copy; 2026 ShopLink. Tous droits réservés.</p>
+    <p>&copy; 2026 ShopLink. Tous droits réservés. Bénin 🇧🇯</p>
   </footer>
+
+<!-- Bottom Bar -->
+<div class="bottom-bar">
+  <span><span class="dot"></span>Bénin · West Africa</span>
+  <span>Explorer</span>
+</div>
+
+<script>
+  // Check authentication on dashboard card click
+  (function setupDashboardCard() {
+    const dashboardCard = document.querySelector('a[href="dashboard-client-shoplink.html"]');
+    if (dashboardCard) {
+      dashboardCard.addEventListener('click', function(e) {
+        e.preventDefault();
+        const token = localStorage.getItem('shoplink_token');
+        const user = JSON.parse(localStorage.getItem('shoplink_user') || 'null');
+        
+        if (token && user) {
+          // User is logged in, go to dashboard
+          window.location.href = 'dashboard-client-shoplink.html';
+        } else {
+          // User is not logged in, go to login
+          window.location.href = 'login.html';
+        }
+      });
+    }
+  })();
+
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+  (function animateRing() {
+    rx += (mx - rx) * 0.13;
+    ry += (my - ry) * 0.13;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  })();
+
+  const canvas = document.getElementById('bg');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', () => { resize(); init(); });
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.size = Math.random() * 1.8 + 0.4;
+      this.speedX = (Math.random() - 0.5) * 0.35;
+      this.speedY = (Math.random() - 0.5) * 0.35;
+      this.alpha = Math.random() * 0.15 + 0.04;
+      this.color = Math.random() > 0.85 ? '#E8620A' : '#111111';
+    }
+    update() {
+      this.x += this.speedX; this.y += this.speedY;
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = this.alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function init() {
+    particles = [];
+    const count = Math.floor((W * H) / 7000);
+    for (let i = 0; i < count; i++) particles.push(new Particle());
+  }
+  init();
+
+  let mouseX = W / 2, mouseY = H / 2;
+  document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 110) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(232,98,10,${0.06 * (1 - dist / 110)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.fillStyle = '#F5F0E8';
+    ctx.fillRect(0, 0, W, H);
+    const grd = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 300);
+    grd.addColorStop(0, 'rgba(232,98,10,0.05)');
+    grd.addColorStop(1, 'rgba(245,240,232,0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+    drawConnections();
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  document.querySelectorAll('.word').forEach(w => {
+    w.addEventListener('click', () => {
+      w.style.animation = 'none';
+      void w.offsetWidth;
+      w.style.animation = 'jumpWord 0.5s cubic-bezier(0.16,1,0.3,1) forwards';
+    });
+  });
+
+  // Toast Notifications
+  function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+      <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'slideOutRight 0.3s ease forwards';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+</script>
+<script src="/js/mobile-nav.js"></script>
+
 </body>
 </html>

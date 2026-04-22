@@ -4,6 +4,7 @@ const {
   nextSiteId,
   nextProductId,
   nextPaymentId,
+  nextTicketId,
   saveState,
 } = require('./store')
 
@@ -232,5 +233,71 @@ module.exports = {
         payment.step === 'acompte' &&
         ['paid', 'paye'].includes(String(payment.status || '').toLowerCase()),
     ).length
+  },
+
+  async listTickets() {
+    return state.tickets.map((t) => ({ ...t }))
+  },
+
+  async findTicketById(id) {
+    const t = state.tickets.find((entry) => entry.id === id)
+    return t ? { ...t } : null
+  },
+
+  async findTicketsByUserId(userId) {
+    return state.tickets.filter((ticket) => ticket.userId === userId).map((t) => ({ ...t }))
+  },
+
+  async createTicket(data) {
+    const ticket = {
+      id: data.id || nextTicketId(),
+      userId: data.userId,
+      userName: data.userName,
+      userEmail: data.userEmail,
+      subject: data.subject,
+      message: data.message,
+      priority: data.priority || 'normal',
+      status: data.status || 'open',
+      replies: data.replies || [],
+      createdAt: data.createdAt || new Date().toISOString(),
+    }
+    state.tickets.push(ticket)
+    saveState()
+    return { ...ticket }
+  },
+
+  async addReplyToTicket(id, reply) {
+    const ticket = state.tickets.find((entry) => entry.id === id)
+    if (!ticket) {
+      return null
+    }
+    if (!ticket.replies) {
+      ticket.replies = []
+    }
+    ticket.replies.push(reply)
+    ticket.updatedAt = new Date().toISOString()
+    saveState()
+    return { ...ticket }
+  },
+
+  async updateTicketStatus(id, status) {
+    const ticket = state.tickets.find((entry) => entry.id === id)
+    if (!ticket) {
+      return null
+    }
+    ticket.status = status
+    ticket.updatedAt = new Date().toISOString()
+    saveState()
+    return { ...ticket }
+  },
+
+  async deleteTicket(id) {
+    const index = state.tickets.findIndex((entry) => entry.id === id)
+    if (index === -1) {
+      return null
+    }
+    const [deletedTicket] = state.tickets.splice(index, 1)
+    saveState()
+    return { ...deletedTicket }
   },
 }

@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --sidebar-bg:  #0f1f17;
+      --brand:       #1a6b4a;
+      --brand-light: #e8f5ee;
+      --brand-mid:   #6dd9a8;
+      --accent:      #f59c1a;
+      --accent-light:#faeeda;
+      --white:       #ffffff;
+      --border:      #e5e7eb;
+      --bg:          #f8f9fa;
+      --text:        #1a1a1a;
+      --muted:       #6b7280;
+      --radius:      8px;
+      --radius-lg:   12px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);font-size:14px;}
+    .layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{background:var(--sidebar-bg);padding:20px 0;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;}
+    .sidebar-logo{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:10px;}
+    .logo-text{font-size:18px;font-weight:500;color:#fff;display:flex;align-items:center;gap:6px;}
+    .logo-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;display:inline-block;}
+    .admin-pill{display:inline-block;font-size:10px;background:var(--accent);color:#412402;border-radius:4px;padding:2px 7px;font-weight:500;margin-left:4px;}
+    .nav-section{font-size:10px;color:rgba(255,255,255,0.3);padding:12px 20px 4px;text-transform:uppercase;letter-spacing:0.08em;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.55);transition:all 0.15s;border-left:3px solid transparent;}
+    .nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.9);}
+    .nav-item.active{background:rgba(26,107,74,0.3);color:var(--brand-mid);border-left-color:var(--brand);font-weight:500;}
+    .nav-badge{margin-left:auto;background:rgba(229,57,53,0.25);color:#f09595;border-radius:100px;font-size:10px;padding:1px 7px;font-weight:500;}
+    .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08);}
+    .admin-name{font-size:13px;color:rgba(255,255,255,0.8);font-weight:500;}
+    .admin-info{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+
+    /* ── MAIN ── */
+    .main{padding:28px;display:flex;flex-direction:column;gap:20px;overflow:auto;}
+    .page{display:none;flex-direction:column;gap:20px;}
+    .page.active{display:flex;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;}
+    .page-title{font-size:20px;font-weight:500;}
+    .page-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+
+    /* ── BUTTONS ── */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text);transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+    .btn:hover{background:var(--bg);}
+    .btn-green{background:var(--brand);color:#fff;border-color:var(--brand);}
+    .btn-green:hover{background:#155c3d;}
+    .btn-amber{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+    /* ── METRICS ── */
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
+    .metric-card{background:#f1ede6;border-radius:var(--radius);padding:16px;}
+    .metric-label{font-size:12px;color:var(--muted);margin-bottom:6px;}
+    .metric-value{font-size:26px;font-weight:500;}
+    .metric-sub{font-size:11px;color:#9ca3af;margin-top:4px;}
+
+    /* ── BADGES ── */
+    .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:500;}
+    .bg-green{background:var(--brand-light);color:#0f6e56;}
+    .bg-amber{background:var(--accent-light);color:#854f0b;}
+    .bg-red{background:#fee2e2;color:#a32d2d;}
+    .bg-gray{background:#f3f4f6;color:var(--muted);}
+    .bg-blue{background:#e6f1fb;color:#185fa5;}
+
+    /* ── CARDS ── */
+    .section-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+    .card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .card-title{font-size:15px;font-weight:500;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+    /* ── TABLES ── */
+    .table-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
+    th{padding:10px 16px;text-align:left;font-size:11px;font-weight:500;color:var(--muted);border-bottom:1px solid var(--border);background:#f9fafb;text-transform:uppercase;letter-spacing:0.05em;}
+    td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:#fafafa;}
+    .user-cell{display:flex;align-items:center;gap:10px;}
+    .avatar{width:30px;height:30px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#0f6e56;flex-shrink:0;}
+    .avatar.premium{background:var(--accent-light);color:#854f0b;}
+    .avatar.danger{background:#fee2e2;color:#a32d2d;}
+    .user-name-cell{font-weight:500;font-size:13px;white-space:nowrap;}
+    .user-sub-cell{font-size:11px;color:var(--muted);}
+    .status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;}
+    .dot-green{background:var(--brand);}
+    .dot-amber{background:var(--accent);}
+    .dot-red{background:#e24b4a;}
+    .action-btns{display:flex;gap:6px;}
+    .icon-btn{width:28px;height:28px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:background 0.15s;flex-shrink:0;}
+    .icon-btn:hover{background:var(--bg);}
+
+    /* ── REVENUE ROWS ── */
+    .revenue-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);}
+    .revenue-row:last-child{border-bottom:none;}
+    .rev-left{display:flex;align-items:center;gap:10px;}
+    .rev-icon{width:34px;height:34px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .rev-amount{font-size:15px;font-weight:500;color:var(--brand);}
+    .rev-date{font-size:11px;color:var(--muted);}
+
+    /* ── PROGRESS ── */
+    .progress-wrap{background:#f3f4f6;border-radius:100px;height:5px;overflow:hidden;margin-top:6px;}
+    .progress-fill{height:100%;border-radius:100px;background:var(--brand);}
+    .progress-fill.amber{background:var(--accent);}
+
+    /* ── TABS ── */
+    .tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 20px;}
+    .tab{padding:10px 14px;font-size:13px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s;white-space:nowrap;}
+    .tab.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:500;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    /* ── FILTER PILLS ── */
+    .filter-bar{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+    .filter-pill{padding:5px 12px;border-radius:100px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--muted);transition:all 0.15s;font-weight:500;}
+    .filter-pill.active{background:var(--brand-light);color:#0f6e56;border-color:#9fe1cb;}
+
+    /* ── COUNTDOWN ── */
+    .countdown-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;display:flex;flex-direction:column;gap:14px;}
+    .countdown-project{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg);border-left:3px solid var(--brand);}
+    .countdown-project.urgent{border-left-color:#e24b4a;}
+    .cdown-client{font-size:13px;font-weight:500;}
+    .cdown-type{font-size:11px;color:var(--muted);}
+    .cdown-days{font-size:20px;font-weight:500;color:var(--brand);line-height:1;}
+    .cdown-days.urgent{color:#e24b4a;}
+    .cdown-label{font-size:10px;color:#9ca3af;}
+  </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text"><span class="logo-dot"></span>ShopLink<span class="admin-pill">ADMIN</span></div>
+    </div>
+    <div class="nav-section">Tableau de bord</div>
+    <div class="nav-item active" onclick="showPage('overview',this)"><span>📊</span> Vue d'ensemble</div>
+    <div class="nav-section">Gestion</div>
+    <div class="nav-item" onclick="showPage('users',this)"><span>👥</span> Utilisateurs <span class="nav-badge" id="badge-users">18</span></div>
+    <div class="nav-item" onclick="showPage('sites',this)"><span>🌐</span> Sites publiés</div>
+    <div class="nav-item" onclick="showPage('payments',this)"><span>💳</span> Paiements <span class="nav-badge" id="badge-pending">3</span></div>
+    <div class="nav-item" onclick="showPage('premium',this)"><span>⭐</span> Projets Premium</div>
+    <div class="nav-section">Support</div>
+    <div class="nav-item" onclick="showPage('tickets',this)"><span>🎫</span> Tickets support <span class="nav-badge" id="badge-tickets">0</span></div>
+    <div class="nav-section">Outils</div>
+    <div class="nav-item" onclick="showPage('countdown',this)"><span>⏱</span> Décomptes livraison <span class="nav-badge" id="badge-countdown">0</span></div>
+    <div class="nav-item" onclick="showPage('stats',this)"><span>📈</span> Statistiques</div>
+    <div class="sidebar-footer">
+      <div class="admin-name">Administrateur</div>
+      <div class="admin-info">Accès total · ShopLink</div>
+      <div style="margin-top:12px;">
+        <button onclick="adminLogout()" style="width:100%;padding:8px 14px;border-radius:var(--radius);font-size:12px;cursor:pointer;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);font-family:'DM Sans',sans-serif;transition:all 0.15s;">
+          🚪 Déconnexion
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- PAGE VUE D'ENSEMBLE -->
+    <div id="page-overview" class="page active">
+      <div class="topbar">
+        <div><div class="page-title">Vue d'ensemble</div><div class="page-sub">Activité globale de la plateforme</div></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn" onclick="exportOverview()">📤 Exporter</button>
+          <button class="btn btn-green">+ Nouveau site premium</button>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-label">Utilisateurs inscrits</div><div class="metric-value" id="metric-users">0</div><div class="metric-sub">Total de la plateforme</div></div>
+        <div class="metric-card"><div class="metric-label">Sites actifs</div><div class="metric-value" id="metric-sites">0</div><div class="metric-sub">Sites publiés</div></div>
+        <div class="metric-card"><div class="metric-label">Revenus totaux</div><div class="metric-value" id="metric-revenue">0</div><div class="metric-sub">FCFA encaissés</div></div>
+        <div class="metric-card"><div class="metric-label">Paiements en attente</div><div class="metric-value" id="metric-pending">0</div><div class="metric-sub">À valider manuellement</div></div>
+      </div>
+      <div class="two-col">
+        <div class="section-card">
+          <div class="card-header"><span class="card-title">Derniers paiements</span><span class="badge bg-green">Mis à jour</span></div>
+          <div id="recent-payments">
+            <div style="text-align:center;color:var(--muted);padding:40px;">Chargement...</div>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="card-header"><span class="card-title">Offre de lancement — compteur</span></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;">
+            <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Autonome · places promo</span><span style="font-weight:500;">0 / 10</span></div><div class="progress-wrap"><div class="progress-fill" style="width:0%;"></div></div><div style="font-size:11px;color:#9ca3af;margin-top:4px;">Prix actuel : 4 000 FCFA · 10 places restantes</div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Premium · places promo</span><span style="font-weight:500;">0 / 10</span></div><div class="progress-wrap"><div class="progress-fill amber" style="width:0%;"></div></div><div style="font-size:11px;color:#9ca3af;margin-top:4px;">Prix actuel : 10 000 FCFA · 10 places restantes</div></div>
+            <div style="background:var(--bg);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;">Après 10 clients : prix autonome → <strong style="color:var(--text);">5 000 FCFA</strong> · prix premium → <strong style="color:var(--text);">12 000 FCFA</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE UTILISATEURS -->
+    <div id="page-users" class="page">
+      <div class="topbar"><div><div class="page-title">Utilisateurs</div><div class="page-sub">18 comptes inscrits sur la plateforme</div></div><button class="btn" onclick="exportUsers()">📤 Exporter CSV</button></div>
+      <div class="section-card">
+        <div class="filter-bar">
+          <div class="filter-pill active" onclick="filterUsers('all',this)">Tous (18)</div>
+          <div class="filter-pill" onclick="filterUsers('active',this)">Actifs (12)</div>
+          <div class="filter-pill" onclick="filterUsers('premium',this)">Premium (4)</div>
+          <div class="filter-pill" onclick="filterUsers('pending',this)">En attente (2)</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:220px;">Utilisateur</th><th style="width:110px;">Type</th><th style="width:130px;">Statut site</th><th style="width:180px;">Paiement</th><th style="width:120px;">Inscrit le</th><th style="width:110px;">Actions</th></tr></thead>
+            <tbody id="users-table">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE PAIEMENTS -->
+    <div id="page-payments" class="page">
+      <div class="topbar"><div><div class="page-title">Paiements</div><div class="page-sub">Historique complet · acomptes · soldes</div></div><button class="btn" onclick="exportPayments()">📤 Exporter</button></div>
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-label">Total encaissé</div><div class="metric-value">98 000</div><div class="metric-sub">FCFA</div></div>
+        <div class="metric-card"><div class="metric-label">Acomptes reçus</div><div class="metric-value">30 000</div><div class="metric-sub">FCFA · 6 projets</div></div>
+        <div class="metric-card"><div class="metric-label">Soldes restants</div><div class="metric-value">30 000</div><div class="metric-sub">FCFA à encaisser</div></div>
+        <div class="metric-card"><div class="metric-label">En attente</div><div class="metric-value">3</div><div class="metric-sub">paiements à valider</div></div>
+      </div>
+      <div class="section-card">
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchTabP('pay-all',this)">Tous les paiements</div>
+          <div class="tab" onclick="switchTabP('pay-auto',this)">Création autonome</div>
+          <div class="tab" onclick="switchTabP('pay-prem',this)">Service premium</div>
+          <div class="tab" onclick="switchTabP('pay-pending',this)">En attente (3)</div>
+        </div>
+        <div id="pay-all" class="tab-panel active">
+          <table><thead><tr><th>Client</th><th>Type</th><th>Montant</th><th>Transaction</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
+          </tbody></table>
+        </div>
+        <div id="pay-auto" class="tab-panel">
+          <table><thead><tr><th>Client</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
+          </tbody></table>
+        </div>
+        <div id="pay-prem" class="tab-panel">
+          <table><thead><tr><th>Client</th><th>Total</th><th>Acompte</th><th>Solde restant</th><th>Statut</th></tr></thead>
+          <tbody>
+            <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
+          </tbody></table>
+        </div>
+        <div id="pay-pending" class="tab-panel">
+          <table><thead><tr><th>Client</th><th>Type</th><th>Montant attendu</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE PROJETS PREMIUM -->
+    <div id="page-premium" class="page">
+      <div class="topbar"><div><div class="page-title">Projets Premium</div><div class="page-sub">Suivi des sites créés manuellement</div></div><button class="btn btn-green">+ Nouveau projet</button></div>
+      <div class="section-card">
+        <div class="filter-bar">
+          <div class="filter-pill active" onclick="filterPremium('all',this)">Tous</div>
+          <div class="filter-pill" onclick="filterPremium('in_progress',this)">En cours</div>
+          <div class="filter-pill" onclick="filterPremium('completed',this)">Livré</div>
+          <div class="filter-pill" onclick="filterPremium('pending',this)">Attente acompte</div>
+        </div>
+        <table><thead><tr><th style="width:200px;">Client</th><th>Type site</th><th>Acompte</th><th>Solde</th><th>Délai</th><th>Progression</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody id="premium-projects-tbody">
+          <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- PAGE DÉCOMPTES -->
+    <div id="page-countdown" class="page">
+      <div class="topbar"><div><div class="page-title">Décomptes de livraison</div><div class="page-sub">Temps restant depuis le premier acompte</div></div></div>
+      <div class="two-col">
+        <div>
+          <div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--muted);">VUE ADMINISTRATEUR</div>
+          <div class="countdown-card">
+            <div style="font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px;">Projets en cours</div>
+            <div id="countdown-projects">
+              <div style="text-align:center;color:var(--muted);padding:40px;">Aucun projet en cours</div>
+            </div>
+            <div style="background:var(--bg);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;">Le décompte démarre automatiquement dès réception de l'acompte. En rouge : livraison urgente sous 2 semaines.</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--muted);">VUE CLIENT (côté utilisateur)</div>
+          <div class="countdown-card">
+            <div style="font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px;">Votre site est en cours de création</div>
+            <div style="background:var(--bg);border-radius:var(--radius);padding:20px;text-align:center;">
+              <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Livraison estimée dans</div>
+              <div style="font-size:36px;font-weight:500;color:var(--brand);letter-spacing:0.02em;" id="client-timer">—</div>
+              <div style="font-size:12px;color:#9ca3af;margin-top:6px;">Projet : Kouassi Biokou · Normal</div>
+            </div>
+            <div style="background:var(--brand-light);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:#0f6e56;line-height:1.6;">✓ Acompte reçu · Le 10 mars 2025<br>Délai : 3 semaines maximum · Site livré par email & WhatsApp</div>
+            <div style="background:var(--bg);border-radius:var(--radius);padding:12px 14px;">
+              <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Avancement estimé</div>
+              <div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:45%;"></div></div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:4px;">Étape : Design en cours · ~45%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE STATISTIQUES -->
+    <div id="page-stats" class="page">
+      <div class="topbar"><div><div class="page-title">Statistiques globales</div><div class="page-sub">Performance de la plateforme</div></div></div>
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-label">Taux de conversion</div><div class="metric-value">0%</div><div class="metric-sub">Inscrits → Payants</div></div>
+        <div class="metric-card"><div class="metric-label">Clics WhatsApp totaux</div><div class="metric-value">0</div><div class="metric-sub">Sur tous les sites</div></div>
+        <div class="metric-card"><div class="metric-label">Sites autonomes</div><div class="metric-value">0</div><div class="metric-sub">sur 0 inscrits</div></div>
+        <div class="metric-card"><div class="metric-label">Sites premium</div><div class="metric-value">0</div><div class="metric-sub">commandés</div></div>
+      </div>
+      <div class="section-card">
+        <div class="card-header"><span class="card-title">Revenus par type de service</span></div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Création autonome</span><span style="font-weight:500;color:var(--brand);">0 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:0%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Service premium (acomptes)</span><span style="font-weight:500;color:var(--accent);">0 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill amber" style="width:0%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Premium soldes encaissés</span><span style="font-weight:500;color:var(--brand);">0 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:0%;"></div></div></div>
+          <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;font-size:14px;font-weight:500;"><span>Total encaissé</span><span style="color:var(--brand);">0 FCFA</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE SITES -->
+    <div id="page-sites" class="page">
+      <div class="topbar"><div><div class="page-title">Sites publiés</div><div class="page-sub">12 sites actifs sur la plateforme</div></div></div>
+      <div class="section-card">
+        <table><thead><tr><th>Site</th><th>Propriétaire</th><th>Lien</th><th>Produits</th><th>Vues</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- PAGE TICKETS -->
+    <div id="page-tickets" class="page">
+      <div class="topbar"><div><div class="page-title">Tickets Support</div><div class="page-sub">Questions et demandes des utilisateurs</div></div></div>
+      <div class="section-card">
+        <div class="filter-bar">
+          <div class="filter-pill active" onclick="filterTickets('all',this)">Tous</div>
+          <div class="filter-pill" onclick="filterTickets('open',this)">Ouverts</div>
+          <div class="filter-pill" onclick="filterTickets('pending',this)">En attente</div>
+          <div class="filter-pill" onclick="filterTickets('closed',this)">Fermés</div>
+        </div>
+        <table id="tickets-table">
+          <thead>
+            <tr>
+              <th style="width:200px;">Client</th>
+              <th>Sujet</th>
+              <th>Priorité</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tickets-tbody">
+            <tr>
+              <td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">
+                Chargement des tickets...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let allTickets = [];
+
+  function showPage(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const pg = document.getElementById('page-' + id);
+    pg.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+  }
+
+  // Admin logout
+  function adminLogout() {
+    localStorage.removeItem('shoplink_token');
+    localStorage.removeItem('shoplink_user');
+    localStorage.removeItem('admin_logged_in');
+    window.location.href = '/admin/admin-login.html';
+  }
+
+  function switchTabP(id, el) {
+    const card = document.getElementById(id).closest('.section-card');
+    card.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  function filterUsers(type, el) {
+    document.querySelectorAll('.filter-bar .filter-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('#users-table tr').forEach(r => {
+      r.style.display = (type === 'all' || r.dataset.type === type) ? '' : 'none';
+    });
+  }
+
+  function filterTickets(status, el) {
+    document.querySelectorAll('#page-tickets .filter-bar .filter-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('#tickets-tbody tr').forEach(r => {
+      r.style.display = (status === 'all' || r.dataset.status === status) ? '' : 'none';
+    });
+  }
+
+  function filterPremium(status, el) {
+    document.querySelectorAll('#page-premium .filter-bar .filter-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('#premium-projects-tbody tr').forEach(r => {
+      r.style.display = (status === 'all' || r.dataset.status === status) ? '' : 'none';
+    });
+  }
+
+  function downloadCSV(csvContent, filename) {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  async function exportOverview() {
+    try {
+      const token = localStorage.getItem('shoplink_token');
+      const summaryRes = await fetch('http://localhost:5000/api/admin/summary', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const summaryData = await summaryRes.json();
+
+      if (summaryData.success) {
+        const data = summaryData.data;
+        const date = new Date().toLocaleDateString('fr-FR');
+        
+        const csvContent = '=== RAPPORT D\'ACTIVITE SHOPLINK ===\n' +
+          'Date d\'export: ' + date + '\n\n' +
+          '=== METRIQUES GLOBALES ===\n' +
+          'Categorie,Nombre\n' +
+          'Utilisateurs inscrits,' + (data.users || 0) + '\n' +
+          'Sites actifs,' + (data.sites || 0) + '\n' +
+          'Produits publies,' + (data.products || 0) + '\n' +
+          'Paiements enregistres,' + (data.payments || 0) + '\n\n' +
+          '=== REVENUS ===\n' +
+          'Revenus totaux,' + (data.revenue || 0).toLocaleString('fr-FR') + ' FCFA\n\n' +
+          '=== NOTES ===\n' +
+          'Ce rapport genere automatiquement depuis le dashboard administrateur\n';
+        
+        downloadCSV(csvContent, 'shoplink_rapport_' + date.replace(/\//g, '-') + '.csv');
+      }
+    } catch (error) {
+      console.error('Erreur export overview:', error);
+      alert('Erreur lors de l\'export');
+    }
+  }
+
+  async function exportUsers() {
+    try {
+      const token = localStorage.getItem('shoplink_token');
+      const usersRes = await fetch('http://localhost:5000/api/admin/users', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const usersData = await usersRes.json();
+
+      if (usersData.success && usersData.users) {
+        let csvContent = 'Nom,Email,Telephone,Role,Date inscription\n';
+        usersData.users.forEach(user => {
+          const userName = user.name || 'N/A';
+          const userEmail = user.email || 'N/A';
+          const userPhone = user.phone || 'N/A';
+          const userRole = user.role || 'user';
+          const userDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'N/A';
+          csvContent += userName + ',' + userEmail + ',' + userPhone + ',' + userRole + ',' + userDate + '\n';
+        });
+        
+        downloadCSV(csvContent, 'shoplink_utilisateurs_' + new Date().toISOString().split('T')[0] + '.csv');
+      }
+    } catch (error) {
+      console.error('Erreur export users:', error);
+      alert('Erreur lors de l export');
+    }
+  }
+
+  async function exportPayments() {
+    try {
+      const token = localStorage.getItem('shoplink_token');
+      const paymentsRes = await fetch('http://localhost:5000/api/admin/payments', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const paymentsData = await paymentsRes.json();
+
+      if (paymentsData.success && paymentsData.payments) {
+        let csvContent = 'Client,Type,Montant,Statut,Date\n';
+        paymentsData.payments.forEach(payment => {
+          const userName = payment.userName || 'N/A';
+          const paymentType = payment.type || 'Autonome';
+          const amount = (payment.amount || 0) + ' FCFA';
+          const status = payment.status || 'N/A';
+          const date = payment.createdAt ? new Date(payment.createdAt).toLocaleDateString('fr-FR') : 'N/A';
+          csvContent += userName + ',' + paymentType + ',' + amount + ',' + status + ',' + date + '\n';
+        });
+        
+        downloadCSV(csvContent, 'shoplink_paiements_' + new Date().toISOString().split('T')[0] + '.csv');
+      }
+    } catch (error) {
+      console.error('Erreur export payments:', error);
+      alert('Erreur lors de l export');
+    }
+  }
+
+  async function fetchPremiumProjects() {
+    try {
+      const token = localStorage.getItem('shoplink_token');
+      const res = await fetch('http://localhost:5000/api/admin/premium-projects', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (data.success && data.projects) {
+        const countdownContainer = document.getElementById('countdown-projects');
+        const badgeCountdown = document.getElementById('badge-countdown');
+        
+        // Filter projects with deposits paid
+        const projectsWithDeposit = data.projects.filter(p => p.depositPaid && p.status !== 'completed' && p.status !== 'delivered');
+        
+        if (badgeCountdown) {
+          badgeCountdown.textContent = projectsWithDeposit.length;
+          // Make badge red if there are active projects
+          if (projectsWithDeposit.length > 0) {
+            badgeCountdown.style.background = '#fee2e2';
+            badgeCountdown.style.color = '#a32d2d';
+          } else {
+            badgeCountdown.style.background = 'var(--brand-light)';
+            badgeCountdown.style.color = '#0f6e56';
+          }
+        }
+
+        if (countdownContainer) {
+          if (projectsWithDeposit.length === 0) {
+            countdownContainer.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px;">Aucun projet en cours</div>';
+          } else {
+            countdownContainer.innerHTML = projectsWithDeposit.map(project => {
+              const depositDate = new Date(project.depositDate);
+              const deliveryDays = project.deliveryDays || 21; // Default 21 days
+              const deliveryDate = new Date(depositDate);
+              deliveryDate.setDate(deliveryDate.getDate() + deliveryDays);
+              
+              const now = new Date();
+              const remainingMs = deliveryDate - now;
+              const remainingDays = Math.max(0, Math.floor(remainingMs / (1000 * 60 * 60 * 24)));
+              const remainingHours = Math.max(0, Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+              
+              const isUrgent = remainingDays < 14;
+              const isOverdue = remainingMs < 0;
+
+              return `
+                <div class="countdown-project ${isUrgent || isOverdue ? 'urgent' : ''}">
+                  <div>
+                    <div class="cdown-client">${project.clientName || 'N/A'}</div>
+                    <div class="cdown-type">${project.siteType || 'Site'} · ${deliveryDays} jours · Démarré le ${depositDate.toLocaleDateString('fr-FR')}</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div class="cdown-days ${isUrgent || isOverdue ? 'urgent' : ''}">${isOverdue ? 'En retard' : remainingDays + 'j ' + remainingHours + 'h'}</div>
+                    <div class="cdown-label">restants</div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching premium projects:', error);
+    }
+  }
+
+  function validatePayment(btn) {
+    const row = btn.closest('tr');
+    const statusCell = row.querySelector('.badge');
+    if (statusCell && confirm('Valider ce paiement ?')) {
+      statusCell.className = 'badge bg-green';
+      statusCell.textContent = 'Payé ✓';
+      btn.closest('.action-btns').innerHTML = '<div class="icon-btn">👁</div>';
+      const pending = parseInt(document.getElementById('badge-pending').textContent);
+      if (pending > 0) document.getElementById('badge-pending').textContent = pending - 1;
+    }
+  }
+
+  function updateTimers() {
+    const now = new Date();
+    function diff(startStr, days) {
+      const end = new Date(startStr);
+      end.setDate(end.getDate() + days);
+      const ms = end - now;
+      if (ms <= 0) return '0j 0h';
+      return Math.floor(ms/86400000) + 'j ' + Math.floor((ms%86400000)/3600000) + 'h';
+    }
+    function diffFull(startStr, days) {
+      const end = new Date(startStr);
+      end.setDate(end.getDate() + days);
+      const ms = end - now;
+      if (ms <= 0) return '0j 0h 0m';
+      return Math.floor(ms/86400000) + 'j ' + Math.floor((ms%86400000)/3600000) + 'h ' + Math.floor((ms%3600000)/60000) + 'm';
+    }
+    if (document.getElementById('cd1'))          document.getElementById('cd1').textContent          = diff('2025-03-10', 21);
+    if (document.getElementById('cd2'))          document.getElementById('cd2').textContent          = diff('2025-03-05', 14);
+    if (document.getElementById('client-timer')) document.getElementById('client-timer').textContent = diffFull('2025-03-10', 21);
+  }
+
+  // Fetch real data from backend
+  async function fetchAdminData() {
+    try {
+      // Fetch summary
+      const summaryRes = await fetch('http://localhost:5000/api/admin/summary');
+      const summaryData = await summaryRes.json();
+      if (summaryData.success) {
+        const data = summaryData.data;
+        // Update metrics with proper IDs
+        const metricUsers = document.getElementById('metric-users');
+        const metricSites = document.getElementById('metric-sites');
+        const metricRevenue = document.getElementById('metric-revenue');
+        const metricPending = document.getElementById('metric-pending');
+
+        if (metricUsers) metricUsers.textContent = data.users || 0;
+        if (metricSites) metricSites.textContent = data.sites || 0;
+        // Payment system not finished - set to 0
+        if (metricRevenue) metricRevenue.textContent = '0';
+        if (metricPending) metricPending.textContent = '0';
+
+        // Update badges
+        const badgeUsers = document.getElementById('badge-users');
+        const badgePending = document.getElementById('badge-pending');
+        if (badgeUsers) badgeUsers.textContent = data.users || 0;
+        if (badgePending) badgePending.textContent = '0';
+      }
+
+      // Fetch users
+      const usersRes = await fetch('http://localhost:5000/api/admin/users');
+      const usersData = await usersRes.json();
+      if (usersData.success) {
+        const usersTable = document.getElementById('users-table');
+        if (usersTable && usersData.users.length > 0) {
+          const tbody = usersTable.querySelector('tbody') || usersTable;
+          // Clear existing rows (except header)
+          const existingRows = tbody.querySelectorAll('tr:not(:first-child)');
+          existingRows.forEach(row => row.remove());
+          // Add new rows
+          usersData.users.forEach(user => {
+            const row = document.createElement('tr');
+            row.dataset.type = user.role || 'user';
+            const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
+            row.innerHTML = `
+              <td><div class="user-cell"><div class="avatar">${initials}</div><div><div class="user-name-cell">${user.name || 'N/A'}</div><div class="user-sub-cell">${user.email || ''}</div></div></div></td>
+              <td><span class="badge bg-blue">Autonome</span></td>
+              <td><span class="status-dot dot-green"></span>En ligne</td>
+              <td><span class="badge bg-green">Actif</span></td>
+              <td style="color:var(--muted);">${user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'N/A'}</td>
+              <td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div></div></td>
+            `;
+            tbody.appendChild(row);
+          });
+          // Update badge
+          const badgeUsers = document.getElementById('badge-users');
+          if (badgeUsers) badgeUsers.textContent = usersData.users.length;
+        }
+      }
+
+      // Fetch sites
+      const sitesRes = await fetch('http://localhost:5000/api/admin/sites');
+      const sitesData = await sitesRes.json();
+      if (sitesData.success) {
+        console.log('Sites loaded:', sitesData.sites.length);
+      }
+
+      // Fetch premium projects
+      const premiumRes = await fetch('http://localhost:5000/api/admin/premium-projects', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const premiumData = await premiumRes.json();
+      if (premiumData.success && premiumData.projects) {
+        const premiumTable = document.getElementById('premium-projects-tbody');
+        if (premiumTable) {
+          if (premiumData.projects.length === 0) {
+            premiumTable.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">Aucun projet premium</td></tr>';
+          } else {
+            premiumTable.innerHTML = '';
+            premiumData.projects.forEach(project => {
+              const row = document.createElement('tr');
+              row.dataset.status = project.status || 'pending';
+              const initials = project.clientName ? project.clientName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
+              const progress = project.progress || 0;
+              const depositPaid = project.depositPaid || false;
+              const status = project.status || 'pending';
+              
+              row.innerHTML = `
+                <td><div class="user-cell"><div class="avatar premium">${initials}</div><div><div class="user-name-cell">${project.clientName || 'N/A'}</div><div class="user-sub-cell">${project.clientEmail || ''}</div></div></div></td>
+                <td>${project.siteType || 'N/A'}</td>
+                <td><span class="badge ${depositPaid ? 'bg-green' : 'bg-red'}">${depositPaid ? '✓ ' + (project.depositAmount || '0') + ' F' : 'En attente'}</span></td>
+                <td style="color:${!depositPaid ? '#9ca3af' : '#e24b4a'};font-weight:500;">${depositPaid ? (project.totalAmount - project.depositAmount) || '0' : '—'}</td>
+                <td><span class="badge ${project.urgent ? 'bg-red' : 'bg-amber'}">${project.deliveryDays || 21} jours</span></td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div class="progress-wrap" style="width:60px;height:6px;"><div class="progress-fill" style="width:${progress}%;"></div></div>
+                    <span style="font-size:11px;font-weight:500;">${progress}%</span>
+                  </div>
+                </td>
+                <td><span class="status-dot ${status === 'completed' ? 'dot-green' : status === 'in_progress' ? 'dot-amber' : 'dot-red'}"></span>${status === 'completed' ? 'Livré' : status === 'in_progress' ? 'En cours' : 'En attente'}</td>
+                <td><div class="action-btns"><div class="icon-btn">✏️</div><div class="icon-btn">📲</div></div></td>
+              `;
+              premiumTable.appendChild(row);
+            });
+          }
+        }
+      }
+
+      // Fetch tickets
+      const ticketsRes = await fetch('http://localhost:5000/api/tickets');
+      const ticketsData = await ticketsRes.json();
+      if (ticketsData.success) {
+        allTickets = ticketsData.tickets;
+        const ticketsTable = document.getElementById('tickets-tbody');
+        if (ticketsTable) {
+          if (ticketsData.tickets.length === 0) {
+            ticketsTable.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">Aucun ticket</td></tr>';
+          } else {
+            ticketsTable.innerHTML = '';
+            ticketsData.tickets.forEach(ticket => {
+              const row = document.createElement('tr');
+              row.dataset.status = ticket.status || 'open';
+              const initials = ticket.userName ? ticket.userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
+              row.innerHTML = `
+                <td><div class="user-cell"><div class="avatar">${initials}</div><div class="user-name-cell">${ticket.userName || 'N/A'}</div></div></td>
+                <td>${ticket.subject || 'N/A'}</td>
+                <td><span class="badge ${ticket.priority === 'high' ? 'bg-red' : ticket.priority === 'medium' ? 'bg-amber' : 'bg-gray'}">${ticket.priority || 'low'}</span></td>
+                <td><span class="status-dot ${ticket.status === 'open' ? 'dot-green' : ticket.status === 'pending' ? 'dot-amber' : 'dot-gray'}"></span>${ticket.status || 'N/A'}</td>
+                <td style="color:var(--muted);">${ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString('fr-FR') : 'N/A'}</td>
+                <td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div></div></td>
+              `;
+              ticketsTable.appendChild(row);
+            });
+          }
+          const badgeTickets = document.getElementById('badge-tickets');
+          if (badgeTickets) badgeTickets.textContent = ticketsData.tickets.length;
+        }
+      }
+
+      // Fetch payments
+      const paymentsRes = await fetch('http://localhost:5000/api/admin/payments');
+      const paymentsData = await paymentsRes.json();
+      if (paymentsData.success) {
+        // Update pending badge
+        const pendingPayments = paymentsData.payments.filter(p => p.status === 'pending');
+        const pendingBadge = document.getElementById('badge-pending');
+        if (pendingBadge) pendingBadge.textContent = pendingPayments.length;
+      }
+
+    } catch (error) {
+      console.error('Error fetching admin data:', error);
+    }
+  }
+
+  // Initialize admin dashboard on load
+  document.addEventListener('DOMContentLoaded', () => {
+    // Check admin authentication
+    const isAdminLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+    const token = localStorage.getItem('shoplink_token');
+
+    if (!isAdminLoggedIn || !token) {
+      window.location.href = '/admin/admin-login.html';
+      return;
+    }
+
+    // Always fetch real data, no demo mode
+    fetchAdminData();
+    fetchPremiumProjects();
+    updateTimers();
+    setInterval(updateTimers, 60000); // Update timers every minute
+    setInterval(fetchPremiumProjects, 60000); // Update countdown every minute
+  });
+
+  // Load admin demo mock data (disabled - using real data only)
+  function loadAdminDemoData() {
+    // Demo data disabled - using real backend data
+    console.log('Demo data disabled - using real backend data');
+  }
+
+  // Fetch tickets from backend
+  async function fetchTickets() {
+    try {
+      const ticketsRes = await fetch('http://localhost:5000/api/tickets');
+      
+      if (!ticketsRes.ok) {
+        console.log('Tickets endpoint not available (404)');
+        const ticketsTbody = document.getElementById('tickets-tbody');
+        const ticketsBadge = document.getElementById('badge-tickets');
+        if (ticketsTbody) {
+          ticketsTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">Aucun ticket</td></tr>';
+        }
+        if (ticketsBadge) {
+          ticketsBadge.textContent = '0';
+        }
+        return;
+      }
+
+      const ticketsData = await ticketsRes.json();
+
+      if (ticketsData.success) {
+        allTickets = ticketsData.tickets;
+        const tickets = ticketsData.tickets;
+        const ticketsTbody = document.getElementById('tickets-tbody');
+        const ticketsBadge = document.getElementById('badge-tickets');
+
+        if (ticketsBadge) {
+          const openTickets = tickets.filter(t => t.status === 'open' || t.status === 'pending').length;
+          ticketsBadge.textContent = openTickets;
+        }
+
+        if (ticketsTbody) {
+          if (tickets.length === 0) {
+            ticketsTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">Aucun ticket</td></tr>';
+          } else {
+            ticketsTbody.innerHTML = tickets.map(ticket => {
+              const priorityColors = {
+                low: 'bg-gray',
+                normal: 'bg-blue',
+                high: 'bg-amber',
+                urgent: 'bg-red'
+              };
+              const statusColors = {
+                open: 'bg-red',
+                pending: 'bg-amber',
+                answered: 'bg-green',
+                closed: 'bg-gray'
+              };
+              const priorityLabels = {
+                low: 'Basse',
+                normal: 'Normale',
+                high: 'Haute',
+                urgent: 'Urgente'
+              };
+              const statusLabels = {
+                open: 'Ouvert',
+                pending: 'En attente',
+                answered: 'Répondu',
+                closed: 'Fermé'
+              };
+
+              return `
+                <tr data-status="${ticket.status || 'open'}">
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar">${(ticket.userName || ticket.userEmail || 'U').charAt(0).toUpperCase()}</div>
+                      <div>
+                        <div class="user-name-cell">${ticket.userName || 'N/A'}</div>
+                        <div class="user-sub-cell">${ticket.userEmail || 'N/A'}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-weight:500;">${ticket.subject}</td>
+                  <td><span class="badge ${priorityColors[ticket.priority] || 'bg-gray'}">${priorityLabels[ticket.priority] || ticket.priority}</span></td>
+                  <td><span class="badge ${statusColors[ticket.status] || 'bg-gray'}">${statusLabels[ticket.status] || ticket.status}</span></td>
+                  <td style="color:var(--muted);">${new Date(ticket.createdAt).toLocaleDateString('fr-FR')}</td>
+                  <td>
+                    <div class="action-btns">
+                      <div class="icon-btn" onclick="viewTicket('${ticket.id}')">👁</div>
+                      ${ticket.status !== 'closed' ? `<div class="icon-btn" onclick="closeTicket('${ticket.id}')">✅</div>` : ''}
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('');
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Erreur fetching tickets:', error);
+      const ticketsTbody = document.getElementById('tickets-tbody');
+      const ticketsBadge = document.getElementById('badge-tickets');
+      if (ticketsTbody) {
+        ticketsTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">Aucun ticket</td></tr>';
+      }
+      if (ticketsBadge) {
+        ticketsBadge.textContent = '0';
+      }
+    }
+  }
+
+  // Load demo mock tickets (disabled - using real data only)
+  function loadDemoTickets() {
+    console.log('Demo tickets disabled - using real backend data');
+  }
+
+  function viewTicket(id) {
+    alert('Voir le ticket ' + id + ' - Fonctionnalité à venir');
+  }
+
+  async function closeTicket(id) {
+    if (confirm('Fermer ce ticket ?')) {
+      try {
+        const res = await fetch(`http://localhost:5000/api/tickets/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'closed' })
+        });
+        if (res.ok) {
+          fetchTickets();
+        } else {
+          alert('Erreur lors de la fermeture du ticket');
+        }
+      } catch (error) {
+        console.error('Erreur closing ticket:', error);
+        alert('Erreur lors de la fermeture du ticket');
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="/css/responsive.css">
+<script src="/js/mobile-nav.js"></script>
+</body>
+</html>

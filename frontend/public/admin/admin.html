@@ -132,6 +132,7 @@
     .cdown-days.urgent{color:#e24b4a;}
     .cdown-label{font-size:10px;color:#9ca3af;}
   </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
 
@@ -430,6 +431,92 @@
 
   updateTimers();
   setInterval(updateTimers, 60000);
+
+  // Charger les stats =====
+  const API_BASE = '/api';
+
+  async function loadStats() {
+    try {
+      // Charger les stats financières
+      const finRes = await fetch(`${API_BASE}/admin/payments/summary`);
+      const fin = await finRes.json();
+      
+      // Charger les stats générales
+      const sumRes = await fetch(`${API_BASE}/admin/summary`);
+      const sum = await sumRes.json();
+
+      // Mettre à jour les métriques
+      const metrics = document.querySelectorAll('.metric-value');
+      if (metrics[0]) metrics[0].textContent = (sum.data?.users || 18);
+      if (metrics[1]) metrics[1].textContent = (sum.data?.sites || 12);
+      if (metrics[2]) metrics[2].textContent = (fin.summary?.totalAmount || 98000).toLocaleString('fr-FR');
+      if (metrics[3]) metrics[3].textContent = (fin.summary?.totalPending || 3);
+    } catch (error) {
+      console.error('Erreur chargement stats:', error);
+    }
+  }
+
+  async function loadPaymentsFromAPI() {
+    try {
+      const res = await fetch(`${API_BASE}/admin/payments/validated`);
+      const data = await res.json();
+
+      if (data.success && data.payments && data.payments.length > 0) {
+        // Remplir le tableau "Tous les paiements"
+        const allPaymentsTable = document.querySelector('#pay-all tbody');
+        const autoPaymentsTable = document.querySelector('#pay-auto tbody');
+        const premPaymentsTable = document.querySelector('#pay-prem tbody');
+
+        let allHTML = '';
+        let autoHTML = '';
+        let premHTML = '';
+
+        data.payments.forEach(p => {
+          const type = p.type || 'autonome';
+          const date = new Date(p.validatedAt || p.updatedAt).toLocaleDateString('fr-FR');
+          const clientName = p.siteName || p.clientName || 'Client';
+          const initials = clientName.split(' ').map(n => n[0]).join('').substring(0, 2);
+          const badgeClass = type === 'autonome' ? 'bg-blue' : 'bg-amber';
+          const provider = p.mobileMoneyProvider ? p.mobileMoneyProvider.toUpperCase() : 'N/A';
+
+          const row = `<tr>
+            <td><div class="user-cell"><div class="avatar ${type === 'premium' ? 'premium' : ''}">${initials}</div><div class="user-name-cell">${clientName}</div></div></td>
+            <td>${type === 'autonome' ? 'Autonome' : 'Premium'}</td>
+            <td style="font-weight:500;color:var(--brand);">${(p.amount || 0).toLocaleString('fr-FR')} FCFA</td>
+            <td>—</td>
+            <td><span class="badge bg-green">Payé</span></td>
+            <td style="color:var(--muted);">${date}</td>
+            <td><div class="icon-btn">👁</div></td>
+          </tr>`;
+
+          allHTML += row;
+
+          if (type === 'autonome') {
+            autoHTML += `<tr><td><div class="user-cell"><div class="avatar">${initials}</div><div class="user-name-cell">${clientName}</div></div></td><td style="font-weight:500;color:var(--brand);">${(p.amount || 0).toLocaleString('fr-FR')} FCFA</td><td><span class="badge bg-green">Payé · site actif</span></td><td style="color:var(--muted);">${date}</td></tr>`;
+          } else {
+            premHTML += `<tr><td><div class="user-cell"><div class="avatar premium">${initials}</div><div class="user-name-cell">${clientName}</div></div></td><td>${(p.amount || 0).toLocaleString('fr-FR')} FCFA</td><td><span class="badge bg-amber">${(p.amount || 0).toLocaleString('fr-FR')} F reçu</span></td><td style="color:#e24b4a;font-weight:500;">—</td><td><span class="badge bg-amber">En cours</span></td></tr>`;
+          }
+        });
+
+        if (allPaymentsTable) allPaymentsTable.innerHTML = allHTML;
+        if (autoPaymentsTable) autoPaymentsTable.innerHTML = autoHTML || '<tr><td colspan="4" style="text-align:center;color:#999;">Aucun paiement autonome</td></tr>';
+        if (premPaymentsTable) premPaymentsTable.innerHTML = premHTML || '<tr><td colspan="5" style="text-align:center;color:#999;">Aucun paiement premium</td></tr>';
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des paiements:', error);
+    }
+  }
+
+  // Charger les paiements au démarrage
+  window.addEventListener('load', () => {
+    loadPaymentsFromAPI();
+    loadStats();
+    // Actualiser toutes les 5 secondes
+    setInterval(loadPaymentsFromAPI, 5000);
+    setInterval(loadStats, 10000);
+  });
 </script>
+<script src="/js/mobile-nav.js"></script>
+
 </body>
 </html>

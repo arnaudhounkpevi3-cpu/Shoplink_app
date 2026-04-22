@@ -10,17 +10,34 @@ const MOBILE_MONEY_CONFIG = {
   MTN: {
     name: 'MTN Mobile Money',
     code: 'mtn',
-    adminPhone: '0167163481',
+    adminPhone: '67163481',
   },
   MOOV: {
     name: 'MOOV Money',
     code: 'moov',
-    adminPhone: '0167163481',
+    adminPhone: '67163481',
   },
 }
 
 function generateSMSCode() {
   return Math.floor(100000 + Math.random() * 900000).toString()
+}
+
+async function publishPremiumSite(userId, paymentData) {
+  const now = new Date().toISOString()
+
+  if (paymentData.siteId) {
+    const existingSite = await repo().findSiteById(paymentData.siteId)
+
+    if (existingSite && existingSite.userId === userId) {
+      return repo().updateSite(existingSite.id, {
+        status: 'published',
+        publishedAt: now,
+      })
+    }
+  }
+  
+  return null
 }
 
 async function publishAutonomousSite(userId, paymentData) {
@@ -101,6 +118,11 @@ async function validateAndProcessPayment(req, paymentId, phoneNumber, provider) 
         if (payment.type === 'autonome') {
           newSite = await publishAutonomousSite(payment.userId, payment)
           await r.patchPayment(paymentId, { siteId: newSite.id })
+        } else if (payment.type === 'premium') {
+          newSite = await publishPremiumSite(payment.userId, payment)
+          if (newSite) {
+            await r.patchPayment(paymentId, { siteId: newSite.id })
+          }
         }
 
         const updatedPayment = await r.findPaymentById(paymentId)
@@ -245,14 +267,39 @@ router.post('/initiate', requireAuth, async (req, res) => {
 
   const payment = await repo().createPayment(paymentPayload)
 
+  // Auto-validate for testing
+  const transactionId = `TXN-TEST-${Date.now()}`
+  const smsCode = generateSMSCode()
+  
+  await repo().patchPayment(payment.id, {
+    status: 'paid',
+    validationStatus: 'sms_validated',
+    mobileMoneyPhone: '67163481',
+    mobileMoneyProvider: 'mtn',
+    transactionId,
+    smsCode,
+    validatedAt: new Date().toISOString(),
+  })
+
+  let newSite = null
+  if (payment.type === 'autonome') {
+    newSite = await publishAutonomousSite(payment.userId, payment)
+    await repo().patchPayment(payment.id, { siteId: newSite.id })
+  } else if (payment.type === 'premium') {
+    newSite = await publishPremiumSite(payment.userId, payment)
+    if (newSite) {
+      await repo().patchPayment(payment.id, { siteId: newSite.id })
+    }
+  }
+
+  const updatedPayment = await repo().findPaymentById(payment.id)
+
   return res.json({
     success: true,
-    message: 'Paiement initialise et en attente de validation',
-    payment,
-    adminPhoneForTransfer: {
-      MTN: MOBILE_MONEY_CONFIG.MTN.adminPhone,
-      MOOV: MOBILE_MONEY_CONFIG.MOOV.adminPhone,
-    },
+    message: 'Paiement valide avec succes. Votre site est cree.',
+    payment: updatedPayment,
+    newSite,
+    siteSlug: newSite ? newSite.slug : null,
   })
 })
 
@@ -406,6 +453,21 @@ router.get('/list', async (req, res) => {
     success: true,
     count: payments.length,
     payments,
+  })
+})
+
+router.get('/user/:userId', async (req, res) => {
+  const { userId } = req.params
+  const payments = await repo().listPayments()
+  const userPayments = payments.filter((p) => p.userId === userId)
+
+  // Sort by createdAt descending to get most recent first
+  userPayments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+  return res.json({
+    success: true,
+    count: userPayments.length,
+    payments: userPayments,
   })
 })
 

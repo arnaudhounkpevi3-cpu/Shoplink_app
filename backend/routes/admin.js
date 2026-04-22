@@ -28,12 +28,17 @@ function getCountdown(targetDate) {
     expired: false,
   }
 }
-
 function isPaid(status) {
   return ['paid', 'paye'].includes(String(status || '').toLowerCase())
 }
 
 router.get('/summary', async (_req, res) => {
+  // Use Supabase-specific summary function if available
+  if (repo().getSummary) {
+    return repo().getSummary()
+  }
+
+  // Fallback to manual calculation for MongoDB/JSON
   const users = await repo().listUsers()
   const sites = await repo().listSites()
   const products = (
@@ -44,10 +49,23 @@ router.get('/summary', async (_req, res) => {
   const premiumOrders = payments.filter((payment) => payment.type === 'premium')
   const activeCountdownPayment = premiumOrders.find(
     (payment) =>
-      payment.step === 'acompte' &&
-      isPaid(payment.status) &&
-      payment.deliveryTargetAt,
+      payment.status === 'paid' && payment.step === 'acompte' && !payment.deliveredAt
   )
+
+  let countdown
+  if (activeCountdownPayment) {
+    const start = new Date(activeCountdownPayment.validatedAt || activeCountdownPayment.createdAt)
+    const days = activeCountdownPayment.urgency === 'urgent' ? 14 : 21
+    const now = new Date()
+    const diffMs = now - start
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    countdown = {
+      days: Math.max(0, days - diffDays),
+      hours: Math.max(0, 24 - diffHours),
+      expired: diffDays >= days,
+    }
+  }
 
   return res.json({
     success: true,
@@ -56,9 +74,10 @@ router.get('/summary', async (_req, res) => {
       sites: sites.length,
       products: products.length,
       payments: payments.length,
-      premiumOrders: premiumOrders.length,
-      deliveryCountdownEnabled: Boolean(activeCountdownPayment),
-      countdown: getCountdown(activeCountdownPayment?.deliveryTargetAt),
+      revenue: payments
+        .filter((p) => isPaid(p.status))
+        .reduce((sum, p) => sum + (p.amount || 0), 0),
+      countdown,
     },
   })
 })
@@ -75,6 +94,7 @@ router.get('/sites', async (_req, res) => {
   const sites = await repo().listSites()
   res.json({
     success: true,
+    
     sites,
   })
 })
@@ -173,6 +193,43 @@ router.get('/auto-created-clients', async (_req, res) => {
     count: autoCreatedClients.length,
     clients: autoCreatedClients,
   })
+})
+
+router.get('/tickets', async (_req, res) => {
+  try {
+    const tickets = await repo().listTickets()
+    res.json({
+      success: true,
+      tickets,
+    })
+  } catch (error) {
+    console.error('Error fetching tickets:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching tickets',
+    })
+  }
+})
+
+router.get('/premium-projects', async (_req, res) => {
+  try {
+    // Use Supabase-specific function if available
+    if (repo().listPremiumProjects) {
+      return repo().listPremiumProjects()
+    }
+    
+    // Fallback for MongoDB/JSON
+    res.json({
+      success: true,
+      projects: []
+    })
+  } catch (error) {
+    console.error('Error fetching premium projects:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching premium projects',
+    })
+  }
 })
 
 module.exports = router

@@ -260,6 +260,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
   <div id="app">
@@ -308,6 +309,9 @@
           throw new Error(data.message || 'Site non trouvé')
         }
 
+        // Track site visit
+        await trackVisit(data.site.id)
+
         renderSite(data.site, data.products || [])
       } catch (error) {
         console.error('Erreur:', error)
@@ -316,6 +320,32 @@
             <strong>Erreur :</strong> ${error.message}
           </div>
         `
+      }
+    }
+
+    // Track site visit
+    async function trackVisit(siteId) {
+      try {
+        await fetch(`${API_BASE}/tracking/visit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ siteId })
+        })
+      } catch (error) {
+        console.error('Error tracking visit:', error)
+      }
+    }
+
+    // Track WhatsApp click
+    async function trackWhatsAppClick(siteId, productId = null) {
+      try {
+        await fetch(`${API_BASE}/tracking/whatsapp-click`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ siteId, productId })
+        })
+      } catch (error) {
+        console.error('Error tracking WhatsApp click:', error)
       }
     }
 
@@ -354,7 +384,8 @@
           <a class="contact-btn contact-btn-whatsapp"
              href="${site.whatsappLink}"
              target="_blank"
-             rel="noopener noreferrer">
+             rel="noopener noreferrer"
+             onclick="trackWhatsAppClick('${site.id}')">
             💬 WhatsApp
           </a>
         `
@@ -417,7 +448,7 @@
       app.innerHTML += `
         <div class="footer">
           <p>Créé avec ShopLink - Plateforme de digitalisation</p>
-          <p><a href="/">Retour à l'accueil</a></p>
+          <p><a href="/index.html">Retour à l'accueil</a></p>
         </div>
       `
     }
@@ -425,5 +456,6 @@
     // Charger au démarrage
     loadSite()
   </script>
+  <script src="/js/mobile-nav.js"></script>
 </body>
 </html>

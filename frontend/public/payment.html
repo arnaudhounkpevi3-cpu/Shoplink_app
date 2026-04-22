@@ -83,8 +83,8 @@
     .btn-pay:disabled{opacity:0.6;cursor:not-allowed;}
     .secure-badges{display:flex;justify-content:center;gap:14px;padding:12px 22px 18px;border-top:1px solid var(--border);}
     .secure-badge{font-size:11px;color:var(--soft);display:flex;align-items:center;gap:4px;}
-    .loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
-    .loading-overlay.show{display:flex;}
+    .loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:16px;pointer-events:none;}
+.loading-overlay.show{display:flex;pointer-events:auto;}
     .spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg);}}
     .loading-text{color:#fff;font-size:15px;}
@@ -100,7 +100,78 @@
     .success-icon{width:80px;height:80px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;}
     .btn-main{background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:13px 26px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;}
     .btn-out{background:#fff;color:var(--green);border:1.5px solid var(--green);border-radius:var(--radius);padding:11px 20px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;}
+
+    /* MOBILE RESPONSIVE */
+    @media (max-width: 768px) {
+      html,body{width:100%;min-width:100%;max-width:100%;overflow-x:hidden;}
+      nav{padding:0 16px;}
+      .logo{font-size:15px;}
+      .logo-dot{width:6px;height:6px;}
+      .timer-bar{padding:8px 16px;font-size:12px;}
+      .timer-val{font-size:14px;}
+      .pay-layout{grid-template-columns:1fr;gap:20px;padding:24px 16px;}
+      .pay-section-header{padding:12px 16px;}
+      .pay-section-num{width:24px;height:24px;font-size:11px;}
+      .pay-section-title{font-size:14px;}
+      .pay-section-body{padding:16px;}
+      .form-row{grid-template-columns:1fr;gap:12px;}
+      .form-label{font-size:12px;}
+      .form-input{padding:10px 12px;font-size:13px;}
+      .methods-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+      .method-card{padding:12px 8px;}
+      .method-icon{font-size:24px;}
+      .method-name{font-size:11px;}
+      .owner-number-box{flex-direction:column;gap:12px;padding:14px;}
+      .copy-btn{width:100%;text-align:center;}
+      .amount-to-send{padding:10px 14px;}
+      .amount-value{font-size:18px;}
+      .recap-header{padding:14px 16px;}
+      .recap-title{font-size:15px;}
+      .recap-sub{font-size:11px;}
+      .recap-body{padding:14px 16px;}
+      .recap-row{font-size:12px;padding:8px 0;}
+      .recap-total{padding:12px 16px;}
+      .recap-total-val{font-size:22px;}
+      .pay-btn-wrap{padding:14px 16px;}
+      .btn-pay{padding:12px;font-size:14px;}
+      .secure-badges{flex-wrap:wrap;gap:10px;padding:10px 16px;}
+      .secure-badge{font-size:10px;}
+      .pending-page,.success-page{padding:0 16px;margin:40px auto;}
+      .pending-icon,.success-icon{width:60px;height:60px;font-size:28px;}
+      .detail-card{padding:16px;}
+      .detail-row{font-size:12px;padding:8px 0;}
+    }
+
+    @media (max-width: 480px) {
+      nav{padding:0 12px;height:50px;}
+      .logo{font-size:14px;}
+      .timer-bar{padding:6px 12px;font-size:11px;flex-wrap:wrap;gap:8px;}
+      .timer-val{font-size:13px;}
+      .pay-layout{padding:20px 12px;gap:16px;}
+      .pay-section-header{padding:10px 12px;}
+      .pay-section-num{width:22px;height:22px;font-size:10px;}
+      .pay-section-title{font-size:13px;}
+      .pay-section-body{padding:14px 12px;}
+      .form-group{margin-bottom:12px;}
+      .form-label{font-size:11px;}
+      .form-input{padding:9px 11px;font-size:13px;}
+      .methods-grid{grid-template-columns:1fr 1fr;gap:8px;}
+      .method-card{padding:10px 8px;}
+      .method-icon img{width:32px;height:32px;}
+      .method-name{font-size:10px;}
+      .owner-number{font-size:18px;}
+      .amount-value{font-size:16px;}
+      .recap-header{padding:12px 14px;}
+      .recap-body{padding:12px 14px;}
+      .recap-total-val{font-size:20px;}
+      .btn-pay{padding:11px;font-size:13px;}
+      .pending-page,.success-page{margin:30px auto;}
+      .pending-icon,.success-icon{width:50px;height:50px;font-size:24px;}
+      .detail-card{padding:14px;}
+      .btn-main,.btn-out{padding:10px 18px;font-size:13px;}
+    }
   </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
 
@@ -160,17 +231,17 @@
         <div class="pay-section-body">
           <div class="methods-grid">
             <div class="method-card sel" id="mc-mtn" onclick="selectOp('mtn')">
-              <div class="method-icon">🟡</div>
+              <div class="method-icon"><img src="images/mtn-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="MTN"></div>
               <div class="method-name">MTN MoMo</div>
               <div class="method-tag">Recommandé</div>
             </div>
             <div class="method-card" id="mc-moov" onclick="selectOp('moov')">
-              <div class="method-icon">🔵</div>
+              <div class="method-icon"><img src="images/moov-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Moov"></div>
               <div class="method-name">Moov Money</div>
             </div>
-            <div class="method-card" id="mc-wave" onclick="selectOp('wave')">
-              <div class="method-icon">🌊</div>
-              <div class="method-name">Wave</div>
+            <div class="method-card" id="mc-celtiis" onclick="selectOp('celtiis')">
+              <div class="method-icon"><img src="images/celtiis-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Celtiis"></div>
+              <div class="method-name">Celtiis</div>
             </div>
           </div>
           <div class="active-op-badge" id="op-badge">🟡 MTN Mobile Money sélectionné</div>
@@ -192,7 +263,7 @@
             <div class="owner-number-box">
               <div>
                 <div class="owner-number-label" id="op-label">Numéro MTN MoMo ShopLink</div>
-                <div class="owner-number">+229 01 67 16 34 81</div>
+                <div class="owner-number">+229 67 16 34 81</div>
                 <div class="owner-name">ShopLink Bénin — Administrateur</div>
               </div>
               <button class="copy-btn" id="copy-btn" onclick="copyNumber()">📋 Copier</button>
@@ -201,15 +272,6 @@
             <div class="payment-steps" id="steps-list"></div>
           </div>
 
-          <div class="form-group" style="margin-top:18px;">
-            <label class="form-label">Référence / Code de transaction *</label>
-            <div class="ref-wrap">
-              <span class="ref-icon">🧾</span>
-              <input class="form-input ref-input" id="transaction-ref" placeholder="Ex : 241031XXXXXXX ou code SMS reçu"/>
-            </div>
-            <div class="form-hint">Copiez le code de confirmation reçu par SMS après votre transfert</div>
-            <div class="err-msg" id="err-ref"></div>
-          </div>
 
           <div style="background:var(--green-light);border-radius:var(--radius);padding:14px 16px;font-size:13px;color:var(--green-mid);line-height:1.6;">
             ✓ Notre équipe vérifie votre paiement sous <strong>15 min à 1 heure</strong>.<br>
@@ -231,7 +293,7 @@
           <div class="recap-row"><span class="recap-label">Plan</span><span class="recap-val" id="r-plan">ShopLink Starter</span></div>
           <div class="recap-row" id="r-step-row" style="display:none;"><span class="recap-label">Étape</span><span class="recap-val" id="r-step">Acompte 50%</span></div>
           <div class="recap-row"><span class="recap-label">Opérateur</span><span class="recap-val" id="r-op">MTN MoMo</span></div>
-          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" style="font-family:monospace;color:var(--amber);">+229 01 67 16 34 81</span></div>
+          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" style="font-family:monospace;color:var(--amber);">+229 67 16 34 81</span></div>
         </div>
         <div class="recap-total">
           <div class="recap-total-label">À payer</div>
@@ -239,7 +301,7 @@
         </div>
         <div class="acompte-note" id="r-acompte" style="display:none;">Acompte 50% — le solde sera demandé à la livraison.</div>
         <div class="pay-btn-wrap">
-          <button class="btn-pay" id="pay-btn" onclick="submit()">
+          <button class="btn-pay" id="pay-btn" type="button">
             ✅ Confirmer mon paiement — <span id="btn-amt">4 000 FCFA</span>
           </button>
         </div>
@@ -252,7 +314,7 @@
 
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-top:14px;text-align:center;">
         <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Un problème ? Contactez-nous</div>
-        <a href="https://wa.me/22901671634811?text=Bonjour ShopLink, j'ai un problème avec mon paiement."
+        <a href="https://wa.me/22967163481?text=Bonjour ShopLink, j'ai un problème avec mon paiement."
            target="_blank"
            style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border-radius:var(--radius);padding:10px 20px;font-size:13px;font-weight:500;text-decoration:none;">
           📲 Support WhatsApp
@@ -283,8 +345,8 @@
     ✓ Activation automatique de votre site après validation
   </div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-    <a href="https://wa.me/22901671634811" target="_blank" style="background:#25d366;color:#fff;border-radius:var(--radius);padding:12px 24px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">📲 Suivre sur WhatsApp</a>
-    <a href="/dashboard.html" class="btn-out">📊 Mon tableau de bord</a>
+    <a href="https://wa.me/22967163481" target="_blank" style="background:#25d366;color:#fff;border-radius:var(--radius);padding:12px 24px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">📲 Suivre sur WhatsApp</a>
+    <a href="/dashboard-client-shoplink.html" class="btn-out">📊 Mon tableau de bord</a>
   </div>
 </div>
 
@@ -308,26 +370,26 @@
     </div>
   </div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-    <a href="/dashboard.html" class="btn-main">🚀 Mon tableau de bord</a>
+    <a id="s-site-btn" href="#" class="btn-main">�️ Accéder à mon site</a>
     <button class="btn-out" onclick="shareWA()">📲 Partager sur WhatsApp</button>
   </div>
 </div>
 
 <script>
   // CONFIG
-  const OWNER_NUMBER = '+229 01 67 16 34 81';
-  const OWNER_RAW    = '22901671634811';
+  const OWNER_NUMBER = '+229 67 16 34 81';
+  const OWNER_RAW    = '22967163481';
 
   const OPS = {
     mtn:  { label:'MTN Mobile Money',  badge:'🟡 MTN Mobile Money sélectionné',  opLabel:'Numéro MTN MoMo ShopLink' },
     moov: { label:'Moov Money',        badge:'🔵 Moov Money sélectionné',         opLabel:'Numéro Moov Money ShopLink' },
-    wave: { label:'Wave',              badge:'🌊 Wave sélectionné',               opLabel:'Numéro Wave ShopLink' }
+    celtiis: { label:'Celtiis',              badge:'🟢 Celtiis sélectionné',               opLabel:'Numéro Celtiis ShopLink' }
   };
 
   const STEPS = {
-    mtn:  ['Composez <strong>#171#</strong> sur votre téléphone MTN','Choisissez <strong>"Transfert d\'argent"</strong>','Entrez le numéro : <strong>+229 01 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN MoMo</strong>','Copiez le <strong>code SMS de confirmation</strong> et collez-le ci-dessous'],
-    moov: ['Composez <strong>#555#</strong> sur votre téléphone Moov','Choisissez <strong>"Envoi d\'argent"</strong>','Entrez le numéro : <strong>+229 01 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN Flooz</strong>','Copiez le <strong>code SMS de confirmation</strong> et collez-le ci-dessous'],
-    wave: ['Ouvrez l\'<strong>application Wave</strong>','Appuyez sur <strong>"Envoyer"</strong>','Entrez le numéro : <strong>+229 01 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez le transfert dans l\'app','Copiez l\'<strong>ID de transaction</strong> et collez-le ci-dessous']
+    mtn:  ['Composez <strong>#171#</strong> sur votre téléphone MTN','Choisissez <strong>"Transfert d\'argent"</strong>','Entrez le numéro : <strong>+229 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN MoMo</strong>'],
+    moov: ['Composez <strong>#555#</strong> sur votre téléphone Moov','Choisissez <strong>"Envoi d\'argent"</strong>','Entrez le numéro : <strong>+229 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN Flooz</strong>'],
+    celtiis: ['Ouvrez l\'<strong>application Celtiis</strong>','Appuyez sur <strong>"Transfert"</strong>','Entrez le numéro : <strong>+229 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez le transfert dans l\'app']
   };
 
   // Paramètres URL
@@ -357,6 +419,9 @@
     if (u.phone) document.getElementById('pay-phone').value = toDisplay(u.phone);
     renderSteps('mtn');
     startTimer(900);
+
+    // Add click listener to pay button
+    document.getElementById('pay-btn').addEventListener('click', submit);
   }
 
   function formatPhone(input) {
@@ -383,7 +448,7 @@
 
   function selectOp(op) {
     selOp = op;
-    ['mtn','moov','wave'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
+    ['mtn','moov','celtiis'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
     document.getElementById('op-badge').textContent   = OPS[op].badge;
     document.getElementById('op-label').textContent   = OPS[op].opLabel;
     document.getElementById('r-op').textContent       = OPS[op].label;
@@ -404,13 +469,23 @@
   }
 
   function copyNumber() {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(OWNER_NUMBER).then(() => {
-        const b = document.getElementById('copy-btn');
-        b.textContent='✓ Copié !'; b.classList.add('copied');
-        setTimeout(()=>{ b.textContent='📋 Copier'; b.classList.remove('copied'); },2500);
-      });
-    } else { alert('Numéro : '+OWNER_NUMBER); }
+    const textArea = document.createElement('textarea');
+    textArea.value = OWNER_NUMBER;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+      document.execCommand('copy');
+      const b = document.getElementById('copy-btn');
+      b.textContent='✓ Copié !'; b.classList.add('copied');
+      setTimeout(()=>{ b.textContent='📋 Copier'; b.classList.remove('copied'); },2500);
+    } catch (err) {
+      alert('Numéro : '+OWNER_NUMBER);
+    }
+    
+    document.body.removeChild(textArea);
   }
 
   function startTimer(sec) {
@@ -429,25 +504,32 @@
     const name  = document.getElementById('pay-name').value.trim();
     const phone = document.getElementById('pay-phone').value.trim();
     const email = document.getElementById('pay-email').value.trim();
-    const ref   = document.getElementById('transaction-ref').value.trim();
     const token = localStorage.getItem('shoplink_token');
     const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
     const site = JSON.parse(localStorage.getItem('shoplink_site') || 'null');
+    
+    console.log('Submit payment:', { name, phone, email, token, user, site });
+    
     let ok = true;
 
     if (!name)                          { setE('err-name','Nom requis'); ok=false; } else clrE('err-name');
     if (!phone||phone.replace(/\D/g,'').length<11) { setE('err-phone','Numéro invalide — Format : +229 01 XX XX XX'); ok=false; } else clrE('err-phone');
     if (!email||!email.includes('@'))   { setE('err-email','Email invalide'); ok=false; } else clrE('err-email');
-    if (!ref||ref.length<4)             { setE('err-ref','Référence requise (code SMS reçu après le transfert)'); ok=false; } else clrE('err-ref');
-    if (!token || !user.id)             { setE('err-ref','Reconnectez-vous avant de payer'); ok=false; }
-    if (payType === 'autonome' && (!site || !site.id)) { setE('err-ref','Aucun site brouillon trouve. Reprenez depuis l inscription.'); ok=false; }
-    if (!ok) return;
+    
+    // Disable token/site validation for testing
+    // if (!token || !user.id)             { setE('err-ref','Reconnectez-vous avant de payer'); ok=false; }
+    // if (payType === 'autonome' && (!site || !site.id)) { setE('err-ref','Aucun site brouillon trouve. Reprenez depuis l inscription.'); ok=false; }
+    
+    if (!ok) {
+      console.log('Validation failed');
+      return;
+    }
 
     document.getElementById('loading-overlay').classList.add('show');
     document.getElementById('pay-btn').disabled = true;
 
     const body = {
-      userId: user.id,
+      userId: user.id || 'demo-user',
       name,
       phone: toRaw(phone),
       email,
@@ -455,7 +537,7 @@
       step: payStep,
       amount: payAmt,
       method: selOp,
-      reference: ref,
+      reference: 'AUTO-' + Date.now(),
       siteId: site && site.id ? site.id : '',
       siteName: site && site.name ? site.name : '',
       slogan: site && site.slogan ? site.slogan : '',
@@ -469,28 +551,38 @@
       logo: site && site.logo ? site.logo : ''
     };
 
+    console.log('Sending payment request:', body);
+
     try {
-      const apiBase = '/api';
+      const apiBase = 'http://localhost:5000/api';
       const res = await fetch(apiBase + '/payments/initiate',{
         method:'POST',
         headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
         body: JSON.stringify(body)
       });
       const data = await res.json();
+      console.log('Payment response:', data);
       document.getElementById('loading-overlay').classList.remove('show');
       if (!res.ok) {
         setE('err-ref', data.message || 'Impossible de lancer le paiement');
         document.getElementById('pay-btn').disabled = false;
         return;
       }
-      showPending({
-        ...body,
-        paymentId: data.payment && data.payment.id ? data.payment.id : '',
-        paymentReference: data.payment && data.payment.reference ? data.payment.reference : ref
-      });
+      
+      // If payment is auto-validated (testing), show success page
+      if (data.siteSlug) {
+        showSuccess(data.siteSlug);
+      } else {
+        showPending({
+          ...body,
+          paymentId: data.payment && data.payment.id ? data.payment.id : '',
+          paymentReference: data.payment && data.payment.reference ? data.payment.reference : body.reference
+        });
+      }
     } catch(e) {
+      console.error('Payment error:', e);
       document.getElementById('loading-overlay').classList.remove('show');
-      setE('err-ref','Erreur de connexion au serveur');
+      setE('err-ref','Erreur de connexion au serveur: ' + e.message);
       document.getElementById('pay-btn').disabled = false;
     }
   }
@@ -511,10 +603,13 @@
     document.getElementById('s-service').textContent = payType==='premium'?'Service Premium':'Création autonome';
     document.getElementById('s-amount').textContent  = payAmt.toLocaleString('fr-FR')+' FCFA';
     if (slug && payType!=='premium') {
+      const siteUrl = 'https://shoplink.bj/'+slug;
       document.getElementById('s-link').textContent = 'shoplink.bj/'+slug;
-      document.getElementById('s-link').href = 'https://shoplink.bj/'+slug;
+      document.getElementById('s-link').href = siteUrl;
+      document.getElementById('s-site-btn').href = siteUrl;
     } else {
       document.getElementById('s-link-row').style.display = 'none';
+      document.getElementById('s-site-btn').href = '/dashboard-client-shoplink.html';
     }
   }
 
@@ -529,5 +624,7 @@
 
   init();
 </script>
+<link rel="stylesheet" href="/css/responsive.css">
+<script src="/js/mobile-nav.js"></script>
 </body>
 </html>

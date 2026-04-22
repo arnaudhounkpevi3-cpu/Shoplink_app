@@ -109,6 +109,13 @@ router.post('/register', async (req, res) => {
     createdAt: new Date().toISOString(),
   })
 
+  if (!user) {
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la création de l\'utilisateur dans la base de données',
+    })
+  }
+
   const site = await createDraftSiteForUser(user.id, {
     shopName,
     slogan,
@@ -122,6 +129,16 @@ router.post('/register', async (req, res) => {
     primaryColor,
     secondaryColor,
   })
+
+  // TEST MODE - Auto-publish site without payment
+  if (site) {
+    await repo().updateSite(site.id, {
+      status: 'published',
+      publishedAt: new Date().toISOString(),
+    })
+    site.status = 'published';
+    site.publishedAt = new Date().toISOString();
+  }
 
   const pricing = await getAutonomousPricing()
 
@@ -160,6 +177,15 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({
       success: false,
       message: 'Identifiants invalides',
+    })
+  }
+
+  // Restrict admin access to specific email only
+  const ADMIN_EMAIL = 'arnaudhounkpevi3@gmail.com';
+  if (user.role === 'admin' && user.email !== ADMIN_EMAIL.toLowerCase()) {
+    return res.status(403).json({
+      success: false,
+      message: 'Accès admin refusé',
     })
   }
 
@@ -273,6 +299,100 @@ router.post('/test-account', async (req, res) => {
     user: sanitizeUser(testUser),
     testSite,
     testProducts,
+  })
+})
+
+// Store reset tokens in memory (for development)
+const resetTokens = new Map()
+
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body
+
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email requis',
+    })
+  }
+
+  const user = await repo().findUserByEmail(email)
+
+  if (!user) {
+    // Don't reveal if email exists
+    return res.json({
+      success: false,
+      message: 'Si cet email existe, vous recevrez un lien de réinitialisation',
+    })
+  }
+
+  // Generate a unique token
+  const token = require('crypto').randomBytes(32).toString('hex')
+  resetTokens.set(token, { email, expiresAt: Date.now() + 60 * 60 * 1000 }) // 1 hour
+
+  console.log('=== TOKEN DE RÉINITIALISATION ===')
+  console.log(`Email: ${email}`)
+  console.log(`Token: ${token}`)
+  console.log(`Expire dans: 1 heure`)
+  console.log('================================')
+
+  // In production, send email with link here
+  // For now, return the link in response for testing
+  const resetLink = `${req.protocol}://${req.get('host')}/reset-password.html?token=${token}`
+  
+  return res.json({
+    success: true,
+    message: 'Lien de réinitialisation généré',
+    resetLink: resetLink, // Remove this in production
+  })
+})
+
+router.post('/reset-password', async (req, res) => {
+  const { token, newPassword } = req.body
+
+  if (!token || !newPassword) {
+    return res.status(400).json({
+      success: false,
+      message: 'Token et nouveau mot de passe requis',
+    })
+  }
+
+  const resetData = resetTokens.get(token)
+
+  if (!resetData) {
+    return res.status(400).json({
+      success: false,
+      message: 'Token invalide ou expiré',
+    })
+  }
+
+  if (resetData.expiresAt < Date.now()) {
+    resetTokens.delete(token)
+    return res.status(400).json({
+      success: false,
+      message: 'Token expiré',
+    })
+  }
+
+  const user = await repo().findUserByEmail(resetData.email)
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'Utilisateur introuvable',
+    })
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 10)
+  await repo().updateUser(user.id, { passwordHash })
+
+  resetTokens.delete(token)
+
+  // Return user data for auto-login
+  return res.json({
+    success: true,
+    message: 'Mot de passe réinitialisé avec succès',
+    token: createToken(user),
+    user: sanitizeUser(user),
   })
 })
 

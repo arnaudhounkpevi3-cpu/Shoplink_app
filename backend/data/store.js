@@ -95,6 +95,7 @@ const seedState = {
       deliveryTargetAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
     },
   ],
+  tickets: [],
 }
 
 function loadState() {
@@ -113,6 +114,7 @@ let userCounter = state.users.length + 1
 let siteCounter = state.sites.length + 1
 let productCounter = state.products.length + 1
 let paymentCounter = state.payments.length + 1
+let ticketCounter = state.tickets ? state.tickets.length + 1 : 1
 
 function nextUserId() {
   return `user-${userCounter++}`
@@ -128,6 +130,10 @@ function nextProductId() {
 
 function nextPaymentId() {
   return `payment-${paymentCounter++}`
+}
+
+function nextTicketId() {
+  return `ticket-${ticketCounter++}`
 }
 
 function sanitizeUser(user) {
@@ -149,6 +155,7 @@ module.exports = {
   nextSiteId,
   nextProductId,
   nextPaymentId,
+  nextTicketId,
   sanitizeUser,
   saveState,
 }
