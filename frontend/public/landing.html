@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="ShopLink - Créez votre boutique en ligne en 5 minutes. Digitalisez votre entreprise au Bénin avec paiement mobile intégré (Moov, MTN).">
+    <meta name="keywords" content="boutique en ligne, e-commerce Bénin, paiement mobile, Moov, MTN, digitalisation, commerce électronique">
+    <meta name="author" content="ShopLink">
+    <meta property="og:title" content="ShopLink - Votre boutique en ligne en 5 minutes">
+    <meta property="og:description" content="Digitalisez votre entreprise au Bénin avec ShopLink. Paiement mobile intégré, design moderne, simple et rapide.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shoplink.bj">
+    <title>ShopLink - Votre boutique en ligne en 5 minutes | Digitalisez votre entreprise au Bénin</title>
+    
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css" />
+    <link rel="stylesheet" href="/css/responsive.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a5c38;
+            --primary-dark: #155030;
+            --accent: #f59c1a;
+            --accent-hover: #e08a10;
+            --text-dark: #1a1a1a;
+            --text-light: #6b5744;
+            --text-muted: #9a7d5a;
+            --bg-light: #f5f0ea;
+            --bg-white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-white);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-logo-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-cta {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: #e8ddd0;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 120px 24px 80px;
+            background: linear-gradient(135deg, #eef7f1 0%, #f5f0ea 100%);
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-light);
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            justify-content: center;
+            margin-top: 48px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .hero-stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 24px;
+            background: var(--bg-white);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .section-title p {
+            font-size: 16px;
+            color: var(--text-light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-light);
+            padding: 32px;
+            border-radius: 16px;
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 80px 24px;
+            background: var(--bg-light);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .step-card {
+            background: var(--bg-white);
+            padding: 32px;
+            border-radius: 16px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 auto 16px;
+        }
+
+        .step-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .step-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 80px 24px;
+            background: var(--bg-white);
+        }
+
+        .faq-grid {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--bg-light);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .faq-question {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .faq-answer {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        .pricing {
+            padding: 80px 24px;
+            background: var(--bg-light);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--bg-white);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--primary);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-4px);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .pricing-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .pricing-price {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .pricing-price span {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .pricing-description {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pricing-features li::before {
+            content: "✓";
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 80px 24px;
+            background: var(--bg-white);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: var(--bg-light);
+            padding: 32px;
+            border-radius: 16px;
+        }
+
+        .testimonial-text {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .testimonial-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .testimonial-role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 80px 24px;
+            background: var(--primary);
+            text-align: center;
+            color: white;
+        }
+
+        .cta h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta p {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .cta .btn-primary:hover {
+            background: #f5f0ea;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 48px 24px;
+            background: var(--text-dark);
+            color: white;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 48px;
+        }
+
+        .footer-section h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 32px auto 0;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 100px 16px 60px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero-stats {
+                gap: 24px;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .pricing-card.featured:hover {
+                transform: translateY(-4px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="/landing.html" class="nav-logo">
+            <span class="nav-logo-dot"></span>
+            ShopLink
+        </a>
+        <div class="nav-cta">
+            <a href="/login.html" class="btn btn-secondary">Connexion</a>
+            <a href="/register.html" class="btn btn-primary">Créer un compte</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-badge">🚀 Nouveau : Paiement mobile Moov & MTN</span>
+            <h1>Votre boutique en ligne <span>en 5 minutes</span></h1>
+            <p>Digitalisez votre entreprise au Bénin. Créez votre boutique, ajoutez vos produits, et commencez à vendre. Simple, rapide, et avec paiement mobile intégré.</p>
+            <div class="hero-buttons">
+                <a href="/register.html" class="btn btn-primary">Créer ma boutique gratuitement</a>
+                <a href="#features" class="btn btn-secondary">En savoir plus</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">500+</div>
+                    <div class="hero-stat-label">Boutiques créées</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">10k+</div>
+                    <div class="hero-stat-label">Produits en ligne</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">98%</div>
+                    <div class="hero-stat-label">Clients satisfaits</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-title">
+            <h2>Tout ce dont vous avez besoin</h2>
+            <p>Des fonctionnalités puissantes pour digitaliser votre business</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Création en 5 minutes</h3>
+                <p>Interface intuitive pour créer votre boutique sans compétences techniques. Ajoutez vos produits et commencez à vendre.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>100% Mobile</h3>
+                <p>Optimisé pour mobile. Vos clients peuvent commander depuis leur téléphone avec une expérience fluide.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3>Paiement Mobile</h3>
+                <p>Intégration Moov Money et MTN Mobile Money. Recevez vos paiements directement sur votre téléphone.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Statistiques</h3>
+                <p>Suivez vos performances : vues, clics, taux de conversion. Prenez des décisions basées sur les données.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Personnalisation</h3>
+                <p>Logo, couleurs, description. Créez une boutique qui reflète votre identité de marque.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Sécurisé</h3>
+                <p>Vos données sont protégées. Infrastructure sécurisée avec chiffrement des données sensibles.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="section-title">
+            <h2>Comment ça marche ?</h2>
+            <p>Trois étapes simples pour digitaliser votre business</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Créez votre compte</h3>
+                <p>Inscrivez-vous gratuitement en 2 minutes. Aucune carte bancaire requise.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Ajoutez vos produits</h3>
+                <p>Uploadez vos produits avec photos, descriptions et prix. Interface intuitive.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Commencez à vendre</h3>
+                <p>Partagez votre lien et recevez des paiements via Moov Money ou MTN.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="section-title">
+            <h2><i class="fi fi-rr-brand"></i> Tarifs simples et transparents</h2>
+            <p>Commencez gratuitement, évoluez selon vos besoins</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Starter</h3>
+                <div class="pricing-price">0 FCFA<span>/mois</span></div>
+                <p class="pricing-description">Parfait pour démarrer</p>
+                <ul class="pricing-features">
+                    <li>Jusqu'à 20 produits</li>
+                    <li>Design basique</li>
+                    <li>Statistiques simples</li>
+                    <li>Support email</li>
+                </ul>
+                <a href="/register.html" class="btn btn-secondary" style="width: 100%; display: block;">Commencer gratuitement</a>
+            </div>
+            <div class="pricing-card featured">
+                <span class="pricing-badge">Populaire</span>
+                <h3>Premium</h3>
+                <div class="pricing-price">4 000 FCFA<span>/mois</span></div>
+                <p class="pricing-description">Pour les entreprises en croissance</p>
+                <ul class="pricing-features">
+                    <li>Produits illimités</li>
+                    <li>Design avancé personnalisé</li>
+                    <li>Statistiques détaillées</li>
+                    <li>SEO optimisé</li>
+                    <li>Support prioritaire</li>
+                    <li>Google Maps intégré</li>
+                </ul>
+                <a href="/premium.html" class="btn btn-primary" style="width: 100%; display: block;">Choisir Premium</a>
+            </div>
+            <div class="pricing-card">
+                <h3>Pro</h3>
+                <div class="pricing-price">10 000 FCFA<span>/mois</span></div>
+                <p class="pricing-description">Pour les grandes entreprises</p>
+                <ul class="pricing-features">
+                    <li>Tout Premium +</li>
+                    <li>Multi-boutiques</li>
+                    <li>API accès</li>
+                    <li>Intégration CRM</li>
+                    <li>Account manager dédié</li>
+                </ul>
+                <a href="/register.html" class="btn btn-secondary" style="width: 100%; display: block;">Contacter nous</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="section-title">
+            <h2>Ce que disent nos clients</h2>
+            <p>Des entrepreneurs comme vous qui ont digitalisé leur business</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p class="testimonial-text">"ShopLink a transformé mon business de vente de pagnes. Je peux maintenant vendre en ligne et recevoir des paiements via Moov Money. Incroyablement simple!"</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">GK</div>
+                    <div>
+                        <div class="testimonial-name">Grace Koudjo</div>
+                        <div class="testimonial-role">Boutique Grâce Mode</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"J'ai créé ma boutique en 10 minutes. L'interface est intuitive et le support est très réactif. Mes ventes ont augmenté de 40% depuis que je suis en ligne."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">MA</div>
+                    <div>
+                        <div class="testimonial-name">Marc Adjovi</div>
+                        <div class="testimonial-role">ElectroMarket</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"Le paiement mobile intégré est un game-changer. Mes clients paient facilement et je reçois l'argent instantanément. Je recommande ShopLink à tous mes amis."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">FA</div>
+                    <div>
+                        <div class="testimonial-name">Fabiola Assogba</div>
+                        <div class="testimonial-role">Boutique Beauté</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2>Prêt à digitaliser votre business ?</h2>
+        <p>Rejoignez plus de 500 entrepreneurs au Bénin qui utilisent ShopLink pour vendre en ligne.</p>
+        <a href="/register.html" class="btn btn-primary">Créer ma boutique gratuitement</a>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="section-title">
+            <h2>Questions fréquentes</h2>
+            <p>Tout ce que vous devez savoir sur ShopLink</p>
+        </div>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <div class="faq-question">Est-ce vraiment gratuit ?</div>
+                <div class="faq-answer">Oui, le plan Starter est gratuit. Vous pouvez créer votre boutique, ajouter jusqu'à 20 produits et commencer à vendre sans payer.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Comment je reçois les paiements ?</div>
+                <div class="faq-answer">ShopLink intègre Moov Money et MTN Mobile Money. Les paiements sont reçus directement sur votre téléphone mobile.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Ai-je besoin de compétences techniques ?</div>
+                <div class="faq-answer">Non, ShopLink est conçu pour être simple. Aucune connaissance en code n'est requise. L'interface est intuitive.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Puis-je changer de plan plus tard ?</div>
+                <div class="faq-answer">Oui, vous pouvez passer à un plan Premium ou Pro à tout moment depuis votre dashboard.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Mes données sont-elles sécurisées ?</div>
+                <div class="faq-answer">Absolument. Nous utilisons un chiffrement de niveau bancaire pour protéger toutes vos données sensibles.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>ShopLink</h4>
+                <p style="color: rgba(255,255,255,0.7); font-size: 14px; line-height: 1.6;">
+                    Digitalisons le Bénin, une boutique à la fois. Créez votre boutique en ligne en 5 minutes.
+                </p>
+            </div>
+            <div class="footer-section">
+                <h4>Produit</h4>
+                <ul>
+                    <li><a href="#features">Fonctionnalités</a></li>
+                    <li><a href="#pricing"><i class="fi fi-rr-brand"></i> Tarifs</a></li>
+                    <li><a href="/premium.html">Premium</a></li>
+                    <li><a href="/faq.html">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Entreprise</h4>
+                <ul>
+                    <li><a href="#">À propos</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Carrières</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Légal</h4>
+                <ul>
+                    <li><a href="#">Conditions d'utilisation</a></li>
+                    <li><a href="#">Politique de confidentialité</a></li>
+                    <li><a href="#">CGV</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2026 ShopLink. Tous droits réservés. Fait avec ❤️ au Bénin.
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.nav');
+            if (window.scrollY > 50) {
+                nav.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
+            } else {
+                nav.style.boxShadow = '0 2px 10px rgba(0,0,0,0.05)';
+            }
+        });
+    </script>
+</body>
+</html>
