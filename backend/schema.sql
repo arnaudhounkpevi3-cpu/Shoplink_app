@@ -118,10 +118,15 @@ CREATE TABLE IF NOT EXISTS premium_orders (
 CREATE TABLE IF NOT EXISTS tracking (
   id          TEXT PRIMARY KEY,
   site_id     TEXT REFERENCES sites(id) ON DELETE CASCADE,
-  type        TEXT NOT NULL CHECK (type IN ('visit','whatsapp_click','share')),
+  product_id  TEXT REFERENCES products(id) ON DELETE SET NULL,
+  type        TEXT NOT NULL CHECK (type IN ('visit','whatsapp_click','product_view','link_share','time_spent')),
+  visitor_id  TEXT,
+  session_id  TEXT,
   ip_address  TEXT,
   user_agent  TEXT,
   referrer    TEXT,
+  platform    TEXT,
+  time_spent  INTEGER,
   created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -151,7 +156,11 @@ CREATE INDEX IF NOT EXISTS idx_sites_status    ON sites(status);
 CREATE INDEX IF NOT EXISTS idx_products_site   ON products(site_id);
 CREATE INDEX IF NOT EXISTS idx_payments_user   ON payments(user_id);
 CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
-CREATE INDEX IF NOT EXISTS idx_tracking_site   ON tracking(site_id);
+CREATE INDEX IF NOT EXISTS idx_tracking_site      ON tracking(site_id);
+CREATE INDEX IF NOT EXISTS idx_tracking_visitor  ON tracking(visitor_id);
+CREATE INDEX IF NOT EXISTS idx_tracking_session   ON tracking(session_id);
+CREATE INDEX IF NOT EXISTS idx_tracking_type     ON tracking(type);
+CREATE INDEX IF NOT EXISTS idx_tracking_created   ON tracking(created_at);
 CREATE INDEX IF NOT EXISTS idx_tickets_user    ON tickets(user_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_status  ON tickets(status);
 

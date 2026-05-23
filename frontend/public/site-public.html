@@ -312,6 +312,9 @@
         // Track site visit
         await trackVisit(data.site.id)
 
+        // Store siteId for time tracking
+        window.currentSiteId = data.site.id
+
         renderSite(data.site, data.products || [])
       } catch (error) {
         console.error('Erreur:', error)
@@ -323,31 +326,133 @@
       }
     }
 
+    // Get visitor ID (persistent across sessions)
+    function getVisitorId() {
+      let visitorId = localStorage.getItem('shoplink_visitor_id')
+      if (!visitorId) {
+        visitorId = 'visitor-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+        localStorage.setItem('shoplink_visitor_id', visitorId)
+      }
+      return visitorId
+    }
+
+    // Get session ID (resets on browser close)
+    function getSessionId() {
+      let sessionId = sessionStorage.getItem('shoplink_session_id')
+      if (!sessionId) {
+        sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+        sessionStorage.setItem('shoplink_session_id', sessionId)
+      }
+      return sessionId
+    }
+
+    // Check if WhatsApp click was already counted recently (24h)
+    function hasClickedRecently(productId) {
+      const key = `whatsapp_click_${productId}`
+      const lastClick = localStorage.getItem(key)
+      if (!lastClick) return false
+      
+      const hoursSinceClick = (Date.now() - parseInt(lastClick)) / (1000 * 60 * 60)
+      return hoursSinceClick < 24
+    }
+
     // Track site visit
     async function trackVisit(siteId) {
       try {
         await fetch(`${API_BASE}/tracking/visit`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ siteId })
+          body: JSON.stringify({ 
+            siteId,
+            sessionId: getSessionId(),
+            visitorId: getVisitorId(),
+            referrer: document.referrer,
+            userAgent: navigator.userAgent
+          })
         })
       } catch (error) {
         console.error('Error tracking visit:', error)
       }
     }
 
-    // Track WhatsApp click
+    // Track WhatsApp click with deduplication
     async function trackWhatsAppClick(siteId, productId = null) {
+      // Check if already clicked recently for this product
+      if (productId && hasClickedRecently(productId)) {
+        console.log('Clic déjà compté récemment pour ce produit')
+        return
+      }
+      
       try {
         await fetch(`${API_BASE}/tracking/whatsapp-click`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ siteId, productId })
+          body: JSON.stringify({ 
+            siteId, 
+            productId,
+            sessionId: getSessionId(),
+            visitorId: getVisitorId()
+          })
         })
+        
+        // Mark as clicked for deduplication
+        if (productId) {
+          localStorage.setItem(`whatsapp_click_${productId}`, Date.now())
+        }
       } catch (error) {
         console.error('Error tracking WhatsApp click:', error)
       }
     }
+
+    // Track product view
+    async function trackProductView(siteId, productId) {
+      try {
+        await fetch(`${API_BASE}/tracking/product-view`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            siteId, 
+            productId,
+            sessionId: getSessionId(),
+            visitorId: getVisitorId()
+          })
+        })
+      } catch (error) {
+        console.error('Error tracking product view:', error)
+      }
+    }
+
+    // Track link share
+    async function trackLinkShare(siteId, platform) {
+      try {
+        await fetch(`${API_BASE}/tracking/link-share`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            siteId,
+            platform,
+            sessionId: getSessionId(),
+            visitorId: getVisitorId()
+          })
+        })
+      } catch (error) {
+        console.error('Error tracking link share:', error)
+      }
+    }
+
+    // Track time spent on page
+    let startTime = Date.now()
+    window.addEventListener('beforeunload', () => {
+      const timeSpent = Date.now() - startTime
+      if (timeSpent > 2000) { // Only track if spent more than 2 seconds
+        navigator.sendBeacon(`${API_BASE}/tracking/time-spent`, JSON.stringify({
+          siteId: window.currentSiteId,
+          timeSpent,
+          sessionId: getSessionId(),
+          visitorId: getVisitorId()
+        }))
+      }
+    })
 
     // Afficher le site
     function renderSite(site, products) {
@@ -414,7 +519,7 @@
               ${products
                 .map(
                   (product) => `
-                <div class="product-card">
+                <div class="product-card" onclick="trackProductView('${site.id}', '${product.id}')">
                   <div class="product-image">
                     ${
                       product.image
@@ -429,7 +534,7 @@
                     <p class="product-description">${product.description || ''}</p>
                     <div class="product-action">
                       <button class="btn-order"
-                              onclick="orderOnWhatsApp('${product.whatsappLink}')">
+                              onclick="event.stopPropagation(); trackWhatsAppClick('${site.id}', '${product.id}'); orderOnWhatsApp('${product.whatsappLink}')">
                         🛒 Commander
                       </button>
                     </div>

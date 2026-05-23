@@ -461,6 +461,14 @@
       setMetric('Vues totales', stats.views);
       setMetric('Commandes reçues', stats.whatsappClicks);
       setMetric('Top produit', stats.topProduct?.name || 'Aucun');
+      
+      // New metrics from backend tracking
+      if (stats.uniqueVisitors !== undefined) {
+        setMetric('Visiteurs uniques', stats.uniqueVisitors);
+      }
+      if (stats.conversionRate !== undefined) {
+        setMetric('Taux de conversion', stats.conversionRate + '%');
+      }
       setMetric('Produits publiés', stats.products);
       setMetric('Partages du lien', stats.shares);
       renderTrafficSources(stats.sourceClicks || {});
@@ -491,9 +499,28 @@
         stats.sourceBreakdown = data.stats.sourceBreakdown || {};
         stats.sourceClicks = data.stats.sourceClicks || {};
         stats.productViews = data.stats.productViews || {};
+        
+        // New metrics from backend tracking
+        if (data.stats.uniqueVisitors !== undefined) {
+          stats.uniqueVisitors = Number(data.stats.uniqueVisitors);
+        }
+        
         saveStats(stats);
         updateProductViewCounters(stats.productViews);
         renderClientStats();
+        
+        // Also fetch conversion stats
+        try {
+          const convRes = await fetch(`/api/tracking/stats/${encodeURIComponent(context.siteId)}/conversion`);
+          const convData = await convRes.json();
+          if (convData.success) {
+            stats.conversionRate = convData.stats.conversionRate;
+            saveStats(stats);
+            renderClientStats();
+          }
+        } catch (_error) {
+          // Ignore conversion stats error
+        }
       } catch (_error) {
         // Keep local stats if backend tracking is temporarily unavailable.
       }
