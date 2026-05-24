@@ -1,0 +1,2664 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopLink - Tableau de bord client</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css" />
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-brands/css/uicons-brands.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <script src="/js/api-config.js"></script>
+  <style>
+    :root{--font-sans:'DM Sans',sans-serif;--font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;--green:#1a5c38;--green-2:#0f6e56;--amber:#f59c1a;--ocre:#8b5e2a;--bg:#fdf6ee;--card:#fff;--border:#e8ddd0;--text:#1a1a1a;--muted:#6b5744;--soft:#9a7d5a;}
+    *{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;min-width:320px;overflow-x:hidden}body{font-family:var(--font-sans);background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}.topnav{background:var(--green);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:80}.logo{font-size:17px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px}.logo-dot{width:8px;height:8px;background:var(--amber);border-radius:50%}.nav-links{display:flex;gap:2px}.nav-link{padding:8px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,.68);cursor:pointer;transition:all .15s;font-weight:500;display:flex;align-items:center;gap:6px;border:0;background:transparent;font-family:inherit}.nav-link:hover,.nav-link.active{background:rgba(255,255,255,.15);color:#fff}.nav-right{display:flex;align-items:center;gap:10px}.site-live{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:100px;padding:5px 12px;font-size:12px;color:#fff;white-space:nowrap}.live-dot{width:7px;height:7px;background:#6dd9a8;border-radius:50%;animation:pulse 2s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#412402}.subbar{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:20px;min-height:46px}.subbar-greeting{font-size:13px;color:var(--muted)}.subbar-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--green);font-weight:700;background:#eef7f1;border-radius:100px;padding:4px 12px;cursor:pointer}.subbar-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:var(--amber);color:#412402;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer}.main{padding:24px 28px 96px;display:flex;flex-direction:column;gap:20px}.page{display:none;flex-direction:column;gap:20px}.page.active{display:flex}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.mcard{border-radius:14px;padding:18px 16px;position:relative;overflow:hidden}.mcard-green{background:var(--green);color:#fff}.mcard-amber{background:var(--amber);color:#412402}.mcard-ocre{background:var(--ocre);color:#fff}.mcard-cream{background:#fff;border:1px solid var(--border)}.mcard-label{font-size:11px;opacity:.75;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}.mcard-val{font-size:28px;font-weight:700;line-height:1}.mcard-sub{font-size:11px;opacity:.7;margin-top:5px}.mcard-icon{position:absolute;right:14px;top:14px;font-size:22px;opacity:.3}.two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}.card{background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden}.card-head{padding:14px 18px;border-bottom:1px solid #f0e8df;display:flex;align-items:center;justify-content:space-between;gap:12px}.card-title{font-size:14px;font-weight:700;color:var(--text)}.card-body{padding:16px 18px}.badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:100px;font-weight:700}.bg-green{background:#eef7f1;color:#0f6e56}.bg-amber{background:#fef3de;color:#854f0b}.bg-red{background:#fde8e8;color:#a32d2d}.bg-gray{background:#f5f0ea;color:var(--muted)}.prod-row{display:grid;grid-template-columns:40px 1fr auto auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #f5f0ea}.prod-row:last-child{border-bottom:none}.prod-thumb{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:#f5f0ea}.prod-name{font-size:13px;font-weight:700}.prod-cat{font-size:11px;color:var(--soft)}.prod-price{font-size:13px;font-weight:700;color:var(--green);white-space:nowrap}.prod-views{font-size:11px;color:var(--soft);white-space:nowrap}.iBtn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px}.act-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #f5f0ea}.act-item:last-child{border-bottom:none}.act-ico{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}.act-ico.v{background:#eef7f1}.act-ico.o{background:#fef3de}.act-ico.s{background:#f5ece0}.act-text{font-size:13px}.act-time{font-size:11px;color:var(--soft)}.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}.form-label{font-size:12px;color:var(--muted);font-weight:700}.form-input{padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit}.form-input:focus{border-color:var(--green);background:#fff}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.phone-wrap{display:flex;justify-content:center;padding:16px 0}.phone{width:200px;background:#1a1a1a;border-radius:30px;padding:8px}.phone-screen{background:#fff;border-radius:23px;overflow:hidden;min-height:340px}.phone-head{padding:14px 12px 10px}.phone-head-name{font-size:14px;font-weight:700}.phone-head-sub{font-size:10px;opacity:.75}.phone-prods{padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}.phone-prod{border-radius:9px;overflow:hidden;border:1px solid #f0e8df}.phone-prod-img{height:52px;display:flex;align-items:center;justify-content:center;font-size:22px}.phone-prod-info{padding:5px 7px 7px}.phone-prod-name,.phone-prod-price{font-size:9px;font-weight:700}.phone-prod-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:5px;padding:3px;font-size:8px;margin-top:3px}.color-swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2.5px solid transparent}.color-swatch.sel{border-color:#1a1a1a}.pub-banner{background:var(--green);border-radius:14px;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}.pub-banner-text{color:#fff}.pub-banner-title{font-size:15px;font-weight:700;margin-bottom:3px}.pub-banner-sub{font-size:12px;opacity:.75}.pub-btn{background:var(--amber);color:#412402;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}.stat-bar-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}.stat-bar-top{display:flex;justify-content:space-between;font-size:12px;gap:12px}.stat-bar-label{color:var(--muted)}.stat-bar-val{font-weight:700}.bar-bg{background:#f5f0ea;border-radius:100px;height:6px;overflow:hidden}.bar-fill{height:100%;border-radius:100px}.fill-green{background:var(--green)}.fill-amber{background:var(--amber)}.fill-ocre{background:var(--ocre)}.wa-btn{display:inline-flex;align-items:center;gap:7px;background:#25d366;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer}.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.step-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}.step-num{width:32px;height:32px;border-radius:50%;background:var(--green);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}.step-ico{font-size:24px;margin-bottom:8px}.step-title{font-size:13px;font-weight:700;margin-bottom:4px}.step-desc{font-size:11px;color:var(--soft);line-height:1.5}.add-form{background:#fff;border:1px solid var(--border);border-radius:16px;padding:20px 22px}.add-form-title{font-size:15px;font-weight:700;margin-bottom:18px}.upload-zone{border:2px dashed #c8b89a;border-radius:12px;padding:24px;text-align:center;background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);cursor:pointer}.upload-zone-icon{font-size:28px;margin-bottom:8px}.upload-zone-text{font-size:12px;color:var(--soft)}.form-btn-row{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}.btn-primary{background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer}.btn-sec{background:#fff;color:var(--text);border:1px solid var(--border);border-radius:9px;padding:10px 18px;font-size:13px;cursor:pointer}.support-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.support-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px}.mobile-client-topbar{display:none}.client-overlay{display:none}
+    @media(max-width:992px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.support-grid{grid-template-columns:1fr}.main{padding:20px 18px 96px}.prod-row{grid-template-columns:40px 1fr auto auto}.prod-views{display:none}}
+    @media(max-width:768px){.topnav{height:auto;min-height:58px;padding:12px 16px;gap:12px}.nav-links{display:none}.site-live{display:none}.subbar{padding:12px 16px;align-items:flex-start;flex-direction:column;gap:10px}.subbar-btn{width:100%;justify-content:center;margin-left:0}.subbar-link{max-width:100%;overflow:hidden;text-overflow:ellipsis}.main{padding:16px 14px 118px}.mobile-client-topbar{display:flex;position:sticky;top:0;z-index:120;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--green);color:#fff;box-shadow:0 8px 22px rgba(26,92,56,.16)}.client-menu-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:8px 12px;font-weight:700;font-family:inherit}.client-overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;opacity:0;pointer-events:none;transition:.2s}.client-overlay.open{opacity:1;pointer-events:auto}.topnav{position:fixed;left:0;top:0;width:min(82vw,320px);height:100vh;z-index:999;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;transform:translateX(-105%);transition:.24s ease;overflow-y:auto}.topnav.open{transform:translateX(0)}.topnav .logo{padding:4px 0 12px;border-bottom:1px solid rgba(255,255,255,.12)}.topnav .nav-links{display:flex;flex-direction:column;gap:6px}.nav-link{width:100%;justify-content:flex-start;padding:11px 12px}.nav-right{margin-top:auto;width:100%;justify-content:space-between;border-top:1px solid rgba(255,255,255,.12);padding-top:12px}.client-bottom-nav{display:flex}.metrics{grid-template-columns:1fr 1fr;gap:10px}.mcard{padding:15px 14px}.mcard-val{font-size:24px}.pub-banner{flex-direction:column;align-items:stretch}.pub-btn,.wa-btn,.btn-primary,.btn-sec{width:100%;justify-content:center;text-align:center}.card-head{align-items:flex-start;flex-direction:column}.form-row{grid-template-columns:1fr}.add-form>div[style*="grid-template-columns"]{display:grid!important;grid-template-columns:1fr!important}.prod-row{grid-template-columns:40px 1fr auto;gap:10px}.prod-price{grid-column:2}.prod-row>div:last-child{grid-column:3;grid-row:1 / span 2}.phone{width:210px;max-width:100%}.steps{grid-template-columns:1fr}.stat-bar-top{font-size:11px}.bottom-nav{display:none!important}}
+    @media(max-width:480px){.metrics{grid-template-columns:1fr}.topnav{width:min(88vw,315px)}.main{padding:12px 10px 96px}.card-body,.card-head{padding-left:14px;padding-right:14px}.add-form{padding:16px}.mcard-icon{font-size:18px}.prod-thumb{width:36px;height:36px}.subbar-greeting{font-size:12px}.support-card{padding:14px}}
+    .client-bottom-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:130;background:#fff;border-top:1px solid var(--border);box-shadow:0 -8px 22px rgba(26,92,56,.08);overflow:hidden;padding:6px 4px calc(6px + env(safe-area-inset-bottom));gap:2px;scrollbar-width:none}.client-bottom-nav::-webkit-scrollbar{display:none}.client-bottom-btn{flex:1 1 0;min-width:0;border:0;background:transparent;border-radius:10px;padding:6px 1px;color:var(--soft);font-family:inherit;font-size:8.7px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;white-space:nowrap;line-height:1.1}.client-bottom-btn.active{background:#eef7f1;color:var(--green)}.client-bottom-btn.logout{color:#b42318}.client-bottom-btn.logout.active{background:#fde8e8;color:#a32d2d}.client-bottom-btn span{font-size:15px;line-height:1}
+    @media(max-width:768px){.client-bottom-nav{display:flex!important;align-items:center;justify-content:space-between}.topnav .nav-links{display:flex!important;flex-direction:column!important;gap:6px!important}.topnav.open .nav-links{display:flex!important}.topnav .nav-link{pointer-events:auto!important;touch-action:manipulation}.client-bottom-btn{pointer-events:auto!important;touch-action:manipulation}.main{padding-bottom:116px!important}}
+    @media(max-width:360px){.client-bottom-btn{font-size:7.6px;padding:5px 0;border-radius:8px}.client-bottom-btn span{font-size:14px}.client-bottom-nav{gap:1px;padding-left:2px;padding-right:2px}}
+    .prod-thumb img,.upload-preview-img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}.upload-zone.has-image{padding:0;overflow:hidden;border-style:solid;background:#000;min-height:150px;position:relative}.upload-quality{position:absolute;left:8px;right:8px;bottom:8px;background:rgba(15,31,23,.82);color:#fff;border-radius:8px;padding:6px 8px;font-size:11px;text-align:center}.prod-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.35}.prod-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}.prod-meta span{font-size:10px;background:var(--green-light);color:var(--green);border-radius:999px;padding:2px 7px;font-weight:700}.custom-category-input{display:none;margin-top:8px;padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit}.custom-category-input:focus{border-color:var(--green);background:#fff}.custom-category-input.show{display:block}.activity-product-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:8px 0 14px}.activity-product-fields .form-group{margin-bottom:0}@media(max-width:768px){.activity-product-fields{grid-template-columns:1fr}}.catalog-filter-wrap{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:0 10px;color:var(--green);min-width:210px}.catalog-filter-wrap i{font-size:16px;line-height:1}.catalog-filter-wrap select{border:0!important;background:transparent!important;min-width:0!important;width:100%!important;padding-left:0!important;box-shadow:none!important}.site-logo-upload{display:flex;align-items:center;gap:14px;background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);border:1px dashed #c8b89a;border-radius:14px;padding:14px;margin-bottom:16px;cursor:pointer}.site-logo-preview{width:68px;height:68px;border-radius:16px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:24px;overflow:hidden;flex:0 0 auto}.site-logo-preview img{width:100%;height:100%;object-fit:cover}.site-logo-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}.site-logo-hint{font-size:12px;color:var(--soft);line-height:1.45}
+    .site-logo-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.site-logo-remove{display:none;border:1px solid #f3b6b6;background:#fff5f5;color:#a32d2d;border-radius:8px;padding:7px 10px;font:700 12px var(--font-sans);cursor:pointer}.site-logo-upload.has-logo .site-logo-remove{display:inline-flex;align-items:center;gap:5px}.phone-logo{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;margin-bottom:8px;overflow:hidden}.phone-logo img{width:100%;height:100%;object-fit:cover}.phone-prod-btn{display:flex!important;align-items:center;justify-content:center;gap:3px}.phone-prod-btn .fi{font-size:8px;line-height:1}.prod-thumb img{cursor:zoom-in}.act-ico img{width:18px;height:18px;object-fit:contain;display:block}.image-viewer-overlay{position:fixed;inset:0;background:rgba(15,31,23,.78);z-index:2500;display:none;align-items:center;justify-content:center;padding:18px}.image-viewer-overlay.open{display:flex}.image-viewer-card{width:min(92vw,560px);background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.32)}.image-viewer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border)}.image-viewer-title{font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.image-viewer-close{width:34px;height:34px;border:0;border-radius:999px;background:#f5f0ea;color:var(--text);cursor:pointer;font-size:18px}.image-viewer-img{width:100%;max-height:72vh;object-fit:contain;background:#111;display:block}.phone-empty-products{grid-column:1 / -1;text-align:center;color:#9a7d5a;font-size:9px;line-height:1.4;padding:16px 8px;border:1px dashed #eadfce;border-radius:10px;background:#fdf6ee}@media(min-width:993px){#p-support .support-grid{display:grid;grid-template-columns:minmax(380px,1.35fr) repeat(3,minmax(180px,.75fr));align-items:stretch;gap:16px}#support-ticket-card{grid-column:1;grid-row:1 / span 2;padding:22px}#support-ticket-card .step-desc{margin-bottom:4px}#support-ticket-card textarea{min-height:150px;resize:vertical}#support-ticket-card .btn-primary{width:100%;justify-content:center}#p-support .support-card:not(#support-ticket-card){display:flex;flex-direction:column;min-height:190px}#p-support .support-card:not(#support-ticket-card) button{margin-top:auto!important}}@media(max-width:992px){#p-support .support-grid{grid-template-columns:1fr!important}#support-ticket-card{order:-1}#support-ticket-card textarea{min-height:130px}}
+    .phone-contact-row{display:none;margin-top:4px;font-size:7.5px;line-height:1.3;opacity:.88;align-items:center;gap:4px;flex-wrap:wrap}.phone-contact-row.show{display:flex}.phone-contact-item{display:inline-flex;align-items:center;gap:2px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.phone-contact-item img{width:7px!important;height:7px!important;min-width:7px!important;max-width:7px!important;object-fit:contain;filter:brightness(0) invert(1);display:inline-block!important}
+    .activity-recent-panel,.activity-archive-panel{border-top:1px solid #f5f0ea;margin-top:10px;padding-top:10px}.activity-recent-panel{border-top:0;margin-top:0;padding-top:0}.activity-recent-toggle,.activity-archive-toggle,.catalog-toggle{width:100%;border:0;background:#f8f3ec;border-radius:10px;padding:9px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:var(--font-sans);font-size:12px;font-weight:800;color:var(--muted);cursor:pointer}.activity-recent-content,.activity-archive-content{display:none;max-height:220px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 4px 0}.activity-recent-panel.open .activity-recent-content,.activity-archive-panel.open .activity-archive-content{display:block}.activity-recent-panel.open .archive-chevron,.activity-archive-panel.open .archive-chevron{transform:rotate(180deg)}.archive-chevron{transition:transform .18s ease;display:inline-flex}.catalog-toggle{margin:12px 0 4px;background:#eef7f1;color:var(--green);justify-content:center}.catalog-toggle .archive-chevron{margin-left:4px}.catalog-toggle.open .archive-chevron{transform:rotate(180deg)}@media(max-width:768px){.activity-archive-panel{display:none!important}.activity-recent-content{max-height:260px}.client-bottom-btn{font-size:8px}.client-bottom-btn span{font-size:14px}}
+    .activity-product-panel{margin:10px 0 14px;border:1px solid var(--border);border-radius:14px;background:#fff;overflow:hidden;}
+    .activity-product-toggle{width:100%;min-height:44px;border:0;background:var(--green-light);color:var(--green);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;font-family:var(--font-sans);font-size:13px;font-weight:800;cursor:pointer;}
+    .activity-product-toggle .chevron{transition:transform .18s ease;display:inline-flex;line-height:1;}
+    .activity-product-panel.open .activity-product-toggle .chevron{transform:rotate(180deg);}
+    .activity-product-panel .activity-product-fields{display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0;padding:14px;background:#fff;}
+    .activity-product-panel.open .activity-product-fields{display:grid;}
+    .activity-product-fields .form-group{margin-bottom:0;}
+    @media(max-width:768px){.activity-product-panel .activity-product-fields{grid-template-columns:1fr;padding:12px}.activity-product-toggle{font-size:12px}}
+    .quick-guide-overlay{position:fixed;inset:0;z-index:2800;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,31,23,.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}.quick-guide-overlay.open{display:flex}.quick-guide-modal{width:min(920px,100%);max-height:88dvh;overflow:hidden;display:flex;flex-direction:column;background:#fff;border-radius:24px;box-shadow:0 28px 90px rgba(0,0,0,.32);border:1px solid rgba(15,31,23,.08)}.quick-guide-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:18px 20px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fff,#fdf6ee)}.quick-guide-title{font-size:20px;font-weight:900;color:var(--text);letter-spacing:-.03em}.quick-guide-sub{font-size:13px;color:var(--muted);line-height:1.45;margin-top:3px}.quick-guide-close{width:36px;height:36px;border:0;border-radius:999px;background:#f5f0ea;color:var(--text);font-size:20px;cursor:pointer;flex:0 0 auto}.quick-guide-body{padding:18px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch}.quick-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.guide-card{border:1px solid var(--border);border-radius:16px;padding:14px;background:#fff;display:grid;gap:8px}.guide-card-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:900;color:var(--green)}.guide-card-title i{font-size:17px}.guide-card p{font-size:12.5px;color:var(--muted);line-height:1.55;margin:0}.guide-card ul{margin:0;padding-left:18px;color:var(--muted);font-size:12.5px;line-height:1.6}.guide-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.guide-action-btn{border:0;border-radius:999px;background:var(--green);color:#fff;padding:8px 12px;font:800 12px var(--font-sans);cursor:pointer}.guide-action-btn.secondary{background:#f5f0ea;color:var(--text)}@media(max-width:760px){.quick-guide-modal{max-height:92dvh;border-radius:20px}.quick-guide-head{padding:15px}.quick-guide-body{padding:14px}.quick-guide-grid{grid-template-columns:1fr}.quick-guide-title{font-size:18px}}
+    #p-support .support-card.whatsapp-guide-open{max-height:420px;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;border-color:rgba(26,107,74,.28);box-shadow:0 14px 38px rgba(26,107,74,.08)}#p-support .support-card.whatsapp-guide-open::-webkit-scrollbar{width:6px}#p-support .support-card.whatsapp-guide-open::-webkit-scrollbar-thumb{background:rgba(26,107,74,.25);border-radius:999px}@media(max-width:768px){#p-support .support-card.whatsapp-guide-open{max-height:58vh}}
+  </style>
+</head>
+<body>
+  <div class="mobile-client-topbar">
+    <button class="client-menu-btn" onclick="openClientMenu()"><i class="fi fi-rr-bars-staggered"></i> Menu</button>
+    <div style="display:flex;align-items:center;gap:8px;font-weight:700;"><span class="logo-dot"></span>ShopLink</div>
+  </div>
+  <div class="client-overlay" onclick="closeClientMenu()"></div>
+
+  <div class="topnav">
+    <div class="logo"><span class="logo-dot"></span>ShopLink</div>
+    <div class="nav-links">
+      <button class="nav-link active" data-page="accueil" onclick="nav('accueil',this)"><span class="nicon"><i class="fi fi-rr-house-chimney"></i></span>Accueil</button>
+      <button class="nav-link" data-page="produits" onclick="nav('produits',this)"><span class="nicon"><i class="fi fi-rr-box-open-full"></i></span>Mes produits</button>
+      <button class="nav-link" data-page="monsite" onclick="nav('monsite',this)"><span class="nicon"><i class="fi fi-rr-site-alt"></i></span>Mon site</button>
+      <button class="nav-link" data-page="stats" onclick="nav('stats',this)"><span class="nicon"><i class="fi fi-rr-stats"></i></span>Statistiques</button>
+      <button class="nav-link" data-page="support" onclick="nav('support',this)"><span class="nicon"><i class="fi fi-rr-customer-service"></i></span>Support</button>
+      <button class="nav-link" data-page="parametres" onclick="nav('parametres',this)"><span class="nicon"><i class="fi fi-rr-settings"></i></span>Paramètres</button>
+      <button class="nav-link" type="button" onclick="logoutClient()" style="color:#ffd7d7;"><span class="nicon"><i class="fi fi-rr-exit"></i></span>Déconnecter</button>
+    </div>
+    <div class="nav-right"><div class="site-live"><span class="live-dot"></span>Connecté</div><div class="user-avatar">--</div></div>
+  </div>
+
+  <div class="subbar">
+    <span class="subbar-greeting">Chargement de votre boutique...</span>
+    <div class="subbar-link"><i class="fi fi-rr-screen-share"></i> shoplink.bj/gracemode</div>
+    <button class="subbar-btn" onclick="nav('produits', document.querySelectorAll('.nav-link')[1])">+ Ajouter un produit</button>
+  </div>
+
+  <main class="main">
+    <section id="p-accueil" class="page active">
+      <div class="metrics"><div class="mcard mcard-green"><div class="mcard-icon">👁</div><div class="mcard-label">Vues du site</div><div class="mcard-val">247</div><div class="mcard-sub">7 derniers jours</div></div><div class="mcard mcard-amber"><div class="mcard-icon"><i class="fi fi-brands-whatsapp"></i></div><div class="mcard-label">Commandes reçues</div><div class="mcard-val">0</div><div class="mcard-sub">7 derniers jours</div></div><div class="mcard mcard-ocre"><div class="mcard-icon">📦</div><div class="mcard-label">Produits publiés</div><div class="mcard-val">12</div><div class="mcard-sub">Catalogue actif</div></div><div class="mcard mcard-cream"><div class="mcard-icon">🔗</div><div class="mcard-label">Partages du lien</div><div class="mcard-val" style="color:#1a5c38;">8</div><div class="mcard-sub" style="color:#9a7d5a;">WhatsApp & réseaux</div></div></div>
+      <div class="two-col"><div style="display:flex;flex-direction:column;gap:16px;"><div class="pub-banner"><div class="pub-banner-text"><div class="pub-banner-title">Votre site est en ligne ✓</div><div class="pub-banner-sub">Partagez votre lien pour recevoir des commandes via WhatsApp</div></div><button class="pub-btn" onclick="copyShopLink()"><i class="fi fi-rr-screen-share"></i> Partager mon lien</button></div><div class="card"><div class="card-head"><span class="card-title">Activité récente</span><span class="badge bg-green">En direct</span></div><div class="card-body"><div class="act-item"><div class="act-ico v">👁</div><div><div class="act-text">Visite — page produit "Robe pagne imprimé"</div><div class="act-time">Il y a 4 min</div></div></div><div class="act-item"><div class="act-ico o">📲</div><div><div class="act-text">Clic WhatsApp — "Sac wax · 5 000 F"</div><div class="act-time">Il y a 22 min</div></div></div><div class="act-item"><div class="act-ico s">🔗</div><div><div class="act-text">Lien partagé sur Instagram</div><div class="act-time">Hier, 11h15</div></div></div></div></div></div><div style="display:flex;flex-direction:column;gap:16px;"><div class="card"><div class="card-head"><span class="card-title">Statut de la boutique</span></div><div class="card-body" style="display:flex;flex-direction:column;gap:11px;"><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:#6b5744;">Statut</span><span style="font-weight:700;color:#1a5c38;">● En ligne</span></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:#6b5744;">Type</span><span style="font-weight:700;">Boutique vêtements</span></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:#6b5744;">WhatsApp</span><span style="font-weight:700;">+229 97 XX XX XX</span></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:#6b5744;">Plan</span><span class="badge bg-green">Starter · Payé</span></div><div style="border-top:1px solid #f5f0ea;padding-top:11px;"><div style="font-size:12px;color:#6b5744;margin-bottom:6px;">Lien public</div><div style="font-size:12px;color:#1a5c38;background:#eef7f1;border-radius:8px;padding:7px 10px;font-family:var(--font-mono);overflow:hidden;text-overflow:ellipsis;">shoplink.bj/gracemode</div></div><button class="wa-btn"><i class="fi fi-brands-whatsapp"></i> Tester sur WhatsApp</button></div></div><div class="card"><div class="card-head"><span class="card-title">Passer au Premium</span></div><div class="card-body"><div style="font-size:13px;color:#6b5744;line-height:1.6;margin-bottom:14px;">Confiez la création d'un site professionnel à notre équipe. Design avancé, Google Maps, sections personnalisées.</div><button class="btn-primary" onclick="sendPrompt('Je veux commander un site Premium ShopLink')">⭐ Commander mon site Pro →</button></div></div></div></div>
+    </section>
+
+    <section id="p-produits" class="page"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;"><div style="font-size:16px;font-weight:700;">Mes produits <span style="font-size:13px;color:#9a7d5a;font-weight:400;">· 12 publiés</span></div><select class="form-input" style="width:auto;min-width:180px;background:#fff;"><option>Toutes catégories</option><option>Robes & pagnes</option><option>Accessoires</option><option>Sacs</option></select></div><div class="add-form"><div class="add-form-title">➕ Ajouter un nouveau produit</div><div style="display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:start;"><div class="upload-zone"><div class="upload-zone-icon">📷</div><div class="upload-zone-text">Cliquez pour ajouter une photo</div></div><div><div class="form-row"><div class="form-group"><label class="form-label">Nom du produit</label><input class="form-input" placeholder="Ex : Robe pagne imprimé"></div><div class="form-group"><label class="form-label">Prix (FCFA)</label><input class="form-input" type="number" placeholder="Ex : 8500"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Catégorie</label><select class="form-input"><option>Robes & pagnes</option><option>Accessoires</option><option>Sacs</option></select></div><div class="form-group"><label class="form-label">Description courte</label><input class="form-input" placeholder="Ex : Robe en pagne wax 100%"></div></div><div class="form-btn-row"><button class="btn-primary">✓ Publier le produit</button><button class="btn-sec">Annuler</button></div></div></div></div><div class="card"><div class="card-head"><span class="card-title">Catalogue en ligne</span><span class="badge bg-amber">12 produits</span></div><div class="card-body" style="padding-top:0;"><div class="prod-row"><div class="prod-thumb">👗</div><div><div class="prod-name">Robe pagne imprimé</div><div class="prod-cat">Robes & pagnes</div></div><div class="prod-price">8 500 F</div><div class="prod-views">👁 42</div><div style="display:flex;gap:6px;"><div class="iBtn">✏️</div><div class="iBtn">🗑</div></div></div><div class="prod-row"><div class="prod-thumb">👜</div><div><div class="prod-name">Sac wax multicolore</div><div class="prod-cat">Sacs</div></div><div class="prod-price">5 000 F</div><div class="prod-views">👁 38</div><div style="display:flex;gap:6px;"><div class="iBtn">✏️</div><div class="iBtn">🗑</div></div></div><div class="prod-row"><div class="prod-thumb">👒</div><div><div class="prod-name">Headband assorti</div><div class="prod-cat">Accessoires</div></div><div class="prod-price">1 500 F</div><div class="prod-views">👁 29</div><div style="display:flex;gap:6px;"><div class="iBtn">✏️</div><div class="iBtn">🗑</div></div></div></div></div></section>
+
+    <section id="p-monsite" class="page"><div style="font-size:16px;font-weight:700;">Mon site <span style="font-size:13px;color:#9a7d5a;font-weight:400;">· Personnalisation & aperçu</span></div><div style="display:flex;flex-direction:column;gap:16px;"><div class="card"><div class="card-head"><span class="card-title">Identité de la boutique</span></div><div class="card-body"><div class="form-row"><div class="form-group"><label class="form-label">Nom de la boutique</label><input class="form-input" value="Boutique Grâce Mode"></div><div class="form-group"><label class="form-label">Slogan</label><input class="form-input" value="La mode africaine à votre porte"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Numéro WhatsApp</label><input class="form-input" value="+229 97 XX XX XX"></div><div class="form-group"><label class="form-label">Adresse</label><input class="form-input" value="Cotonou, Cadjehoun"></div></div><div class="form-group"><label class="form-label">Description</label><textarea class="form-input" rows="3">Boutique de mode africaine — pagnes, robes, accessoires et sacs wax.</textarea></div></div></div><div><div style="font-size:12px;color:#9a7d5a;font-weight:700;margin-bottom:10px;text-align:center;">Aperçu mobile</div><div class="phone-wrap" style="padding:0;"><div class="phone"><div class="phone-screen"><div class="phone-head" id="phone-head" style="background:#1a5c38;color:#fff;"><div class="phone-head-name">Boutique Grâce Mode</div><div class="phone-head-sub">La mode africaine à votre porte</div></div><div class="phone-prods"><div class="phone-prod"><div class="phone-prod-img" style="background:#eef7f1;">👗</div><div class="phone-prod-info"><div class="phone-prod-name">Robe pagne</div><div class="phone-prod-price" style="color:#1a5c38;">8 500 F</div><div class="phone-prod-btn">📲 Commander</div></div></div><div class="phone-prod"><div class="phone-prod-img" style="background:#fef3de;">👜</div><div class="phone-prod-info"><div class="phone-prod-name">Sac wax</div><div class="phone-prod-price" style="color:#1a5c38;">5 000 F</div><div class="phone-prod-btn">📲 Commander</div></div></div></div><div style="padding:8px;text-align:center;font-size:8px;color:#9a7d5a;border-top:1px solid #f5f0ea;">shoplink.bj/gracemode</div></div></div></div></div><div class="card"><div class="card-head"><span class="card-title">Apparence</span></div><div class="card-body"><div class="form-group"><label class="form-label">Couleur principale</label><div style="display:flex;gap:10px;margin-top:4px;"><div class="color-swatch sel" style="background:#1a5c38" onclick="selectColor(this,'#1a5c38')"></div><div class="color-swatch" style="background:#185fa5" onclick="selectColor(this,'#185fa5')"></div><div class="color-swatch" style="background:#8b5e2a" onclick="selectColor(this,'#8b5e2a')"></div><div class="color-swatch" style="background:#993556" onclick="selectColor(this,'#993556')"></div></div></div><div class="form-btn-row"><button class="btn-primary">💾 Sauvegarder</button><button class="btn-sec">👁 Voir mon site</button></div></div></div></section>
+
+    <section id="p-stats" class="page"><div style="font-size:16px;font-weight:700;">Statistiques <span style="font-size:13px;color:#9a7d5a;font-weight:400;">· 7 derniers jours</span></div><div class="metrics"><div class="mcard mcard-amber"><div class="mcard-icon"><i class="fi fi-brands-whatsapp"></i></div><div class="mcard-label">Commandes reçues</div><div class="mcard-val">0</div><div class="mcard-sub">Depuis liens partagés</div></div><div class="mcard mcard-cream"><div class="mcard-icon">🏆</div><div class="mcard-label">Top produit</div><div class="mcard-val" style="font-size:14px;color:#1a5c38;">Robe pagne</div></div></div><div class="two-col"><div class="card"><div class="card-head"><span class="card-title">Produits les plus vus</span></div><div class="card-body"><div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Robe pagne imprimé</span><span class="stat-bar-val">42 vues</span></div><div class="bar-bg"><div class="bar-fill fill-green" style="width:85%"></div></div></div><div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Sac wax multicolore</span><span class="stat-bar-val">38 vues</span></div><div class="bar-bg"><div class="bar-fill fill-green" style="width:77%"></div></div></div></div></div><div class="card"><div class="card-head"><span class="card-title">Sources de trafic</span></div><div class="card-body"><div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">WhatsApp</span><span class="stat-bar-val">58%</span></div><div class="bar-bg"><div class="bar-fill fill-green" style="width:58%"></div></div></div><div class="stat-bar-row"><div class="stat-bar-top"><span class="stat-bar-label">Instagram</span><span class="stat-bar-val">24%</span></div><div class="bar-bg"><div class="bar-fill fill-amber" style="width:24%"></div></div></div></div></div></div></section>
+
+    <section id="p-archives" class="page"><div style="font-size:16px;font-weight:700;">Archives <span style="font-size:13px;color:#9a7d5a;font-weight:400;">· Activités après 24h</span></div><div class="card"><div class="card-head"><span class="card-title">Activités archivées</span><span class="badge bg-gray" id="archives-count">0</span></div><div class="card-body" id="archives-page-body"><div style="text-align:center;color:var(--soft);padding:18px 6px;font-size:13px;">Aucune archive pour le moment.</div></div></div></section>
+
+    <section id="p-support" class="page"><div style="font-size:16px;font-weight:700;">Support</div><div class="support-grid"><div class="support-card"><div class="step-ico"><i class="fi fi-brands-whatsapp"></i></div><div class="step-title">WhatsApp support</div><div class="step-desc">Contactez l'équipe pour une aide rapide.</div><button class="btn-primary" style="margin-top:12px;">Contacter</button></div><div class="support-card"><div class="step-ico">📚</div><div class="step-title">Guide rapide</div><div class="step-desc">Apprendre à ajouter produits, partager lien et modifier la boutique.</div><button class="btn-sec" style="margin-top:12px;">Lire</button></div><div class="support-card"><div class="step-ico">⭐</div><div class="step-title">Service Premium</div><div class="step-desc">Confiez la création d'un site pro à ShopLink.</div><button class="btn-primary" style="margin-top:12px;" onclick="sendPrompt('Je veux le service Premium ShopLink')">Demander</button></div></div></section>
+
+    <section id="p-parametres" class="page"><div style="font-size:16px;font-weight:700;">Paramètres du compte</div><div class="two-col"><div class="card"><div class="card-head"><span class="card-title">Informations personnelles</span></div><div class="card-body"><div class="form-group"><label class="form-label">Nom complet</label><input class="form-input" value="Grace Koudjo"></div><div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" value="grace.koudjo@email.com"></div><div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" value="+229 97 XX XX XX"></div><button class="btn-primary">Sauvegarder</button></div></div><div class="card"><div class="card-head"><span class="card-title">Mon abonnement</span></div><div class="card-body"><div style="background:#eef7f1;border-radius:12px;padding:16px;margin-bottom:16px;"><div style="font-size:13px;font-weight:700;color:#1a5c38;margin-bottom:4px;">Plan Starter</div><div style="font-size:12px;color:#0f6e56;">Site actif · Payé · 4 000 FCFA</div></div><div style="font-size:13px;color:#6b5744;margin-bottom:14px;line-height:1.6;">Passez au Premium pour un site professionnel créé sur mesure.</div><button class="btn-primary" onclick="sendPrompt('Comment commander le service Premium ShopLink ?')">⭐ Passer Premium →</button></div></div></div></section>
+  </main>
+
+  <nav class="client-bottom-nav" aria-label="Navigation client mobile">
+    <button class="client-bottom-btn active" data-page="accueil" type="button"><span><i class="fi fi-rr-house-chimney"></i></span>Accueil</button>
+    <button class="client-bottom-btn" data-page="produits" type="button"><span><i class="fi fi-rr-box-open-full"></i></span>Produits</button>
+    <button class="client-bottom-btn" data-page="monsite" type="button"><span><i class="fi fi-rr-site-alt"></i></span>Site</button>
+    <button class="client-bottom-btn" data-page="stats" type="button"><span><i class="fi fi-rr-stats"></i></span>Stats</button>
+    <button class="client-bottom-btn" data-page="support" type="button"><span><i class="fi fi-rr-customer-service"></i></span>Support</button>
+    <button class="client-bottom-btn" data-page="parametres" type="button"><span><i class="fi fi-rr-settings"></i></span>Compte</button>
+  </nav>
+
+  <div class="quick-guide-overlay" id="quick-guide-overlay" onclick="if(event.target===this) closeQuickGuide()">
+    <div class="quick-guide-modal" role="dialog" aria-modal="true" aria-label="Guide rapide ShopLink">
+      <div class="quick-guide-head">
+        <div>
+          <div class="quick-guide-title">Guide rapide ShopLink</div>
+          <div class="quick-guide-sub">Les étapes essentielles pour configurer, publier, partager et suivre votre boutique.</div>
+        </div>
+        <button class="quick-guide-close" type="button" onclick="closeQuickGuide()" aria-label="Fermer">×</button>
+      </div>
+      <div class="quick-guide-body">
+        <div class="quick-guide-grid">
+          <div class="guide-card">
+            <div class="guide-card-title"><i class="fi fi-rr-site-alt"></i> Compléter ma boutique</div>
+            <p>Allez dans <strong>Mon site</strong>, renseignez le nom, slogan, WhatsApp, adresse, numéro d’appel, description et logo, puis cliquez sur <strong>Sauvegarder</strong>.</p>
+            <ul><li>WhatsApp sert aux commandes.</li><li>Numéro d’appel sert aux appels classiques.</li></ul>
+            <div class="guide-actions"><button class="guide-action-btn" onclick="guideGo('monsite')">Aller à Mon site</button></div>
+          </div>
+          <div class="guide-card">
+            <div class="guide-card-title"><i class="fi fi-rr-box-open-full"></i> Ajouter un produit</div>
+            <p>Ajoutez une photo, un nom, un prix, une catégorie et une description. Ouvrez <strong>Options avancées</strong> pour disponibilité, stock, prix barré ou variantes.</p>
+            <div class="guide-actions"><button class="guide-action-btn" onclick="guideGo('produits')">Ajouter un produit</button></div>
+          </div>
+          <div class="guide-card">
+            <div class="guide-card-title"><i class="fi fi-rr-eyes"></i> Voir mon site</div>
+            <p>Le bouton <strong>Voir mon site</strong> synchronise vos informations et votre catalogue. Ce que vous voyez en mode propriétaire peut contenir un bouton retour dashboard.</p>
+            <ul><li>Produit publié → visible sur le site.</li><li>Produit supprimé → retiré du site.</li></ul>
+          </div>
+          <div class="guide-card">
+            <div class="guide-card-title"><i class="fi fi-rr-screen-share"></i> Partager mon lien</div>
+            <p>Cliquez sur <strong>Partager mon lien</strong>. Le lien est copié dans le presse-papiers. Collez-le dans WhatsApp, Facebook, Instagram ou SMS.</p>
+            <div class="guide-actions"><button class="guide-action-btn" onclick="copyShopLink()">Copier mon lien</button></div>
+          </div>
+          <div class="guide-card">
+            <div class="guide-card-title"><i class="fi fi-rr-shopping-cart"></i> Recevoir une commande</div>
+            <p>Sur les sites avec panier, le client ajoute des produits, remplit ses infos, crée la commande, puis envoie le résumé sur votre WhatsApp.</p>
+            <ul><li>La référence est propre à chaque boutique.</li><li>Le message contient produits, quantités, adresse et total.</li></ul>
+          </div>
+          <div class="guide-card">
+            <div class="guide-card-title"><i class="fi fi-rr-stats"></i> Comprendre les statistiques</div>
+            <p><strong>Vues du site</strong> : visiteurs issus d’un lien partagé restés au moins 5 secondes. <strong>Commandes reçues</strong> : commandes créées depuis vos liens partagés.</p>
+            <ul><li>Produits les plus vus = produits consultés.</li><li>Top produit = produit le plus commandé.</li></ul>
+            <div class="guide-actions"><button class="guide-action-btn" onclick="guideGo('stats')">Voir mes stats</button></div>
+          </div>
+          <div class="guide-card">
+            <div class="guide-card-title"><i class="fi fi-brands-whatsapp"></i> Besoin d’aide ?</div>
+            <p>Dans <strong>Support</strong>, cliquez sur <strong>Contacter</strong>, choisissez le problème rencontré ou décrivez-le, puis envoyez sur WhatsApp.</p>
+            <div class="guide-actions"><button class="guide-action-btn" onclick="guideGo('support')">Contacter le support</button></div>
+          </div>
+          <div class="guide-card">
+            <div class="guide-card-title"><i class="fi fi-rr-settings"></i> Compte et connexion</div>
+            <p>Dans <strong>Compte</strong>, vous pouvez modifier votre nom, email et WhatsApp. Si vous changez d’email, utilisez le nouvel email à la prochaine connexion.</p>
+            <div class="guide-actions"><button class="guide-action-btn secondary" onclick="guideGo('parametres')">Ouvrir Compte</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let editingProductRow = null;
+    let selectedProductImage = '';
+    let selectedSiteLogo = '';
+    let isCopyingShopLink = false;
+    let isCatalogExpanded = false;
+    const CLIENT_STATS_KEY = 'shoplink_client_dashboard_stats';
+    const CLIENT_PRODUCTS_KEY = 'shoplink_client_products';
+    const CLIENT_PROFILE_KEY = 'shoplink_user';
+    const CLIENT_SITE_KEY = 'shoplink_site';
+
+    function getStoredJson(key, fallback = null) {
+      try { return JSON.parse(localStorage.getItem(key) || 'null') || fallback; }
+      catch (_error) { return fallback; }
+    }
+
+    function getCurrentUser() {
+      return getStoredJson(CLIENT_PROFILE_KEY, {}) || {};
+    }
+
+    function getAccountId() {
+      const user = getCurrentUser();
+      return String(user.id || user.email || user.phone || 'guest')
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, '-');
+    }
+
+    function accountKey(baseKey) {
+      return `${baseKey}:${getAccountId()}`;
+    }
+
+    function hasAccountKey(baseKey) {
+      return localStorage.getItem(accountKey(baseKey)) !== null;
+    }
+
+    function getAccountJson(baseKey, fallback = null) {
+      return getStoredJson(accountKey(baseKey), fallback);
+    }
+
+    function setAccountJson(baseKey, value) {
+      localStorage.setItem(accountKey(baseKey), JSON.stringify(value));
+    }
+
+    function getGlobalSiteForCurrentUser(user) {
+      return {};
+    }
+
+    function getAccountSite(user = getCurrentUser()) {
+      const storedSite = getAccountJson(CLIENT_SITE_KEY, null);
+      if (storedSite) return storedSite;
+
+      const globalSite = getGlobalSiteForCurrentUser(user);
+      if (Object.keys(globalSite).length) {
+        setAccountJson(CLIENT_SITE_KEY, globalSite);
+        return globalSite;
+      }
+
+      return {};
+    }
+
+    function selectCurrentAccountSite(sites = []) {
+      const user = getCurrentUser();
+      const storedSite = getAccountJson(CLIENT_SITE_KEY, null);
+      const order = getAccountJson('shoplink_order', {}) || {};
+
+      const ownedSites = sites.filter((site) => {
+        if (!site) return false;
+        if (user.id && site.userId && site.userId !== user.id) return false;
+        return true;
+      });
+
+      if (storedSite?.id) {
+        const match = ownedSites.find((site) => site.id === storedSite.id);
+        if (match) return match;
+      }
+
+      if (storedSite?.slug) {
+        const match = ownedSites.find((site) => site.slug === storedSite.slug);
+        if (match) return match;
+      }
+
+      if (order?.slug) {
+        const match = ownedSites.find((site) => site.slug === order.slug);
+        if (match) return match;
+      }
+
+      return ownedSites
+        .slice()
+        .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))[0] || null;
+    }
+
+    function getAuthToken() {
+      return localStorage.getItem('shoplink_token') || '';
+    }
+
+    function slugify(value) {
+      return String(value || 'boutique')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'boutique';
+    }
+
+    async function apiJson(path, options = {}) {
+      const token = getAuthToken();
+      const response = await fetch(path, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options.headers || {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await response.json().catch(async () => {
+        const text = await response.text().catch(() => '');
+        return { message: text || `Erreur HTTP ${response.status}` };
+      });
+
+      if (!response.ok || data.success === false) {
+        if (response.status === 413) {
+          throw new Error('Image trop lourde pour la synchronisation. Réduisez la photo ou choisissez une autre image.');
+        }
+        throw new Error(data.message || `Erreur API ${response.status}`);
+      }
+
+      return data;
+    }
+
+    function getClientContext() {
+      const user = getCurrentUser();
+      const site = getAccountSite(user);
+      const order = getAccountJson('shoplink_order', {}) || {};
+      const name = user.name || user.fullName || user.email?.split('@')[0] || 'Client';
+      const shopName = site.name || site.siteName || order.company || document.querySelector('#p-monsite input')?.value || 'votre boutique';
+      const slug = site.slug || order.slug || slugify(site.name || site.siteName || order.company || shopName);
+      const siteId = site.id || order.siteId || slug;
+      return { user, site, order, name, shopName, slug, siteId };
+    }
+
+    function buildSitePayload(overrides = {}) {
+      const context = getClientContext();
+      const sitePage = document.getElementById('p-monsite');
+      const inputs = sitePage?.querySelectorAll('.form-input') || [];
+      const name = overrides.name || document.getElementById('site-name')?.value?.trim() || inputs[0]?.value?.trim() || context.site.name || context.site.siteName || context.order.company || context.shopName || 'Ma boutique';
+      const slogan = overrides.slogan ?? document.getElementById('site-slogan')?.value?.trim() ?? inputs[1]?.value?.trim() ?? context.site.slogan ?? context.order.slogan ?? '';
+      const whatsapp = overrides.whatsapp ?? document.getElementById('site-whatsapp')?.value?.trim() ?? inputs[2]?.value?.trim() ?? context.site.whatsapp ?? context.order.whatsapp ?? context.user.phone ?? '';
+      const address = overrides.address ?? document.getElementById('site-address')?.value?.trim() ?? inputs[3]?.value?.trim() ?? context.site.address ?? context.order.city ?? '';
+      const secondaryPhone = overrides.secondaryPhone ?? document.getElementById('site-call-phone')?.value?.trim() ?? context.site.secondaryPhone ?? context.order.secondaryPhone ?? '';
+      const description = overrides.description ?? document.getElementById('site-description')?.value?.trim() ?? context.site.description ?? context.order.description ?? '';
+      const activityType = overrides.activityType || context.site.activityType || context.order.activityType || 'Boutique';
+      const slug = overrides.slug || context.site.slug || context.order.slug || slugify(name);
+
+      return {
+        ...(context.site || {}),
+        name,
+        siteName: name,
+        slug,
+        slogan,
+        whatsapp,
+        secondaryPhone,
+        address,
+        description,
+        activityType,
+        logo: overrides.logo ?? selectedSiteLogo ?? context.site.logo ?? '',
+        status: overrides.status || context.site.status || 'published',
+      };
+    }
+
+    async function ensureBackendSite(overrides = {}) {
+      const token = getAuthToken();
+      const localSite = buildSitePayload(overrides);
+      setAccountJson(CLIENT_SITE_KEY, localSite);
+
+      if (!token) return localSite;
+
+      try {
+        const data = localSite.id
+          ? await apiJson(`/api/sites/${localSite.id}`, {
+              method: 'PUT',
+              body: JSON.stringify(localSite),
+            })
+          : await apiJson('/api/sites/create', {
+              method: 'POST',
+              body: JSON.stringify(localSite),
+            });
+
+        const site = data.site || localSite;
+        setAccountJson(CLIENT_SITE_KEY, site);
+        localStorage.setItem(CLIENT_SITE_KEY, JSON.stringify(site));
+        applyAccountSiteToPreview();
+        return site;
+      } catch (error) {
+        notify(`Sauvegarde backend indisponible : ${error.message}`, 'warning');
+        return localSite;
+      }
+    }
+
+    function getLocalGreeting() {
+      const hour = new Date().getHours();
+      if (hour >= 18 || hour < 5) return 'Bonsoir';
+      if (hour >= 12) return 'Bon après-midi';
+      return 'Bonjour';
+    }
+
+    function defaultStats() {
+      return { views: 0, whatsappClicks: 0, products: 0, shares: 0, activities: [] };
+    }
+
+    function loadStats() {
+      return { ...defaultStats(), ...(getAccountJson(CLIENT_STATS_KEY, {}) || {}) };
+    }
+
+    function saveStats(stats) {
+      setAccountJson(CLIENT_STATS_KEY, stats);
+    }
+
+    function setMetric(labelText, value) {
+      document.querySelectorAll('.mcard').forEach(card => {
+        const label = card.querySelector('.mcard-label')?.textContent || '';
+        if (label.toLowerCase().includes(labelText.toLowerCase())) {
+          const valueNode = card.querySelector('.mcard-val');
+          if (valueNode) valueNode.textContent = value;
+        }
+      });
+    }
+
+    function getActivityBody() {
+      return Array.from(document.querySelectorAll('.card')).find(card =>
+        card.querySelector('.card-title')?.textContent.includes('Activité récente')
+      )?.querySelector('.card-body');
+    }
+
+    function formatRelativeTime(dateValue) {
+      const diff = Math.max(0, Date.now() - new Date(dateValue).getTime());
+      const minutes = Math.floor(diff / 60000);
+      if (minutes < 1) return 'À l’instant';
+      if (minutes < 60) return `Il y a ${minutes} min`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `Il y a ${hours} h`;
+      return new Date(dateValue).toLocaleDateString('fr-FR');
+    }
+
+    function renderActivityItem(activity) {
+      return `
+        <div class="act-item">
+          <div class="act-ico ${activity.iconClass || 'v'}">${activity.icon || '🔔'}</div>
+          <div><div class="act-text">${activity.title}</div><div class="act-time">${formatRelativeTime(activity.createdAt)}</div></div>
+        </div>
+      `;
+    }
+
+    function renderActivities(stats) {
+      const body = getActivityBody();
+      if (!body) return;
+      const archiveLimit = 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      const recent = stats.activities.filter(activity => now - new Date(activity.createdAt).getTime() < archiveLimit);
+      const archived = stats.activities.filter(activity => now - new Date(activity.createdAt).getTime() >= archiveLimit);
+
+      body.innerHTML = `
+        <div class="activity-recent-panel open">
+          <button class="activity-recent-toggle" type="button" onclick="toggleRecentActivity()">
+            <span>Activités de la journée</span>
+            <span class="badge bg-green">${recent.length}</span>
+            <span class="archive-chevron">⌄</span>
+          </button>
+          <div class="activity-recent-content">
+            ${recent.length
+              ? recent.slice(0, 8).map(renderActivityItem).join('')
+              : '<div style="text-align:center;color:var(--soft);padding:14px 6px;font-size:13px;">Aucune activité aujourd’hui.</div>'}
+          </div>
+        </div>
+        <div class="activity-archive-panel">
+          <button class="activity-archive-toggle" type="button" onclick="toggleActivityArchive()">
+            <span>Archives après 24h</span>
+            <span class="badge bg-gray">${archived.length}</span>
+            <span class="archive-chevron">⌄</span>
+          </button>
+          <div class="activity-archive-content">
+            ${archived.length
+              ? archived.map(renderActivityItem).join('')
+              : '<div style="text-align:center;color:var(--soft);padding:12px 6px;font-size:12px;">Aucune archive pour le moment.</div>'}
+          </div>
+        </div>
+      `;
+      renderArchivesPage(archived);
+    }
+
+    function renderArchivesPage(archived = []) {
+      const body = document.getElementById('archives-page-body');
+      const count = document.getElementById('archives-count');
+      if (count) count.textContent = String(archived.length);
+      if (!body) return;
+      body.innerHTML = archived.length
+        ? archived.map(renderActivityItem).join('')
+        : '<div style="text-align:center;color:var(--soft);padding:18px 6px;font-size:13px;">Aucune archive pour le moment.</div>';
+    }
+
+    function toggleActivityArchive() {
+      document.querySelector('.activity-archive-panel')?.classList.toggle('open');
+    }
+    function toggleRecentActivity() {
+      document.querySelector('.activity-recent-panel')?.classList.toggle('open');
+    }
+    window.toggleActivityArchive = toggleActivityArchive;
+    window.toggleRecentActivity = toggleRecentActivity;
+
+    function renderClientStats() {
+      const stats = loadStats();
+      setMetric('Vues du site', stats.views);
+      setMetric('Vues totales', stats.views);
+      setMetric('Commandes reçues', stats.whatsappClicks);
+      setMetric('Top produit', stats.topProduct?.name || 'Aucun');
+      
+      // New metrics from backend tracking
+      if (stats.uniqueVisitors !== undefined) {
+        setMetric('Visiteurs uniques', stats.uniqueVisitors);
+      }
+      if (stats.conversionRate !== undefined) {
+        setMetric('Taux de conversion', stats.conversionRate + '%');
+      }
+      setMetric('Produits publiés', stats.products);
+      setMetric('Partages du lien', stats.shares);
+      renderTrafficSources(stats.sourceClicks || {});
+      document.querySelectorAll('.stat-bar-val').forEach(el => {
+        if (!el.closest('[data-traffic-sources="true"]')) {
+          el.textContent = el.textContent.includes('%') ? '0%' : '0 vue';
+        }
+      });
+      document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = '0%'; });
+      renderTopViewedProducts(stats.productViews || {});
+      applyCatalogFilter(false);
+      renderActivities(stats);
+    }
+
+    async function syncTrackedStats() {
+      const context = getClientContext();
+      if (!context.siteId) return;
+      try {
+        const res = await fetch(`/api/tracking/stats/${encodeURIComponent(context.siteId)}`);
+        const data = await res.json();
+        if (!data.success) return;
+
+        const stats = loadStats();
+        stats.views = Number(data.stats.totalViews || 0);
+        stats.whatsappClicks = Number(data.stats.whatsappClicks || 0);
+        stats.topProduct = data.stats.topProduct || null;
+        stats.productOrders = data.stats.productOrders || {};
+        stats.sourceBreakdown = data.stats.sourceBreakdown || {};
+        stats.sourceClicks = data.stats.sourceClicks || {};
+        stats.productViews = data.stats.productViews || {};
+        
+        // New metrics from backend tracking
+        if (data.stats.uniqueVisitors !== undefined) {
+          stats.uniqueVisitors = Number(data.stats.uniqueVisitors);
+        }
+        
+        saveStats(stats);
+        updateProductViewCounters(stats.productViews);
+        renderClientStats();
+        
+        // Also fetch conversion stats
+        try {
+          const convRes = await fetch(`/api/tracking/stats/${encodeURIComponent(context.siteId)}/conversion`);
+          const convData = await convRes.json();
+          if (convData.success) {
+            stats.conversionRate = convData.stats.conversionRate;
+            saveStats(stats);
+            renderClientStats();
+          }
+        } catch (_error) {
+          // Ignore conversion stats error
+        }
+      } catch (_error) {
+        // Keep local stats if backend tracking is temporarily unavailable.
+      }
+    }
+
+    function renderTrafficSources(sourceBreakdown = {}) {
+      const trafficCard = Array.from(document.querySelectorAll('#p-stats .card')).find((card) =>
+        card.querySelector('.card-title')?.textContent.includes('Sources de trafic')
+      );
+      const body = trafficCard?.querySelector('.card-body');
+      if (!body) return;
+
+      body.dataset.trafficSources = 'true';
+      const total = Object.values(sourceBreakdown).reduce((sum, value) => sum + Number(value || 0), 0);
+      const sources = [
+        ['Lien partagé', Number(sourceBreakdown.shared || 0)],
+        ['WhatsApp partagé', Number(sourceBreakdown.whatsapp_shared_link || 0)],
+      ];
+
+      if (!total) {
+        body.innerHTML = '<div style="text-align:center;color:var(--soft);padding:18px 6px;font-size:13px;">Aucune source de trafic issue d’un lien partagé pour le moment.</div>';
+        return;
+      }
+
+      const shared = sources[0][1];
+      const whatsapp = sources[1][1];
+      const sharedPercent = total ? Math.round((shared / total) * 100) : 0;
+      const whatsappPercent = Math.max(0, 100 - sharedPercent);
+
+      body.innerHTML = `
+        <div style="display:grid;gap:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div>
+              <div style="font-size:22px;font-weight:900;color:var(--green);line-height:1;">${total}</div>
+              <div style="font-size:11px;color:var(--soft);font-weight:700;margin-top:3px;">visiteurs qualifiés</div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);text-align:right;line-height:1.35;max-width:170px;">
+              Ouvert depuis un lien partagé ou un partage WhatsApp.
+            </div>
+          </div>
+
+          <div style="height:16px;display:flex;overflow:hidden;border-radius:999px;background:#f3eadf;box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);">
+            <div title="Lien partagé" style="width:${sharedPercent}%;background:var(--green);min-width:${shared ? '8px' : '0'};"></div>
+            <div title="WhatsApp partagé" style="width:${whatsappPercent}%;background:var(--amber);min-width:${whatsapp ? '8px' : '0'};"></div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--green);"></span><span style="font-size:12px;font-weight:900;color:var(--text);">Lien partagé</span></div>
+              <div style="font-size:17px;font-weight:900;color:var(--green);">${sharedPercent}%</div>
+              <div style="font-size:11px;color:var(--soft);">${shared} vue${shared > 1 ? 's' : ''}</div>
+            </div>
+            <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--amber);"></span><span style="font-size:12px;font-weight:900;color:var(--text);">WhatsApp</span></div>
+              <div style="font-size:17px;font-weight:900;color:var(--amber);">${whatsappPercent}%</div>
+              <div style="font-size:11px;color:var(--soft);">${whatsapp} vue${whatsapp > 1 ? 's' : ''}</div>
+            </div>
+          </div>
+
+          <div style="padding:9px 10px;border-radius:11px;background:#f8f3ec;color:var(--muted);font-size:11.5px;line-height:1.4;">
+            Comptabilise uniquement les visiteurs venus d’un lien partagé et restés au moins 5 secondes.
+          </div>
+        </div>
+      `;
+    }
+
+    function updateProductViewCounters(productViews = loadStats().productViews || {}) {
+      getProductRows().forEach((row) => {
+        const product = productFromRow(row);
+        const count = Number(productViews[product.backendId] || productViews[product.id] || 0);
+        const viewsNode = row.querySelector('.prod-views');
+        if (viewsNode) viewsNode.innerHTML = `<i class="fi fi-rr-eyes"></i> ${count}`;
+      });
+    }
+
+    function renderTopViewedProducts(productViews = {}) {
+      const topCard = Array.from(document.querySelectorAll('#p-stats .card')).find((card) =>
+        card.querySelector('.card-title')?.textContent.includes('Produits les plus vus')
+      );
+      const body = topCard?.querySelector('.card-body');
+      if (!body) return;
+
+      const products = getProductRows().map((row) => {
+        const product = productFromRow(row);
+        const views = Number(productViews[product.backendId] || productViews[product.id] || 0);
+        const orders = Number((loadStats().productOrders || {})[product.backendId] || (loadStats().productOrders || {})[product.id] || 0);
+        return {
+          id: product.backendId || product.id,
+          name: product.name || 'Produit',
+          category: product.category || 'Catalogue',
+          views,
+          orders,
+        };
+      }).filter((product) => product.views > 0 || product.orders > 0)
+        .sort((a, b) => (b.orders * 2 + b.views) - (a.orders * 2 + a.views))
+        .slice(0, 3);
+
+      if (!products.length) {
+        body.innerHTML = '<div style="text-align:center;color:var(--soft);padding:18px 6px;font-size:13px;line-height:1.55;">Aucune vue produit pour le moment.<br>Partagez votre lien puis les clics sur les produits apparaîtront ici.</div>';
+        return;
+      }
+
+      const maxViews = Math.max(...products.map((product) => product.views), 1);
+      const rankColors = ['var(--green)', 'var(--amber)', 'var(--ocre)'];
+
+      function interpretation(product, percent, index) {
+        if (product.orders > 0 && product.views > 0 && index === 0) return 'Produit star';
+        if (product.orders > 0 && product.views <= 1) return 'Bon convertisseur';
+        if (product.views >= 3 && product.orders === 0) return 'Attire mais convertit peu';
+        if (percent >= 45) return 'Bon intérêt';
+        if (percent >= 20) return 'À surveiller';
+        return 'Faible attention';
+      }
+
+      body.innerHTML = `
+        <div style="border:1px solid var(--border);border-radius:14px;background:#fff;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:minmax(0,1.25fr) 58px minmax(92px,.8fr);gap:10px;align-items:center;padding:9px 11px;background:#fbf7f1;border-bottom:1px solid var(--border);color:var(--soft);font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:900;">
+            <span>Produit</span>
+            <span style="text-align:right;">Vues</span>
+            <span style="text-align:right;">Usage</span>
+          </div>
+          ${products.map((product, index) => {
+            const percent = Math.max(8, Math.round((product.views / maxViews) * 100));
+            const color = rankColors[index] || 'var(--green)';
+            return `
+              <div style="display:grid;grid-template-columns:minmax(0,1.25fr) 58px minmax(92px,.8fr);gap:10px;align-items:center;padding:10px 11px;border-bottom:${index === products.length - 1 ? '0' : '1px solid #f3eadf'};">
+                <div style="min-width:0;display:flex;align-items:center;gap:8px;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:conic-gradient(${color} 0 ${percent}%, #efe7dc ${percent}% 100%);display:grid;place-items:center;flex:0 0 auto;">
+                    <div style="width:14px;height:14px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:7px;font-weight:900;color:${color};">${index + 1}</div>
+                  </div>
+                  <div style="min-width:0;">
+                    <div style="font-size:12px;font-weight:900;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${product.name}</div>
+                    <div style="font-size:10px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${product.category}</div>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <span style="font-size:13px;font-weight:900;color:var(--text);">${product.views}</span>
+                  ${product.orders ? `<div style="font-size:9px;color:var(--green);font-weight:900;">${product.orders} cmd</div>` : ''}
+                </div>
+                <div style="display:grid;gap:4px;justify-items:end;">
+                  <div style="display:flex;align-items:center;gap:6px;width:100%;justify-content:flex-end;">
+                    <div style="height:5px;width:min(72px,100%);border-radius:999px;background:#f1eadf;overflow:hidden;">
+                      <div style="height:100%;width:${percent}%;border-radius:999px;background:${color};"></div>
+                    </div>
+                    <span style="min-width:32px;text-align:right;font-size:11px;font-weight:900;color:${color};">${percent}%</span>
+                  </div>
+                  <div style="font-size:9px;color:var(--soft);white-space:nowrap;">${interpretation(product, percent, index)}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function getProductList() {
+      return document.querySelector('#p-produits .card .card-body');
+    }
+
+    function getCatalogFilterSelect() {
+      return document.querySelector('#p-produits > div:first-child select.form-input');
+    }
+
+    function getProductRows() {
+      return Array.from(document.querySelectorAll('#p-produits .prod-row'));
+    }
+
+    function productFromRow(row) {
+      return {
+        id: row.dataset.productId || `product-${Date.now()}`,
+        backendId: row.dataset.backendId || '',
+        name: row.querySelector('.prod-name')?.textContent || '',
+        category: row.dataset.category || row.querySelector('.prod-cat')?.textContent || '',
+        description: row.querySelector('.prod-desc')?.textContent || '',
+        price: String(row.querySelector('.prod-price')?.textContent || '').replace(/\D/g, ''),
+        image: row.querySelector('.prod-thumb img')?.src || '',
+        availability: row.dataset.availability || 'available',
+        stock: row.dataset.stock || '',
+        badge: row.dataset.badge || '',
+        oldPrice: row.dataset.oldPrice || '',
+        variantInfo: row.dataset.variantInfo || '',
+        extraInfo: row.dataset.extraInfo || '',
+      };
+    }
+
+    function renderProductMeta(product = {}) {
+      const labels = [];
+      const availabilityLabels = {
+        available: 'Disponible',
+        out_of_stock: 'Rupture',
+        hidden: 'Masqué',
+      };
+      const badgeLabels = {
+        new: 'Nouveau',
+        popular: 'Populaire',
+        promo: 'Promo',
+        recommended: 'Recommandé',
+      };
+
+      labels.push(availabilityLabels[product.availability || 'available'] || 'Disponible');
+      if (product.stock !== undefined && product.stock !== '') labels.push(`Stock ${product.stock}`);
+      if (product.badge) labels.push(badgeLabels[product.badge] || product.badge);
+      if (product.oldPrice) labels.push(`Avant ${Number(product.oldPrice).toLocaleString('fr-FR')} F`);
+      if (product.variantInfo) labels.push(product.variantInfo);
+      if (product.extraInfo) labels.push(product.extraInfo);
+
+      return labels.length ? `<div class="prod-meta">${labels.map((label) => `<span>${label}</span>`).join('')}</div>` : '<div class="prod-meta" style="display:none;"></div>';
+    }
+
+    function createProductRow(product) {
+      const row = document.createElement('div');
+      row.className = 'prod-row';
+      row.dataset.productId = product.id || `product-${Date.now()}`;
+      row.dataset.backendId = product.backendId || product.id || '';
+      row.dataset.category = product.category || 'Produits';
+      row.dataset.availability = product.availability || 'available';
+      row.dataset.stock = product.stock || '';
+      row.dataset.badge = product.badge || '';
+      row.dataset.oldPrice = product.oldPrice || '';
+      row.dataset.variantInfo = product.variantInfo || '';
+      row.dataset.extraInfo = product.extraInfo || '';
+      row.innerHTML = `<div class="prod-thumb">${product.image ? `<img src="${product.image}" alt="${product.name || 'Produit'}">` : '📦'}</div><div><div class="prod-name"></div><div class="prod-cat"></div><div class="prod-desc"></div>${renderProductMeta(product)}</div><div class="prod-price"></div><div class="prod-views"><i class="fi fi-rr-eyes"></i> 0</div><div style="display:flex;gap:6px;"><button class="iBtn" type="button" data-action="edit"><i class="fi fi-rr-pencil"></i></button><button class="iBtn" type="button" data-action="delete"><i class="fi fi-rr-trash"></i></button></div>`;
+      row.querySelector('.prod-name').textContent = product.name || '';
+      row.querySelector('.prod-cat').textContent = product.category || 'Produits';
+      row.querySelector('.prod-desc').textContent = product.description || '';
+      row.querySelector('.prod-desc').style.display = product.description ? 'block' : 'none';
+      row.querySelector('.prod-price').textContent = `${Number(product.price || 0).toLocaleString('fr-FR')} F`;
+      return row;
+    }
+
+    async function toBackendProductPayload(product, siteId) {
+      return {
+        siteId,
+        name: product.name,
+        price: Number(product.price || 0),
+        image: await optimizeDataUrlIfNeeded(product.image || ''),
+        description: product.description || '',
+        category: product.category || 'Produits',
+        availability: product.availability || 'available',
+        stock: product.stock || '',
+        badge: product.badge || '',
+        oldPrice: product.oldPrice || '',
+        variantInfo: product.variantInfo || '',
+        extraInfo: product.extraInfo || '',
+        status: product.availability === 'hidden' ? 'hidden' : 'published',
+        visible: product.availability !== 'hidden',
+      };
+    }
+
+    async function saveProductToBackend(row, siteOverride = null) {
+      const token = getAuthToken();
+      if (!token) return null;
+
+      const site = siteOverride || await ensureBackendSite();
+      if (!site?.id) return null;
+
+      const product = productFromRow(row);
+      const payload = await toBackendProductPayload(product, site.id);
+      const backendId = row.dataset.backendId;
+
+      let data;
+
+      if (backendId) {
+        try {
+          data = await apiJson(`/api/products/${backendId}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+          });
+        } catch (error) {
+          const shouldRecreate = /modifier|introuvable|pouvez pas|acces refuse|accès refus/i.test(error.message || '');
+          if (!shouldRecreate) throw error;
+
+          row.dataset.backendId = '';
+          row.dataset.productId = row.dataset.productId || `product-local-${Date.now()}`;
+          data = await apiJson('/api/products', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+          });
+        }
+      } else {
+        data = await apiJson('/api/products', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+      }
+
+      if (data.product?.id) {
+        row.dataset.backendId = data.product.id;
+        row.dataset.productId = data.product.id;
+      }
+
+      return data.product || null;
+    }
+
+    async function deleteProductFromBackend(row) {
+      const token = getAuthToken();
+      const backendId = row.dataset.backendId;
+      if (!token || !backendId) return;
+
+      await apiJson(`/api/products/${backendId}`, { method: 'DELETE' });
+    }
+
+    function saveAccountProducts() {
+      const products = getProductRows().map(productFromRow);
+      setAccountJson(CLIENT_PRODUCTS_KEY, products);
+      const stats = loadStats();
+      stats.products = products.length;
+      saveStats(stats);
+      renderPhonePreviewProducts(products);
+    }
+
+    function loadAccountProducts() {
+      return getAccountJson(CLIENT_PRODUCTS_KEY, []) || [];
+    }
+
+    function hasLocalProductCatalog() {
+      return hasAccountKey(CLIENT_PRODUCTS_KEY);
+    }
+
+    function formatProductPrice(value) {
+      const number = Number(String(value || '').replace(/\D/g, ''));
+      return number > 0 ? `${number.toLocaleString('fr-FR')} F` : 'Prix à définir';
+    }
+
+    function renderPhonePreviewProducts(products = loadAccountProducts()) {
+      const phoneProducts = document.querySelector('.phone-prods');
+      if (!phoneProducts) return;
+
+      if (!products.length) {
+        phoneProducts.innerHTML = '<div class="phone-empty-products">Les produits publiés apparaîtront ici comme sur votre boutique publique.</div>';
+        applyPreviewTheme();
+        return;
+      }
+
+      const previewProducts = products.slice(0, 2);
+      const remainingCount = Math.max(0, products.length - previewProducts.length);
+
+      phoneProducts.innerHTML = previewProducts.map((product) => `
+        <div class="phone-prod">
+          <div class="phone-prod-img" style="background:#eef7f1;">${product.image ? `<img src="${product.image}" alt="${product.name || 'Produit'}" style="width:100%;height:100%;object-fit:cover;display:block;">` : '📦'}</div>
+          <div class="phone-prod-info">
+            <div class="phone-prod-name">${product.name || 'Produit'}</div>
+            <div class="phone-prod-price" style="color:#1a5c38;">${formatProductPrice(product.price)}</div>
+            <div class="phone-prod-btn"><i class="fi fi-brands-whatsapp"></i> Commander</div>
+          </div>
+        </div>
+      `).join('') + (remainingCount ? `<div class="phone-empty-products">+${remainingCount} autre${remainingCount > 1 ? 's' : ''} produit${remainingCount > 1 ? 's' : ''} visible${remainingCount > 1 ? 's' : ''} sur le site public.</div>` : '');
+      applyPreviewTheme();
+    }
+
+    function ensureImageViewer() {
+      let viewer = document.querySelector('.image-viewer-overlay');
+      if (viewer) return viewer;
+
+      viewer = document.createElement('div');
+      viewer.className = 'image-viewer-overlay';
+      viewer.innerHTML = `
+        <div class="image-viewer-card" role="dialog" aria-modal="true" aria-label="Aperçu image produit">
+          <div class="image-viewer-head">
+            <div class="image-viewer-title">Image produit</div>
+            <button class="image-viewer-close" type="button" aria-label="Fermer">×</button>
+          </div>
+          <img class="image-viewer-img" alt="Image produit agrandie">
+        </div>
+      `;
+      viewer.addEventListener('click', (event) => {
+        if (event.target === viewer || event.target.closest('.image-viewer-close')) closeImageViewer();
+      });
+      document.body.appendChild(viewer);
+      return viewer;
+    }
+
+    function openImageViewer(src, title = 'Image produit') {
+      const viewer = ensureImageViewer();
+      viewer.querySelector('.image-viewer-img').src = src;
+      viewer.querySelector('.image-viewer-title').textContent = title;
+      viewer.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageViewer() {
+      document.querySelector('.image-viewer-overlay')?.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function updateProductPublishedCount(visibleCount, selectedCategory = 'all') {
+      const productTitle = document.querySelector('#p-produits > div:first-child span');
+      const suffix = visibleCount > 1 ? 'publiés' : 'publié';
+      if (productTitle) productTitle.textContent = `· ${visibleCount} ${suffix}`;
+
+      const catalogBadge = document.querySelector('#p-produits .card .card-head .badge');
+      if (catalogBadge) {
+        catalogBadge.textContent = selectedCategory === 'all'
+          ? `${visibleCount} produit${visibleCount > 1 ? 's' : ''}`
+          : `${visibleCount} dans ${selectedCategory}`;
+      }
+    }
+
+    function syncCatalogFilterOptions() {
+      const filter = getCatalogFilterSelect();
+      if (!filter) return;
+
+      const previousValue = filter.value || 'all';
+      const categories = [...new Set(getProductRows()
+        .map(row => row.dataset.category || row.querySelector('.prod-cat')?.textContent?.trim())
+        .filter(Boolean))].sort((a, b) => a.localeCompare(b, 'fr'));
+
+      filter.innerHTML = '<option value="all">Toutes catégories</option>';
+      categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        filter.appendChild(option);
+      });
+
+      filter.value = categories.includes(previousValue) ? previousValue : 'all';
+    }
+
+    function ensureCatalogEmptyState(message) {
+      const list = getProductList();
+      if (!list) return;
+      let empty = list.querySelector('.empty-products');
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.className = 'empty-products';
+        empty.style.cssText = 'text-align:center;color:var(--soft);padding:24px 8px;font-size:13px;';
+        list.appendChild(empty);
+      }
+      empty.textContent = message;
+    }
+
+    function applyCatalogFilter(syncOptions = true) {
+      if (syncOptions) syncCatalogFilterOptions();
+
+      const filter = getCatalogFilterSelect();
+      const selectedCategory = filter?.value || 'all';
+      const rows = getProductRows();
+      const empty = getProductList()?.querySelector('.empty-products');
+      const list = getProductList();
+      let visibleCount = 0;
+      let filteredIndex = 0;
+
+      rows.forEach(row => {
+        const category = row.dataset.category || row.querySelector('.prod-cat')?.textContent?.trim() || '';
+        const shouldShow = selectedCategory === 'all' || category === selectedCategory;
+        if (!shouldShow) {
+          row.style.display = 'none';
+          return;
+        }
+
+        const shouldCollapse = !isCatalogExpanded && filteredIndex >= 3;
+        row.style.display = shouldCollapse ? 'none' : '';
+        filteredIndex += 1;
+        visibleCount += 1;
+      });
+
+      if (rows.length === 0) {
+        ensureCatalogEmptyState('Aucun produit publié pour le moment. Ajoutez votre premier produit avec le formulaire ci-dessus.');
+      } else if (visibleCount === 0) {
+        ensureCatalogEmptyState('Aucun produit publié dans cette catégorie.');
+      } else if (empty) {
+        empty.remove();
+      }
+
+      updateProductPublishedCount(visibleCount, selectedCategory);
+      renderCatalogToggle(visibleCount);
+    }
+
+    function renderCatalogToggle(totalVisibleProducts) {
+      const list = getProductList();
+      if (!list) return;
+
+      list.querySelector('.catalog-toggle')?.remove();
+
+      if (totalVisibleProducts <= 3) return;
+
+      const hiddenCount = totalVisibleProducts - 3;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `catalog-toggle${isCatalogExpanded ? ' open' : ''}`;
+      button.onclick = toggleCatalogList;
+      button.innerHTML = isCatalogExpanded
+        ? 'Réduire la liste <span class="archive-chevron">⌄</span>'
+        : `Voir ${hiddenCount} autre${hiddenCount > 1 ? 's' : ''} produit${hiddenCount > 1 ? 's' : ''} <span class="archive-chevron">⌄</span>`;
+      list.appendChild(button);
+    }
+
+    function toggleCatalogList() {
+      isCatalogExpanded = !isCatalogExpanded;
+      applyCatalogFilter(false);
+    }
+
+    window.toggleCatalogList = toggleCatalogList;
+
+    function clearDefaultProductCatalog() {
+      const list = getProductList();
+      if (!list) return;
+      list.querySelectorAll('.prod-row').forEach(row => row.remove());
+      list.querySelector('.empty-products')?.remove();
+
+      const products = loadAccountProducts();
+      products.forEach(product => list.appendChild(createProductRow(product)));
+
+      const stats = loadStats();
+      stats.products = products.length;
+      saveStats(stats);
+      if (!products.length) {
+        ensureCatalogEmptyState('Aucun produit publié pour le moment. Ajoutez votre premier produit avec le formulaire ci-dessus.');
+      }
+      syncCatalogFilterOptions();
+      applyCatalogFilter(false);
+      renderPhonePreviewProducts(products);
+    }
+
+    function updateClientGreeting() {
+      const context = getClientContext();
+      const greeting = `${getLocalGreeting()} ${context.name} — ${context.shopName}`;
+      const sub = document.querySelector('.subbar-greeting');
+      if (sub) sub.textContent = greeting;
+      document.title = `${context.shopName} - Tableau de bord ShopLink`;
+    }
+
+    function clientEventPresentation(type, title) {
+      const iconImg = (src, alt = '') => `<img src="${src}" alt="${alt}">`;
+      const map = {
+        product_published: { icon: iconImg('https://cdn-icons-png.flaticon.com/512/10951/10951869.png', 'Produit'), iconClass: 'o', fallback: 'Produit publié' },
+        product_updated: { icon: iconImg('https://cdn-icons-png.flaticon.com/512/10951/10951869.png', 'Produit'), iconClass: 's', fallback: 'Produit modifié' },
+        product_deleted: { icon: iconImg('https://cdn-icons-png.flaticon.com/512/10951/10951869.png', 'Produit'), iconClass: 's', fallback: 'Produit supprimé' },
+        site_updated: { icon: '🌐', iconClass: 'v', fallback: 'Site mis à jour' },
+        profile_updated: { icon: '⚙️', iconClass: 's', fallback: 'Compte mis à jour' },
+        link_shared: { icon: '<i class="fi fi-rr-screen-share"></i>', iconClass: 's', fallback: 'Lien boutique partagé' },
+        whatsapp_clicked: { icon: '<i class="fi fi-brands-whatsapp"></i>', iconClass: 'o', fallback: 'Clic WhatsApp' },
+        premium_requested: { icon: '<i class="fi fi-rr-crown"></i>', iconClass: 'o', fallback: 'Demande Premium' },
+        photo_uploaded: { icon: iconImg('https://cdn-icons-png.flaticon.com/512/833/833281.png', 'Galerie'), iconClass: 'v', fallback: 'Photo optimisée' },
+      };
+      return { ...(map[type] || { icon: iconImg('https://cdn-icons-png.flaticon.com/512/134/134707.png', 'Message'), iconClass: 'v', fallback: 'Nouvelle action' }), title: title || map[type]?.fallback || 'Nouvelle action' };
+    }
+
+    async function recordClientEvent(type, title, metadata = {}) {
+      const context = getClientContext();
+      const stats = loadStats();
+      if (type === 'link_shared') stats.shares += 1;
+      const presentation = clientEventPresentation(type, title);
+      const activity = {
+        type,
+        title: presentation.title,
+        icon: presentation.icon,
+        iconClass: presentation.iconClass,
+        createdAt: new Date().toISOString(),
+        metadata,
+      };
+      stats.activities.unshift(activity);
+      stats.activities = stats.activities.slice(0, 30);
+      saveStats(stats);
+      renderClientStats();
+      fetch('/api/client-events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type,
+          title: presentation.title,
+          message: presentation.title,
+          clientName: context.name,
+          shopName: context.shopName,
+          userId: context.user.id || '',
+          siteId: context.siteId || '',
+          metadata,
+        }),
+      }).catch(() => {});
+    }
+
+    function notify(message, type = 'success') {
+      let toast = document.getElementById('client-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'client-toast';
+        toast.style.cssText = 'position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:2000;max-width:calc(100vw - 24px);padding:11px 16px;border-radius:999px;font:700 13px DM Sans,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s, bottom .2s;text-align:center;';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.style.background = type === 'danger' ? '#fde8e8' : type === 'warning' ? '#fef3de' : '#eef7f1';
+      toast.style.color = type === 'danger' ? '#a32d2d' : type === 'warning' ? '#854f0b' : '#0f6e56';
+      toast.style.opacity = '1';
+      toast.style.bottom = '96px';
+      window.clearTimeout(toast._timer);
+      toast._timer = window.setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.bottom = '88px';
+      }, 2400);
+    }
+
+    function nav(id, el){
+      const page = document.getElementById('p-' + id);
+      if (!page) return;
+      if (id !== 'support') resetSupportWhatsAppGuide();
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      page.classList.add('active');
+      document.querySelectorAll('.nav-link,.client-bottom-btn').forEach(n => n.classList.toggle('active', n.dataset.page === id));
+      if (el && el.dataset) el.classList.add('active');
+      const sub = document.querySelector('.subbar-greeting');
+      const names = {produits:'Gérez votre catalogue de produits',monsite:'Personnalisez et prévisualisez votre vitrine',stats:'Suivez les performances de votre site',support:'Assistance et accompagnement ShopLink',parametres:'Gérez vos informations et abonnement'};
+      if (id === 'accueil') updateClientGreeting();
+      else if (sub && names[id]) sub.textContent = names[id];
+      closeClientMenu();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function selectColor(el,color){
+      document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('sel'));
+      el.classList.add('sel');
+      const head=document.getElementById('phone-head');
+      if(head) head.style.background=color;
+      notify('Couleur appliquée à l’aperçu mobile.');
+    }
+
+    function openClientMenu(){document.querySelector('.topnav')?.classList.add('open');document.querySelector('.client-overlay')?.classList.add('open');document.body.style.overflow='hidden';}
+    function closeClientMenu(){document.querySelector('.topnav')?.classList.remove('open');document.querySelector('.client-overlay')?.classList.remove('open');document.body.style.overflow='';}
+
+    function getShopLink() {
+      const context = getClientContext();
+      return `${window.location.origin}/${context.slug}?source=shared`;
+    }
+
+    function getTrackedShopLink() {
+      const context = getClientContext();
+      const target = `/${context.slug}?source=shared`;
+      return `${window.location.origin}/api/tracking/shared-link/${encodeURIComponent(context.siteId)}?target=${encodeURIComponent(target)}`;
+    }
+
+    function normalizeWhatsAppNumber(value) {
+      const raw = String(value || '').replace(/\D/g, '');
+      if (!raw || raw.includes('X')) return '';
+      if (/^22901\d{8}$/.test(raw)) return raw;
+      if (/^01\d{8}$/.test(raw)) return `229${raw}`;
+      return '';
+    }
+
+    function normalizeBeninPhoneDisplay(value) {
+      const raw = String(value || '').replace(/\D/g, '');
+      if (/^22901\d{8}$/.test(raw)) return `+${raw}`;
+      if (/^01\d{8}$/.test(raw)) return `+229${raw}`;
+      if (/^229\d{8}$/.test(raw)) return `+22901${raw.slice(3)}`;
+      if (/^\d{8}$/.test(raw)) return `+22901${raw}`;
+      return value || '';
+    }
+
+    function normalizeBeninPhoneForSave(value, label, required = false) {
+      const raw = String(value || '').trim();
+      const digits = raw.replace(/\D/g, '');
+      if (!raw && !required) return '';
+      if (/^22901\d{8}$/.test(digits)) return `+${digits}`;
+      if (/^01\d{8}$/.test(digits)) return `+229${digits}`;
+
+      notify(`${label} invalide. Format requis : +22901XXXXXXXX. Ajoutez 01 après +229.`, 'warning');
+      throw new Error(`${label} invalide`);
+    }
+
+    function getClientWhatsAppNumber() {
+      const context = getClientContext();
+      const siteInput = document.querySelector('#p-monsite input[value^="+229"], #p-monsite input[placeholder^="+229"]');
+      return normalizeWhatsAppNumber(context.site.whatsapp || context.order.whatsapp || siteInput?.value || '');
+    }
+
+    function shareShopLinkToClientWhatsapp() {
+      const phone = getClientWhatsAppNumber();
+      const link = getShopLink();
+      if (!phone || phone.includes('X')) {
+        notify('Renseignez un vrai numéro WhatsApp dans Mon site avant de tester.', 'warning');
+        nav('monsite', document.querySelector('[data-page="monsite"]'));
+        return;
+      }
+      const trackedLink = getTrackedShopLink();
+      const message = `Visite ma boutique à travers ce lien : ${trackedLink}`;
+      recordClientEvent('link_shared', 'Lien boutique envoyé sur WhatsApp', { phone, link, trackedLink });
+      window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    }
+
+    async function copyShopLink(){
+      if (isCopyingShopLink) return;
+      isCopyingShopLink = true;
+      const link = getShopLink();
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(link);
+        } else {
+          const input = document.createElement('textarea');
+          input.value = link;
+          input.setAttribute('readonly', '');
+          input.style.position = 'fixed';
+          input.style.opacity = '0';
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand('copy');
+          input.remove();
+        }
+        notify('Lien copié.');
+        recordClientEvent('link_shared', 'Lien boutique copié');
+      }
+      catch (_error) {
+        notify('Impossible de copier automatiquement le lien.', 'warning');
+      }
+      finally {
+        window.setTimeout(() => { isCopyingShopLink = false; }, 700);
+      }
+    }
+
+    function getPreferredSupportWhatsAppUrl(message) {
+      const phone = '22967163481';
+      const encodedMessage = encodeURIComponent(message);
+      const userAgent = navigator.userAgent || '';
+
+      if (/Android/i.test(userAgent)) {
+        return `intent://send?phone=${phone}&text=${encodedMessage}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=${encodeURIComponent(`https://api.whatsapp.com/send?phone=${phone}&text=${encodedMessage}`)};end`;
+      }
+
+      if (/iPhone|iPad|iPod/i.test(userAgent)) {
+        return `whatsapp://send?phone=${phone}&text=${encodedMessage}`;
+      }
+
+      return `https://api.whatsapp.com/send?phone=${phone}&text=${encodedMessage}`;
+    }
+
+    function openSupportWhatsApp(message) {
+      window.location.href = getPreferredSupportWhatsAppUrl(message);
+    }
+
+    function sendPrompt(message){
+      recordClientEvent('support_contacted', 'Ouverture du support WhatsApp');
+      openSupportWhatsApp(message);
+    }
+
+    function getSupportGreeting() {
+      const hour = new Date().getHours();
+      if (hour >= 18 || hour < 5) return 'Bonsoir';
+      if (hour >= 12) return 'Bon après-midi';
+      return 'Bonjour';
+    }
+
+    function initSupportWhatsAppGuide() {
+      const supportCards = Array.from(document.querySelectorAll('#p-support .support-card'));
+      const whatsappCard = supportCards.find((card) => /whatsapp support/i.test(card.textContent || ''));
+      if (!whatsappCard || whatsappCard.querySelector('.support-whatsapp-guide')) return;
+
+      const guide = document.createElement('div');
+      guide.className = 'support-whatsapp-guide';
+      guide.style.cssText = 'margin-top:12px;display:none;gap:9px;text-align:left;position:relative;padding-top:4px;';
+      guide.innerHTML = `
+        <button type="button" class="support-guide-close" onclick="resetSupportWhatsAppGuide()" aria-label="Fermer" style="position:absolute;right:0;top:0;width:28px;height:28px;border:0;border-radius:999px;background:#fff5f5;color:#a32d2d;font-size:17px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+        <div style="font-size:12px;font-weight:800;color:var(--muted);padding-right:34px;">Quel souci rencontrez-vous ?</div>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text);"><input type="checkbox" class="support-issue" value="Je n’arrive pas à publier mes produits"> Je n’arrive pas à publier mes produits</label>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text);"><input type="checkbox" class="support-issue" value="Mon site public n’affiche pas les bonnes informations"> Mon site public n’affiche pas les bonnes informations</label>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text);"><input type="checkbox" class="support-issue" value="J’ai un problème avec les images ou le logo"> J’ai un problème avec les images ou le logo</label>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text);"><input type="checkbox" class="support-issue" value="J’ai un problème avec les commandes ou le panier"> J’ai un problème avec les commandes ou le panier</label>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text);"><input type="checkbox" class="support-issue" value="Je veux de l’aide pour configurer ma boutique"> Je veux de l’aide pour configurer ma boutique</label>
+        <div class="form-group" style="margin:2px 0 0;">
+          <label class="form-label" for="support-whatsapp-other">Autre problème</label>
+          <textarea class="form-input" id="support-whatsapp-other" rows="3" placeholder="Expliquez votre problème si les choix ne suffisent pas..."></textarea>
+        </div>
+      `;
+
+      const contactButton = Array.from(whatsappCard.querySelectorAll('button')).find((button) => /contacter/i.test(button.textContent || ''));
+      if (contactButton) {
+        whatsappCard.insertBefore(guide, contactButton);
+        contactButton.id = 'send-support-whatsapp';
+        contactButton.type = 'button';
+        contactButton.textContent = 'Contacter';
+      } else {
+        whatsappCard.appendChild(guide);
+      }
+    }
+
+    function handleSupportWhatsAppClick() {
+      const guide = document.querySelector('#p-support .support-whatsapp-guide');
+      const button = document.getElementById('send-support-whatsapp');
+      const card = guide?.closest('.support-card');
+
+      if (guide && guide.style.display === 'none') {
+        guide.style.display = 'grid';
+        card?.classList.add('whatsapp-guide-open');
+        if (button) button.textContent = 'Envoyer sur WhatsApp';
+        card?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+
+      submitSupportWhatsAppGuide();
+    }
+
+    function resetSupportWhatsAppGuide() {
+      const guide = document.querySelector('#p-support .support-whatsapp-guide');
+      const button = document.getElementById('send-support-whatsapp');
+
+      document.querySelectorAll('#p-support .support-issue').forEach((input) => {
+        input.checked = false;
+      });
+
+      const other = document.getElementById('support-whatsapp-other');
+      if (other) other.value = '';
+
+      if (guide) guide.style.display = 'none';
+      guide?.closest('.support-card')?.classList.remove('whatsapp-guide-open');
+      if (button) button.textContent = 'Contacter';
+    }
+
+    function submitSupportWhatsAppGuide() {
+      const context = getClientContext();
+      const user = getCurrentUser();
+      const issues = Array.from(document.querySelectorAll('#p-support .support-issue:checked')).map((input) => input.value);
+      const other = document.getElementById('support-whatsapp-other')?.value.trim() || '';
+
+      if (!issues.length && !other) {
+        notify('Sélectionnez un souci ou renseignez le champ Autre.', 'warning');
+        return;
+      }
+
+      const lines = [
+        `${getSupportGreeting()} ShopLink Administrateur, j’ai besoin d’aide.`,
+        '',
+        `Nom : ${user.name || user.fullName || 'Client'}`,
+        `Email : ${user.email || 'Non renseigné'}`,
+        `Boutique : ${context.shopName || 'Non renseignée'}`,
+        `Lien : shoplink.bj/${context.slug || 'non-renseigné'}`,
+        '',
+        'Problème(s) sélectionné(s) :',
+        ...(issues.length ? issues.map((issue, index) => `${index + 1}. ${issue}`) : ['Aucun choix sélectionné']),
+      ];
+
+      if (other) {
+        lines.push('', 'Détail autre problème :', other);
+      }
+
+      recordClientEvent('support_contacted', 'Support WhatsApp contacté', { issues, other });
+      resetSupportWhatsAppGuide();
+      openSupportWhatsApp(lines.join('\n'));
+    }
+
+    function redirectPremium() {
+      const context = getClientContext();
+      recordClientEvent('premium_requested', 'Demande Premium initiée', { shopName: context.shopName });
+      localStorage.setItem('shoplink_premium_source', JSON.stringify({
+        from: 'client-dashboard',
+        shopName: context.shopName,
+        at: new Date().toISOString(),
+      }));
+      window.location.href = '/premium.html?source=dashboard';
+    }
+
+    function logoutClient(){
+      localStorage.removeItem('shoplink_token');
+      localStorage.removeItem('shoplink_user');
+      localStorage.removeItem('mos_auth_token');
+      closeClientMenu();
+      window.location.href='/login.html';
+    }
+
+    function openQuickGuide() {
+      document.getElementById('quick-guide-overlay')?.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeQuickGuide() {
+      document.getElementById('quick-guide-overlay')?.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function guideGo(page) {
+      closeQuickGuide();
+      nav(page, document.querySelector(`[data-page="${page}"]`));
+    }
+
+    function getProductForm() {
+      const form = document.querySelector('#p-produits .add-form');
+      const fields = form ? form.querySelectorAll('.form-input') : [];
+      return {
+        form,
+        uploadZone: form?.querySelector('.upload-zone'),
+        name: fields[0],
+        price: fields[1],
+        category: fields[2],
+        customCategory: form?.querySelector('.custom-category-input'),
+        description: fields[3],
+        availability: form?.querySelector('#product-availability'),
+        stock: form?.querySelector('#product-stock'),
+        badge: form?.querySelector('#product-badge'),
+        oldPrice: form?.querySelector('#product-old-price'),
+        variantInfo: form?.querySelector('#product-variant-info'),
+        extraInfo: form?.querySelector('#product-extra-info'),
+        publishButton: form?.querySelector('.btn-primary'),
+      };
+    }
+
+    function getActivityKey() {
+      const activity = String(getClientContext().site.activityType || getClientContext().order.activityType || '').toLowerCase();
+      if (/fast\s*-?\s*food|fastfood|burger|hamburger|snack|sandwich|tacos|shawarma|pizza|frites|hot\s*-?\s*dog/.test(activity)) return 'fastfood';
+      if (/restaurant|food|repas|plat|menu|boisson|grillade|poulet|riz/.test(activity)) return 'food';
+      if (/boutique|mode|robe|pagne|sac|chaussure|vêtement|vetement/.test(activity)) return 'fashion';
+      if (/cosm|beaut|maquillage|parfum|crème|creme|cheveux|soin/.test(activity)) return 'beauty';
+      if (/commerce|commerçant|commercant|vente|shop|marché|marche/.test(activity)) return 'commerce';
+      return 'general';
+    }
+
+    function getPreviewTheme() {
+      const themes = {
+        food: {
+          primary: '#9a3f13',
+          accent: '#f59c1a',
+          soft: '#fff2df',
+          text: '#24140a',
+        },
+        fastfood: {
+          primary: '#d9480f',
+          accent: '#facc15',
+          soft: '#fff3bf',
+          text: '#271307',
+        },
+        fashion: {
+          primary: '#1f4f8f',
+          accent: '#d7a247',
+          soft: '#e1ecff',
+          text: '#101a2f',
+        },
+        beauty: {
+          primary: '#8b3a62',
+          accent: '#eaa6c8',
+          soft: '#ffe8f4',
+          text: '#28131e',
+        },
+        commerce: {
+          primary: '#176b5b',
+          accent: '#f59c1a',
+          soft: '#e8f7ef',
+          text: '#0f1f17',
+        },
+        general: {
+          primary: '#176b5b',
+          accent: '#f59c1a',
+          soft: '#fbf7ef',
+          text: '#111827',
+        },
+      };
+      return themes[getActivityKey()] || themes.general;
+    }
+
+    function applyPreviewTheme() {
+      const theme = getPreviewTheme();
+      const head = document.getElementById('phone-head');
+      const phone = document.querySelector('.phone');
+      const screen = document.querySelector('.phone-screen');
+
+      if (phone) {
+        phone.style.background = theme.text;
+        phone.style.boxShadow = `0 18px 44px ${theme.primary}33`;
+      }
+
+      if (screen) {
+        screen.style.background = '#fff';
+      }
+
+      if (head) {
+        head.style.background = `linear-gradient(135deg, ${theme.primary}, ${theme.accent})`;
+        head.style.color = '#fff';
+      }
+
+      document.querySelectorAll('.phone-prod-price').forEach((el) => {
+        el.style.color = theme.primary;
+      });
+
+      document.querySelectorAll('.phone-prod-btn').forEach((el) => {
+        el.style.background = theme.primary;
+        el.style.color = '#fff';
+      });
+
+      document.querySelectorAll('.phone-prod-img').forEach((el) => {
+        if (!el.querySelector('img')) {
+          el.style.background = theme.soft;
+          el.style.color = theme.primary;
+        }
+      });
+    }
+
+    function getActivityFieldLabels() {
+      const key = getActivityKey();
+      const labels = {
+        food: { variant: 'Type / portion', extra: 'Délai ou option', variantPlaceholder: 'Ex : Plat, boisson, petit/grand', extraPlaceholder: 'Ex : prêt en 20 min, sans piment' },
+        fashion: { variant: 'Tailles / couleurs', extra: 'Collection', variantPlaceholder: 'Ex : M, L, XL · Rouge', extraPlaceholder: 'Ex : Nouvelle collection' },
+        beauty: { variant: 'Usage / volume', extra: 'Conseil', variantPlaceholder: 'Ex : 250ml, peau grasse', extraPlaceholder: 'Ex : appliquer le soir' },
+        commerce: { variant: 'État / format', extra: 'Livraison / retrait', variantPlaceholder: 'Ex : Neuf, carton, lot', extraPlaceholder: 'Ex : livraison disponible' },
+        general: { variant: 'Détail produit', extra: 'Information utile', variantPlaceholder: 'Ex : taille, format, option', extraPlaceholder: 'Ex : service disponible à Cotonou' },
+      };
+      return labels[key] || labels.general;
+    }
+
+    function initActivityProductFields() {
+      const productForm = getProductForm();
+      if (!productForm.form || productForm.form.querySelector('.activity-product-panel')) return;
+      const labels = getActivityFieldLabels();
+      const panel = document.createElement('div');
+      panel.className = 'activity-product-panel';
+      panel.innerHTML = `
+        <button class="activity-product-toggle" type="button" aria-expanded="false">
+          <span>Options avancées du produit</span>
+          <span class="chevron">⌄</span>
+        </button>
+        <div class="activity-product-fields">
+          <div class="form-group"><label class="form-label">Disponibilité</label><select class="form-input" id="product-availability"><option value="available">Disponible</option><option value="out_of_stock">Rupture</option><option value="hidden">Masqué du site</option></select></div>
+          <div class="form-group"><label class="form-label">Stock (optionnel)</label><input class="form-input" id="product-stock" type="number" min="0" placeholder="Ex : 10"></div>
+          <div class="form-group"><label class="form-label">Badge</label><select class="form-input" id="product-badge"><option value="">Aucun</option><option value="new">Nouveau</option><option value="popular">Populaire</option><option value="promo">Promo</option><option value="recommended">Recommandé</option></select></div>
+          <div class="form-group"><label class="form-label">Prix barré (optionnel)</label><input class="form-input" id="product-old-price" type="number" min="0" placeholder="Ancien prix"></div>
+          <div class="form-group"><label class="form-label" id="product-variant-label">${labels.variant}</label><input class="form-input" id="product-variant-info" placeholder="${labels.variantPlaceholder}"></div>
+          <div class="form-group"><label class="form-label" id="product-extra-label">${labels.extra}</label><input class="form-input" id="product-extra-info" placeholder="${labels.extraPlaceholder}"></div>
+        </div>
+      `;
+      panel.querySelector('.activity-product-toggle')?.addEventListener('click', () => {
+        const isOpen = panel.classList.toggle('open');
+        panel.querySelector('.activity-product-toggle')?.setAttribute('aria-expanded', String(isOpen));
+      });
+      const actions = productForm.form.querySelector('.form-btn-row');
+      actions?.parentNode.insertBefore(panel, actions);
+    }
+
+    function closeActivityProductPanel() {
+      const panel = document.querySelector('.activity-product-panel');
+      panel?.classList.remove('open');
+      panel?.querySelector('.activity-product-toggle')?.setAttribute('aria-expanded', 'false');
+    }
+
+    function openActivityProductPanel() {
+      const panel = document.querySelector('.activity-product-panel');
+      panel?.classList.add('open');
+      panel?.querySelector('.activity-product-toggle')?.setAttribute('aria-expanded', 'true');
+    }
+
+    function refreshActivityProductLabels() {
+      const labels = getActivityFieldLabels();
+      const variantLabel = document.getElementById('product-variant-label');
+      const extraLabel = document.getElementById('product-extra-label');
+      const variantInput = document.getElementById('product-variant-info');
+      const extraInput = document.getElementById('product-extra-info');
+      if (variantLabel) variantLabel.textContent = labels.variant;
+      if (extraLabel) extraLabel.textContent = labels.extra;
+      if (variantInput) variantInput.placeholder = labels.variantPlaceholder;
+      if (extraInput) extraInput.placeholder = labels.extraPlaceholder;
+    }
+
+    function initProductCategoryControls() {
+      const productForm = getProductForm();
+      if (!productForm.form || !productForm.category) return;
+
+      normalizeUploadPhotoIcon();
+
+      const descriptionLabel = productForm.description?.closest('.form-group')?.querySelector('.form-label');
+      if (descriptionLabel) descriptionLabel.textContent = 'Description courte (optionnel)';
+
+      if (!Array.from(productForm.category.options).some(option => option.value === '__custom__')) {
+        const option = document.createElement('option');
+        option.value = '__custom__';
+        option.textContent = 'Autre catégorie...';
+        productForm.category.appendChild(option);
+      }
+
+      if (!productForm.customCategory) {
+        const input = document.createElement('input');
+        input.className = 'custom-category-input';
+        input.placeholder = 'Renseignez votre catégorie';
+        input.type = 'text';
+        productForm.category.insertAdjacentElement('afterend', input);
+      }
+
+      productForm.category.addEventListener('change', () => {
+        const currentForm = getProductForm();
+        currentForm.customCategory?.classList.toggle('show', currentForm.category.value === '__custom__');
+        if (currentForm.category.value === '__custom__') currentForm.customCategory?.focus();
+      });
+    }
+
+    function initCatalogFilterControls() {
+      const filter = getCatalogFilterSelect();
+      if (!filter || filter.dataset.ready === 'true') return;
+      filter.dataset.ready = 'true';
+
+      if (!filter.closest('.catalog-filter-wrap')) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'catalog-filter-wrap';
+        wrapper.innerHTML = '<i class="fi fi-rr-filter-list" aria-hidden="true"></i>';
+        filter.parentNode.insertBefore(wrapper, filter);
+        wrapper.appendChild(filter);
+      }
+
+      filter.addEventListener('change', () => applyCatalogFilter(false));
+      syncCatalogFilterOptions();
+    }
+
+    function ensureSiteLogoInput() {
+      let input = document.getElementById('site-logo-input');
+      if (input) return input;
+
+      input = document.createElement('input');
+      input.id = 'site-logo-input';
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.style.display = 'none';
+      input.addEventListener('change', () => {
+        const file = input.files?.[0];
+        if (file) handleSiteLogo(file);
+        input.value = '';
+      });
+      document.body.appendChild(input);
+      return input;
+    }
+
+    function initSiteLogoUpload() {
+      const sitePage = document.getElementById('p-monsite');
+      const identityBody = sitePage?.querySelector('.card .card-body');
+      if (!identityBody || identityBody.querySelector('.site-logo-upload')) return;
+
+      const context = getClientContext();
+      selectedSiteLogo = context.site.logo || '';
+      const logoBlock = document.createElement('div');
+      logoBlock.className = `site-logo-upload${selectedSiteLogo ? ' has-logo' : ''}`;
+      logoBlock.innerHTML = `
+        <div class="site-logo-preview">${selectedSiteLogo ? `<img src="${selectedSiteLogo}" alt="Logo boutique">` : '<i class="fi fi-rr-site-alt"></i>'}</div>
+        <div>
+          <div class="site-logo-title">Logo du site</div>
+          <div class="site-logo-hint">Cliquez pour choisir le logo de votre boutique. L’image sera optimisée automatiquement.</div>
+          <div class="site-logo-actions">
+            <button class="site-logo-remove" type="button"><i class="fi fi-rr-trash"></i> Supprimer le logo</button>
+          </div>
+        </div>
+      `;
+      logoBlock.addEventListener('click', (event) => {
+        if (event.target.closest('.site-logo-remove')) return;
+        ensureSiteLogoInput().click();
+      });
+      logoBlock.querySelector('.site-logo-remove')?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        removeSiteLogo();
+      });
+      identityBody.prepend(logoBlock);
+      updatePhoneLogoPreview();
+    }
+
+    function updatePhoneLogoPreview() {
+      const phoneHead = document.getElementById('phone-head');
+      if (!phoneHead) return;
+
+      let logo = phoneHead.querySelector('.phone-logo');
+      if (!selectedSiteLogo) {
+        logo?.remove();
+        return;
+      }
+
+      if (!logo) {
+        logo = document.createElement('div');
+        logo.className = 'phone-logo';
+        phoneHead.prepend(logo);
+      }
+      logo.innerHTML = `<img src="${selectedSiteLogo}" alt="Logo boutique">`;
+    }
+
+    async function removeSiteLogo() {
+      selectedSiteLogo = '';
+      const context = getClientContext();
+      const nextSite = { ...(context.site || {}), logo: '' };
+      setAccountJson(CLIENT_SITE_KEY, nextSite);
+
+      const upload = document.querySelector('.site-logo-upload');
+      const preview = document.querySelector('.site-logo-preview');
+      upload?.classList.remove('has-logo');
+      if (preview) preview.innerHTML = '<i class="fi fi-rr-site-alt"></i>';
+      updatePhoneLogoPreview();
+
+      try {
+        await ensureBackendSite({ ...nextSite, logo: '' });
+        notify('Logo supprimé du site public et de l’aperçu mobile.', 'warning');
+      } catch (error) {
+        notify(`Logo supprimé localement. Sync backend indisponible : ${error.message}`, 'warning');
+      }
+
+      recordClientEvent('site_updated', 'Logo de boutique supprimé');
+    }
+
+    async function handleSiteLogo(file) {
+      if (!file.type.startsWith('image/')) return notify('Choisissez une vraie image pour le logo.', 'warning');
+      if (file.size > 8 * 1024 * 1024) return notify('Logo trop lourd. Maximum conseillé : 8 Mo.', 'warning');
+
+      try {
+        notify('Optimisation du logo en cours...', 'warning');
+        const optimized = await compressImage(file, 512, 0.82);
+        selectedSiteLogo = optimized.dataUrl;
+        const preview = document.querySelector('.site-logo-preview');
+        if (preview) preview.innerHTML = `<img src="${optimized.dataUrl}" alt="Logo boutique optimisé">`;
+        document.querySelector('.site-logo-upload')?.classList.add('has-logo');
+        updatePhoneLogoPreview();
+
+        const context = getClientContext();
+        const nextSite = { ...(context.site || {}), logo: optimized.dataUrl };
+        setAccountJson(CLIENT_SITE_KEY, nextSite);
+
+        try {
+          await ensureBackendSite({ ...nextSite, logo: optimized.dataUrl });
+          notify('Logo ajouté sur le site public et l’aperçu mobile.');
+        } catch (error) {
+          notify(`Logo ajouté localement. Sync backend indisponible : ${error.message}`, 'warning');
+        }
+
+        recordClientEvent('site_updated', 'Logo de boutique mis à jour', { width: optimized.width, height: optimized.height });
+      } catch (error) {
+        notify(error.message || 'Impossible d’optimiser le logo.', 'danger');
+      }
+    }
+
+    function getSelectedCategory(productForm) {
+      if (productForm.category?.value === '__custom__') {
+        return productForm.customCategory?.value.trim() || '';
+      }
+      return productForm.category?.value || 'Produits';
+    }
+
+    function resetProductForm() {
+      const productForm = getProductForm();
+      [productForm.name, productForm.price, productForm.description].forEach(field => { if (field) field.value = ''; });
+      [productForm.stock, productForm.oldPrice, productForm.variantInfo, productForm.extraInfo].forEach(field => { if (field) field.value = ''; });
+      if (productForm.availability) productForm.availability.value = 'available';
+      if (productForm.badge) productForm.badge.value = '';
+      if (productForm.category) productForm.category.selectedIndex = 0;
+      if (productForm.customCategory) {
+        productForm.customCategory.value = '';
+        productForm.customCategory.classList.remove('show');
+      }
+      if (productForm.uploadZone) {
+        productForm.uploadZone.classList.remove('has-image');
+        productForm.uploadZone.innerHTML = '<div class="upload-zone-icon"><i class="fi fi-rr-add-image"></i></div><div class="upload-zone-text">Cliquez pour ajouter une photo</div>';
+      }
+      if (productForm.publishButton) productForm.publishButton.textContent = '✓ Publier le produit';
+      selectedProductImage = '';
+      editingProductRow = null;
+      closeActivityProductPanel();
+      normalizeUploadPhotoIcon();
+    }
+
+    function ensureProductImageInput() {
+      let input = document.getElementById('product-image-input');
+      if (input) return input;
+      input = document.createElement('input');
+      input.id = 'product-image-input';
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.style.display = 'none';
+      input.addEventListener('change', () => {
+        const file = input.files?.[0];
+        if (file) handleProductImage(file);
+        input.value = '';
+      });
+      document.body.appendChild(input);
+      return input;
+    }
+
+    function dataUrlSize(dataUrl) {
+      const base64 = String(dataUrl || '').split(',')[1] || '';
+      return Math.ceil(base64.length * 0.75);
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return '0 Ko';
+      if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} Ko`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+    }
+
+    async function dataUrlToFile(dataUrl, filename = 'image.jpg') {
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      return new File([blob], filename, { type: blob.type || 'image/jpeg' });
+    }
+
+    function compressImage(file, maxSize = 1200, quality = 0.86, targetBytes = 850 * 1024) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = () => { img.src = reader.result; };
+        reader.onerror = () => reject(new Error('Impossible de lire la photo.'));
+        img.onload = () => {
+          const attempts = [
+            { maxSize, quality },
+            { maxSize: Math.min(maxSize, 1100), quality: Math.min(quality, 0.84) },
+            { maxSize: Math.min(maxSize, 980), quality: 0.8 },
+            { maxSize: Math.min(maxSize, 860), quality: 0.76 },
+            { maxSize: Math.min(maxSize, 720), quality: 0.72 },
+          ];
+          let best = null;
+
+          for (const attempt of attempts) {
+            const scale = Math.min(1, attempt.maxSize / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(img.width * scale));
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg', attempt.quality);
+            const size = dataUrlSize(dataUrl);
+            const result = { dataUrl, width: canvas.width, height: canvas.height, size };
+
+            best = !best || size < best.size ? result : best;
+            if (size <= targetBytes) {
+              resolve(result);
+              return;
+            }
+          }
+
+          resolve(best);
+        };
+        img.onerror = () => reject(new Error('Format image invalide.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function optimizeDataUrlIfNeeded(dataUrl, targetBytes = 850 * 1024) {
+      if (!String(dataUrl || '').startsWith('data:image/')) return dataUrl;
+      if (dataUrlSize(dataUrl) <= targetBytes) return dataUrl;
+
+      const file = await dataUrlToFile(dataUrl);
+      const optimized = await compressImage(file, 1200, 0.86, targetBytes);
+      return optimized.dataUrl;
+    }
+
+    async function handleProductImage(file) {
+      if (!file.type.startsWith('image/')) return notify('Choisissez une vraie image.', 'warning');
+      try {
+        notify('Optimisation de la photo en cours...', 'warning');
+        const optimized = await compressImage(file);
+        selectedProductImage = optimized.dataUrl;
+        const productForm = getProductForm();
+        if (productForm.uploadZone) {
+          productForm.uploadZone.classList.add('has-image');
+          productForm.uploadZone.innerHTML = `<img class="upload-preview-img" src="${optimized.dataUrl}" alt="Photo produit optimisée"><div class="upload-quality">Photo optimisée · ${optimized.width}×${optimized.height}px · ${formatBytes(optimized.size)}</div>`;
+        }
+        notify('Photo sélectionnée et qualité optimisée.');
+        recordClientEvent('photo_uploaded', 'Photo produit sélectionnée et optimisée', { width: optimized.width, height: optimized.height });
+      } catch (error) {
+        notify(error.message || 'Impossible d’optimiser la photo.', 'danger');
+      }
+    }
+
+    async function addOrUpdateProduct() {
+      const productForm = getProductForm();
+      const name = productForm.name?.value.trim();
+      const price = Number(productForm.price?.value || 0);
+      const category = getSelectedCategory(productForm);
+      const description = productForm.description?.value.trim() || '';
+      const availability = productForm.availability?.value || 'available';
+      const stock = productForm.stock?.value || '';
+      const badge = productForm.badge?.value || '';
+      const oldPrice = productForm.oldPrice?.value || '';
+      const variantInfo = productForm.variantInfo?.value.trim() || '';
+      const extraInfo = productForm.extraInfo?.value.trim() || '';
+      if (!name) return notify('Entrez le nom du produit.', 'warning');
+      if (!price || price <= 0) return notify('Entrez un prix valide.', 'warning');
+      if (!category) return notify('Renseignez votre catégorie personnalisée.', 'warning');
+      const priceLabel = `${price.toLocaleString('fr-FR')} F`;
+      if (editingProductRow) {
+        editingProductRow.querySelector('.prod-name').textContent = name;
+        editingProductRow.querySelector('.prod-cat').textContent = category;
+        let descNode = editingProductRow.querySelector('.prod-desc');
+        if (!descNode) {
+          descNode = document.createElement('div');
+          descNode.className = 'prod-desc';
+          editingProductRow.querySelector('.prod-cat')?.insertAdjacentElement('afterend', descNode);
+        }
+        descNode.textContent = description;
+        descNode.style.display = description ? 'block' : 'none';
+        editingProductRow.querySelector('.prod-price').textContent = priceLabel;
+        editingProductRow.dataset.category = category;
+        editingProductRow.dataset.availability = availability;
+        editingProductRow.dataset.stock = stock;
+        editingProductRow.dataset.badge = badge;
+        editingProductRow.dataset.oldPrice = oldPrice;
+        editingProductRow.dataset.variantInfo = variantInfo;
+        editingProductRow.dataset.extraInfo = extraInfo;
+        editingProductRow.querySelector('.prod-meta')?.remove();
+        editingProductRow.querySelector('.prod-desc')?.insertAdjacentHTML('afterend', renderProductMeta({ availability, stock, badge, oldPrice, variantInfo, extraInfo }));
+        if (selectedProductImage) editingProductRow.querySelector('.prod-thumb').innerHTML = `<img src="${selectedProductImage}" alt="${name}">`;
+        saveAccountProducts();
+        try {
+          await syncLocalProductsToBackend();
+        } catch (error) {
+          notify(`Produit modifié localement. Synchronisation indisponible : ${error.message}`, 'warning');
+        }
+        notify('Produit modifié avec succès.');
+        recordClientEvent('product_updated', `Produit modifié : ${name}`, { productName: name, category, price, description });
+      } else {
+        const list = getProductList();
+        list?.querySelector('.empty-products')?.remove();
+        const row = document.createElement('div');
+        row.className = 'prod-row';
+        row.dataset.category = category;
+        row.dataset.availability = availability;
+        row.dataset.stock = stock;
+        row.dataset.badge = badge;
+        row.dataset.oldPrice = oldPrice;
+        row.dataset.variantInfo = variantInfo;
+        row.dataset.extraInfo = extraInfo;
+        row.innerHTML = `<div class="prod-thumb">${selectedProductImage ? `<img src="${selectedProductImage}" alt="${name}">` : '📦'}</div><div><div class="prod-name"></div><div class="prod-cat"></div><div class="prod-desc"></div>${renderProductMeta({ availability, stock, badge, oldPrice, variantInfo, extraInfo })}</div><div class="prod-price"></div><div class="prod-views"><i class="fi fi-rr-eyes"></i> 0</div><div style="display:flex;gap:6px;"><button class="iBtn" type="button" data-action="edit"><i class="fi fi-rr-pencil"></i></button><button class="iBtn" type="button" data-action="delete"><i class="fi fi-rr-trash"></i></button></div>`;
+        row.querySelector('.prod-name').textContent = name;
+        row.querySelector('.prod-cat').textContent = category;
+        row.querySelector('.prod-desc').textContent = description;
+        row.querySelector('.prod-desc').style.display = description ? 'block' : 'none';
+        row.querySelector('.prod-price').textContent = priceLabel;
+        list?.prepend(row);
+        saveAccountProducts();
+        try {
+          await syncLocalProductsToBackend();
+        } catch (error) {
+          notify(`Produit publié localement. Synchronisation indisponible : ${error.message}`, 'warning');
+        }
+        notify('Produit publié dans le catalogue.');
+        recordClientEvent('product_published', `Produit publié : ${name}`, { productName: name, category, price, description, availability, stock, badge });
+      }
+      syncCatalogFilterOptions();
+      const filter = getCatalogFilterSelect();
+      if (filter && filter.value !== 'all' && filter.value !== category) filter.value = category;
+      applyCatalogFilter(false);
+      resetProductForm();
+    }
+
+    function editProduct(row) {
+      const productForm = getProductForm();
+      editingProductRow = row;
+      if (productForm.name) productForm.name.value = row.querySelector('.prod-name')?.textContent || '';
+      if (productForm.price) productForm.price.value = String(row.querySelector('.prod-price')?.textContent || '').replace(/\D/g, '');
+      if (productForm.description) productForm.description.value = row.querySelector('.prod-desc')?.textContent || '';
+      if (productForm.availability) productForm.availability.value = row.dataset.availability || 'available';
+      if (productForm.stock) productForm.stock.value = row.dataset.stock || '';
+      if (productForm.badge) productForm.badge.value = row.dataset.badge || '';
+      if (productForm.oldPrice) productForm.oldPrice.value = row.dataset.oldPrice || '';
+      if (productForm.variantInfo) productForm.variantInfo.value = row.dataset.variantInfo || '';
+      if (productForm.extraInfo) productForm.extraInfo.value = row.dataset.extraInfo || '';
+      const currentCategory = row.querySelector('.prod-cat')?.textContent || '';
+      if (productForm.category) {
+        const existingOption = Array.from(productForm.category.options).find(option => option.value === currentCategory);
+        if (existingOption) {
+          productForm.category.value = currentCategory;
+          productForm.customCategory?.classList.remove('show');
+        } else {
+          productForm.category.value = '__custom__';
+          if (productForm.customCategory) {
+            productForm.customCategory.value = currentCategory;
+            productForm.customCategory.classList.add('show');
+          }
+        }
+      }
+      selectedProductImage = '';
+      if (productForm.uploadZone) {
+        const img = row.querySelector('.prod-thumb img');
+        if (img) {
+          selectedProductImage = img.src;
+          productForm.uploadZone.classList.add('has-image');
+          productForm.uploadZone.innerHTML = `<img class="upload-preview-img" src="${img.src}" alt="Photo produit"><div class="upload-quality">Photo actuelle · cliquez pour changer</div>`;
+        }
+      }
+      if (productForm.publishButton) productForm.publishButton.textContent = '✓ Enregistrer les modifications';
+      if (row.dataset.availability !== 'available' || row.dataset.stock || row.dataset.badge || row.dataset.oldPrice || row.dataset.variantInfo || row.dataset.extraInfo) {
+        openActivityProductPanel();
+      }
+      productForm.form?.scrollIntoView({behavior:'smooth', block:'start'});
+      notify('Produit chargé en édition.');
+    }
+
+    async function deleteProduct(row) {
+      const name = row.querySelector('.prod-name')?.textContent || 'ce produit';
+      if (!window.confirm(`Supprimer ${name} ?`)) return;
+      row.remove();
+      resetProductForm();
+      saveAccountProducts();
+      try {
+        await syncLocalProductsToBackend();
+      } catch (error) {
+        notify(`Suppression locale effectuée. Synchronisation indisponible : ${error.message}`, 'warning');
+      }
+      syncCatalogFilterOptions();
+      applyCatalogFilter(false);
+      notify('Produit supprimé.', 'danger');
+      recordClientEvent('product_deleted', `Produit supprimé : ${name}`, { productName: name });
+    }
+
+    function ensureSiteFormFields() {
+      const sitePage = document.getElementById('p-monsite');
+      if (!sitePage) return;
+
+      const fields = sitePage.querySelectorAll('.form-input');
+      if (fields[0] && !fields[0].id) fields[0].id = 'site-name';
+      if (fields[1] && !fields[1].id) fields[1].id = 'site-slogan';
+      if (fields[2] && !fields[2].id) fields[2].id = 'site-whatsapp';
+      if (fields[3] && !fields[3].id) fields[3].id = 'site-address';
+      if (fields[4] && !fields[4].id) fields[4].id = 'site-description';
+
+      const whatsappLabel = document.querySelector('label[for="site-whatsapp"]') || fields[2]?.closest('.form-group')?.querySelector('.form-label');
+      if (whatsappLabel) whatsappLabel.textContent = 'Numéro WhatsApp';
+
+      if (!document.getElementById('site-call-phone')) {
+        const addressGroup = document.getElementById('site-address')?.closest('.form-group');
+        const callGroup = document.createElement('div');
+        callGroup.className = 'form-group';
+        callGroup.innerHTML = `
+          <label class="form-label" for="site-call-phone">Numéro d'appel (optionnel)</label>
+          <input class="form-input" id="site-call-phone" type="tel" placeholder="Ex : +22901XXXXXXXX">
+        `;
+        addressGroup?.insertAdjacentElement('afterend', callGroup);
+      }
+    }
+
+    async function saveShopSettings() {
+      ensureSiteFormFields();
+      const site = document.getElementById('p-monsite');
+      const shopName = document.getElementById('site-name')?.value.trim() || 'Boutique Grâce Mode';
+      const slogan = document.getElementById('site-slogan')?.value.trim() || '';
+      let normalizedWhatsapp = '';
+      let normalizedCallPhone = '';
+      try {
+        normalizedWhatsapp = normalizeBeninPhoneForSave(document.getElementById('site-whatsapp')?.value || '', 'Numéro WhatsApp', true);
+        normalizedCallPhone = normalizeBeninPhoneForSave(document.getElementById('site-call-phone')?.value || '', 'Numéro d’appel', false);
+      } catch (_error) {
+        return;
+      }
+      if (document.getElementById('site-whatsapp')) document.getElementById('site-whatsapp').value = normalizedWhatsapp;
+      if (document.getElementById('site-call-phone')) document.getElementById('site-call-phone').value = normalizedCallPhone;
+      const phoneName = document.querySelector('.phone-head-name');
+      const phoneSub = document.querySelector('.phone-head-sub');
+      if (phoneName) phoneName.textContent = shopName;
+      if (phoneSub) phoneSub.textContent = slogan;
+      const context = getClientContext();
+      const nextSite = {
+        ...(context.site || {}),
+        name: shopName,
+        siteName: shopName,
+        slogan,
+        whatsapp: normalizedWhatsapp,
+        secondaryPhone: normalizedCallPhone,
+        address: document.getElementById('site-address')?.value || context.site.address || '',
+        description: document.getElementById('site-description')?.value || context.site.description || '',
+        logo: selectedSiteLogo || context.site.logo || '',
+      };
+      setAccountJson(CLIENT_SITE_KEY, nextSite);
+      await ensureBackendSite(nextSite);
+      updateClientGreeting();
+      applyAccountSiteToPreview();
+      notify('Paramètres de la boutique sauvegardés.');
+      recordClientEvent('site_updated', 'Informations de boutique mises à jour', { shopName, hasLogo: Boolean(selectedSiteLogo || context.site.logo) });
+    }
+
+    function applyAccountSiteToPreview() {
+      const context = getClientContext();
+      const site = context.site || {};
+      const user = context.user || {};
+
+      ensureSiteFormFields();
+
+      const sitePage = document.getElementById('p-monsite');
+      const inputs = sitePage?.querySelectorAll('.form-input') || [];
+      const shopName = site.name || site.siteName || context.order.company || 'votre boutique';
+      const slogan = site.slogan || context.order.slogan || '';
+      const whatsapp = site.whatsapp || context.order.whatsapp || user.phone || '';
+      const address = site.address || context.order.city || '';
+      const secondaryPhone = site.secondaryPhone || context.order.secondaryPhone || '';
+      const description = site.description || context.order.description || '';
+
+      if (document.getElementById('site-name')) document.getElementById('site-name').value = shopName;
+      if (document.getElementById('site-slogan')) document.getElementById('site-slogan').value = slogan;
+      if (document.getElementById('site-whatsapp')) document.getElementById('site-whatsapp').value = normalizeBeninPhoneDisplay(whatsapp);
+      if (document.getElementById('site-address')) document.getElementById('site-address').value = address;
+      if (document.getElementById('site-call-phone')) document.getElementById('site-call-phone').value = normalizeBeninPhoneDisplay(secondaryPhone);
+      if (document.getElementById('site-description')) document.getElementById('site-description').value = description;
+
+      const phoneName = document.querySelector('.phone-head-name');
+      const phoneSub = document.querySelector('.phone-head-sub');
+      const statusWhatsapp = Array.from(document.querySelectorAll('#p-accueil span'))
+        .find((el) => el.previousElementSibling?.textContent === 'WhatsApp');
+      const statusActivity = Array.from(document.querySelectorAll('#p-accueil span'))
+        .find((el) => el.previousElementSibling?.textContent === 'Type');
+      const linkEls = document.querySelectorAll('.subbar-link, #p-accueil [style*="font-family:var(--font-mono)"]');
+
+      if (phoneName) phoneName.textContent = shopName;
+      if (phoneSub) phoneSub.textContent = slogan || 'Votre boutique en ligne';
+      let phoneContact = document.querySelector('.phone-contact-row');
+      if (!phoneContact && phoneSub) {
+        phoneContact = document.createElement('div');
+        phoneContact.className = 'phone-contact-row';
+        phoneSub.insertAdjacentElement('afterend', phoneContact);
+      }
+      if (phoneContact) {
+        const parts = [];
+        if (address) {
+          parts.push(`<span class="phone-contact-item"><img src="https://cdn-icons-png.flaticon.com/512/535/535239.png" alt="Localisation">${address}</span>`);
+        }
+        if (secondaryPhone) {
+          parts.push(`<span class="phone-contact-item"><img src="https://cdn-icons-png.flaticon.com/512/17193/17193373.png" alt="Appel">${normalizeBeninPhoneDisplay(secondaryPhone)}</span>`);
+        }
+
+        if (parts.length) {
+          phoneContact.classList.add('show');
+          phoneContact.innerHTML = parts.join('');
+        } else {
+          phoneContact.classList.remove('show');
+          phoneContact.innerHTML = '';
+        }
+      }
+      if (statusActivity) statusActivity.textContent = site.activityType || context.order.activityType || 'Activité non renseignée';
+      if (statusWhatsapp && whatsapp) statusWhatsapp.textContent = normalizeBeninPhoneDisplay(whatsapp);
+      linkEls.forEach((el) => {
+        if (el.classList?.contains('subbar-link')) {
+          el.innerHTML = `<i class="fi fi-rr-screen-share"></i> shoplink.bj/${context.slug}`;
+        } else {
+          el.textContent = `shoplink.bj/${context.slug}`;
+        }
+      });
+
+      document.querySelectorAll('#p-monsite .phone-screen div').forEach((el) => {
+        if (!el.children.length && el.textContent.trim().startsWith('shoplink.bj/')) {
+          el.textContent = `shoplink.bj/${context.slug}`;
+        }
+      });
+
+      selectedSiteLogo = site.logo || '';
+      updatePhoneLogoPreview();
+      applyPreviewTheme();
+    }
+
+    function normalizePhonePreviewWhatsAppButtons() {
+      document.querySelectorAll('.phone-prod-btn').forEach((button) => {
+        button.innerHTML = '<i class="fi fi-brands-whatsapp"></i> Commander';
+      });
+    }
+
+    function normalizeUploadPhotoIcon() {
+      document.querySelectorAll('.upload-zone:not(.has-image) .upload-zone-icon').forEach((icon) => {
+        icon.innerHTML = '<i class="fi fi-rr-add-image"></i>';
+      });
+    }
+
+    function normalizeAddProductTitle() {
+      const title = document.querySelector('#p-produits .add-form-title');
+      if (!title) return;
+      title.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/3161/3161837.png" alt="Ajouter" style="width:18px;height:18px;object-fit:contain;vertical-align:-3px;margin-right:6px;">Ajouter un nouveau produit';
+    }
+
+    function iconImg(src, alt = '') {
+      return `<img src="${src}" alt="${alt}" style="width:18px;height:18px;object-fit:contain;display:inline-block;vertical-align:-3px;">`;
+    }
+
+    function normalizeClientDashboardIcons() {
+      const productIcon = iconImg('https://cdn-icons-png.flaticon.com/512/10951/10951869.png', 'Produits');
+      const galleryIcon = iconImg('https://cdn-icons-png.flaticon.com/512/833/833281.png', 'Galerie');
+      const messageIcon = iconImg('https://cdn-icons-png.flaticon.com/512/134/134707.png', 'Message');
+      const commissionIcon = '<img src="https://cdn-icons-png.flaticon.com/512/11131/11131878.png" alt="Commander" style="width:18px;height:18px;object-fit:contain;display:inline-block;vertical-align:-3px;margin-right:6px;">';
+
+      document.querySelectorAll('.mcard').forEach((card) => {
+        const label = card.querySelector('.mcard-label')?.textContent || '';
+        const icon = card.querySelector('.mcard-icon');
+        if (!icon) return;
+
+        if (/produit/i.test(label)) icon.innerHTML = productIcon;
+        else if (/partage/i.test(label)) icon.innerHTML = '<i class="fi fi-rr-screen-share"></i>';
+        else if (/whatsapp/i.test(label)) icon.innerHTML = '<i class="fi fi-brands-whatsapp"></i>';
+        else if (/vue/i.test(label)) icon.innerHTML = '<i class="fi fi-rr-eyes"></i>';
+        else if (/taux/i.test(label)) icon.innerHTML = '<i class="fi fi-rr-stats"></i>';
+      });
+
+      document.querySelectorAll('.prod-thumb').forEach((thumb) => {
+        if (!thumb.querySelector('img') && thumb.textContent.trim()) {
+          thumb.innerHTML = productIcon;
+        }
+      });
+
+      document.querySelectorAll('.phone-prod-img').forEach((thumb) => {
+        if (!thumb.querySelector('img') && thumb.textContent.trim()) {
+          thumb.innerHTML = productIcon;
+        }
+      });
+
+      document.querySelectorAll('.upload-zone:not(.has-image) .upload-zone-icon').forEach((icon) => {
+        icon.innerHTML = '<i class="fi fi-rr-add-image"></i>';
+      });
+
+      document.querySelectorAll('.act-ico').forEach((icon) => {
+        const text = icon.textContent.trim();
+        if (text === '📷') icon.innerHTML = galleryIcon;
+        else if (text === '📦') icon.innerHTML = productIcon;
+        else if (text === '🔔') icon.innerHTML = messageIcon;
+        else if (text === '📲') icon.innerHTML = '<i class="fi fi-brands-whatsapp"></i>';
+        else if (text === '🔗') icon.innerHTML = '<i class="fi fi-rr-screen-share"></i>';
+        else if (text === '👁') icon.innerHTML = '<i class="fi fi-rr-eyes"></i>';
+      });
+
+      document.querySelectorAll('#p-support .support-card').forEach((card) => {
+        const title = card.querySelector('.step-title')?.textContent || '';
+        const icon = card.querySelector('.step-ico');
+        if (!icon) return;
+
+        if (/whatsapp/i.test(title)) icon.innerHTML = '<i class="fi fi-brands-whatsapp"></i>';
+        else if (/guide/i.test(title)) icon.innerHTML = messageIcon;
+        else if (/premium/i.test(title)) icon.innerHTML = '<i class="fi fi-rr-crown"></i>';
+      });
+
+      document.querySelectorAll('#p-monsite .btn-primary, #p-parametres .btn-primary').forEach((button) => {
+        if (/sauvegarder/i.test(button.textContent)) button.innerHTML = '<i class="fi fi-rr-disk"></i> Sauvegarder';
+      });
+
+      document.querySelectorAll('#p-monsite .btn-sec').forEach((button) => {
+        if (/voir mon site/i.test(button.textContent)) button.innerHTML = '<i class="fi fi-rr-eyes"></i> Voir mon site';
+      });
+
+      document.querySelectorAll('#p-accueil button').forEach((button) => {
+        if (/Commander mon site Pro|Commander mon site/i.test(button.textContent)) {
+          const cleanText = button.textContent.replace(/^\s*[⭐✨]\s*/, '').trim();
+          button.innerHTML = commissionIcon + cleanText;
+        }
+      });
+    }
+
+    function initSupportTicketForm() {
+      const supportGrid = document.querySelector('#p-support .support-grid');
+      if (!supportGrid || document.getElementById('support-ticket-card')) return;
+
+      const user = getCurrentUser();
+      const card = document.createElement('div');
+      card.className = 'support-card';
+      card.id = 'support-ticket-card';
+      card.innerHTML = `
+        <div class="step-ico"><i class="fi fi-rr-customer-service"></i></div>
+        <div class="step-title">Envoyer un ticket</div>
+        <div class="step-desc">Décrivez votre problème. L'administrateur le recevra dans son tableau de bord.</div>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label" for="support-email">Email de contact</label>
+          <input class="form-input" id="support-email" type="email" placeholder="votre@email.com" value="${user.email || ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="support-problem">Votre problème</label>
+          <textarea class="form-input" id="support-problem" rows="4" placeholder="Expliquez clairement le problème rencontré..."></textarea>
+        </div>
+        <button class="btn-primary" id="send-support-ticket" type="button" style="margin-top:4px;">Envoyer le ticket</button>
+      `;
+      supportGrid.prepend(card);
+    }
+
+    async function submitSupportTicket() {
+      const email = document.getElementById('support-email')?.value.trim();
+      const problem = document.getElementById('support-problem')?.value.trim();
+      const token = localStorage.getItem('shoplink_token');
+
+      if (!email || !email.includes('@')) return notify('Renseignez un email valide.', 'warning');
+      if (!problem || problem.length < 10) return notify('Décrivez le problème en au moins 10 caractères.', 'warning');
+      if (!token) return notify('Connectez-vous avant d’envoyer un ticket.', 'warning');
+
+      const button = document.getElementById('send-support-ticket');
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Envoi en cours...';
+      }
+
+      try {
+        const response = await fetch('/api/tickets', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            email,
+            subject: `Support client - ${problem.slice(0, 70)}`,
+            message: problem,
+            priority: 'normal',
+          }),
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Impossible d’envoyer le ticket');
+        }
+
+        document.getElementById('support-problem').value = '';
+        notify('Ticket envoyé à l’administrateur.');
+        recordClientEvent('support_ticket_created', 'Ticket support envoyé', { email, ticketId: data.ticket?.id || '' });
+      } catch (error) {
+        notify(error.message || 'Erreur lors de l’envoi du ticket.', 'danger');
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = 'Envoyer le ticket';
+        }
+      }
+    }
+
+    function applyAccountProfileToSettings() {
+      const section = document.getElementById('p-parametres');
+      const inputs = section?.querySelectorAll('.form-input') || [];
+      const user = getCurrentUser();
+      const site = getAccountSite(user);
+
+      const phoneLabel = inputs[2]?.closest('.form-group')?.querySelector('.form-label');
+      if (phoneLabel) phoneLabel.textContent = 'WhatsApp';
+
+      if (inputs[0]) inputs[0].value = user.name || user.fullName || '';
+      if (inputs[1]) inputs[1].value = user.email || '';
+      if (inputs[2]) inputs[2].value = user.phone || site.whatsapp || '';
+    }
+
+    function removeAppearanceColorSection() {
+      const identityBody = document.querySelector('#p-monsite .card .card-body');
+      if (identityBody && !identityBody.querySelector('.site-settings-actions')) {
+        const actions = document.createElement('div');
+        actions.className = 'form-btn-row site-settings-actions';
+        actions.style.marginTop = '10px';
+        actions.innerHTML = `
+          <button class="btn-primary" type="button"><i class="fi fi-rr-disk"></i> Sauvegarder</button>
+          <button class="btn-sec" type="button"><i class="fi fi-rr-eyes"></i> Voir mon site</button>
+        `;
+        identityBody.appendChild(actions);
+      }
+
+      document.querySelectorAll('#p-monsite .card').forEach((card) => {
+        const title = card.querySelector('.card-title')?.textContent?.trim().toLowerCase() || '';
+        if (title === 'apparence' || card.textContent.includes('Couleur principale')) {
+          card.remove();
+        }
+      });
+    }
+
+    function getUserInitials(user = getCurrentUser()) {
+      const fullName = String(user.name || user.fullName || user.email || '').trim();
+      if (!fullName) return '--';
+
+      const parts = fullName
+        .replace(/@.*/, '')
+        .split(/\s+/)
+        .filter(Boolean);
+
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return `${parts[0][0] || ''}${parts[parts.length - 1][0] || ''}`.toUpperCase();
+    }
+
+    function applyConnectedIdentity() {
+      const user = getCurrentUser();
+      const avatar = document.querySelector('.user-avatar');
+      if (avatar) avatar.textContent = getUserInitials(user);
+
+      const live = document.querySelector('.site-live');
+      if (live) live.innerHTML = '<span class="live-dot"></span>Connecté';
+
+      document.querySelectorAll('#p-accueil span').forEach((span) => {
+        if (span.textContent.includes('En ligne')) {
+          span.textContent = span.textContent.replace('En ligne', 'Connecté');
+        }
+      });
+
+      const bannerTitle = document.querySelector('.pub-banner-title');
+      if (bannerTitle && bannerTitle.textContent.includes('en ligne')) {
+        bannerTitle.textContent = 'Votre dashboard est connecté ✓';
+      }
+    }
+
+    async function saveProfileSettings() {
+      const section = document.getElementById('p-parametres');
+      const inputs = section?.querySelectorAll('.form-input') || [];
+      const previous = getStoredJson(CLIENT_PROFILE_KEY, {}) || {};
+      const name = inputs[0]?.value?.trim() || previous.name || 'Client';
+      const email = inputs[1]?.value?.trim().toLowerCase() || previous.email || '';
+      let phone = '';
+      try {
+        phone = normalizeBeninPhoneForSave(inputs[2]?.value?.trim() || previous.phone || '', 'WhatsApp', true);
+      } catch (_error) {
+        return;
+      }
+      if (inputs[2]) inputs[2].value = phone;
+
+      if (!previous.id) {
+        notify('Compte introuvable. Reconnectez-vous avant de modifier le profil.', 'warning');
+        return;
+      }
+
+      if (!email || !email.includes('@')) {
+        notify('Renseignez un email valide.', 'warning');
+        return;
+      }
+
+      const nextUser = {
+        ...previous,
+        name,
+        email,
+        phone,
+      };
+
+      try {
+        const data = await apiJson(`/api/users/${previous.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ name, email, phone }),
+        });
+        const updatedUser = data.user || nextUser;
+        const context = getClientContext();
+        const nextSite = {
+          ...(context.site || {}),
+          whatsapp: phone,
+          ownerName: updatedUser.name || name,
+          ownerEmail: updatedUser.email || email,
+        };
+
+        localStorage.setItem(CLIENT_PROFILE_KEY, JSON.stringify(updatedUser));
+        setAccountJson(CLIENT_SITE_KEY, nextSite);
+        localStorage.setItem(CLIENT_SITE_KEY, JSON.stringify(nextSite));
+
+        if (localStorage.getItem('shoplink_remember_me') === 'true') {
+          localStorage.setItem('shoplink_remember_email', updatedUser.email || email);
+        }
+
+        await ensureBackendSite(nextSite);
+        applyAccountProfileToSettings();
+        updateClientGreeting();
+        applyConnectedIdentity();
+        applyAccountSiteToPreview();
+
+        const supportEmail = document.getElementById('support-email');
+        if (supportEmail) supportEmail.value = updatedUser.email || email;
+
+        notify('Informations du compte sauvegardées. Utilisez ce nouvel email à la prochaine connexion.');
+        recordClientEvent('profile_updated', 'Informations du compte mises à jour', { email: updatedUser.email || email, phone });
+      } catch (error) {
+        notify(error.message || 'Impossible de sauvegarder le profil.', 'danger');
+      }
+    }
+
+    async function syncLocalProductsToBackend() {
+      if (!getAuthToken()) {
+        notify('Connectez-vous pour publier les produits sur votre site public.', 'warning');
+        return getClientContext().site;
+      }
+
+      const site = await ensureBackendSite();
+      if (!site?.id) {
+        throw new Error('Impossible de créer ou récupérer le site public');
+      }
+
+      const rawLocalProducts = await Promise.all(
+        getProductRows().map(async (row) => {
+          const product = productFromRow(row);
+          return {
+            name: product.name,
+            id: product.backendId || product.id || '',
+            price: Number(product.price || 0),
+            image: await optimizeDataUrlIfNeeded(product.image || ''),
+            description: product.description || '',
+            category: product.category || 'Produits',
+            availability: product.availability || 'available',
+            stock: product.stock || '',
+            badge: product.badge || '',
+            oldPrice: product.oldPrice || '',
+            variantInfo: product.variantInfo || '',
+            extraInfo: product.extraInfo || '',
+            status: product.availability === 'hidden' ? 'hidden' : 'published',
+            visible: product.availability !== 'hidden',
+          };
+        }),
+      );
+
+      const seenProducts = new Set();
+      const localProducts = rawLocalProducts.filter((product) => {
+        const key = [
+          String(product.name || '').trim().toLowerCase(),
+          String(product.category || '').trim().toLowerCase(),
+          Number(product.price || 0),
+          String(product.variantInfo || '').trim().toLowerCase(),
+          String(product.extraInfo || '').trim().toLowerCase(),
+        ].join('|');
+
+        if (!product.name || seenProducts.has(key)) return false;
+        seenProducts.add(key);
+        return true;
+      });
+
+      const data = await apiJson(`/api/products/site/${site.id}/replace`, {
+        method: 'PUT',
+        body: JSON.stringify({ products: localProducts }),
+      });
+
+      const list = getProductList();
+      if (list) {
+        list.querySelectorAll('.prod-row').forEach((row) => row.remove());
+        (data.products || []).forEach((product) => {
+          list.appendChild(createProductRow({ ...product, backendId: product.id }));
+        });
+      }
+
+      saveAccountProducts();
+      syncCatalogFilterOptions();
+      applyCatalogFilter(false);
+      renderClientStats();
+      return site;
+    }
+
+    async function openPublicSite() {
+      try {
+        const site = await syncLocalProductsToBackend();
+        const slug = site?.slug || getClientContext().slug;
+        window.open(`/${slug}?owner=1`, '_blank');
+      } catch (error) {
+        notify(`Impossible d’ouvrir le site public : ${error.message}`, 'danger');
+      }
+    }
+
+    async function loadBackendClientData() {
+      if (!getAuthToken()) return;
+
+      try {
+        const sitesData = await apiJson('/api/sites/user/my-sites');
+        const site = selectCurrentAccountSite(sitesData.sites || []);
+
+        if (!site) {
+          await ensureBackendSite();
+          return;
+        }
+
+        setAccountJson(CLIENT_SITE_KEY, site);
+        applyAccountSiteToPreview();
+
+        if (!hasLocalProductCatalog()) {
+          const productsData = await apiJson(`/api/products/${site.id}`);
+          const products = (productsData.products || []).map((product) => ({
+            ...product,
+            backendId: product.id,
+          }));
+          setAccountJson(CLIENT_PRODUCTS_KEY, products);
+        }
+        clearDefaultProductCatalog();
+        renderClientStats();
+      } catch (error) {
+        notify(`Données locales utilisées. Sync backend indisponible : ${error.message}`, 'warning');
+      }
+    }
+
+    window.nav = nav;
+    window.selectColor = selectColor;
+    window.logoutClient = logoutClient;
+    window.openQuickGuide = openQuickGuide;
+    window.closeQuickGuide = closeQuickGuide;
+    window.guideGo = guideGo;
+
+    document.querySelectorAll('[data-page]').forEach(button => {
+      button.addEventListener('click', event => {
+        event.preventDefault();
+        nav(button.dataset.page, button);
+      });
+    });
+
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button, .iBtn, .upload-zone, .wa-btn, .subbar-link, .prod-thumb img');
+      if (!target) return;
+      const text = target.textContent.trim();
+      if (target.matches('.prod-thumb img')) {
+        const row = target.closest('.prod-row');
+        const title = row?.querySelector('.prod-name')?.textContent || 'Image produit';
+        return openImageViewer(target.src, title);
+      }
+      if (target.classList.contains('upload-zone')) return ensureProductImageInput().click();
+      if (target.classList.contains('wa-btn')) return shareShopLinkToClientWhatsapp();
+      if (target.classList.contains('subbar-link')) return copyShopLink();
+      if (target.classList.contains('iBtn')) {
+        const row = target.closest('.prod-row');
+        if (!row) return;
+        if (target.dataset.action === 'edit' || target.querySelector('.fi-rr-pencil') || text.includes('✏️')) return editProduct(row);
+        if (target.dataset.action === 'delete' || target.querySelector('.fi-rr-trash')) return deleteProduct(row);
+      }
+      if (text.includes('Publier le produit') || text.includes('Enregistrer les modifications')) return addOrUpdateProduct();
+      if (text === 'Annuler') return resetProductForm();
+      if (text.includes('Sauvegarder') && target.closest('#p-monsite')) return saveShopSettings();
+      if (text.includes('Sauvegarder') && target.closest('#p-parametres')) return saveProfileSettings();
+      if (text.includes('Voir mon site')) return openPublicSite();
+      if (target.id === 'send-support-whatsapp' || (text.includes('Contacter') && target.closest('#p-support'))) return handleSupportWhatsAppClick();
+      if (target.id === 'send-support-ticket') return submitSupportTicket();
+      if (text.includes('Lire')) return openQuickGuide();
+      if (text.includes('Passer Premium') || text.includes('Demander') || text.includes('Commander')) return redirectPremium();
+    });
+
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target) return;
+      const text = target.textContent.trim();
+      if (text.includes('Passer Premium') || text.includes('Demander') || text.includes('Commander')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        redirectPremium();
+      }
+    }, true);
+
+    function resetVisibleNumbersAndContacts() {
+      document.querySelectorAll('.mcard-val').forEach(el => { el.textContent = '0'; });
+      document.querySelectorAll('.prod-price').forEach(el => { el.textContent = '0 F'; });
+      updateProductViewCounters();
+      document.querySelectorAll('.stat-bar-val').forEach(el => {
+        el.textContent = el.textContent.includes('%') ? '0%' : '0 vue';
+      });
+      document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = '0%'; });
+      document.querySelectorAll('.act-text').forEach(el => {
+        el.textContent = el.textContent.replace(/\d[\d\s]*F/g, '0 F');
+      });
+      const productTitle = document.querySelector('#p-produits > div:first-child span');
+      if (productTitle) productTitle.textContent = '· 0 publié';
+    }
+
+    resetVisibleNumbersAndContacts();
+    applyAccountSiteToPreview();
+    applyAccountProfileToSettings();
+    applyConnectedIdentity();
+    removeAppearanceColorSection();
+    initProductCategoryControls();
+    initActivityProductFields();
+    refreshActivityProductLabels();
+    applyPreviewTheme();
+    initCatalogFilterControls();
+    initSiteLogoUpload();
+    initSupportTicketForm();
+    initSupportWhatsAppGuide();
+    normalizePhonePreviewWhatsAppButtons();
+    normalizeUploadPhotoIcon();
+    normalizeAddProductTitle();
+    normalizeClientDashboardIcons();
+    clearDefaultProductCatalog();
+    loadBackendClientData();
+    updateClientGreeting();
+    renderClientStats();
+    syncTrackedStats();
+    setInterval(renderClientStats, 60000);
+    setInterval(normalizeClientDashboardIcons, 1000);
+    setInterval(syncTrackedStats, 30000);
+    document.addEventListener('keydown', event => {
+      if(event.key === 'Escape') {
+        closeClientMenu();
+        closeImageViewer();
+        closeQuickGuide();
+      }
+    });
+  </script>
+</body>
+</html>
+

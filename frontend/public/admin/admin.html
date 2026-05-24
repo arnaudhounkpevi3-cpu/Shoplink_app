@@ -1,0 +1,523 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --sidebar-bg:  #0f1f17;
+      --brand:       #1a6b4a;
+      --brand-light: #e8f5ee;
+      --brand-mid:   #6dd9a8;
+      --accent:      #f59c1a;
+      --accent-light:#faeeda;
+      --white:       #ffffff;
+      --border:      #e5e7eb;
+      --bg:          #f8f9fa;
+      --text:        #1a1a1a;
+      --muted:       #6b7280;
+      --radius:      8px;
+      --radius-lg:   12px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;color:var(--text);background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);font-size:14px;}
+    .layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{background:var(--sidebar-bg);padding:20px 0;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;}
+    .sidebar-logo{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:10px;}
+    .logo-text{font-size:18px;font-weight:500;color:#fff;display:flex;align-items:center;gap:6px;}
+    .logo-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;display:inline-block;}
+    .admin-pill{display:inline-block;font-size:10px;background:var(--accent);color:#412402;border-radius:4px;padding:2px 7px;font-weight:500;margin-left:4px;}
+    .nav-section{font-size:10px;color:rgba(255,255,255,0.3);padding:12px 20px 4px;text-transform:uppercase;letter-spacing:0.08em;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.55);transition:all 0.15s;border-left:3px solid transparent;}
+    .nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.9);}
+    .nav-item.active{background:rgba(26,107,74,0.3);color:var(--brand-mid);border-left-color:var(--brand);font-weight:500;}
+    .nav-badge{margin-left:auto;background:rgba(229,57,53,0.25);color:#f09595;border-radius:100px;font-size:10px;padding:1px 7px;font-weight:500;}
+    .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08);}
+    .admin-name{font-size:13px;color:rgba(255,255,255,0.8);font-weight:500;}
+    .admin-info{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+
+    /* ── MAIN ── */
+    .main{padding:28px;display:flex;flex-direction:column;gap:20px;overflow:auto;}
+    .page{display:none;flex-direction:column;gap:20px;}
+    .page.active{display:flex;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;}
+    .page-title{font-size:20px;font-weight:500;}
+    .page-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+
+    /* ── BUTTONS ── */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text);transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+    .btn:hover{background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);}
+    .btn-green{background:var(--brand);color:#fff;border-color:var(--brand);}
+    .btn-green:hover{background:#155c3d;}
+    .btn-amber{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+    /* ── METRICS ── */
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
+    .metric-card{background:#f1ede6;border-radius:var(--radius);padding:16px;}
+    .metric-label{font-size:12px;color:var(--muted);margin-bottom:6px;}
+    .metric-value{font-size:26px;font-weight:500;}
+    .metric-sub{font-size:11px;color:#9ca3af;margin-top:4px;}
+
+    /* ── BADGES ── */
+    .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:500;}
+    .bg-green{background:var(--brand-light);color:#0f6e56;}
+    .bg-amber{background:var(--accent-light);color:#854f0b;}
+    .bg-red{background:#fee2e2;color:#a32d2d;}
+    .bg-gray{background:#f3f4f6;color:var(--muted);}
+    .bg-blue{background:#e6f1fb;color:#185fa5;}
+
+    /* ── CARDS ── */
+    .section-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+    .card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .card-title{font-size:15px;font-weight:500;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+    /* ── TABLES ── */
+    .table-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
+    th{padding:10px 16px;text-align:left;font-size:11px;font-weight:500;color:var(--muted);border-bottom:1px solid var(--border);background:#f9fafb;text-transform:uppercase;letter-spacing:0.05em;}
+    td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:#fafafa;}
+    .user-cell{display:flex;align-items:center;gap:10px;}
+    .avatar{width:30px;height:30px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#0f6e56;flex-shrink:0;}
+    .avatar.premium{background:var(--accent-light);color:#854f0b;}
+    .avatar.danger{background:#fee2e2;color:#a32d2d;}
+    .user-name-cell{font-weight:500;font-size:13px;white-space:nowrap;}
+    .user-sub-cell{font-size:11px;color:var(--muted);}
+    .status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;}
+    .dot-green{background:var(--brand);}
+    .dot-amber{background:var(--accent);}
+    .dot-red{background:#e24b4a;}
+    .action-btns{display:flex;gap:6px;}
+    .icon-btn{width:28px;height:28px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:background 0.15s;flex-shrink:0;}
+    .icon-btn:hover{background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);}
+
+    /* ── REVENUE ROWS ── */
+    .revenue-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);}
+    .revenue-row:last-child{border-bottom:none;}
+    .rev-left{display:flex;align-items:center;gap:10px;}
+    .rev-icon{width:34px;height:34px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .rev-amount{font-size:15px;font-weight:500;color:var(--brand);}
+    .rev-date{font-size:11px;color:var(--muted);}
+
+    /* ── PROGRESS ── */
+    .progress-wrap{background:#f3f4f6;border-radius:100px;height:5px;overflow:hidden;margin-top:6px;}
+    .progress-fill{height:100%;border-radius:100px;background:var(--brand);}
+    .progress-fill.amber{background:var(--accent);}
+
+    /* ── TABS ── */
+    .tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 20px;}
+    .tab{padding:10px 14px;font-size:13px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s;white-space:nowrap;}
+    .tab.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:500;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    /* ── FILTER PILLS ── */
+    .filter-bar{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+    .filter-pill{padding:5px 12px;border-radius:100px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--muted);transition:all 0.15s;font-weight:500;}
+    .filter-pill.active{background:var(--brand-light);color:#0f6e56;border-color:#9fe1cb;}
+
+    /* ── COUNTDOWN ── */
+    .countdown-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;display:flex;flex-direction:column;gap:14px;}
+    .countdown-project{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);border-left:3px solid var(--brand);}
+    .countdown-project.urgent{border-left-color:#e24b4a;}
+    .cdown-client{font-size:13px;font-weight:500;}
+    .cdown-type{font-size:11px;color:var(--muted);}
+    .cdown-days{font-size:20px;font-weight:500;color:var(--brand);line-height:1;}
+    .cdown-days.urgent{color:#e24b4a;}
+    .cdown-label{font-size:10px;color:#9ca3af;}
+  </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text"><span class="logo-dot"></span>ShopLink<span class="admin-pill">ADMIN</span></div>
+    </div>
+    <div class="nav-section">Tableau de bord</div>
+    <div class="nav-item active" onclick="showPage('overview',this)"><span></span> Vue d'ensemble</div>
+    <div class="nav-section">Gestion</div>
+    <div class="nav-item" onclick="showPage('users',this)"><span></span> Utilisateurs <span class="nav-badge" id="badge-users">18</span></div>
+    <div class="nav-item" onclick="showPage('sites',this)"><span></span> Sites publiés</div>
+    <div class="nav-item" onclick="showPage('payments',this)"><span></span> Paiements <span class="nav-badge" id="badge-pending">3</span></div>
+    <div class="nav-item" onclick="showPage('premium',this)"><span></span> Projets Premium</div>
+    <div class="nav-section">Outils</div>
+    <div class="nav-item" onclick="showPage('countdown',this)"><span></span> Décomptes livraison</div>
+    <div class="nav-item" onclick="showPage('stats',this)"><span></span> Statistiques</div>
+    <div class="sidebar-footer">
+      <div class="admin-name">Administrateur</div>
+      <div class="admin-info">Accès total · ShopLink</div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- PAGE VUE D'ENSEMBLE -->
+    <div id="page-overview" class="page active">
+      <div class="topbar">
+        <div><div class="page-title">Vue d'ensemble</div><div class="page-sub">Activité globale de la plateforme</div></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn">📤 Exporter</button>
+          <button class="btn btn-green">+ Nouveau site premium</button>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-label">Utilisateurs inscrits</div><div class="metric-value">18</div><div class="metric-sub">Total de la plateforme</div><div class="badge bg-green" style="margin-top:6px;">+3 cette semaine</div></div>
+        <div class="metric-card"><div class="metric-label">Sites actifs</div><div class="metric-value">12</div><div class="metric-sub">6 en cours de création</div><div class="badge bg-blue" style="margin-top:6px;">12 publiés</div></div>
+        <div class="metric-card"><div class="metric-label">Revenus totaux</div><div class="metric-value">98 000</div><div class="metric-sub">FCFA encaissés</div><div class="badge bg-amber" style="margin-top:6px;">+18 000 ce mois</div></div>
+        <div class="metric-card"><div class="metric-label">Paiements en attente</div><div class="metric-value">3</div><div class="metric-sub">À valider manuellement</div><div class="badge bg-red" style="margin-top:6px;">Action requise</div></div>
+      </div>
+      <div class="two-col">
+        <div class="section-card">
+          <div class="card-header"><span class="card-title">Derniers paiements</span><span class="badge bg-green">Mis à jour</span></div>
+          <div>
+            <div class="revenue-row"><div class="rev-left"><div class="rev-icon" style="background:var(--brand-light);">💳</div><div><div class="user-name-cell">Grace Koudjo</div><div class="rev-date">Autonome · 12 mars 2025</div></div></div><div style="text-align:right;"><div class="rev-amount">4 000 FCFA</div><div class="badge bg-green">Payé</div></div></div>
+            <div class="revenue-row"><div class="rev-left"><div class="rev-icon" style="background:var(--accent-light);">⭐</div><div><div class="user-name-cell">Kouassi Biokou</div><div class="rev-date">Premium acompte · 10 mars</div></div></div><div style="text-align:right;"><div class="rev-amount">5 000 FCFA</div><div class="badge bg-amber">Acompte reçu</div></div></div>
+            <div class="revenue-row"><div class="rev-left"><div class="rev-icon" style="background:var(--brand-light);">💳</div><div><div class="user-name-cell">Adjovi Sèmê</div><div class="rev-date">Autonome · 8 mars 2025</div></div></div><div style="text-align:right;"><div class="rev-amount">4 000 FCFA</div><div class="badge bg-green">Payé</div></div></div>
+            <div class="revenue-row"><div class="rev-left"><div class="rev-icon" style="background:var(--accent-light);">⭐</div><div><div class="user-name-cell">Mèdéssè Hounsou</div><div class="rev-date">Premium acompte · 5 mars</div></div></div><div style="text-align:right;"><div class="rev-amount">5 000 FCFA</div><div class="badge bg-amber">Acompte reçu</div></div></div>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="card-header"><span class="card-title">Offre de lancement — compteur</span></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;">
+            <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Autonome · places promo</span><span style="font-weight:500;">3 / 10</span></div><div class="progress-wrap"><div class="progress-fill" style="width:30%;"></div></div><div style="font-size:11px;color:#9ca3af;margin-top:4px;">Prix actuel : 4 000 FCFA · 7 places restantes</div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Premium · places promo</span><span style="font-weight:500;">2 / 10</span></div><div class="progress-wrap"><div class="progress-fill amber" style="width:20%;"></div></div><div style="font-size:11px;color:#9ca3af;margin-top:4px;">Prix actuel : 10 000 FCFA · 8 places restantes</div></div>
+            <div style="background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;">Après 10 clients : prix autonome → <strong style="color:var(--text);">5 000 FCFA</strong> · prix premium → <strong style="color:var(--text);">12 000 FCFA</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE UTILISATEURS -->
+    <div id="page-users" class="page">
+      <div class="topbar"><div><div class="page-title">Utilisateurs</div><div class="page-sub">18 comptes inscrits sur la plateforme</div></div><button class="btn">📤 Exporter CSV</button></div>
+      <div class="section-card">
+        <div class="filter-bar">
+          <div class="filter-pill active" onclick="filterUsers('all',this)">Tous (18)</div>
+          <div class="filter-pill" onclick="filterUsers('active',this)">Actifs (12)</div>
+          <div class="filter-pill" onclick="filterUsers('premium',this)">Premium (4)</div>
+          <div class="filter-pill" onclick="filterUsers('pending',this)">En attente (2)</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:220px;">Utilisateur</th><th style="width:110px;">Type</th><th style="width:130px;">Statut site</th><th style="width:180px;">Paiement</th><th style="width:120px;">Inscrit le</th><th style="width:110px;">Actions</th></tr></thead>
+            <tbody id="users-table">
+              <tr data-type="active"><td><div class="user-cell"><div class="avatar">GK</div><div><div class="user-name-cell">Grace Koudjo</div><div class="user-sub-cell">grace@email.com</div></div></div></td><td><span class="badge bg-blue">Autonome</span></td><td><span class="status-dot dot-green"></span>En ligne</td><td><span class="badge bg-green">4 000 FCFA payé</span></td><td style="color:var(--muted);">12 mars 2025</td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div><div class="icon-btn">🔗</div></div></td></tr>
+              <tr data-type="premium"><td><div class="user-cell"><div class="avatar premium">KB</div><div><div class="user-name-cell">Kouassi Biokou</div><div class="user-sub-cell">k.biokou@email.com</div></div></div></td><td><span class="badge bg-amber">Premium</span></td><td><span class="status-dot dot-amber"></span>En cours</td><td><span class="badge bg-amber">Acompte 5 000 F</span></td><td style="color:var(--muted);">10 mars 2025</td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div><div class="icon-btn">📲</div></div></td></tr>
+              <tr data-type="active"><td><div class="user-cell"><div class="avatar">AS</div><div><div class="user-name-cell">Adjovi Sèmê</div><div class="user-sub-cell">adjovi.s@email.com</div></div></div></td><td><span class="badge bg-blue">Autonome</span></td><td><span class="status-dot dot-green"></span>En ligne</td><td><span class="badge bg-green">4 000 FCFA payé</span></td><td style="color:var(--muted);">8 mars 2025</td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div><div class="icon-btn">🔗</div></div></td></tr>
+              <tr data-type="premium"><td><div class="user-cell"><div class="avatar premium">MH</div><div><div class="user-name-cell">Mèdéssè Hounsou</div><div class="user-sub-cell">med.hounsou@email.com</div></div></div></td><td><span class="badge bg-amber">Premium</span></td><td><span class="status-dot dot-amber"></span>En cours</td><td><span class="badge bg-amber">Acompte 5 000 F</span></td><td style="color:var(--muted);">5 mars 2025</td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div><div class="icon-btn">📲</div></div></td></tr>
+              <tr data-type="pending"><td><div class="user-cell"><div class="avatar danger">FD</div><div><div class="user-name-cell">Fidèle Dossou</div><div class="user-sub-cell">fidele.d@email.com</div></div></div></td><td><span class="badge bg-blue">Autonome</span></td><td><span class="status-dot dot-red"></span>Non publié</td><td><span class="badge bg-red">En attente paiement</span></td><td style="color:var(--muted);">14 mars 2025</td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✉️</div><div class="icon-btn">🗑</div></div></td></tr>
+              <tr data-type="active"><td><div class="user-cell"><div class="avatar">RA</div><div><div class="user-name-cell">Rosine Agossou</div><div class="user-sub-cell">rosine.a@email.com</div></div></div></td><td><span class="badge bg-blue">Autonome</span></td><td><span class="status-dot dot-green"></span>En ligne</td><td><span class="badge bg-green">4 000 FCFA payé</span></td><td style="color:var(--muted);">2 mars 2025</td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div><div class="icon-btn">🔗</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE PAIEMENTS -->
+    <div id="page-payments" class="page">
+      <div class="topbar"><div><div class="page-title">Paiements</div><div class="page-sub">Historique complet · acomptes · soldes</div></div><button class="btn">📤 Exporter</button></div>
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-label">Total encaissé</div><div class="metric-value">98 000</div><div class="metric-sub">FCFA</div></div>
+        <div class="metric-card"><div class="metric-label">Acomptes reçus</div><div class="metric-value">30 000</div><div class="metric-sub">FCFA · 6 projets</div></div>
+        <div class="metric-card"><div class="metric-label">Soldes restants</div><div class="metric-value">30 000</div><div class="metric-sub">FCFA à encaisser</div></div>
+        <div class="metric-card"><div class="metric-label">En attente</div><div class="metric-value">3</div><div class="metric-sub">paiements à valider</div></div>
+      </div>
+      <div class="section-card">
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchTabP('pay-all',this)">Tous les paiements</div>
+          <div class="tab" onclick="switchTabP('pay-auto',this)">Création autonome</div>
+          <div class="tab" onclick="switchTabP('pay-prem',this)">Service premium</div>
+          <div class="tab" onclick="switchTabP('pay-pending',this)">En attente (3)</div>
+        </div>
+        <div id="pay-all" class="tab-panel active">
+          <table><thead><tr><th>Client</th><th>Type</th><th>Montant</th><th>Étape</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><div class="user-cell"><div class="avatar">GK</div><div class="user-name-cell">Grace Koudjo</div></div></td><td>Autonome</td><td style="font-weight:500;color:var(--brand);">4 000 FCFA</td><td>—</td><td><span class="badge bg-green">Payé</span></td><td style="color:var(--muted);">12 mars</td><td><div class="icon-btn">👁</div></td></tr>
+            <tr><td><div class="user-cell"><div class="avatar premium">KB</div><div class="user-name-cell">Kouassi Biokou</div></div></td><td>Premium</td><td style="font-weight:500;color:var(--accent);">5 000 FCFA</td><td><span class="badge bg-amber">Acompte</span></td><td><span class="badge bg-amber">Reçu</span></td><td style="color:var(--muted);">10 mars</td><td><div class="action-btns"><div class="icon-btn" onclick="validatePayment(this)">✅</div><div class="icon-btn">📲</div></div></td></tr>
+            <tr><td><div class="user-cell"><div class="avatar">AS</div><div class="user-name-cell">Adjovi Sèmê</div></div></td><td>Autonome</td><td style="font-weight:500;color:var(--brand);">4 000 FCFA</td><td>—</td><td><span class="badge bg-green">Payé</span></td><td style="color:var(--muted);">8 mars</td><td><div class="icon-btn">👁</div></td></tr>
+            <tr><td><div class="user-cell"><div class="avatar danger">FD</div><div class="user-name-cell">Fidèle Dossou</div></div></td><td>Autonome</td><td style="color:var(--muted);">4 000 FCFA</td><td>—</td><td><span class="badge bg-red">En attente</span></td><td style="color:var(--muted);">14 mars</td><td><div class="action-btns"><div class="icon-btn" onclick="validatePayment(this)">✅</div><div class="icon-btn">✉️</div></div></td></tr>
+          </tbody></table>
+        </div>
+        <div id="pay-auto" class="tab-panel">
+          <table><thead><tr><th>Client</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td><div class="user-cell"><div class="avatar">GK</div><div class="user-name-cell">Grace Koudjo</div></div></td><td style="font-weight:500;color:var(--brand);">4 000 FCFA</td><td><span class="badge bg-green">Payé · site actif</span></td><td style="color:var(--muted);">12 mars 2025</td></tr>
+            <tr><td><div class="user-cell"><div class="avatar">AS</div><div class="user-name-cell">Adjovi Sèmê</div></div></td><td style="font-weight:500;color:var(--brand);">4 000 FCFA</td><td><span class="badge bg-green">Payé · site actif</span></td><td style="color:var(--muted);">8 mars 2025</td></tr>
+            <tr><td><div class="user-cell"><div class="avatar danger">FD</div><div class="user-name-cell">Fidèle Dossou</div></div></td><td style="color:var(--muted);">4 000 FCFA</td><td><span class="badge bg-red">En attente</span></td><td style="color:var(--muted);">14 mars 2025</td></tr>
+          </tbody></table>
+        </div>
+        <div id="pay-prem" class="tab-panel">
+          <table><thead><tr><th>Client</th><th>Total</th><th>Acompte</th><th>Solde restant</th><th>Statut</th></tr></thead>
+          <tbody>
+            <tr><td><div class="user-cell"><div class="avatar premium">KB</div><div class="user-name-cell">Kouassi Biokou</div></div></td><td>10 000 FCFA</td><td><span class="badge bg-amber">5 000 F reçu</span></td><td style="color:#e24b4a;font-weight:500;">5 000 FCFA</td><td><span class="badge bg-amber">En cours</span></td></tr>
+            <tr><td><div class="user-cell"><div class="avatar premium">MH</div><div class="user-name-cell">Mèdéssè Hounsou</div></div></td><td>10 000 FCFA</td><td><span class="badge bg-amber">5 000 F reçu</span></td><td style="color:#e24b4a;font-weight:500;">5 000 FCFA</td><td><span class="badge bg-amber">En cours</span></td></tr>
+          </tbody></table>
+        </div>
+        <div id="pay-pending" class="tab-panel">
+          <table><thead><tr><th>Client</th><th>Type</th><th>Montant attendu</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><div class="user-cell"><div class="avatar danger">FD</div><div class="user-name-cell">Fidèle Dossou</div></div></td><td>Autonome</td><td>4 000 FCFA</td><td><div class="action-btns"><button class="btn btn-green" style="font-size:12px;padding:5px 10px;" onclick="validatePayment(this)">✅ Valider</button><div class="icon-btn">✉️</div></div></td></tr>
+            <tr><td><div class="user-cell"><div class="avatar danger">NK</div><div class="user-name-cell">Narcisse Kpèdjo</div></div></td><td>Autonome</td><td>4 000 FCFA</td><td><div class="action-btns"><button class="btn btn-green" style="font-size:12px;padding:5px 10px;" onclick="validatePayment(this)">✅ Valider</button><div class="icon-btn">✉️</div></div></td></tr>
+            <tr><td><div class="user-cell"><div class="avatar premium">OA</div><div class="user-name-cell">Olivia Ahouandjènou</div></div></td><td>Premium</td><td>5 000 FCFA (acompte)</td><td><div class="action-btns"><button class="btn btn-green" style="font-size:12px;padding:5px 10px;" onclick="validatePayment(this)">✅ Valider</button><div class="icon-btn">📲</div></div></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE PROJETS PREMIUM -->
+    <div id="page-premium" class="page">
+      <div class="topbar"><div><div class="page-title">Projets Premium</div><div class="page-sub">Suivi des sites créés manuellement</div></div><button class="btn btn-green">+ Nouveau projet</button></div>
+      <div class="section-card">
+        <div class="filter-bar">
+          <div class="filter-pill active">Tous (4)</div>
+          <div class="filter-pill">En cours (2)</div>
+          <div class="filter-pill">Livré (1)</div>
+          <div class="filter-pill">Attente acompte (1)</div>
+        </div>
+        <table><thead><tr><th style="width:200px;">Client</th><th>Type site</th><th>Acompte</th><th>Solde</th><th>Délai</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td><div class="user-cell"><div class="avatar premium">KB</div><div><div class="user-name-cell">Kouassi Biokou</div><div class="user-sub-cell">Restaurant</div></div></div></td><td>Menu restaurant</td><td><span class="badge bg-green">✓ 5 000 F</span></td><td style="color:#e24b4a;font-weight:500;">5 000 F</td><td><span class="badge bg-amber">Normal · 3 sem.</span></td><td><span class="status-dot dot-amber"></span>En cours</td><td><div class="action-btns"><div class="icon-btn">✏️</div><div class="icon-btn">📲</div><div class="icon-btn">🚀</div></div></td></tr>
+          <tr><td><div class="user-cell"><div class="avatar premium">MH</div><div><div class="user-name-cell">Mèdéssè Hounsou</div><div class="user-sub-cell">Boutique</div></div></div></td><td>Boutique catalogue</td><td><span class="badge bg-green">✓ 5 000 F</span></td><td style="color:#e24b4a;font-weight:500;">5 000 F</td><td><span class="badge bg-red">Urgent · 2 sem.</span></td><td><span class="status-dot dot-amber"></span>En cours</td><td><div class="action-btns"><div class="icon-btn">✏️</div><div class="icon-btn">📲</div><div class="icon-btn">🚀</div></div></td></tr>
+          <tr><td><div class="user-cell"><div class="avatar" style="background:#eaf3de;color:#27500a;">TA</div><div><div class="user-name-cell">Théophile Agboton</div><div class="user-sub-cell">Cosmétiques</div></div></div></td><td>Boutique cosmétiques</td><td><span class="badge bg-green">✓ 5 000 F</span></td><td><span class="badge bg-green">✓ 5 000 F</span></td><td><span class="badge bg-gray">Terminé</span></td><td><span class="status-dot dot-green"></span>Livré</td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">🔗</div></div></td></tr>
+          <tr><td><div class="user-cell"><div class="avatar danger">OA</div><div><div class="user-name-cell">Olivia Ahouandjènou</div><div class="user-sub-cell">Fast-food</div></div></div></td><td>Menu fast-food</td><td><span class="badge bg-red">En attente</span></td><td style="color:#9ca3af;">—</td><td><span class="badge bg-gray">Non démarré</span></td><td><span class="status-dot dot-red"></span>Bloqué</td><td><div class="action-btns"><div class="icon-btn">✉️</div><div class="icon-btn">📲</div></div></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- PAGE DÉCOMPTES -->
+    <div id="page-countdown" class="page">
+      <div class="topbar"><div><div class="page-title">Décomptes de livraison</div><div class="page-sub">Temps restant depuis le premier acompte</div></div></div>
+      <div class="two-col">
+        <div>
+          <div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--muted);">VUE ADMINISTRATEUR</div>
+          <div class="countdown-card">
+            <div style="font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px;">Projets en cours</div>
+            <div class="countdown-project">
+              <div><div class="cdown-client">Kouassi Biokou</div><div class="cdown-type">Restaurant · Normal (21 jours) · Démarré le 10 mars</div></div>
+              <div style="text-align:right;"><div class="cdown-days" id="cd1">—</div><div class="cdown-label">restants</div></div>
+            </div>
+            <div class="countdown-project urgent">
+              <div><div class="cdown-client">Mèdéssè Hounsou</div><div class="cdown-type">Boutique · Urgent (14 jours) · Démarré le 5 mars</div></div>
+              <div style="text-align:right;"><div class="cdown-days urgent" id="cd2">—</div><div class="cdown-label">restants</div></div>
+            </div>
+            <div style="background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;">Le décompte démarre automatiquement dès réception de l'acompte. En rouge : livraison urgente sous 2 semaines.</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--muted);">VUE CLIENT (côté utilisateur)</div>
+          <div class="countdown-card">
+            <div style="font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px;">Votre site est en cours de création</div>
+            <div style="background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);border-radius:var(--radius);padding:20px;text-align:center;">
+              <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Livraison estimée dans</div>
+              <div style="font-size:36px;font-weight:500;color:var(--brand);letter-spacing:0.02em;" id="client-timer">—</div>
+              <div style="font-size:12px;color:#9ca3af;margin-top:6px;">Projet : Kouassi Biokou · Normal</div>
+            </div>
+            <div style="background:var(--brand-light);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:#0f6e56;line-height:1.6;">✓ Acompte reçu · Le 10 mars 2025<br>Délai : 3 semaines maximum · Site livré par email & WhatsApp</div>
+            <div style="background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);border-radius:var(--radius);padding:12px 14px;">
+              <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Avancement estimé</div>
+              <div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:45%;"></div></div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:4px;">Étape : Design en cours · ~45%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE STATISTIQUES -->
+    <div id="page-stats" class="page">
+      <div class="topbar"><div><div class="page-title">Statistiques globales</div><div class="page-sub">Performance de la plateforme</div></div></div>
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-label">Taux de conversion</div><div class="metric-value">66%</div><div class="metric-sub">Inscrits → Payants</div></div>
+        <div class="metric-card"><div class="metric-label">Clics WhatsApp totaux</div><div class="metric-value">214</div><div class="metric-sub">Sur tous les sites</div></div>
+        <div class="metric-card"><div class="metric-label">Sites autonomes</div><div class="metric-value">14</div><div class="metric-sub">sur 18 inscrits</div></div>
+        <div class="metric-card"><div class="metric-label">Sites premium</div><div class="metric-value">4</div><div class="metric-sub">commandés</div></div>
+      </div>
+      <div class="section-card">
+        <div class="card-header"><span class="card-title">Revenus par type de service</span></div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Création autonome</span><span style="font-weight:500;color:var(--brand);">56 000 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:57%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Service premium (acomptes)</span><span style="font-weight:500;color:var(--accent);">30 000 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill amber" style="width:31%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Premium soldes encaissés</span><span style="font-weight:500;color:var(--brand);">10 000 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:10%;"></div></div></div>
+          <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;font-size:14px;font-weight:500;"><span>Total encaissé</span><span style="color:var(--brand);">96 000 FCFA</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE SITES -->
+    <div id="page-sites" class="page">
+      <div class="topbar"><div><div class="page-title">Sites publiés</div><div class="page-sub">12 sites actifs sur la plateforme</div></div></div>
+      <div class="section-card">
+        <table><thead><tr><th>Site</th><th>Propriétaire</th><th>Lien</th><th>Produits</th><th>Vues</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500;">Boutique Grâce Mode</td><td>Grace Koudjo</td><td style="color:#185fa5;font-family:monospace;font-size:12px;">shoplink.bj/gracemode</td><td>12</td><td>247</td><td><span class="badge bg-green">En ligne</span></td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div></div></td></tr>
+          <tr><td style="font-weight:500;">Chez Maman Délices</td><td>Adjovi Sèmê</td><td style="color:#185fa5;font-family:monospace;font-size:12px;">shoplink.bj/chezmaman</td><td>18</td><td>189</td><td><span class="badge bg-green">En ligne</span></td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div></div></td></tr>
+          <tr><td style="font-weight:500;">Beauty by Sèmè</td><td>Rosine Agossou</td><td style="color:#185fa5;font-family:monospace;font-size:12px;">shoplink.bj/beautyseme</td><td>9</td><td>134</td><td><span class="badge bg-green">En ligne</span></td><td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div></div></td></tr>
+          <tr><td style="font-weight:500;">Fast Délice Cotonou</td><td>Fidèle Dossou</td><td style="color:#9ca3af;font-family:monospace;font-size:12px;">non publié</td><td>6</td><td>0</td><td><span class="badge bg-red">Bloqué</span></td><td><div class="action-btns"><div class="icon-btn">✉️</div><div class="icon-btn">🗑</div></div></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function showPage(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const pg = document.getElementById('page-' + id);
+    pg.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+  }
+
+  function switchTabP(id, el) {
+    const card = document.getElementById(id).closest('.section-card');
+    card.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  function filterUsers(type, el) {
+    document.querySelectorAll('.filter-bar .filter-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('#users-table tr').forEach(r => {
+      r.style.display = (type === 'all' || r.dataset.type === type) ? '' : 'none';
+    });
+  }
+
+  function validatePayment(btn) {
+    const row = btn.closest('tr');
+    const statusCell = row.querySelector('.badge');
+    if (statusCell && confirm('Valider ce paiement ?')) {
+      statusCell.className = 'badge bg-green';
+      statusCell.textContent = 'Payé ✓';
+      btn.closest('.action-btns').innerHTML = '<div class="icon-btn">👁</div>';
+      const pending = parseInt(document.getElementById('badge-pending').textContent);
+      if (pending > 0) document.getElementById('badge-pending').textContent = pending - 1;
+    }
+  }
+
+  function updateTimers() {
+    const now = new Date();
+    function diff(startStr, days) {
+      const end = new Date(startStr);
+      end.setDate(end.getDate() + days);
+      const ms = end - now;
+      if (ms <= 0) return '0j 0h';
+      return Math.floor(ms/86400000) + 'j ' + Math.floor((ms%86400000)/3600000) + 'h';
+    }
+    function diffFull(startStr, days) {
+      const end = new Date(startStr);
+      end.setDate(end.getDate() + days);
+      const ms = end - now;
+      if (ms <= 0) return '0j 0h 0m';
+      return Math.floor(ms/86400000) + 'j ' + Math.floor((ms%86400000)/3600000) + 'h ' + Math.floor((ms%3600000)/60000) + 'm';
+    }
+    if (document.getElementById('cd1'))          document.getElementById('cd1').textContent          = diff('2025-03-10', 21);
+    if (document.getElementById('cd2'))          document.getElementById('cd2').textContent          = diff('2025-03-05', 14);
+    if (document.getElementById('client-timer')) document.getElementById('client-timer').textContent = diffFull('2025-03-10', 21);
+  }
+
+  updateTimers();
+  setInterval(updateTimers, 60000);
+
+  // Charger les stats =====
+  const API_BASE = '/api';
+
+  async function loadStats() {
+    try {
+      // Charger les stats financières
+      const finRes = await fetch(`${API_BASE}/admin/payments/summary`);
+      const fin = await finRes.json();
+      
+      // Charger les stats générales
+      const sumRes = await fetch(`${API_BASE}/admin/summary`);
+      const sum = await sumRes.json();
+
+      // Mettre à jour les métriques
+      const metrics = document.querySelectorAll('.metric-value');
+      if (metrics[0]) metrics[0].textContent = (sum.data?.users || 18);
+      if (metrics[1]) metrics[1].textContent = (sum.data?.sites || 12);
+      if (metrics[2]) metrics[2].textContent = (fin.summary?.totalAmount || 98000).toLocaleString('fr-FR');
+      if (metrics[3]) metrics[3].textContent = (fin.summary?.totalPending || 3);
+    } catch (error) {
+      console.error('Erreur chargement stats:', error);
+    }
+  }
+
+  async function loadPaymentsFromAPI() {
+    try {
+      const res = await fetch(`${API_BASE}/admin/payments/validated`);
+      const data = await res.json();
+
+      if (data.success && data.payments && data.payments.length > 0) {
+        // Remplir le tableau "Tous les paiements"
+        const allPaymentsTable = document.querySelector('#pay-all tbody');
+        const autoPaymentsTable = document.querySelector('#pay-auto tbody');
+        const premPaymentsTable = document.querySelector('#pay-prem tbody');
+
+        let allHTML = '';
+        let autoHTML = '';
+        let premHTML = '';
+
+        data.payments.forEach(p => {
+          const type = p.type || 'autonome';
+          const date = new Date(p.validatedAt || p.updatedAt).toLocaleDateString('fr-FR');
+          const clientName = p.siteName || p.clientName || 'Client';
+          const initials = clientName.split(' ').map(n => n[0]).join('').substring(0, 2);
+          const badgeClass = type === 'autonome' ? 'bg-blue' : 'bg-amber';
+          const provider = p.mobileMoneyProvider ? p.mobileMoneyProvider.toUpperCase() : 'N/A';
+
+          const row = `<tr>
+            <td><div class="user-cell"><div class="avatar ${type === 'premium' ? 'premium' : ''}">${initials}</div><div class="user-name-cell">${clientName}</div></div></td>
+            <td>${type === 'autonome' ? 'Autonome' : 'Premium'}</td>
+            <td style="font-weight:500;color:var(--brand);">${(p.amount || 0).toLocaleString('fr-FR')} FCFA</td>
+            <td>—</td>
+            <td><span class="badge bg-green">Payé</span></td>
+            <td style="color:var(--muted);">${date}</td>
+            <td><div class="icon-btn">👁</div></td>
+          </tr>`;
+
+          allHTML += row;
+
+          if (type === 'autonome') {
+            autoHTML += `<tr><td><div class="user-cell"><div class="avatar">${initials}</div><div class="user-name-cell">${clientName}</div></div></td><td style="font-weight:500;color:var(--brand);">${(p.amount || 0).toLocaleString('fr-FR')} FCFA</td><td><span class="badge bg-green">Payé · site actif</span></td><td style="color:var(--muted);">${date}</td></tr>`;
+          } else {
+            premHTML += `<tr><td><div class="user-cell"><div class="avatar premium">${initials}</div><div class="user-name-cell">${clientName}</div></div></td><td>${(p.amount || 0).toLocaleString('fr-FR')} FCFA</td><td><span class="badge bg-amber">${(p.amount || 0).toLocaleString('fr-FR')} F reçu</span></td><td style="color:#e24b4a;font-weight:500;">—</td><td><span class="badge bg-amber">En cours</span></td></tr>`;
+          }
+        });
+
+        if (allPaymentsTable) allPaymentsTable.innerHTML = allHTML;
+        if (autoPaymentsTable) autoPaymentsTable.innerHTML = autoHTML || '<tr><td colspan="4" style="text-align:center;color:#999;">Aucun paiement autonome</td></tr>';
+        if (premPaymentsTable) premPaymentsTable.innerHTML = premHTML || '<tr><td colspan="5" style="text-align:center;color:#999;">Aucun paiement premium</td></tr>';
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des paiements:', error);
+    }
+  }
+
+  // Charger les paiements au démarrage
+  window.addEventListener('load', () => {
+    loadPaymentsFromAPI();
+    loadStats();
+    // Actualiser toutes les 5 secondes
+    setInterval(loadPaymentsFromAPI, 5000);
+    setInterval(loadStats, 10000);
+  });
+</script>
+<script src="/js/mobile-nav.js"></script>
+
+</body>
+</html>
+

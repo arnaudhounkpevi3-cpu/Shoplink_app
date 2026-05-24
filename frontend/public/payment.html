@@ -1,0 +1,631 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Paiement sécurisé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --green:#1a5c38;--green-light:#eef7f1;--green-mid:#0f6e56;
+      --amber:#f59c1a;--amber-light:#fef3de;
+      --dark:#0f1f17;--bg:#fdf6ee;--white:#fff;
+      --border:#e8ddd0;--text:#1a1a1a;--muted:#6b5744;--soft:#9a7d5a;
+      --radius:12px;--radius-lg:18px;
+    }
+
+    /* ANTI-ZOOM */
+    html, body {
+      touch-action: none;
+      -ms-touch-action: none;
+      -webkit-touch-action: none;
+    }
+    body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);color:var(--text);min-height:100vh;}
+    nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;}
+    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;}
+    .pay-layout{max-width:980px;margin:0 auto;padding:36px 20px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;}
+    .pay-col{display:flex;flex-direction:column;gap:18px;}
+    .pay-section{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+    .pay-section-header{padding:14px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .pay-section-num{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .pay-section-title{font-size:15px;font-weight:500;}
+    .pay-section-body{padding:20px 22px;}
+    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:15px;}
+    .form-group:last-child{margin-bottom:0;}
+    .form-label{font-size:13px;color:var(--muted);font-weight:500;}
+    .form-input{padding:11px 14px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--bg);font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;width:100%;}
+    .form-input:focus{border-color:var(--green);background:#fff;}
+    .form-input.err{border-color:#e24b4a;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .err-msg{font-size:12px;color:#e24b4a;margin-top:3px;}
+    .form-hint{font-size:12px;color:var(--soft);margin-top:3px;}
+    .methods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+    .method-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
+    .method-card:hover{border-color:var(--amber);}
+    .method-card.sel{border-color:var(--amber);background:var(--amber-light);}
+    .method-icon{font-size:28px;margin-bottom:6px;}
+    .method-name{font-size:12px;font-weight:500;color:var(--muted);}
+    .method-card.sel .method-name{color:#854f0b;}
+    .method-tag{display:inline-block;font-size:10px;background:var(--amber-light);color:#854f0b;border-radius:4px;padding:1px 6px;margin-top:3px;}
+    .momo-instructions{background:var(--bg);border-radius:var(--radius);padding:18px;border:1px solid var(--border);}
+    .owner-number-box{background:var(--dark);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .owner-number-label{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:4px;}
+    .owner-number{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--amber);letter-spacing:0.05em;}
+    .owner-name{font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;}
+    .copy-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;padding:8px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;}
+    .copy-btn:hover{background:rgba(255,255,255,0.2);}
+    .copy-btn.copied{background:rgba(26,107,74,0.4);border-color:var(--green);}
+    .amount-to-send{background:var(--green-light);border:1px solid #9fe1cb;border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .amount-label{font-size:12px;color:var(--green-mid);}
+    .amount-value{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--green);}
+    .payment-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:4px;}
+    .payment-step{display:flex;align-items:flex-start;gap:10px;}
+    .step-badge{width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .step-text{font-size:13px;color:var(--text);line-height:1.5;}
+    .active-op-badge{display:inline-flex;align-items:center;gap:6px;background:var(--amber-light);border:1px solid #f5c878;border-radius:100px;padding:4px 12px;font-size:12px;font-weight:500;color:#854f0b;margin-bottom:14px;}
+    .ref-wrap{position:relative;}
+    .ref-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;}
+    .ref-input{padding-left:40px;}
+    .pay-recap{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+    .recap-header{padding:18px 22px;background:var(--dark);}
+    .recap-title{font-size:16px;font-weight:500;color:#fff;}
+    .recap-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-top:3px;}
+    .recap-body{padding:18px 22px;}
+    .recap-row{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid #f5f0ea;}
+    .recap-row:last-of-type{border-bottom:none;}
+    .recap-label{color:var(--muted);}
+    .recap-val{font-weight:500;}
+    .recap-total{padding:14px 22px;background:var(--green-light);border-top:1px solid #c0e8d0;display:flex;justify-content:space-between;align-items:center;}
+    .recap-total-label{font-size:14px;font-weight:500;color:var(--green-mid);}
+    .recap-total-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--green);}
+    .acompte-note{margin:0 22px;background:var(--amber-light);border-radius:0 0 10px 10px;padding:10px 14px;font-size:12px;color:#854f0b;border:1px solid #f5c878;border-top:none;}
+    .pay-btn-wrap{padding:16px 22px;}
+    .btn-pay{width:100%;background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;}
+    .btn-pay:hover{background:#155030;}
+    .btn-pay:disabled{opacity:0.6;cursor:not-allowed;}
+    .secure-badges{display:flex;justify-content:center;gap:14px;padding:12px 22px 18px;border-top:1px solid var(--border);}
+    .secure-badge{font-size:11px;color:var(--soft);display:flex;align-items:center;gap:4px;}
+    .loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:16px;pointer-events:none;}
+.loading-overlay.show{display:flex;pointer-events:auto;}
+    .spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .loading-text{color:#fff;font-size:15px;}
+    .pending-page{display:none;max-width:580px;margin:60px auto;padding:0 20px;text-align:center;}
+    .pending-page.show{display:block;}
+    .pending-icon{width:80px;height:80px;background:var(--amber-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;}
+    .detail-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;text-align:left;margin-bottom:22px;}
+    .detail-row{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid #f5f0ea;}
+    .detail-row:last-child{border-bottom:none;}
+    .detail-label{color:var(--muted);}
+    .success-page{display:none;max-width:580px;margin:60px auto;padding:0 20px;text-align:center;}
+    .success-page.show{display:block;}
+    .success-icon{width:80px;height:80px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;}
+    .btn-main{background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:13px 26px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;}
+
+
+    .whatsapp-icon {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 24 24'%3E%3Cpath d='M0 0h24v24H0z' fill='none' /%3E%3Cpath fill='%2385e155' d='M8.886 7.17c.183.005.386.015.579.443c.128.285.343.81.519 1.238c.137.333.249.607.277.663c.064.128.104.275.02.448l-.028.058a1.4 1.4 0 0 1-.23.37l-.143.17c-.085.104-.17.206-.242.278c-.129.128-.262.266-.114.522s.668 1.098 1.435 1.777a6.6 6.6 0 0 0 1.903 1.2q.105.045.17.076c.257.128.41.108.558-.064c.149-.173.643-.749.817-1.005c.168-.256.34-.216.578-.128c.238.089 1.504.71 1.761.837l.143.07c.179.085.3.144.352.23c.064.109.064.62-.148 1.222c-.218.6-1.267 1.176-1.742 1.22l-.135.016c-.436.052-.988.12-2.956-.655c-2.426-.954-4.027-3.32-4.35-3.799l-.053-.076l-.006-.008c-.147-.197-1.048-1.402-1.048-2.646c0-1.19.587-1.81.854-2.092l.047-.05a.95.95 0 0 1 .687-.32c.173 0 .347 0 .495.005' /%3E%3Cpath fill='%2385e155' fill-rule='evenodd' d='M2.184 21.331a.4.4 0 0 0 .487.494l4.607-1.204a10 10 0 0 0 4.76 1.207h.004c5.486 0 9.958-4.446 9.958-9.912a9.83 9.83 0 0 0-2.914-7.011A9.92 9.92 0 0 0 12.042 2c-5.486 0-9.958 4.446-9.958 9.911c0 1.739.458 3.447 1.33 4.954zm2.677-4.068a1.5 1.5 0 0 0-.148-1.15a8.4 8.4 0 0 1-1.129-4.202c0-4.63 3.793-8.411 8.458-8.411c2.27 0 4.388.877 5.986 2.468a8.33 8.33 0 0 1 2.472 5.948c0 4.63-3.793 8.412-8.458 8.412h-.005a8.5 8.5 0 0 1-4.044-1.026a1.5 1.5 0 0 0-1.094-.132l-2.762.721z' clip-rule='evenodd' /%3E%3C/svg%3E");
+    }
+
+    /* MOBILE RESPONSIVE */
+    @media (max-width: 768px) {
+      html,body{width:100%;min-width:100%;max-width:100%;overflow-x:hidden;}
+      nav{padding:0 16px;}
+      .logo{font-size:15px;}
+      .logo-dot{width:6px;height:6px;}
+      .pay-layout{grid-template-columns:1fr;gap:20px;padding:24px 16px;}
+      .pay-section-header{padding:12px 16px;}
+      .pay-section-num{width:24px;height:24px;font-size:11px;}
+      .pay-section-title{font-size:14px;}
+      .pay-section-body{padding:16px;}
+      .form-row{grid-template-columns:1fr;gap:12px;}
+      .form-label{font-size:12px;}
+      .form-input{padding:10px 12px;font-size:13px;}
+      .methods-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+      .method-card{padding:12px 8px;}
+      .method-icon{font-size:24px;}
+      .method-name{font-size:11px;}
+      .owner-number-box{flex-direction:column;gap:12px;padding:14px;}
+      .copy-btn{width:100%;text-align:center;}
+      .amount-to-send{padding:10px 14px;}
+      .amount-value{font-size:18px;}
+      .recap-header{padding:14px 16px;}
+      .recap-title{font-size:15px;}
+      .recap-sub{font-size:11px;}
+      .recap-body{padding:14px 16px;}
+      .recap-row{font-size:12px;padding:8px 0;}
+      .recap-total{padding:12px 16px;}
+      .recap-total-val{font-size:22px;}
+      .pay-btn-wrap{padding:14px 16px;}
+      .btn-pay{padding:12px;font-size:14px;}
+      .secure-badges{flex-wrap:wrap;gap:10px;padding:10px 16px;}
+      .secure-badge{font-size:10px;}
+      .pending-page,.success-page{padding:0 16px;margin:40px auto;}
+      .pending-icon,.success-icon{width:60px;height:60px;font-size:28px;}
+      .detail-card{padding:16px;}
+      .detail-row{font-size:12px;padding:8px 0;}
+    }
+
+    @media (max-width: 480px) {
+      nav{padding:0 12px;height:50px;}
+      .logo{font-size:14px;}
+      .pay-layout{padding:20px 12px;gap:16px;}
+      .pay-section-header{padding:10px 12px;}
+      .pay-section-num{width:22px;height:22px;font-size:10px;}
+      .pay-section-title{font-size:13px;}
+      .pay-section-body{padding:14px 12px;}
+      .form-group{margin-bottom:12px;}
+      .form-label{font-size:11px;}
+      .form-input{padding:9px 11px;font-size:13px;}
+      .methods-grid{grid-template-columns:1fr 1fr;gap:8px;}
+      .method-card{padding:10px 8px;}
+      .method-icon img{width:32px;height:32px;}
+      .method-name{font-size:10px;}
+      .owner-number{font-size:18px;}
+      .amount-value{font-size:16px;}
+      .recap-header{padding:12px 14px;}
+      .recap-body{padding:12px 14px;}
+      .recap-total-val{font-size:20px;}
+      .btn-pay{padding:11px;font-size:13px;}
+      .pending-page,.success-page{margin:30px auto;}
+      .pending-icon,.success-icon{width:50px;height:50px;font-size:24px;}
+      .detail-card{padding:14px;}
+      .btn-main,.btn-out{padding:10px 18px;font-size:13px;}
+    }
+  </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
+</head>
+<body>
+
+<nav>
+  <a href="/index.html" class="logo"><span class="logo-dot"></span>ShopLink</a>
+  <span style="color:rgba(255,255,255,0.75);font-size:13px;">Paiement sécurisé</span>
+</nav>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Enregistrement en cours...</div>
+</div>
+
+<div id="payment-page">
+  <div class="pay-layout">
+    <div class="pay-col">
+
+      <!-- 1. COORDONNÉES -->
+      <div class="pay-section">
+        <div class="pay-section-header">
+          <div class="pay-section-num">1</div>
+          <div class="pay-section-title">Vos coordonnées</div>
+        </div>
+        <div class="pay-section-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nom complet *</label>
+              <input class="form-input" id="pay-name" placeholder="Prénom et nom"/>
+              <div class="err-msg" id="err-name"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Votre numéro de téléphone *</label>
+              <input class="form-input" id="pay-phone" placeholder="22901XXXXXXXX" oninput="formatPhone(this)"/>
+              <div class="form-hint">Format béninois : 22901XXXXXXXX</div>
+              <div class="err-msg" id="err-phone"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-input" id="pay-email" type="email" placeholder="votre@email.com"/>
+            <div class="form-hint">La confirmation vous sera envoyée par email</div>
+            <div class="err-msg" id="err-email"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. OPÉRATEUR -->
+      <div class="pay-section">
+        <div class="pay-section-header">
+          <div class="pay-section-num">2</div>
+          <div class="pay-section-title">Choisissez votre opérateur Mobile Money</div>
+        </div>
+        <div class="pay-section-body">
+          <div class="methods-grid">
+            <div class="method-card sel" id="mc-mtn" onclick="selectOp('mtn')">
+              <div class="method-icon"><span class="arcticons--mymtn-ng"></span></div>
+              <div class="method-name">MTN MoMo</div>
+              <div class="method-tag">Recommandé</div>
+            </div>
+            <div class="method-card" id="mc-moov" onclick="selectOp('moov')">
+              <div class="method-icon"><img src="images/moov-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Moov"></div>
+              <div class="method-name">Moov Money</div>
+            </div>
+            <div class="method-card" id="mc-celtiis" onclick="selectOp('celtiis')">
+              <div class="method-icon"><img src="images/celtiis-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Celtiis"></div>
+              <div class="method-name">Celtiis</div>
+            </div>
+          </div>
+          <div class="active-op-badge" id="op-badge">🟡 MTN Mobile Money sélectionné</div>
+        </div>
+      </div>
+
+      <!-- 3. INSTRUCTIONS -->
+      <div class="pay-section">
+        <div class="pay-section-header">
+          <div class="pay-section-num">3</div>
+          <div class="pay-section-title">Effectuez le transfert puis entrez la référence</div>
+        </div>
+        <div class="pay-section-body">
+          <div class="momo-instructions">
+            <div class="amount-to-send">
+              <div class="amount-label">Montant exact à envoyer</div>
+              <div class="amount-value" id="send-amount">4 000 FCFA</div>
+            </div>
+            <div class="owner-number-box">
+              <div>
+                <div class="owner-number-label" id="op-label">Numéro MTN MoMo ShopLink</div>
+                <div class="owner-number">+2290167163481</div>
+                <div class="owner-name">ShopLink Bénin — Administrateur</div>
+              </div>
+              <button class="copy-btn" id="copy-btn" onclick="copyNumber()">📋 Copier</button>
+            </div>
+            <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">📋 Étapes :</div>
+            <div class="payment-steps" id="steps-list"></div>
+          </div>
+
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- RÉCAPITULATIF -->
+    <div>
+      <div class="pay-recap">
+        <div class="recap-header">
+          <div class="recap-title">Récapitulatif</div>
+          <div class="recap-sub">ShopLink — Bénin 🇧🇯</div>
+        </div>
+        <div class="recap-body">
+          <div class="recap-row"><span class="recap-label">Service</span><span class="recap-val" id="r-service">Création autonome</span></div>
+          <div class="recap-row"><span class="recap-label">Plan</span><span class="recap-val" id="r-plan">ShopLink Starter</span></div>
+          <div class="recap-row" id="r-step-row" style="display:none;"><span class="recap-label">Étape</span><span class="recap-val" id="r-step">Acompte 50%</span></div>
+          <div class="recap-row"><span class="recap-label">Opérateur</span><span class="recap-val" id="r-op">MTN MoMo</span></div>
+          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" style="font-family:monospace;color:var(--amber);">+2290167163481</span></div>
+        </div>
+        <div class="recap-total">
+          <div class="recap-total-label">À payer</div>
+          <div class="recap-total-val" id="r-amount">4 000 FCFA</div>
+        </div>
+        <div class="acompte-note" id="r-acompte" style="display:none;">Acompte 50% — le solde sera demandé à la livraison.</div>
+        <div class="pay-btn-wrap">
+          <button class="btn-pay" id="pay-btn" type="button">
+            ✅ Confirmer mon paiement — <span id="btn-amt">4 000 FCFA</span>
+          </button>
+        </div>
+
+      </div>
+
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-top:14px;text-align:center;">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Un problème ? Contactez-nous</div>
+        <a href="https://wa.me/22967163481?text=Bonjour ShopLink, j'ai un problème avec mon paiement."
+           target="_blank"
+           style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border-radius:var(--radius);padding:10px 20px;font-size:13px;font-weight:500;text-decoration:none;">
+          <span class="whatsapp-icon"></span> Support WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE EN ATTENTE -->
+<div class="pending-page" id="pending-page">
+  <div class="pending-icon">⏳</div>
+  <h2 style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:10px;">Demande envoyée !</h2>
+  <p style="font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.7;">
+    Votre paiement est en cours de vérification. Votre site sera activé dès validation.
+  </p>
+  <div class="detail-card">
+    <div style="font-size:14px;font-weight:500;color:var(--green-mid);margin-bottom:14px;">Détails de votre demande</div>
+    <div class="detail-row"><span class="detail-label">Nom</span><span id="p-name" style="font-weight:500;">—</span></div>
+    <div class="detail-row"><span class="detail-label">Service</span><span id="p-service" style="font-weight:500;">—</span></div>
+    <div class="detail-row"><span class="detail-label">Montant</span><span id="p-amount" style="font-weight:500;color:var(--green);">—</span></div>
+    <div class="detail-row"><span class="detail-label">Référence</span><span id="p-ref" style="font-weight:500;font-family:monospace;">—</span></div>
+    <div class="detail-row"><span class="detail-label">Statut</span><span style="background:var(--amber-light);color:#854f0b;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:500;">En attente de validation</span></div>
+  </div>
+  <div style="background:var(--green-light);border:1px solid #9fe1cb;border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;text-align:left;font-size:13px;color:var(--green-mid);line-height:1.8;">
+    • Confirmation email envoyée<br>
+    • Validation sous <strong>15 min à 1 heure</strong> en heures ouvrées<br>
+    • Activation automatique de votre site après validation
+  </div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <a href="https://wa.me/22967163481" target="_blank" style="background:#25d366;color:#fff;border-radius:var(--radius);padding:12px 24px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px;"><span class="whatsapp-icon"></span> Suivre sur WhatsApp</a>
+    <a href="/dashboard-client-shoplink.html" class="btn-out">📊 Mon tableau de bord</a>
+  </div>
+</div>
+
+<!-- PAGE SUCCÈS -->
+<div class="success-page" id="success-page">
+  <div class="success-icon">•</div>
+  <h2 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:10px;">Paiement validé !</h2>
+  <p style="font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.7;">
+    Salut, Cher(e) client(e) 👋<br>
+    Votre paiement a été effectué avec succès.<br>
+    Votre site est maintenant <strong>actif et accessible en ligne</strong>.
+  </p>
+  <div class="detail-card">
+    <div style="font-size:14px;font-weight:500;color:var(--green-mid);margin-bottom:14px;">Détails</div>
+    <div class="detail-row"><span class="detail-label">Service</span><span id="s-service">—</span></div>
+    <div class="detail-row"><span class="detail-label">Montant</span><span id="s-amount" style="font-weight:500;color:var(--green);">—</span></div>
+    <div class="detail-row"><span class="detail-label">Statut</span><span style="color:var(--green);font-weight:500;">• Payé</span></div>
+    <div class="detail-row" id="s-link-row">
+      <span class="detail-label">Votre lien</span>
+      <a id="s-link" href="#" target="_blank" style="color:var(--green);font-weight:500;font-family:monospace;font-size:13px;"></a>
+    </div>
+  </div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <a id="s-site-btn" href="#" class="btn-main">�️ Accéder à mon site</a>
+    <button class="btn-out" onclick="shareWA()"><span class="whatsapp-icon"></span> Partager sur WhatsApp</button>
+  </div>
+</div>
+
+<script>
+  // CONFIG
+  const OWNER_NUMBER = '+2290167163481';
+  const OWNER_RAW    = '2290167163481';
+
+  const OPS = {
+    mtn:  { label:'MTN Mobile Money',  badge:'🟡 MTN Mobile Money sélectionné',  opLabel:'Numéro MTN MoMo ShopLink' },
+    moov: { label:'Moov Money',        badge:'🔵 Moov Money sélectionné',         opLabel:'Numéro Moov Money ShopLink' },
+    celtiis: { label:'Celtiis',              badge:'🟢 Celtiis sélectionné',               opLabel:'Numéro Celtiis ShopLink' }
+  };
+
+  const STEPS = {
+    mtn:  ['Composez <strong>#171#</strong> sur votre téléphone MTN','Choisissez <strong>"Transfert d\'argent"</strong>','Entrez le numéro : <strong>+2290167163481</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN MoMo</strong>'],
+    moov: ['Composez <strong>#555#</strong> sur votre téléphone Moov','Choisissez <strong>"Envoi d\'argent"</strong>','Entrez le numéro : <strong>+2290167163481</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN Flooz</strong>'],
+    celtiis: ['Ouvrez l\'<strong>application Celtiis</strong>','Appuyez sur <strong>"Transfert"</strong>','Entrez le numéro : <strong>+2290167163481</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez le transfert dans l\'app']
+  };
+
+  // Paramètres URL
+  const P       = new URLSearchParams(window.location.search);
+  const payType = P.get('type')   || 'autonome';
+  const payStep = P.get('step')   || 'full';
+  const payAmt  = parseInt(P.get('amount')) || 4000;
+  let   selOp   = 'mtn';
+
+  function init() {
+    const fmt = payAmt.toLocaleString('fr-FR') + ' FCFA';
+    document.getElementById('r-amount').textContent  = fmt;
+    document.getElementById('btn-amt').textContent   = fmt;
+    document.getElementById('send-amount').textContent = fmt;
+    if (payType === 'premium') {
+      document.getElementById('r-service').textContent = 'Service Premium';
+      document.getElementById('r-plan').textContent    = 'ShopLink Pro';
+      if (payStep === 'acompte') {
+        document.getElementById('r-step-row').style.display = 'flex';
+        document.getElementById('r-acompte').style.display  = 'block';
+      }
+    }
+    // Pré-remplir utilisateur
+    const u = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+    if (u.name)  document.getElementById('pay-name').value  = u.name;
+    if (u.email) document.getElementById('pay-email').value = u.email;
+    if (u.phone) document.getElementById('pay-phone').value = toDisplay(u.phone);
+    renderSteps('mtn');
+
+    // Add click listener to pay button
+    document.getElementById('pay-btn').addEventListener('click', submit);
+  }
+
+  function formatPhone(input) {
+    let v = input.value.replace(/\D/g,'');
+    if (v.startsWith('229')) v = v.slice(3);
+    v = v.slice(0,10);
+    let f = '';
+    for (let i=0;i<v.length;i++) {
+      if (i===2||i===4||i===6||i===8) f+=' ';
+      f+=v[i];
+    }
+    input.value = v.length ? '+229 '+f : '';
+  }
+
+  function toDisplay(phone) {
+    const d = phone.replace(/\D/g,'').replace(/^229/,'').slice(0,10).padEnd(10,'X');
+    return '+229 '+d.slice(0,2)+' '+d.slice(2,4)+' '+d.slice(4,6)+' '+d.slice(6,8)+' '+d.slice(8,10);
+  }
+
+  function toRaw(phone) {
+    const d = phone.replace(/\D/g,'');
+    return d.startsWith('229') ? d : '229'+d;
+  }
+
+  function selectOp(op) {
+    selOp = op;
+    ['mtn','moov','celtiis'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
+    document.getElementById('op-badge').textContent   = OPS[op].badge;
+    document.getElementById('op-label').textContent   = OPS[op].opLabel;
+    document.getElementById('r-op').textContent       = OPS[op].label;
+    renderSteps(op);
+  }
+
+  function renderSteps(op) {
+    const list = document.getElementById('steps-list');
+    list.innerHTML = '';
+    STEPS[op].forEach((text, i) => {
+      const d = document.createElement('div');
+      d.className = 'payment-step';
+      d.innerHTML = `<div class="step-badge">${i+1}</div><div class="step-text">${text}</div>`;
+      list.appendChild(d);
+    });
+    const sa = list.querySelector('#sa');
+    if (sa) sa.textContent = payAmt.toLocaleString('fr-FR') + ' FCFA';
+  }
+
+  function copyNumber() {
+    const textArea = document.createElement('textarea');
+    textArea.value = OWNER_NUMBER;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+      document.execCommand('copy');
+      const b = document.getElementById('copy-btn');
+      b.textContent='• Copié !'; b.classList.add('copied');
+      setTimeout(()=>{ b.textContent='📋 Copier'; b.classList.remove('copied'); },2500);
+    } catch (err) {
+      alert('Numéro : '+OWNER_NUMBER);
+    }
+    
+    document.body.removeChild(textArea);
+  }
+
+  async function submit() {
+    const name  = document.getElementById('pay-name').value.trim();
+    const phone = document.getElementById('pay-phone').value.trim();
+    const email = document.getElementById('pay-email').value.trim();
+    const token = localStorage.getItem('shoplink_token');
+    const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+    const site = JSON.parse(localStorage.getItem('shoplink_site') || 'null');
+    
+    console.log('Submit payment:', { name, phone, email, token, user, site });
+    
+    let ok = true;
+
+    if (!name)                          { setE('err-name','Nom requis'); ok=false; } else clrE('err-name');
+    if (!phone||phone.replace(/\D/g,'').length<11) { setE('err-phone','Numéro invalide — Format : +229 01 XX XX XX'); ok=false; } else clrE('err-phone');
+    if (!email||!email.includes('@'))   { setE('err-email','Email invalide'); ok=false; } else clrE('err-email');
+    
+    // Disable token/site validation for testing
+    // if (!token || !user.id)             { setE('err-ref','Reconnectez-vous avant de payer'); ok=false; }
+    // if (payType === 'autonome' && (!site || !site.id)) { setE('err-ref','Aucun site brouillon trouve. Reprenez depuis l inscription.'); ok=false; }
+    
+    if (!ok) {
+      console.log('Validation failed');
+      return;
+    }
+
+    document.getElementById('loading-overlay').classList.add('show');
+    document.getElementById('pay-btn').disabled = true;
+
+    const body = {
+      userId: user.id || 'demo-user',
+      name,
+      phone: toRaw(phone),
+      email,
+      type: payType,
+      step: payStep,
+      amount: payAmt,
+      method: selOp,
+      reference: 'AUTO-' + Date.now(),
+      siteId: site && site.id ? site.id : '',
+      siteName: site && site.name ? site.name : '',
+      slogan: site && site.slogan ? site.slogan : '',
+      siteDescription: site && site.description ? site.description : '',
+      whatsappNumber: site && site.whatsapp ? site.whatsapp : toRaw(phone),
+      secondaryPhone: site && site.secondaryPhone ? site.secondaryPhone : '',
+      address: site && site.address ? site.address : '',
+      activityType: site && site.activityType ? site.activityType : '',
+      primaryColor: site && site.primaryColor ? site.primaryColor : '',
+      secondaryColor: site && site.secondaryColor ? site.secondaryColor : '',
+      logo: site && site.logo ? site.logo : ''
+    };
+
+    console.log('Sending payment request:', body);
+
+    try {
+      const apiBase = 'http://localhost:5000/api';
+      const res = await fetch(apiBase + '/payments/initiate',{
+        method:'POST',
+        headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      console.log('Payment response:', data);
+      document.getElementById('loading-overlay').classList.remove('show');
+      if (!res.ok) {
+        setE('err-ref', data.message || 'Impossible de lancer le paiement');
+        document.getElementById('pay-btn').disabled = false;
+        return;
+      }
+      
+      // If payment is auto-validated (testing), show success page
+      if (data.siteSlug) {
+        showSuccess(data.siteSlug);
+      } else {
+        showPending({
+          ...body,
+          paymentId: data.payment && data.payment.id ? data.payment.id : '',
+          paymentReference: data.payment && data.payment.reference ? data.payment.reference : body.reference
+        });
+      }
+    } catch(e) {
+      console.error('Payment error:', e);
+      document.getElementById('loading-overlay').classList.remove('show');
+      setE('err-ref','Erreur de connexion au serveur: ' + e.message);
+      document.getElementById('pay-btn').disabled = false;
+    }
+  }
+
+  function showPending(data) {
+    document.getElementById('payment-page').style.display = 'none';
+    document.getElementById('pending-page').classList.add('show');
+    document.getElementById('p-name').textContent    = data.name;
+    document.getElementById('p-service').textContent = data.type==='premium'?'Service Premium':'Création autonome';
+    document.getElementById('p-amount').textContent  = data.amount.toLocaleString('fr-FR')+' FCFA';
+    document.getElementById('p-ref').textContent     = data.paymentReference || data.reference;
+    localStorage.setItem('shoplink_pending', JSON.stringify({...data, at: new Date().toISOString()}));
+  }
+
+  function showSuccess(slug) {
+    document.getElementById('pending-page').classList.remove('show');
+    document.getElementById('success-page').classList.add('show');
+    document.getElementById('s-service').textContent = payType==='premium'?'Service Premium':'Création autonome';
+    document.getElementById('s-amount').textContent  = payAmt.toLocaleString('fr-FR')+' FCFA';
+    if (slug && payType!=='premium') {
+      const siteUrl = 'https://shoplink.bj/'+slug;
+      document.getElementById('s-link').textContent = 'shoplink.bj/'+slug;
+      document.getElementById('s-link').href = siteUrl;
+      document.getElementById('s-site-btn').href = siteUrl;
+    } else {
+      document.getElementById('s-link-row').style.display = 'none';
+      document.getElementById('s-site-btn').href = '/dashboard-client-shoplink.html';
+    }
+  }
+
+  function shareWA() {
+    const slug = document.getElementById('s-link').textContent;
+    const msg  = encodeURIComponent('🛍️ Venez voir ma boutique !\n👉 https://'+slug+'\nCréé avec ShopLink 🇧🇯');
+    window.open('https://wa.me/?text='+msg,'_blank');
+  }
+
+  function setE(id,msg){ document.getElementById(id).textContent=msg; }
+  function clrE(id){ document.getElementById(id).textContent=''; }
+
+  init();
+</script>
+<link rel="stylesheet" href="/css/responsive.css">
+<script src="/js/mobile-nav.js"></script></body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

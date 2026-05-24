@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin | ShopLink</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .admin-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .page-subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .stat-large {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .stat-sub {
+            color: #999;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .notification {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .refresh-btn:hover {
+            background: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div>
+                <div class="logo">ShopLink <span class="admin-badge">ADMIN</span></div>
+            </div>
+            <nav>
+                <a href="index.html">Accueil</a>
+                <a href="FAQ.html">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <h1>Dashboard Administrateur</h1>
+            <p class="page-subtitle">💰 Gestion des paiements et clients créés automatiquement</p>
+        </div>
+
+        <!-- Notifications -->
+        <div id="notifications-container"></div>
+
+        <!-- Stats principales -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>💳 Paiements Validés</h2>
+                <div class="stat-large" id="stat-validated">-</div>
+                <div class="stat-label">Paiements reçus et validés</div>
+                <div class="stat-sub">Montant total: <strong id="stat-total-amount">-</strong> FCFA</div>
+            </div>
+
+            <div class="card">
+                <h2>👥 Clients Créés</h2>
+                <div class="stat-large" id="stat-clients">-</div>
+                <div class="stat-label">Sites autonomes créés automatiquement</div>
+                <div class="stat-sub">Après paiement validé</div>
+            </div>
+
+            <div class="card">
+                <h2>⏳ En Attente</h2>
+                <div class="stat-large" id="stat-pending">-</div>
+                <div class="stat-label">Paiements en attente de validation</div>
+                <div class="stat-sub">À valider manuellement</div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Répartition</h2>
+                <div class="stat-label">Autonome: <strong id="stat-autonome">-</strong></div>
+                <div class="stat-sub">Premium: <strong id="stat-premium">-</strong></div>
+            </div>
+        </div>
+
+        <!-- Paiements reçus -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="margin: 0; border: none; padding: 0;">✅ Paiements Validés (Argent Reçu)</h2>
+                <button class="refresh-btn" onclick="loadValidatedPayments()">🔄 Actualiser</button>
+            </div>
+            <div id="validated-payments-container">
+                <div class="empty-state">Chargement des paiements validés...</div>
+            </div>
+        </div>
+
+        <!-- Clients créés automatiquement -->
+        <div class="card" style="margin-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="margin: 0; border: none; padding: 0;">✨ Clients & Sites Créés Automatiquement</h2>
+                <button class="refresh-btn" onclick="loadAutoClients()">🔄 Actualiser</button>
+            </div>
+            <div id="auto-clients-container">
+                <div class="empty-state">Chargement des clients créés...</div>
+            </div>
+        </div>
+
+        <!-- Résumé financier -->
+        <div class="card" style="margin-top: 2rem;">
+            <h2>📈 Résumé Financier</h2>
+            <div id="financial-summary">
+                <div class="empty-state">Chargement des données financières...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        const POLL_INTERVAL = 5000; // Actualiser toutes les 5 secondes
+
+        // Charger les paiements validés
+        async function loadValidatedPayments() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/payments/validated`);
+                const data = await res.json();
+
+                if (data.success && data.payments.length > 0) {
+                    let html = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Type</th>
+                                    <th>Montant</th>
+                                    <th>Provider</th>
+                                    <th>Transaction ID</th>
+                                    <th>Validé le</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    data.payments.forEach(p => {
+                        const date = new Date(p.validatedAt || p.updatedAt).toLocaleDateString('fr-FR');
+                        html += `
+                            <tr>
+                                <td><strong>${p.clientName || 'Client'}</strong></td>
+                                <td><span class="badge ${p.type === 'autonome' ? 'badge-success' : 'badge-warning'}">${p.type}</span></td>
+                                <td style="font-weight: bold; color: #667eea;">${p.amount} FCFA</td>
+                                <td>${p.mobileMoneyProvider || 'N/A'}</td>
+                                <td style="font-family: monospace; font-size: 0.9rem;">${p.transactionId || 'N/A'}</td>
+                                <td>${date}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                            </tbody>
+                        </table>
+                    `;
+
+                    document.getElementById('validated-payments-container').innerHTML = html;
+
+                    // Mettre à jour les stats
+                    document.getElementById('stat-validated').textContent = data.count;
+                } else {
+                    document.getElementById('validated-payments-container').innerHTML = '<div class="empty-state">Aucun paiement validé pour le moment</div>';
+                    document.getElementById('stat-validated').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('validated-payments-container').innerHTML = '<div class="empty-state">Erreur lors du chargement</div>';
+            }
+        }
+
+        // Charger les clients créés automatiquement
+        async function loadAutoClients() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/auto-created-clients`);
+                const data = await res.json();
+
+                if (data.success && data.clients.length > 0) {
+                    let html = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Email</th>
+                                    <th>Téléphone</th>
+                                    <th>Montant Payé</th>
+                                    <th>Site Créé</th>
+                                    <th>Provider</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    data.clients.forEach(c => {
+                        const siteName = c.site?.name || 'Site en création...';
+                        const siteStatus = c.site?.status || 'pending';
+                        const date = new Date(c.validatedAt).toLocaleDateString('fr-FR');
+                        
+                        html += `
+                            <tr>
+                                <td><strong>${c.clientName}</strong></td>
+                                <td>${c.email}</td>
+                                <td>${c.phone}</td>
+                                <td style="font-weight: bold; color: #28a745;">${c.amount} FCFA</td>
+                                <td>${siteName}</td>
+                                <td><span class="badge badge-info">${c.provider}</span></td>
+                                <td><span class="badge badge-success">✓ ${date}</span></td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                            </tbody>
+                        </table>
+                    `;
+
+                    document.getElementById('auto-clients-container').innerHTML = html;
+
+                    // Mettre à jour les stats
+                    document.getElementById('stat-clients').textContent = data.count;
+                } else {
+                    document.getElementById('auto-clients-container').innerHTML = '<div class="empty-state">Aucun client créé pour le moment</div>';
+                    document.getElementById('stat-clients').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('auto-clients-container').innerHTML = '<div class="empty-state">Erreur lors du chargement</div>';
+            }
+        }
+
+        // Charger le résumé financier
+        async function loadFinancialSummary() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/payments/summary`);
+                const data = await res.json();
+
+                if (data.success) {
+                    const s = data.summary;
+                    const html = `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+                                <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">Montant Total Encaissé</div>
+                                <div style="font-size: 2rem; font-weight: bold; color: #28a745;">${new Intl.NumberFormat('fr-FR').format(s.totalAmount)} FCFA</div>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+                                <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">Autonome</div>
+                                <div style="font-size: 2rem; font-weight: bold; color: #667eea;">${s.autonomeCount}</div>
+                                <div style="color: #999; font-size: 0.85rem;">Total: ${new Intl.NumberFormat('fr-FR').format(s.autonomeTotal)} FCFA</div>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+                                <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">Premium (Acomptes)</div>
+                                <div style="font-size: 2rem; font-weight: bold; color: #764ba2;">${s.premiumCount}</div>
+                                <div style="color: #999; font-size: 0.85rem;">Total: ${new Intl.NumberFormat('fr-FR').format(s.premiumTotal)} FCFA</div>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('financial-summary').innerHTML = html;
+                    document.getElementById('stat-total-amount').textContent = new Intl.NumberFormat('fr-FR').format(s.totalAmount);
+                    document.getElementById('stat-autonome').textContent = s.autonomeCount;
+                    document.getElementById('stat-premium').textContent = s.premiumCount;
+                    document.getElementById('stat-pending').textContent = '0'; // À implémenter
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Charger au démarrage
+        window.addEventListener('load', () => {
+            loadValidatedPayments();
+            loadAutoClients();
+            loadFinancialSummary();
+
+            // Actualiser périodiquement
+            setInterval(() => {
+                loadValidatedPayments();
+                loadAutoClients();
+                loadFinancialSummary();
+            }, POLL_INTERVAL);
+        });
+    </script>
+</body>
+</html>

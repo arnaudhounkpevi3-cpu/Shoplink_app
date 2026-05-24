@@ -1,0 +1,567 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Public - ShopLink</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .site-header {
+      padding: 2rem 1rem;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+      background: white;
+    }
+
+    .site-header-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      border-radius: 8px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #999;
+    }
+
+    .site-header-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .site-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .site-header .slogan {
+      font-size: 1.1rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .site-header .description {
+      font-size: 0.95rem;
+      color: #888;
+      max-width: 600px;
+      margin: 1rem auto;
+    }
+
+    .site-contact {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .contact-btn-whatsapp {
+      background: #25d366;
+      color: white;
+    }
+
+    .contact-btn-whatsapp:hover {
+      background: #1fa851;
+      transform: translateY(-2px);
+    }
+
+    .contact-btn-phone {
+      background: #0085cc;
+      color: white;
+    }
+
+    .contact-btn-phone:hover {
+      background: #0073b2;
+      transform: translateY(-2px);
+    }
+
+    .products-section {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .products-title {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 250px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #ddd;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-content {
+      padding: 1.5rem;
+    }
+
+    .product-category {
+      display: inline-block;
+      font-size: 0.75rem;
+      background: #f0f0f0;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-name {
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
+      font-weight: 600;
+    }
+
+    .product-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+      color: #d9643a;
+    }
+
+    .product-description {
+      font-size: 0.9rem;
+      color: #666;
+      margin: 1rem 0;
+      line-height: 1.4;
+    }
+
+    .product-action {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .btn-order {
+      flex: 1;
+      padding: 0.75rem;
+      background: #25d366;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-order:hover {
+      background: #1fa851;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      font-size: 1.1rem;
+      color: #666;
+    }
+
+    .error {
+      background: #fee;
+      border: 1px solid #fcc;
+      color: #c33;
+      padding: 1rem;
+      border-radius: 6px;
+      margin: 2rem auto;
+      max-width: 600px;
+    }
+
+    .footer {
+      margin-top: 3rem;
+      padding: 2rem;
+      background: white;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      color: #999;
+    }
+
+    .footer a {
+      color: #d9643a;
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .site-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-btn {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
+</head>
+<body>
+  <div id="app">
+    <div class="loading">Chargement du site...</div>
+  </div>
+
+  <script src="/js/api-config.js"></script>
+  <script>
+    const API_BASE = window.SHOPLINK_API_BASE
+
+    // Récupérer le slug depuis l'URL
+    function getSlug() {
+      const path = window.location.pathname
+      const slug = path.split('/').pop()
+      return slug || 'boutique-test'
+    }
+
+    // Formater le prix
+    function formatPrice(price) {
+      if (!price) return 'Prix non défini'
+      return new Intl.NumberFormat('fr-FR').format(Number(price)) + ' FCFA'
+    }
+
+    // Lancer la commande WhatsApp
+    function orderOnWhatsApp(whatsappLink) {
+      if (whatsappLink && whatsappLink !== '#') {
+        window.open(whatsappLink, '_blank')
+      }
+    }
+
+    // Appeler le téléphone
+    function callPhone(phone) {
+      if (phone) {
+        window.location.href = `tel:${phone}`
+      }
+    }
+
+    // Charger et afficher le site
+    async function loadSite() {
+      try {
+        const slug = getSlug()
+        const response = await fetch(`${API_BASE}/public/${slug}`)
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Site non trouvé')
+        }
+
+        // Track site visit
+        await trackVisit(data.site.id)
+
+        // Store siteId for time tracking
+        window.currentSiteId = data.site.id
+
+        renderSite(data.site, data.products || [])
+      } catch (error) {
+        console.error('Erreur:', error)
+        document.getElementById('app').innerHTML = `
+          <div class="error">
+            <strong>Erreur :</strong> ${error.message}
+          </div>
+        `
+      }
+    }
+
+    // Get visitor ID (persistent across sessions)
+    function getVisitorId() {
+      let visitorId = localStorage.getItem('shoplink_visitor_id')
+      if (!visitorId) {
+        visitorId = 'visitor-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+        localStorage.setItem('shoplink_visitor_id', visitorId)
+      }
+      return visitorId
+    }
+
+    // Get session ID (resets on browser close)
+    function getSessionId() {
+      let sessionId = sessionStorage.getItem('shoplink_session_id')
+      if (!sessionId) {
+        sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+        sessionStorage.setItem('shoplink_session_id', sessionId)
+      }
+      return sessionId
+    }
+
+    // Check if WhatsApp click was already counted recently (24h)
+    function hasClickedRecently(productId) {
+      const key = `whatsapp_click_${productId}`
+      const lastClick = localStorage.getItem(key)
+      if (!lastClick) return false
+      
+      const hoursSinceClick = (Date.now() - parseInt(lastClick)) / (1000 * 60 * 60)
+      return hoursSinceClick < 24
+    }
+
+    // Track site visit
+    async function trackVisit(siteId) {
+      try {
+        await fetch(`${API_BASE}/tracking/visit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            siteId,
+            sessionId: getSessionId(),
+            visitorId: getVisitorId(),
+            referrer: document.referrer,
+            userAgent: navigator.userAgent
+          })
+        })
+      } catch (error) {
+        console.error('Error tracking visit:', error)
+      }
+    }
+
+    // Track WhatsApp click with deduplication
+    async function trackWhatsAppClick(siteId, productId = null) {
+      // Check if already clicked recently for this product
+      if (productId && hasClickedRecently(productId)) {
+        console.log('Clic déjà compté récemment pour ce produit')
+        return
+      }
+      
+      try {
+        await fetch(`${API_BASE}/tracking/whatsapp-click`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            siteId, 
+            productId,
+            sessionId: getSessionId(),
+            visitorId: getVisitorId()
+          })
+        })
+        
+        // Mark as clicked for deduplication
+        if (productId) {
+          localStorage.setItem(`whatsapp_click_${productId}`, Date.now())
+        }
+      } catch (error) {
+        console.error('Error tracking WhatsApp click:', error)
+      }
+    }
+
+    // Track product view
+    async function trackProductView(siteId, productId) {
+      try {
+        await fetch(`${API_BASE}/tracking/product-view`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            siteId, 
+            productId,
+            sessionId: getSessionId(),
+            visitorId: getVisitorId()
+          })
+        })
+      } catch (error) {
+        console.error('Error tracking product view:', error)
+      }
+    }
+
+    // Track link share
+    async function trackLinkShare(siteId, platform) {
+      try {
+        await fetch(`${API_BASE}/tracking/link-share`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            siteId,
+            platform,
+            sessionId: getSessionId(),
+            visitorId: getVisitorId()
+          })
+        })
+      } catch (error) {
+        console.error('Error tracking link share:', error)
+      }
+    }
+
+    // Track time spent on page
+    let startTime = Date.now()
+    window.addEventListener('beforeunload', () => {
+      const timeSpent = Date.now() - startTime
+      if (timeSpent > 2000) { // Only track if spent more than 2 seconds
+        navigator.sendBeacon(`${API_BASE}/tracking/time-spent`, JSON.stringify({
+          siteId: window.currentSiteId,
+          timeSpent,
+          sessionId: getSessionId(),
+          visitorId: getVisitorId()
+        }))
+      }
+    })
+
+    // Afficher le site
+    function renderSite(site, products) {
+      const app = document.getElementById('app')
+
+      // En-tête du site
+      let headerHTML = `
+        <div class="site-header">
+      `
+
+      if (site.logo) {
+        headerHTML += `<div class="site-header-logo"><img src="${site.logo}" alt="Logo" /></div>`
+      } else {
+        headerHTML += `<div class="site-header-logo">🏪</div>`
+      }
+
+      headerHTML += `
+          <h1>${site.name}</h1>
+      `
+
+      if (site.slogan) {
+        headerHTML += `<div class="slogan">${site.slogan}</div>`
+      }
+
+      if (site.description) {
+        headerHTML += `<div class="description">${site.description}</div>`
+      }
+
+      headerHTML += `<div class="site-contact">`
+
+      // Bouton WhatsApp
+      if (site.whatsappLink) {
+        headerHTML += `
+          <a class="contact-btn contact-btn-whatsapp"
+             href="${site.whatsappLink}"
+             target="_blank"
+             rel="noopener noreferrer"
+             onclick="trackWhatsAppClick('${site.id}')">
+            💬 WhatsApp
+          </a>
+        `
+      }
+
+      // Bouton téléphone secondaire
+      if (site.secondaryPhone) {
+        headerHTML += `
+          <button class="contact-btn contact-btn-phone"
+                  onclick="callPhone('${site.secondaryPhone}')">
+            📞 Appeler
+          </button>
+        `
+      }
+
+      headerHTML += `</div></div>`
+
+      app.innerHTML = headerHTML
+
+      // Produits
+      if (products.length > 0) {
+        const productsHTML = `
+          <div class="products-section">
+            <h2 class="products-title">Nos Produits</h2>
+            <div class="products-grid">
+              ${products
+                .map(
+                  (product) => `
+                <div class="product-card" onclick="trackProductView('${site.id}', '${product.id}')">
+                  <div class="product-image">
+                    ${
+                      product.image
+                        ? `<img src="${product.image}" alt="${product.name}" />`
+                        : '📦'
+                    }
+                  </div>
+                  <div class="product-content">
+                    ${product.category ? `<span class="product-category">${product.category}</span>` : ''}
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-price">${formatPrice(product.price)}</div>
+                    <p class="product-description">${product.description || ''}</p>
+                    <div class="product-action">
+                      <button class="btn-order"
+                              onclick="event.stopPropagation(); trackWhatsAppClick('${site.id}', '${product.id}'); orderOnWhatsApp('${product.whatsappLink}')">
+                        🛒 Commander
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `,
+                )
+                .join('')}
+            </div>
+          </div>
+        `
+        app.innerHTML += productsHTML
+      }
+
+      // Footer
+      app.innerHTML += `
+        <div class="footer">
+          <p>Créé avec ShopLink - Plateforme de digitalisation</p>
+          <p><a href="/index.html">Retour à l'accueil</a></p>
+        </div>
+      `
+    }
+
+    // Charger au démarrage
+    loadSite()
+  </script>
+  <script src="/js/mobile-nav.js"></script>
+</body>
+</html>
+

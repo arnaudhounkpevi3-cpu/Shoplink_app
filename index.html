@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Base de site vitrine moderne, responsive et facile a personnaliser."
+    />
+    <title>Studio Horizon</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#top">
+          <span class="brand-mark">SH</span>
+          <span class="brand-text">Studio Horizon</span>
+        </a>
+
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+        >
+          Menu
+        </button>
+
+        <nav class="site-nav" id="site-nav">
+          <a href="#services">Services</a>
+          <a href="#apropos">A propos</a>
+          <a href="#projets">Projets</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="hero reveal">
+          <div class="hero-copy">
+            <p class="eyebrow">Site vitrine moderne</p>
+            <h1>Une presence web claire, forte et memorable.</h1>
+            <p class="hero-text">
+              Cette base est prete pour presenter ton activite, tes services et
+              donner envie aux visiteurs de te contacter.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#contact">Demarrer</a>
+              <a class="button button-secondary" href="#projets"
+                >Voir les sections</a
+              >
+            </div>
+          </div>
+
+          <div class="hero-card">
+            <p class="card-label">Positionnement</p>
+            <h2>Simple a modifier, elegant sur mobile, efficace pour convertir.</h2>
+            <ul>
+              <li>Structure propre et lisible</li>
+              <li>Design responsive</li>
+              <li>Animations legeres</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="stats reveal">
+          <article>
+            <strong>01</strong>
+            <span>Une page d'accueil claire</span>
+          </article>
+          <article>
+            <strong>02</strong>
+            <span>Des blocs faciles a remplacer</span>
+          </article>
+          <article>
+            <strong>03</strong>
+            <span>Une base propre pour evoluer ensuite</span>
+          </article>
+        </section>
+
+        <section class="section reveal" id="services">
+          <div class="section-heading">
+            <p class="eyebrow">Services</p>
+            <h2>Ce que ton site peut montrer des maintenant</h2>
+          </div>
+
+          <div class="card-grid">
+            <article class="feature-card">
+              <h3>Presentation</h3>
+              <p>
+                Raconte qui tu es, ce que tu proposes et pourquoi on doit te
+                faire confiance.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <h3>Offres</h3>
+              <p>
+                Mets en avant tes services, tes tarifs ou ta promesse de valeur
+                de maniere claire.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <h3>Contact</h3>
+              <p>
+                Aide les visiteurs a passer a l'action avec un formulaire et
+                des appels a l'action visibles.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section split-section reveal" id="apropos">
+          <div class="section-heading">
+            <p class="eyebrow">A propos</p>
+            <h2>Une histoire claire inspire plus de confiance.</h2>
+            <p>
+              Remplace ce texte par ta mission, ton experience, tes valeurs ou
+              les problemes que tu resols pour tes clients.
+            </p>
+          </div>
+
+          <div class="info-panel">
+            <div>
+              <span class="panel-tag">Mission</span>
+              <p>
+                Construire une image forte avec un message simple et un design
+                qui donne confiance.
+              </p>
+            </div>
+            <div>
+              <span class="panel-tag">Vision</span>
+              <p>
+                Faire de ton site une vitrine qui travaille pour toi, meme
+                quand tu n'es pas en ligne.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section reveal" id="projets">
+          <div class="section-heading">
+            <p class="eyebrow">Projets</p>
+            <h2>Quelques blocs pour montrer ton travail</h2>
+          </div>
+
+          <div class="project-grid">
+            <article class="project-card">
+              <span>Projet 01</span>
+              <h3>Landing page</h3>
+              <p>Une page de presentation concise pour convertir rapidement.</p>
+            </article>
+
+            <article class="project-card">
+              <span>Projet 02</span>
+              <h3>Portfolio</h3>
+              <p>Une vitrine visuelle pour presenter des realisations.</p>
+            </article>
+
+            <article class="project-card">
+              <span>Projet 03</span>
+              <h3>Site de service</h3>
+              <p>Un site structure autour des besoins de tes futurs clients.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section contact-section reveal" id="contact">
+          <div class="section-heading">
+            <p class="eyebrow">Contact</p>
+            <h2>Le prochain objectif: personnaliser ce site avec ton contenu.</h2>
+          </div>
+
+          <form class="contact-form">
+            <label>
+              Nom
+              <input type="text" name="name" placeholder="Ton nom" />
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" placeholder="ton@email.com" />
+            </label>
+            <label>
+              Message
+              <textarea
+                name="message"
+                rows="5"
+                placeholder="Explique ici ton besoin"
+              ></textarea>
+            </label>
+            <button class="button button-primary" type="submit">
+              Envoyer
+            </button>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

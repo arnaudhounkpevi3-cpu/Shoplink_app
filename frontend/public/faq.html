@@ -1,0 +1,581 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAQ - ShopLink</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green: #1a5c38;
+      --green-light: #eef7f1;
+      --green-dark: #0f6e56;
+      --amber: #f59c1a;
+      --amber-light: #fef3de;
+      --dark: #0f1f17;
+      --bg: #fdf6ee;
+      --white: #fff;
+      --border: #e8ddd0;
+      --text: #1a1a1a;
+      --muted: #6b5744;
+      --soft: #9a7d5a;
+      --radius: 12px;
+      --radius-lg: 18px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, #f0ebe0 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    nav {
+      background: var(--green);
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--amber);
+      border-radius: 50%;
+    }
+
+    .nav-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 44px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--dark);
+    }
+
+    .header p {
+      font-size: 16px;
+      color: var(--soft);
+    }
+
+    .faq-section {
+      margin-bottom: 50px;
+    }
+
+    .faq-section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .faq-section-title::before {
+      content: '';
+      width: 4px;
+      height: 22px;
+      background: var(--amber);
+      border-radius: 2px;
+    }
+
+    .faq-item {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+      border-color: var(--amber);
+      box-shadow: 0 4px 12px rgba(245, 156, 26, 0.15);
+    }
+
+    .faq-question {
+      padding: 20px 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .faq-question-text {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .faq-toggle {
+      width: 24px;
+      height: 24px;
+      background: var(--green-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      font-weight: bold;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .faq-item.active .faq-toggle {
+      background: var(--amber-light);
+      color: var(--amber);
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 0 24px 20px;
+      color: var(--soft);
+      line-height: 1.7;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .faq-answer strong {
+      color: var(--green);
+    }
+
+    .faq-answer ul {
+      margin: 10px 0 10px 20px;
+    }
+
+    .faq-answer li {
+      margin-bottom: 8px;
+    }
+
+    .price-tag {
+      display: inline-block;
+      background: var(--amber-light);
+      color: var(--dark);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+      color: var(--soft);
+      font-size: 14px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 30px;
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .back-link:hover {
+      color: var(--amber);
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 32px;
+      }
+
+      nav {
+        padding: 0 20px;
+      }
+
+      .faq-question {
+        padding: 16px 18px;
+      }
+
+      .faq-answer {
+        padding: 0 18px 16px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
+</head>
+<body>
+  <nav>
+    <a href="/index.html" class="logo">
+      <span>ShopLink</span>
+      <span class="logo-dot"></span>
+    </a>
+  </nav>
+
+  <div class="container">
+    <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+
+    <div class="header">
+      <h1>FAQ</h1>
+      <p>Trouvez réponses à vos questions les plus fréquentes</p>
+    </div>
+
+    <!-- Section Démarrage -->
+    <div class="faq-section">
+      <h2 class="faq-section-title">Démarrage</h2>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Comment créer mon site ShopLink ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>C'est très simple en 3 étapes :</p>
+          <ul>
+            <li><strong>Créer un compte :</strong> Cliquez sur « Inscription » et remplissez vos coordonnées</li>
+            <li><strong>Créer votre boutique :</strong> Donnez un nom à votre site, un slug (URL), et votre numéro WhatsApp</li>
+            <li><strong>Ajouter des produits :</strong> Listez vos produits avec prix, descriptions et images</li>
+            <li><strong>Payer et publier :</strong> Payez <span class="price-tag">4 000 FCFA</span> pour publier votre site</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Quels sont les tarifs de ShopLink ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>ShopLink propose 2 formules :</strong></p>
+          <ul>
+            <li><strong>Autonome - 4 000 FCFA :</strong> Créez et publiez vous-même votre site en quelques minutes</li>
+            <li><strong>Premium - 5 000 FCFA (acompte) :</strong> Nous créons votre site professionnel pour vous (21 jours normal ou 14 jours urgent)</li>
+          </ul>
+          <p style="margin-top: 10px;">Aucun frais supplémentaire, paiement unique.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Ai-je besoin de compétences techniques ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Non du tout !</strong> ShopLink est conçu pour les utilisateurs sans expérience technique. L'interface est simple et intuitive. Vous pouvez :</p>
+          <ul>
+            <li>Créer votre site en quelques clics</li>
+            <li>Ajouter des produits facilement</li>
+            <li>Modifier vos informations à tout moment</li>
+          </ul>
+          <p style="margin-top: 10px;">Si vous voulez un site plus professionnel, utilisez notre service <strong>Premium</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Paiement -->
+    <div class="faq-section">
+      <h2 class="faq-section-title">Paiement</h2>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Quels modes de paiement acceptez-vous ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>ShopLink accepte les paiements par Mobile Money :</strong></p>
+          <ul>
+            <li><strong>Orange Money</strong> (Bénin)</li>
+            <li><strong>MTN Mobile Money</strong> (Bénin)</li>
+          </ul>
+          <p style="margin-top: 10px;">Entrez simplement votre numéro de téléphone et suivez les étapes pour confirmer le paiement.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Le paiement est-il sécurisé ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Oui, complètement sécurisé !</strong> Nous utilisons :</p>
+          <ul>
+            <li>Chiffrement SSL/TLS pour toutes les données</li>
+            <li>Intégration directe avec les fournisseurs de Mobile Money officiels</li>
+            <li>Aucun stockage de données sensibles</li>
+            <li>Vérification de signature pour chaque transaction</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Que faire si mon paiement échoue ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>Si votre paiement échoue :</p>
+          <ul>
+            <li>Vérifiez que vous avez suffit de crédits Mobile Money</li>
+            <li>Assurez-vous que votre numéro de téléphone est correct</li>
+            <li>Attendez quelques instants et réessayez</li>
+            <li>Si le problème persiste, contactez notre support</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Puis-je obtenir un remboursement ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>Les remboursements sont possibles selon les conditions suivantes :</p>
+          <ul>
+            <li><strong>Paiement autonome (4 000 FCFA) :</strong> Remboursement possible dans les 7 jours</li>
+            <li><strong>Service Premium (5 000 FCFA acompte) :</strong> Remboursement possible avant démarrage des travaux</li>
+          </ul>
+          <p style="margin-top: 10px;">Contactez notre support avec votre email et numéro de transaction.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Fonctionnalités -->
+    <div class="faq-section">
+      <h2 class="faq-section-title">Fonctionnalités</h2>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Puis-je ajouter mon logo et mes couleurs ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Oui, absolument !</strong></p>
+          <ul>
+            <li>Ajoutez votre logo personnalisé</li>
+            <li>Personnalisez les couleurs de votre site</li>
+            <li>Adaptez le design à votre marque</li>
+          </ul>
+          <p style="margin-top: 10px;">Ces options sont disponibles dans la section paramètres de votre tableau de bord.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Comment fonctionnent les commandes via WhatsApp ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>ShopLink intègre WhatsApp pour simplifier les commandes :</strong></p>
+          <ul>
+            <li>Vos clients cliquent sur « Commader » ou « Contacter »</li>
+            <li>Ils sont redirigés vers une conversation WhatsApp avec vous</li>
+            <li>Vous pouvez discuter des détails, prix, livraison, etc.</li>
+            <li>Aucun frais de transaction WhatsApp</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Combien de produits puis-je ajouter ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Illimité !</strong> Vous pouvez ajouter autant de produits que vous le souhaitez. ShopLink s'adapte à la taille de votre catalogue.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Puis-je modifier mes produits après publication ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Oui, à tout moment !</strong> Vous pouvez :</p>
+          <ul>
+            <li>Ajouter de nouveaux produits</li>
+            <li>Modifier les prix et descriptions</li>
+            <li>Changer les images</li>
+            <li>Supprimer les produits épuisés</li>
+          </ul>
+          <p style="margin-top: 10px;">Les modifications sont appliquées immédiatement sur votre site public.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Mon site est-il responsive (mobile-friendly) ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Oui, 100% responsive !</strong> Votre site fonctionne parfaitement sur :</p>
+          <ul>
+            <li>Téléphones mobiles (iOS et Android)</li>
+            <li>Tablettes</li>
+            <li>Ordinateurs de bureau</li>
+          </ul>
+          <p style="margin-top: 10px;">Votre site s'adapte automatiquement à tous les appareils.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Service Premium -->
+    <div class="faq-section">
+      <h2 class="faq-section-title">Service Premium</h2>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Qu'est-ce qui est inclus dans le service Premium ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Notre équipe crée pour vous :</strong></p>
+          <ul>
+            <li>Design professionnel personnalisé</li>
+            <li>Intégration de tous vos produits</li>
+            <li>Optimisation pour les moteurs de recherche (SEO)</li>
+            <li>Intégration des systèmes de paiement</li>
+            <li>Tests complets et support</li>
+          </ul>
+          <p style="margin-top: 10px;">Délai : <strong>21 jours</strong> (normal) ou <strong>14 jours</strong> (urgent)</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Comment fonctionne le paiement du service Premium ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Système en 2 fois :</strong></p>
+          <ul>
+            <li><strong>Acompte initial :</strong> <span class="price-tag">5 000 FCFA</span> pour démarrer</li>
+            <li><strong>Solde final :</strong> À la livraison du site (facturation selon les éléments)</li>
+          </ul>
+          <p style="margin-top: 10px;">Vous payez seulement ce que vous commandez.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Puis-je changer de plan après le paiement ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Oui, c'est possible !</strong> Contactez notre support pour :</p>
+          <ul>
+            <li>Passer de « Autonome » à « Premium »</li>
+            <li>Modifier les délais (normal → urgent)</li>
+            <li>Ajouter des services supplémentaires</li>
+          </ul>
+          <p style="margin-top: 10px;">Nous ajusterons votre facture en conséquence.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Support -->
+    <div class="faq-section">
+      <h2 class="faq-section-title">Support & Contact</h2>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Comment puis-je contacter le support ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>Vous pouvez nous contacter via :</p>
+          <ul>
+            <li>Email : support@shoplink.bj</li>
+            <li>WhatsApp : +229 67 16 34 81</li>
+            <li>Téléphone : +229 0167163481</li>
+            <li>Formulaire sur notre site</li>
+          </ul>
+          <p style="margin-top: 10px;">Notre équipe répond en moins de 24h.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Y a-t-il des frais cachés ?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">
+          <p><strong>Non, aucun frais caché !</strong> Avec ShopLink, vous payez :</p>
+          <ul>
+            <li><strong>Soit</strong> 4 000 FCFA pour l'option autonome</li>
+            <li><strong>Soit</strong> 5 000 FCFA d'acompte pour le service Premium</li>
+          </ul>
+          <p style="margin-top: 10px;">C'est tout. Pas de frais de maintenance, pas d'abonnement mensuel.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2026 ShopLink. Tous droits réservés.</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.faq-item').forEach(item => {
+      const question = item.querySelector('.faq-question');
+      question.addEventListener('click', () => {
+        item.classList.toggle('active');
+      });
+    });
+  </script>
+<script src="/js/mobile-nav.js"></script>
+
+</body>
+</html>
+

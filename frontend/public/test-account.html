@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Créer Compte Test</title>
+  <style>
+    :root{
+      --green:#1a6b4a;
+      --amber:#f59c1a;
+      --dark:#0f1f17;
+      --bg:#fdf6ee;
+      --text:#1a1a1a;
+      --muted:#6b5744;
+      --border:#e8ddd0;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans','Syne',sans-serif;background:radial-gradient(circle at 50% -12%, rgba(26,92,56,0.16), transparent 34%), radial-gradient(circle at 92% 10%, rgba(232,98,10,0.12), transparent 24%), linear-gradient(180deg, #fbfaf6 0%, #f5f0e8 55%, #ffffff 100%);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+    nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;}
+    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;}
+    .container{flex:1;max-width:600px;margin:60px auto;padding:40px;background:#fff;border-radius:16px;border:1px solid var(--border);}
+    h1{font-size:28px;font-weight:800;margin-bottom:12px;color:var(--text);}
+    .subtitle{font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.6;}
+    .info-box{background:var(--green);background-color:rgba(26,107,74,0.1);border:1px solid rgba(26,107,74,0.2);border-radius:12px;padding:16px;margin:24px 0;font-size:13px;line-height:1.7;color:var(--text);}
+    .info-box strong{color:var(--green);}
+    .btn{display:inline-block;background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:15px;font-weight:500;cursor:pointer;text-decoration:none;text-align:center;transition:all 0.2s;}
+    .btn:hover{background:#155030;transform:translateY(-2px);}
+    .btn-secondary{background:#f0f0f0;color:var(--text);margin-left:10px;}
+    .btn-secondary:hover{background:#e0e0e0;}
+    .loading{display:none;text-align:center;font-size:13px;color:var(--muted);}
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid #ddd;border-top-color:var(--green);border-radius:50%;animation:spin 0.6s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .success{display:none;background:rgba(26,107,74,0.1);border:1px solid rgba(26,107,74,0.3);border-radius:12px;padding:20px;margin-top:20px;color:var(--green);}
+    .success h3{margin-bottom:10px;font-size:16px;}
+    .success p{font-size:13px;line-height:1.6;margin:8px 0;}
+    .code{background:#f5f5f5;border-radius:6px;padding:8px 12px;font-family:monospace;font-size:12px;word-break:break-all;margin:8px 0;}
+  </style>
+  <link rel="stylesheet" href="/css/responsive.css"/>
+</head>
+<body>
+
+<nav>
+  <a href="/index.html" class="logo"><span class="logo-dot"></span>ShopLink</a>
+  <div style="color:#fff;font-size:13px;">Mode Test</div>
+</nav>
+
+<div class="container">
+  <h1>🧪 Compte Test et Démo</h1>
+  <p class="subtitle">
+    Créez instantanément un compte de test pour explorer ShopLink et voir comment votre boutique s'affiche dans le dashboard client.
+    <strong>Aucun paiement n'est requis.</strong>
+  </p>
+
+  <div class="info-box">
+    <strong>✨ Ce qui est inclus dans le compte test:</strong><br>
+    • Un compte utilisateur complètement fonctionnel<br>
+    • Un site de boutique déjà créé et publié<br>
+    • 3 produits d'exemple<br>
+    • Accès au dashboard client<br>
+    • Pas de paiement requis<br>
+  </div>
+
+  <div style="text-align:center;">
+    <button class="btn" id="create-btn" onclick="createTestAccount()">
+      🚀 Créer mon compte test
+    </button>
+    <a href="/index.html" class="btn btn-secondary">← Retour</a>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div style="margin-top:10px;">Création du compte en cours...</div>
+  </div>
+
+  <div class="success" id="success">
+    <h3>✅ Compte test créé avec succès!</h3>
+    <p><strong>Bienvenue sur ShopLink ! 🎉</strong></p>
+    <p style="margin-top:16px;"><strong>Vos identifiants de test:</strong></p>
+    <p>Email: <span class="code" id="email-display"></span></p>
+    <p>Mot de passe: (non requis en mode test)</p>
+    <p style="margin-top:16px;"><strong>Liens directs:</strong></p>
+    <p>
+      <a href="/index.html" style="color:var(--green);text-decoration:none;font-weight:500;">📊 Accéder au Portail ShopLink</a>
+    </p>
+    <p style="margin-top:16px;font-size:12px;color:var(--muted);">
+      (Les données de connexion sont automatiquement stockées. Il suffit de cliquer sur le lien ci-dessus.)
+    </p>
+  </div>
+</div>
+
+<script>
+  async function createTestAccount() {
+    const btn = document.getElementById('create-btn');
+    const loading = document.getElementById('loading');
+    const success = document.getElementById('success');
+
+    // Masquer les éléments précédents
+    btn.style.display = 'none';
+    success.style.display = 'none';
+    loading.style.display = 'block';
+
+    try {
+      const res = await fetch('/api/auth/test-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // Stocker le token et l'utilisateur
+        localStorage.setItem('shoplink_token', data.token);
+        localStorage.setItem('shoplink_user', JSON.stringify(data.user));
+
+        // Afficher le succès
+        loading.style.display = 'none';
+        success.style.display = 'block';
+        document.getElementById('email-display').textContent = data.user.email;
+
+        // Redirection après 3 secondes
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 3000);
+      } else {
+        throw new Error(data.message || 'Erreur lors de la création');
+      }
+    } catch (error) {
+      loading.style.display = 'none';
+      btn.style.display = 'inline-block';
+      alert('❌ Erreur: ' + error.message);
+    }
+  }
+</script>
+<script src="/js/mobile-nav.js"></script>
+
+</body>
+</html>
+
