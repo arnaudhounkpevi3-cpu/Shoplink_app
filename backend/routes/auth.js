@@ -360,7 +360,7 @@ router.post('/reset-password-form', async (req, res) => {
       token: token || '',
       error: message,
     })
-    return res.redirect(`${frontendBase}/reset-password.html?${params.toString()}`)
+    return res.redirect(303, `${frontendBase}/reset-password.html?${params.toString()}`)
   }
 
   if (!token || !newPassword) {
@@ -392,7 +392,7 @@ router.post('/reset-password-form', async (req, res) => {
   await repo().updateUser(user.id, { passwordHash })
   resetTokens.delete(token)
 
-  return res.redirect(`${frontendBase}/login.html?passwordReset=success`)
+  return res.redirect(303, `${frontendBase}/login.html?passwordReset=success`)
 })
 
 module.exports = router
