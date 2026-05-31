@@ -2,10 +2,42 @@ require('dotenv').config()
 
 const os = require('os')
 
-const { initRepository, repo } = require('./data/repository')
+const { initRepository, repo, isMongo, isSupabase } = require('./data/repository')
+
+async function ensureAdminUser() {
+  const bcrypt = require('bcryptjs')
+  const adminEmail = (process.env.ADMIN_EMAIL || 'arnaudhounkpevi3@gmail.com').toLowerCase()
+  const adminPassword = process.env.ADMIN_PASSWORD || '/Shoplink@2007'
+  const existingAdmin = await repo().findUserByEmail(adminEmail)
+
+  if (!existingAdmin) {
+    const passwordHash = await bcrypt.hash(adminPassword, 10)
+    await repo().createUser({
+      id: `admin-${Date.now()}`,
+      name: process.env.ADMIN_NAME || 'Administrateur ShopLink',
+      email: adminEmail,
+      phone: process.env.ADMIN_PHONE || '0167163481',
+      role: 'admin',
+      passwordHash,
+      createdAt: new Date().toISOString(),
+    })
+    console.log(`✅ Compte admin créé: ${adminEmail}`)
+    return
+  }
+
+  if (existingAdmin.role !== 'admin') {
+    const passwordHash = await bcrypt.hash(adminPassword, 10)
+    await repo().updateUser(existingAdmin.id, {
+      role: 'admin',
+      passwordHash,
+    })
+    console.log(`✅ Compte admin activé: ${adminEmail}`)
+  }
+}
 
 async function main() {
   await initRepository()
+  await ensureAdminUser()
 
   const express = require('express')
   const cors = require('cors')
@@ -22,6 +54,7 @@ async function main() {
   const ticketsRoutes = require('./routes/tickets')
   const usersRoutes = require('./routes/users')
   const trackingRoutes = require('./routes/tracking')
+  const { requireAuth, requireAdmin } = require('./middleware/auth')
 
   const app = express()
   const server = http.createServer(app)
@@ -103,12 +136,32 @@ async function main() {
     })
   })
 
+  app.get('/api/health/db', async (_req, res) => {
+    try {
+      const users = await repo().listUsers()
+      res.json({
+        success: true,
+        message: 'Base de données accessible',
+        database: isSupabase() ? 'supabase' : isMongo() ? 'mongodb' : 'json',
+        usersCount: users.length,
+        time: new Date().toISOString(),
+      })
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Base de données inaccessible',
+        error: error.message,
+        time: new Date().toISOString(),
+      })
+    }
+  })
+
   app.use('/api/auth', authRoutes)
   app.use('/api/sites', siteRoutes)
   app.use('/api/products', productRoutes)
   app.use('/api/payment', paymentRoutes)
   app.use('/api/payments', paymentRoutes)
-  app.use('/api/admin', adminRoutes)
+  app.use('/api/admin', requireAuth, requireAdmin, adminRoutes)
   app.use('/api/public', publicRoutes)
   app.use('/api/tickets', ticketsRoutes)
   app.use('/api/users', usersRoutes)

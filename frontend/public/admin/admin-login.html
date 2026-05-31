@@ -76,6 +76,16 @@
   </div>
 
   <script>
+    const API_BASE = `${window.location.protocol}//${window.location.hostname}:5000/api`;
+
+    async function apiFetch(path, options = {}) {
+      try {
+        return await fetch(`${API_BASE}${path}`, options);
+      } catch (error) {
+        return fetch(`/api${path}`, options);
+      }
+    }
+
     // Check if already logged in (persistent session)
     const adminLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
     const adminToken = localStorage.getItem('shoplink_token');
@@ -84,33 +94,6 @@
       // Auto-redirect to dashboard if already logged in
       window.location.href = '/admin/admin-dashboard.html';
     }
-
-    // Fetch admin summary for notifications
-    async function fetchAdminNotifications() {
-      try {
-        const res = await fetch('http://localhost:5000/api/admin/payments/pending');
-        const data = await res.json();
-
-        if (data.success && data.count > 0) {
-          const notificationsSection = document.getElementById('notifications-section');
-          const notificationsList = document.getElementById('notifications-list');
-
-          notificationsList.innerHTML = `
-            <div style="display:flex;align-items:center;gap:8px;font-size:12px;">
-              <span style="color:var(--accent);">💳</span>
-              <span style="color:var(--text);">${data.count} paiement(s) en attente</span>
-            </div>
-          `;
-
-          notificationsSection.style.display = 'block';
-        }
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
-      }
-    }
-
-    // Load notifications on page load
-    fetchAdminNotifications();
 
     // Check if remember me was previously checked
     if (localStorage.getItem('admin_remember_me') === 'true') {
@@ -127,29 +110,34 @@
       const password = document.getElementById('admin-password').value;
       const rememberMe = document.getElementById('remember-me').checked;
 
-      // Hardcoded admin credentials
-      const ADMIN_EMAIL = 'arnaudhounkpevi3@gmail.com';
-      const ADMIN_PASSWORD = '/Shoplink@2007';
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Connexion en cours...';
 
-      if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
-        alert('Accès refusé. Identifiants incorrects.');
+      try {
+        const res = await apiFetch('/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.success || !data.user || data.user.role !== 'admin') {
+          alert(data.message || 'Accès refusé. Compte administrateur requis.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Se connecter';
+          return;
+        }
+
+        localStorage.setItem('shoplink_token', data.token);
+        localStorage.setItem('shoplink_user', JSON.stringify(data.user));
+        localStorage.setItem('admin_logged_in', 'true');
+      } catch (error) {
+        alert('Erreur de connexion au serveur admin: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Se connecter';
         return;
       }
-
-      // Direct authentication with hardcoded credentials
-      const adminUser = {
-        id: 'admin-arnaud',
-        name: 'Arnaud Hounkpevi',
-        email: ADMIN_EMAIL,
-        role: 'admin'
-      };
-
-      // Generate mock token
-      const mockToken = 'admin-token-' + Date.now();
-
-      localStorage.setItem('shoplink_token', mockToken);
-      localStorage.setItem('shoplink_user', JSON.stringify(adminUser));
-      localStorage.setItem('admin_logged_in', 'true');
 
       // Handle remember me - save email only for security
       if (rememberMe) {

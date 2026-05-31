@@ -326,21 +326,7 @@
     }
     
     if (email === 'admin@shoplink.bj') {
-      // Demo admin login
-      localStorage.setItem('shoplink_token', 'demo-token-admin');
-      localStorage.setItem('shoplink_user', JSON.stringify({
-        id: 'demo-admin',
-        name: 'Admin Demo',
-        email: 'admin@shoplink.bj',
-        role: 'admin'
-      }));
-      localStorage.setItem('demo_mode', 'true');
-      
-      document.getElementById('success-box').classList.add('show');
-      
-      setTimeout(() => {
-        window.location.href = '/admin/admin-dashboard.html';
-      }, 1000);
+      window.location.href = '/admin/admin-login.html';
       return;
     }
 
