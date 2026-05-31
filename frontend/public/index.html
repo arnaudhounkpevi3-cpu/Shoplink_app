@@ -6,17 +6,6 @@
   <title>ShopLink — Portail Principal</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/css/responsive.css"/>
-  <script>
-    (function () {
-      var params = new URLSearchParams(window.location.search);
-      var wantsPortal = params.get('portal') === '1';
-      var isDesktop = window.matchMedia('(min-width: 901px)').matches;
-
-      if (isDesktop && !wantsPortal) {
-        window.location.replace('/homepage-shoplink.html');
-      }
-    })();
-  </script>
   <style>
     :root {
       --green: #1a5c38;
