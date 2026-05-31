@@ -6,9 +6,10 @@ const { initRepository, repo, isMongo, isSupabase } = require('./data/repository
 
 async function ensureAdminUser() {
   const bcrypt = require('bcryptjs')
-  const adminEmail = (process.env.ADMIN_EMAIL || 'arnaudhounkpevi3@gmail.com').toLowerCase()
+  const adminEmail = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase()
   const adminPassword = process.env.ADMIN_PASSWORD || '/Shoplink@2007'
   const existingAdmin = await repo().findUserByEmail(adminEmail)
+  const legacyAdminEmail = 'arnaudhounkpevi3@gmail.com'
 
   if (!existingAdmin) {
     const passwordHash = await bcrypt.hash(adminPassword, 10)
@@ -22,16 +23,21 @@ async function ensureAdminUser() {
       createdAt: new Date().toISOString(),
     })
     console.log(`✅ Compte admin créé: ${adminEmail}`)
-    return
-  }
-
-  if (existingAdmin.role !== 'admin') {
+  } else {
     const passwordHash = await bcrypt.hash(adminPassword, 10)
     await repo().updateUser(existingAdmin.id, {
       role: 'admin',
       passwordHash,
     })
-    console.log(`✅ Compte admin activé: ${adminEmail}`)
+    console.log(`✅ Compte admin synchronisé: ${adminEmail}`)
+  }
+
+  if (legacyAdminEmail !== adminEmail) {
+    const legacyAdmin = await repo().findUserByEmail(legacyAdminEmail)
+    if (legacyAdmin && legacyAdmin.role === 'admin') {
+      await repo().updateUser(legacyAdmin.id, { role: 'user' })
+      console.log(`✅ Ancien compte admin rétrogradé en utilisateur: ${legacyAdminEmail}`)
+    }
   }
 }
 

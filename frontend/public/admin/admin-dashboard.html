@@ -946,6 +946,33 @@
     window.location.href = '/admin/admin-login.html';
   }
 
+  async function validateAdminSession() {
+    const token = localStorage.getItem('shoplink_token');
+    if (!token) return false;
+
+    try {
+      const res = await apiFetch('/auth/me', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      const email = (data.user && data.user.email || '').toLowerCase();
+      const isValidAdmin = res.ok && data.success && data.user && data.user.role === 'admin' && email === 'supportshoplink@gmail.com';
+
+      if (!isValidAdmin) {
+        adminLogout();
+        return false;
+      }
+
+      localStorage.setItem('shoplink_user', JSON.stringify(data.user));
+      localStorage.setItem('admin_logged_in', 'true');
+      return true;
+    } catch (error) {
+      console.error('Admin session validation failed:', error);
+      adminLogout();
+      return false;
+    }
+  }
+
   function switchTabP(id, el) {
     const card = document.getElementById(id).closest('.section-card');
     card.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -1240,7 +1267,7 @@
   }
 
   // Initialize admin dashboard on load
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     // Check admin authentication
     const isAdminLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
     const token = localStorage.getItem('shoplink_token');
@@ -1249,6 +1276,9 @@
       window.location.href = '/admin/admin-login.html';
       return;
     }
+
+    const sessionIsValid = await validateAdminSession();
+    if (!sessionIsValid) return;
 
     // Always fetch real data, no demo mode
     fetchAdminData();

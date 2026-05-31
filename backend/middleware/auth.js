@@ -61,7 +61,9 @@ async function requireAuth(req, res, next) {
 }
 
 function requireAdmin(req, res, next) {
-  if (!req.user || req.user.role !== 'admin') {
+  const adminEmail = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase()
+
+  if (!req.user || req.user.role !== 'admin' || req.user.email !== adminEmail) {
     return res.status(403).json({
       success: false,
       message: 'Acces administrateur requis',

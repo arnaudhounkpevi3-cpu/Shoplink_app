@@ -243,14 +243,6 @@
       <a href="/register.html" class="btn-outline">Créer mon site gratuitement</a>
     </div>
 
-    <!-- Connexion admin (caché, accessible via URL) -->
-    <div id="admin-section" style="display:none;margin-top:20px;">
-      <div class="divider">Accès administrateur</div>
-      <div style="background:#f9fafb;border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-size:13px;color:var(--muted);text-align:center;">
-        Vous êtes reconnu comme administrateur.<br>
-        <a href="/admin/admin-dashboard.html" style="color:var(--green);font-weight:500;">Accéder au panneau d'administration →</a>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -325,11 +317,6 @@
       return;
     }
     
-    if (email === 'admin@shoplink.bj') {
-      window.location.href = '/admin/admin-login.html';
-      return;
-    }
-
     // Normal backend login
     submitBtn.disabled = true;
     submitBtn.textContent = 'Connexion en cours...';
@@ -343,17 +330,23 @@
       const data = await res.json();
 
       if (res.ok) {
+        if (data.user.role === 'admin') {
+          localStorage.removeItem('shoplink_token');
+          localStorage.removeItem('shoplink_user');
+          document.getElementById('global-error').textContent = 'Le compte administrateur doit se connecter depuis la page admin dédiée.';
+          document.getElementById('global-error').classList.add('show');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Se connecter →';
+          return;
+        }
+
         localStorage.setItem('shoplink_token', data.token);
         localStorage.setItem('shoplink_user', JSON.stringify(data.user));
 
         document.getElementById('success-box').classList.add('show');
 
         setTimeout(() => {
-          if (data.user.role === 'admin') {
-            window.location.href = '/admin/admin-dashboard.html';
-          } else {
-            window.location.href = '/dashboard-client-shoplink.html';
-          }
+          window.location.href = '/dashboard-client-shoplink.html';
         }, 1200);
       } else {
         document.getElementById('global-error').textContent = data.message || 'Email ou mot de passe incorrect';

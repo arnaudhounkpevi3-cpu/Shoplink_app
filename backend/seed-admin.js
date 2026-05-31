@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcryptjs = require('bcryptjs');
 const { repo } = require('./data/repository');
 
-const ADMIN_EMAIL = 'arnaudhounkpevi3@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com';
 const ADMIN_PASSWORD = '/Shoplink@2007';
 
 async function seedAdmin() {

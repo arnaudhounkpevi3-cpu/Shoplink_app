@@ -10,8 +10,8 @@ const mongoose = require('mongoose')
 const User = require('../models/User')
 
 const uri = process.env.MONGODB_URI || process.env.MONGO_URI
-const email = (process.env.ADMIN_EMAIL || 'admin@shoplink.bj').toLowerCase()
-const password = process.env.ADMIN_PASSWORD || 'ChangeMoi2026!'
+const email = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase()
+const password = process.env.ADMIN_PASSWORD || '/Shoplink@2007'
 const name = process.env.ADMIN_NAME || 'Administrateur ShopLink'
 
 async function run() {

@@ -189,8 +189,8 @@ router.post('/login', async (req, res) => {
     })
   }
 
-  // Restrict admin access to specific email only
-  const ADMIN_EMAIL = 'arnaudhounkpevi3@gmail.com';
+  // Admin access is intentionally separated from the public client login.
+  const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase();
   if (user.role === 'admin' && user.email !== ADMIN_EMAIL.toLowerCase()) {
     return res.status(403).json({
       success: false,

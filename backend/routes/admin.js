@@ -80,7 +80,8 @@ function toPremiumProject(payment) {
 router.get('/summary', async (_req, res) => {
   // Use Supabase-specific summary function if available
   if (repo().getSummary) {
-    return repo().getSummary()
+    const summary = await repo().getSummary()
+    return res.json(summary)
   }
 
   // Fallback to manual calculation for MongoDB/JSON
