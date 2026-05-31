@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "vercel-install": "npm install && npm install --prefix frontend",
-    "vercel-build": "npm run build --prefix frontend"
+    "vercel-build": "node scripts/vercel-build.cjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.0",
