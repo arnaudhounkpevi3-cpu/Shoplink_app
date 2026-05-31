@@ -33,10 +33,14 @@
     .admin-pill{display:inline-block;font-size:10px;background:var(--accent);color:#412402;border-radius:4px;padding:2px 7px;font-weight:500;margin-left:4px;}
     .nav-section{font-size:10px;color:rgba(255,255,255,0.3);padding:12px 20px 4px;text-transform:uppercase;letter-spacing:0.08em;}
     .nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.55);transition:all 0.15s;border-left:3px solid transparent;}
+    .nav-icon{width:17px;height:17px;object-fit:contain;display:block;flex:0 0 auto;filter:brightness(0) invert(1);opacity:.72;transition:opacity .15s ease,transform .15s ease,filter .15s ease;}
     .nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.9);}
+    .nav-item:hover .nav-icon{opacity:.95;transform:translateX(1px);}
     .nav-item.active{background:rgba(26,107,74,0.3);color:var(--brand-mid);border-left-color:var(--brand);font-weight:500;}
+    .nav-item.active .nav-icon{opacity:1;filter:none;}
     .nav-badge{margin-left:auto;background:rgba(229,57,53,0.25);color:#f09595;border-radius:100px;font-size:10px;padding:1px 7px;font-weight:500;}
     .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08);}
+    .logout-icon{width:15px;height:15px;object-fit:contain;display:inline-block;vertical-align:-2px;margin-right:6px;filter:brightness(0) invert(1);opacity:.75;}
     .admin-name{font-size:13px;color:rgba(255,255,255,0.8);font-weight:500;}
     .admin-info{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
 
@@ -474,23 +478,23 @@
       <div class="logo-text"><span class="logo-dot"></span>ShopLink<span class="admin-pill">ADMIN</span></div>
     </div>
     <div class="nav-section">Tableau de bord</div>
-    <div class="nav-item active" onclick="showPage('overview',this)"><span>📊</span> Vue d'ensemble</div>
+    <div class="nav-item active" onclick="showPage('overview',this)"><img class="nav-icon" src="https://cdn-icons-png.flaticon.com/512/10930/10930790.png" alt=""> Vue d'ensemble</div>
     <div class="nav-section">Gestion</div>
-    <div class="nav-item" onclick="showPage('users',this)"><span>👥</span> Utilisateurs <span class="nav-badge" id="badge-users">18</span></div>
-    <div class="nav-item" onclick="showPage('sites',this)"><span>🌐</span> Sites publiés</div>
-    <div class="nav-item" onclick="showPage('payments',this)"><span>💳</span> Paiements <span class="nav-badge" id="badge-pending">3</span></div>
-    <div class="nav-item" onclick="showPage('premium',this)"><span>⭐</span> Projets Premium</div>
+    <div class="nav-item" onclick="showPage('users',this)"><img class="nav-icon" src="https://cdn-icons-png.flaticon.com/512/615/615075.png" alt=""> Utilisateurs <span class="nav-badge" id="badge-users">18</span></div>
+    <div class="nav-item" onclick="showPage('sites',this)"><img class="nav-icon" src="https://cdn-icons-png.flaticon.com/512/10398/10398263.png" alt=""> Sites publiés</div>
+    <div class="nav-item" onclick="showPage('payments',this)"><img class="nav-icon" src="https://cdn-icons-png.flaticon.com/512/482/482541.png" alt=""> Paiements <span class="nav-badge" id="badge-pending">3</span></div>
+    <div class="nav-item" onclick="showPage('premium',this)"><img class="nav-icon" src="https://cdn-icons-png.flaticon.com/512/6941/6941697.png" alt=""> Projets Premium</div>
     <div class="nav-section">Support</div>
-    <div class="nav-item" onclick="showPage('tickets',this)"><span>🎫</span> Tickets support <span class="nav-badge" id="badge-tickets">0</span></div>
+    <div class="nav-item" onclick="showPage('tickets',this)"><img class="nav-icon" src="https://cdn-icons-png.flaticon.com/512/3702/3702886.png" alt=""> Tickets support <span class="nav-badge" id="badge-tickets">0</span></div>
     <div class="nav-section">Outils</div>
-    <div class="nav-item" onclick="showPage('countdown',this)"><span>⏱</span> Décomptes livraison <span class="nav-badge" id="badge-countdown">0</span></div>
-    <div class="nav-item" onclick="showPage('stats',this)"><span>📈</span> Statistiques</div>
+    <div class="nav-item" onclick="showPage('countdown',this)"><img class="nav-icon" src="https://cdn-icons-png.flaticon.com/512/2421/2421935.png" alt=""> Décomptes livraison <span class="nav-badge" id="badge-countdown">0</span></div>
+    <div class="nav-item" onclick="showPage('stats',this)"><img class="nav-icon" src="https://cdn-icons-png.flaticon.com/512/478/478544.png" alt=""> Statistiques</div>
     <div class="sidebar-footer">
       <div class="admin-name">Administrateur</div>
       <div class="admin-info">Accès total · ShopLink</div>
       <div style="margin-top:12px;">
         <button onclick="adminLogout()" style="width:100%;padding:8px 14px;border-radius:var(--radius);font-size:12px;cursor:pointer;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);font-family:'DM Sans',sans-serif;transition:all 0.15s;">
-          🚪 Déconnexion
+          <img class="logout-icon" src="https://cdn-icons-png.flaticon.com/512/4043/4043198.png" alt="">Déconnexion
         </button>
       </div>
     </div>

@@ -381,7 +381,7 @@ async function sendBrevoEmail(email, resetLink) {
   `;
   sendSmtpEmail.sender = { name: 'ShopLink', email: process.env.BREVO_SENDER_EMAIL || 'noreply@shoplink.bj' };
   sendSmtpEmail.to = [{ email: email }];
-  sendSmtpEmail.replyTo = { email: process.env.BREVO_REPLY_TO || 'support@shoplink.bj' };
+  sendSmtpEmail.replyTo = { email: process.env.BREVO_REPLY_TO || 'supportshoplink@gmail.com' };
 
   try {
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
