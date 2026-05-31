@@ -275,7 +275,7 @@ async function sendPaymentConfirmation(user, payment, site) {
     <p>Votre paiement de <strong>${payment.amount} FCFA</strong> a été confirmé!</p>
     ${
       payment.type === 'autonome'
-        ? `<p>Votre site est maintenant en ligne: <a href="https://shoplink.bj/${site.slug}">${site.name}</a></p>`
+        ? `<p>Votre site est maintenant en ligne: <a href="${APP_URL}/boutique/${site.slug}">${site.name}</a></p>`
         : `<p>Notre équipe commence la création de votre site. Vous serez contacté sous peu.</p>`
     }
     <p>Merci d'avoir choisi ShopLink!</p>

@@ -1040,7 +1040,7 @@
   function viewSite(index) {
     const site = allSites[index];
     if (!site) return;
-    const publicUrl = site.slug ? `/${site.slug}` : '—';
+    const publicUrl = site.slug ? `/boutique/${site.slug}` : '—';
     openAdminModal('Site publié', site.name || '', `
       ${detailRows([
         ['Nom', site.name],
@@ -1735,7 +1735,7 @@
               <tr>
                 <td>${escapeHtml(site.name || 'N/A')}</td>
                 <td>${escapeHtml(site.ownerName || site.userName || site.userId || 'N/A')}</td>
-                <td>${site.slug ? `<a href="/${escapeHtml(site.slug)}" target="_blank" style="color:var(--brand);font-weight:600;">/${escapeHtml(site.slug)}</a>` : '—'}</td>
+                <td>${site.slug ? `<a href="/boutique/${escapeHtml(site.slug)}" target="_blank" style="color:var(--brand);font-weight:600;">/boutique/${escapeHtml(site.slug)}</a>` : '—'}</td>
                 <td>${site.productsCount || site.productCount || 0}</td>
                 <td>${site.views || 0}</td>
                 <td><span class="badge ${site.status === 'published' ? 'bg-green' : 'bg-gray'}">${escapeHtml(site.status || 'draft')}</span></td>

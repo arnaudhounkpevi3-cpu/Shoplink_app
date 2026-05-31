@@ -1,6 +1,7 @@
 const express = require('express')
 
 const { repo } = require('../data/repository')
+const { buildBoutiqueUrl } = require('../utils/publicUrl')
 
 const router = express.Router()
 
@@ -50,7 +51,7 @@ router.get('/:slug', async (req, res) => {
     success: true,
     site: {
       ...site,
-      publicUrl: `/${site.slug}`,
+      publicUrl: buildBoutiqueUrl(site.slug, req),
       whatsappLink: buildWhatsAppLink(site.whatsapp),
     },
     products,

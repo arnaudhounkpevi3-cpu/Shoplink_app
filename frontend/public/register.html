@@ -324,7 +324,7 @@
         <!-- Aperçu du lien -->
         <div style="background:var(--green-light);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;">
           <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Votre futur lien public :</div>
-          <div style="font-size:13px;color:var(--green);font-weight:500;font-family:monospace;" id="slug-preview">shoplink.bj/votre-boutique</div>
+          <div style="font-size:13px;color:var(--green);font-weight:500;font-family:monospace;" id="slug-preview">/boutique/votre-boutique</div>
         </div>
 
         <div style="display:flex;gap:10px;">
@@ -423,7 +423,7 @@
       const slug = e.target.value.toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
         .replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
-      document.getElementById('slug-preview').textContent = 'shoplink.bj/' + (slug || 'votre-boutique');
+      document.getElementById('slug-preview').textContent = '/boutique/' + (slug || 'votre-boutique');
     }
   });
 

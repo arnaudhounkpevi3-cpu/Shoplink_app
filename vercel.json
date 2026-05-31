@@ -31,6 +31,10 @@
       "dest": "/frontend/public/index.html"
     },
     {
+      "src": "/boutique/(.*)",
+      "dest": "/frontend/public/site-public.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/frontend/public/$1"
     }

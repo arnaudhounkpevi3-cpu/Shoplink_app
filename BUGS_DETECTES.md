@@ -39,8 +39,8 @@ function showSuccess(slug) {
   document.getElementById('s-service').textContent = payType==='premium'?'Service Premium':'Création autonome';
   document.getElementById('s-amount').textContent  = payAmt.toLocaleString('fr-FR')+' FCFA';
   if (slug && payType!=='premium') {
-    document.getElementById('s-link').textContent = 'shoplink.bj/'+slug;
-    document.getElementById('s-link').href = 'https://shoplink.bj/'+slug;
+    document.getElementById('s-link').textContent = '/boutique/'+slug;
+    document.getElementById('s-link').href = APP_URL + '/boutique/'+slug;
   } else {
     document.getElementById('s-link-row').style.display = 'none';
   }

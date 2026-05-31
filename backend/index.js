@@ -173,6 +173,22 @@ async function main() {
   app.use('/api/users', usersRoutes)
   app.use('/api/tracking', trackingRoutes)
 
+  app.get('/boutique/:slug', async (req, res, next) => {
+    const { slug } = req.params
+
+    try {
+      const site = await repo().findSiteBySlug(slug)
+
+      if (!site || site.status !== 'published') {
+        return next()
+      }
+
+      return res.sendFile(publicSitePath)
+    } catch (error) {
+      return next(error)
+    }
+  })
+
   app.get('/:slug', async (req, res, next) => {
     const { slug } = req.params
 
@@ -187,7 +203,7 @@ async function main() {
         return next()
       }
 
-      return res.sendFile(publicSitePath)
+      return res.redirect(301, `/boutique/${slug}`)
     } catch (error) {
       return next(error)
     }

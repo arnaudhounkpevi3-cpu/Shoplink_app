@@ -662,8 +662,8 @@
     document.getElementById('s-service').textContent = payType==='premium'?'Service Premium':'Création autonome';
     document.getElementById('s-amount').textContent  = payAmt.toLocaleString('fr-FR')+' FCFA';
     if (slug && payType!=='premium') {
-      const siteUrl = 'https://shoplink.bj/'+slug;
-      document.getElementById('s-link').textContent = 'shoplink.bj/'+slug;
+      const siteUrl = window.location.origin + '/boutique/' + slug;
+      document.getElementById('s-link').textContent = siteUrl;
       document.getElementById('s-link').href = siteUrl;
       document.getElementById('s-site-btn').href = siteUrl;
     } else {
@@ -673,8 +673,8 @@
   }
 
   function shareWA() {
-    const slug = document.getElementById('s-link').textContent;
-    const msg  = encodeURIComponent('🛍️ Venez voir ma boutique !\n👉 https://'+slug+'\nCréé avec ShopLink 🇧🇯');
+    const siteUrl = document.getElementById('s-link').href || document.getElementById('s-link').textContent;
+    const msg  = encodeURIComponent('🛍️ Venez voir ma boutique !\n👉 '+siteUrl+'\nCréé avec ShopLink 🇧🇯');
     window.open('https://wa.me/?text='+msg,'_blank');
   }
 

@@ -75,6 +75,7 @@ async function createApp() {
   })
 
   const publicPath = path.join(__dirname, '../frontend/public')
+  const publicSitePath = path.join(publicPath, 'site-public.html')
   app.use(express.static(publicPath))
 
   app.get('/api', (_req, res) => {
@@ -123,6 +124,22 @@ async function createApp() {
   app.use('/api/tickets', ticketsRoutes)
   app.use('/api/users', usersRoutes)
   app.use('/api/tracking', trackingRoutes)
+
+  app.get('/boutique/:slug', async (req, res, next) => {
+    const { slug } = req.params
+
+    try {
+      const site = await repo().findSiteBySlug(slug)
+
+      if (!site || site.status !== 'published') {
+        return next()
+      }
+
+      return res.sendFile(publicSitePath)
+    } catch (error) {
+      return next(error)
+    }
+  })
 
   app.use((req, res) => {
     res.status(404).json({
