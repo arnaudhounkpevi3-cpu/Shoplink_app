@@ -194,22 +194,11 @@ async function handlePaymentSubmit(event) { ... }
 
 ---
 
-### 2. Guides Documentation (8 fichiers)
-
-#### `TLDR.md`
-- **Type:** Ultra-short summary
-- **Lignes:** ~50
-- **Contenu:** 3 lignes, 5 étapes, quick start
+### 2. Guides Documentation
 
 #### `ACTIONS_IMMEDIATES.md`
 - **Type:** Getting started guide
-- **Lignes:** ~200
-- **Contenu:** 5 min test, checklist, troubleshooting quick
-
-#### `TEST_GUIDE.md`
-- **Type:** Complete testing guide
-- **Lignes:** ~400
-- **Contenu:** 8 tests, checklist, advanced scenarios, troubleshooting
+- **Contenu:** lancement local, liens principaux, tests mot de passe et Premium
 
 #### `GUIDE_PAIEMENT_COMPLET.md`
 - **Type:** User guide (FR)
@@ -226,17 +215,15 @@ async function handlePaymentSubmit(event) { ... }
 - **Lignes:** ~400
 - **Contenu:** Code réel Moov, endpoints, configuration, checklist, troubleshooting
 
-#### `RESUME_EXÉCUTIF.md`
-- **Type:** Executive summary
-- **Lignes:** ~300
-- **Contenu:** Changements tech, fichiers, flux, metrics, next steps
-
 #### `README_GUIDES.md`
 - **Type:** Documentation index
-- **Lignes:** ~250
-- **Contenu:** Où trouver quoi, par cas usage, par mot-clé
+- **Contenu:** index actualisé des documents encore présents
 
 #### `00_LIRE_DABORD.md`
+- **Type:** Résumé actuel du projet
+- **Contenu:** état MVP, liens, ordre de test, configuration email
+
+> Note nettoyage : les anciens guides `TLDR.md`, `TEST_GUIDE.md` et `RESUME_EXÉCUTIF.md` ne sont plus présents dans le dépôt.
 - **Type:** Welcome document
 - **Lignes:** ~200
 - **Contenu:** Livrable final, chiffres, prochaines étapes, comment commencer

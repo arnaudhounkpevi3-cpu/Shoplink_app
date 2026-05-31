@@ -24,7 +24,7 @@ Vous aviez demandé d'implémenter **4 composants impératifs**:
 - ✓ Client redirigé vers son dashboard
 
 ### ✅ 4. Dashboard Admin Temps Réel
-**Code**: [http://localhost:5173/admin.html](http://localhost:5173/admin.html)
+**Code**: [http://localhost:5173/admin/admin-dashboard.html](http://localhost:5173/admin/admin-dashboard.html)
 - ✓ Stats: Paiements validés, Clients créés, En attente
 - ✓ Tableau des paiements avec montants
 - ✓ Tableau des clients créés avec sites
@@ -121,7 +121,7 @@ https://localhost:5173/payment.html?amount=7500
 ✅ backend/routes/payments.js (8 routes + 3 fonctions)
 ✅ backend/routes/admin.js (3 endpoints)
 ✅ frontend/public/payment.html (formulaire complet avec MTN/MOOV)
-✅ frontend/public/admin.html (dashboard en temps réel)
+✅ frontend/public/admin/admin-dashboard.html (dashboard en temps réel)
 ✅ frontend/public/index.html (navigation accueil)
 ✅ frontend/public/faq.html (30+ Q&A avec recherche)
 ✅ TEST_CREDENTIALS.md (ce document)
@@ -135,7 +135,7 @@ https://localhost:5173/payment.html?amount=7500
 ┌─────────────────────────────────────┐
 │   Frontend Vite (port 5173)         │
 │   ├─ payment.html (formulaire)      │
-│   ├─ admin.html (dashboard)         │
+│   ├─ admin/admin-dashboard.html     │
 │   └─ index.html (accueil)           │
 └──────────────┬──────────────────────┘
                │ HTTP calls

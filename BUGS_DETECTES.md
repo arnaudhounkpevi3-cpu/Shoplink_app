@@ -50,13 +50,13 @@ function showSuccess(slug) {
 **Page succès inclut:**
 - ✅ Message de confirmation
 - ✅ Détails du paiement
-- ✅ Bouton "Mon tableau de bord" (redirection vers dashboard.html)
+- ✅ Bouton "Mon tableau de bord" (redirection vers dashboard-client-shoplink.html)
 - ✅ Bouton "Partager sur WhatsApp"
 
 ---
 
 ### ✅ BUG HAUTE PRIORITÉ #3: CORRIGÉ - Admin panel protégé
-**Fichier:** `frontend/public/admin-dashboard.html`
+**Fichier:** `frontend/public/admin/admin-dashboard.html`
 **Statut:** ✅ **DÉJÀ CORRIGÉ** (lignes 375-380)
 
 **Implémentation ajoutée:**

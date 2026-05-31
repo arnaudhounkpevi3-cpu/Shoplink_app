@@ -248,7 +248,7 @@
       <div class="divider">Accès administrateur</div>
       <div style="background:#f9fafb;border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-size:13px;color:var(--muted);text-align:center;">
         Vous êtes reconnu comme administrateur.<br>
-        <a href="/admin.html" style="color:var(--green);font-weight:500;">Accéder au panneau d'administration →</a>
+        <a href="/admin/admin-dashboard.html" style="color:var(--green);font-weight:500;">Accéder au panneau d'administration →</a>
       </div>
     </div>
   </div>
@@ -339,7 +339,7 @@
       document.getElementById('success-box').classList.add('show');
       
       setTimeout(() => {
-        window.location.href = '/admin-dashboard.html';
+        window.location.href = '/admin/admin-dashboard.html';
       }, 1000);
       return;
     }
@@ -364,7 +364,7 @@
 
         setTimeout(() => {
           if (data.user.role === 'admin') {
-            window.location.href = '/admin-dashboard.html';
+            window.location.href = '/admin/admin-dashboard.html';
           } else {
             window.location.href = '/dashboard-client-shoplink.html';
           }

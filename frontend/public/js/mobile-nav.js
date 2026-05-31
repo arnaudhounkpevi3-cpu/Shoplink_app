@@ -1,5 +1,5 @@
 // ============================================================
-// SHOPLINK — frontend/js/mobile-nav.js
+// SHOPLINK — frontend/public/js/mobile-nav.js
 // Gestion du menu hamburger + bottom navigation mobile
 // À inclure dans TOUTES les pages :
 // <script src="/js/mobile-nav.js"></script>
