@@ -22,11 +22,16 @@
   ],
   "routes": [
     {
-      "handle": "filesystem"
+      "src": "/api/(.*)",
+      "dest": "/api/[...path].js"
+    },
+    {
+      "src": "/",
+      "dest": "/frontend/index.html"
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/frontend/$1"
     }
   ]
 }
