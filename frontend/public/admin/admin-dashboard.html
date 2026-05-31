@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>ShopLink — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
@@ -131,8 +131,338 @@
     .cdown-days{font-size:20px;font-weight:500;color:var(--brand);line-height:1;}
     .cdown-days.urgent{color:#e24b4a;}
     .cdown-label{font-size:10px;color:#9ca3af;}
+
+    /* ── PREMIUM DETAILS ── */
+    .premium-detail{display:none;margin-top:16px;border-top:1px solid var(--border);padding:18px 20px;background:#fff;}
+    .premium-detail.show{display:block;}
+    .premium-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;}
+    .premium-detail-title{font-size:16px;font-weight:700;}
+    .premium-detail-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+    .premium-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    .premium-detail-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;}
+    .premium-detail-card.full{grid-column:1 / -1;}
+    .premium-detail-card-title{font-size:12px;font-weight:700;color:var(--brand);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
+    .premium-detail-row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px dashed rgba(0,0,0,0.08);font-size:12px;}
+    .premium-detail-row:last-child{border-bottom:none;}
+    .premium-detail-label{color:var(--muted);}
+    .premium-detail-value{font-weight:600;text-align:right;overflow-wrap:anywhere;}
+    .premium-detail-text{font-size:12px;color:var(--text);line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;}
+    .premium-tags{display:flex;flex-wrap:wrap;gap:6px;}
+    .premium-tag{font-size:11px;background:#fff;border:1px solid var(--border);border-radius:999px;padding:4px 8px;color:var(--brand);}
+    .premium-products{display:flex;flex-direction:column;gap:10px;}
+    .premium-product{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:10px;}
+    .premium-product-head{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:700;margin-bottom:5px;}
+    .premium-product-meta{font-size:11px;color:var(--muted);line-height:1.45;margin-bottom:8px;}
+    .premium-assets{display:flex;flex-wrap:wrap;gap:8px;}
+    .premium-asset{width:82px;}
+    .premium-asset img{width:82px;height:82px;object-fit:cover;border-radius:10px;border:1px solid var(--border);background:#fff;display:block;}
+    .premium-download{display:block;width:100%;margin-top:4px;text-align:center;font-size:10px;color:var(--brand);text-decoration:none;background:var(--brand-light);border-radius:8px;padding:4px 5px;}
+    .premium-empty{font-size:12px;color:var(--muted);font-style:italic;}
+
+    /* ── MOBILE ADMIN ── */
+    @media (max-width: 900px) {
+      html, body { width:100%; max-width:100%; overflow-x:hidden; }
+      body { background:var(--bg); font-size:13px; }
+
+      .layout {
+        display:flex;
+        flex-direction:column;
+        min-height:100vh;
+        width:100%;
+        max-width:100%;
+      }
+
+      .sidebar {
+        position:sticky;
+        top:0;
+        z-index:100;
+        height:auto;
+        width:100%;
+        max-width:100%;
+        padding:10px 10px 8px;
+        display:grid;
+        grid-template-columns:1fr;
+        gap:8px;
+        overflow:hidden;
+        box-shadow:0 12px 30px rgba(0,0,0,0.18);
+      }
+
+      .sidebar-logo {
+        padding:0 16px 14px;
+        margin:0 0 8px;
+        border-bottom:1px solid rgba(255,255,255,0.08);
+        display:flex;
+        align-items:center;
+        justify-content:flex-start;
+      }
+
+      .logo-text {
+        width:max-content;
+        max-width:100%;
+        padding:7px 11px;
+        border-radius:999px;
+        background:rgba(255,255,255,0.08);
+        border:1px solid rgba(255,255,255,0.12);
+        font-size:15px;
+        white-space:nowrap;
+      }
+
+      .admin-pill { font-size:9px; padding:2px 6px; }
+      .nav-section {
+        display:block;
+        font-size:9px;
+        padding:10px 16px 4px;
+        color:rgba(255,255,255,0.32);
+      }
+
+      .sidebar-footer {
+        display:block;
+        margin-top:8px;
+        padding:14px 16px 0;
+        border-top:1px solid rgba(255,255,255,0.08);
+      }
+
+      .sidebar > .nav-item {
+        display:inline-flex;
+      }
+
+      .sidebar::after {
+        content:'';
+        display:block;
+        height:0;
+      }
+
+      .sidebar .nav-item {
+        min-height:38px;
+        padding:10px 16px;
+        border-left:3px solid transparent;
+        border-radius:0;
+        font-size:12px;
+        white-space:nowrap;
+        flex:0 0 auto;
+        width:100%;
+      }
+
+      .sidebar .nav-item.active {
+        border-left-color:var(--brand);
+        background:rgba(26,107,74,0.36);
+      }
+
+      .sidebar .nav-badge {
+        margin-left:6px;
+      }
+
+      .sidebar-logo ~ .nav-item,
+      .sidebar-logo ~ .nav-section + .nav-item {
+        width:100%;
+      }
+
+      .main {
+        width:100%;
+        max-width:100%;
+        padding:16px 12px 28px;
+        gap:14px;
+        overflow:visible;
+      }
+
+      .page { gap:14px; min-width:0; }
+
+      .topbar {
+        align-items:flex-start;
+        gap:10px;
+        flex-direction:column;
+      }
+
+      .topbar > div,
+      .topbar > button,
+      .topbar .btn {
+        max-width:100%;
+      }
+
+      .page-title { font-size:18px; line-height:1.2; }
+      .page-sub { font-size:12px; line-height:1.35; }
+
+      .metrics {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;
+      }
+
+      .metric-card {
+        padding:12px;
+        min-width:0;
+      }
+
+      .metric-value { font-size:22px; }
+      .metric-label, .metric-sub { overflow-wrap:anywhere; }
+
+      .two-col {
+        grid-template-columns:1fr;
+        gap:14px;
+      }
+
+      .section-card {
+        max-width:100%;
+        overflow-x:auto;
+        -webkit-overflow-scrolling:touch;
+      }
+
+      .card-header {
+        padding:12px;
+        gap:8px;
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .filter-bar,
+      .tab-bar {
+        padding:10px 12px;
+        overflow-x:auto;
+        flex-wrap:nowrap;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:none;
+      }
+
+      .filter-bar::-webkit-scrollbar,
+      .tab-bar::-webkit-scrollbar { display:none; }
+
+      .filter-pill,
+      .tab {
+        flex:0 0 auto;
+        font-size:11px;
+      }
+
+      table {
+        min-width:760px;
+        table-layout:auto;
+        font-size:12px;
+      }
+
+      th, td {
+        padding:9px 10px;
+        white-space:nowrap;
+      }
+
+      .user-name-cell,
+      .user-sub-cell {
+        max-width:150px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+
+      .icon-btn {
+        width:34px;
+        height:34px;
+        font-size:13px;
+      }
+
+      .btn {
+        min-height:38px;
+        justify-content:center;
+      }
+
+      .revenue-row,
+      .countdown-project {
+        gap:10px;
+        align-items:flex-start;
+      }
+
+      .countdown-project {
+        padding:12px;
+      }
+
+      .cdown-days { font-size:17px; }
+
+      .premium-detail {
+        margin-top:12px;
+        padding:14px 12px;
+        min-width:0;
+      }
+
+      .premium-detail-head {
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .premium-detail-head .btn {
+        width:100%;
+      }
+
+      .premium-detail-grid {
+        grid-template-columns:1fr;
+        gap:10px;
+      }
+
+      .premium-detail-card.full {
+        grid-column:auto;
+      }
+
+      .premium-detail-row {
+        flex-direction:column;
+        gap:3px;
+      }
+
+      .premium-detail-value {
+        text-align:left;
+      }
+
+      .premium-products {
+        gap:8px;
+      }
+
+      .premium-product-head {
+        flex-direction:column;
+        gap:3px;
+      }
+
+      .premium-assets {
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:8px;
+      }
+
+      .premium-asset {
+        width:100%;
+        min-width:0;
+      }
+
+      .premium-asset img {
+        width:100%;
+        height:78px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .main { padding:12px 10px 24px; }
+      .metrics { grid-template-columns:1fr; }
+      .metric-card { padding:13px; }
+      .page-title { font-size:17px; }
+      .logo-text { font-size:14px; }
+      .sidebar .nav-item { font-size:11px; padding:8px 10px; }
+      .premium-assets { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      table { min-width:720px; }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:stretch !important;
+        gap:0 !important;
+        overflow:visible !important;
+        white-space:normal !important;
+      }
+
+      .sidebar-logo,
+      .sidebar .nav-item {
+        flex:0 0 auto !important;
+      }
+
+      .sidebar-logo ~ .nav-item,
+      .sidebar-logo ~ .nav-section + .nav-item {
+        width:100% !important;
+      }
+    }
   </style>
-  <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
 
@@ -280,6 +610,9 @@
         <tbody id="premium-projects-tbody">
           <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
         </tbody></table>
+        <div class="premium-detail" id="premium-detail">
+          <div style="text-align:center;color:var(--muted);padding:20px;">Sélectionnez un projet Premium pour voir les détails.</div>
+        </div>
       </div>
     </div>
 
@@ -294,7 +627,7 @@
             <div id="countdown-projects">
               <div style="text-align:center;color:var(--muted);padding:40px;">Aucun projet en cours</div>
             </div>
-            <div style="background:var(--bg);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;">Le décompte démarre automatiquement dès réception de l'acompte. En rouge : livraison urgente sous 2 semaines.</div>
+            <div style="background:var(--bg);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;">Le décompte démarre automatiquement dès réception de l'acompte. En rouge : livraison urgente sous 3 semaines.</div>
           </div>
         </div>
         <div>
@@ -306,7 +639,7 @@
               <div style="font-size:36px;font-weight:500;color:var(--brand);letter-spacing:0.02em;" id="client-timer">—</div>
               <div style="font-size:12px;color:#9ca3af;margin-top:6px;">Projet : Kouassi Biokou · Normal</div>
             </div>
-            <div style="background:var(--brand-light);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:#0f6e56;line-height:1.6;">✓ Acompte reçu · Le 10 mars 2025<br>Délai : 3 semaines maximum · Site livré par email & WhatsApp</div>
+            <div style="background:var(--brand-light);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:#0f6e56;line-height:1.6;">✓ Acompte reçu · Le 10 mars 2025<br>Délai : 4 semaines maximum · Site livré par email & WhatsApp</div>
             <div style="background:var(--bg);border-radius:var(--radius);padding:12px 14px;">
               <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Avancement estimé</div>
               <div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:45%;"></div></div>
@@ -384,7 +717,218 @@
 </div>
 
 <script>
+  const API_BASE = `${window.location.protocol}//${window.location.hostname}:5000/api`;
+  const API_FALLBACK = '/api';
+
+  async function apiFetch(path, options = {}) {
+    try {
+      return await fetch(`${API_BASE}${path}`, options);
+    } catch (primaryError) {
+      console.warn('API directe indisponible, tentative via proxy:', primaryError);
+      return fetch(`${API_FALLBACK}${path}`, options);
+    }
+  }
   let allTickets = [];
+  let allPremiumProjects = [];
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function fmtMoney(value) {
+    return Number(value || 0).toLocaleString('fr-FR') + ' F';
+  }
+
+  function fileExtFromDataUrl(src) {
+    const match = String(src || '').match(/^data:image\/(png|jpeg|jpg|webp|gif|svg\+xml)/i);
+    if (!match) return 'png';
+    return match[1].replace('jpeg', 'jpg').replace('svg+xml', 'svg');
+  }
+
+  function renderAsset(src, name, label) {
+    if (!src) return '';
+    const safeName = escapeHtml(name || label || 'image');
+    const filename = `${(name || label || 'image').replace(/[^a-z0-9_-]+/gi, '-').slice(0, 40)}.${fileExtFromDataUrl(src)}`;
+    return `
+      <div class="premium-asset">
+        <img src="${src}" alt="${safeName}">
+        <a class="premium-download" href="${src}" download="${filename}">Télécharger</a>
+      </div>
+    `;
+  }
+
+  function renderTags(items) {
+    return (items || []).length
+      ? items.map(item => `<span class="premium-tag">${escapeHtml(item)}</span>`).join('')
+      : '<span class="premium-empty">Aucune option</span>';
+  }
+
+  function renderPremiumProducts(products) {
+    if (!products || !products.length) {
+      return '<div class="premium-empty">Aucun produit renseigné</div>';
+    }
+
+    return products.map((product, index) => {
+      const photos = (product.photos || []).map((photo, pIndex) => renderAsset(photo.src, photo.name, `produit-${index + 1}-photo-${pIndex + 1}`)).join('');
+      return `
+        <div class="premium-product">
+          <div class="premium-product-head">
+            <span>${escapeHtml(product.name || product.title || `Produit ${index + 1}`)}</span>
+            <span>${product.price ? fmtMoney(product.price) : 'Prix non renseigné'}</span>
+          </div>
+          <div class="premium-product-meta">
+            Catégorie : ${escapeHtml(product.category || '—')}<br>
+            Description : ${escapeHtml(product.description || '—')}
+          </div>
+          <div class="premium-assets">${photos || '<span class="premium-empty">Aucune photo</span>'}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderPremiumProjects() {
+    const premiumTable = document.getElementById('premium-projects-tbody');
+    if (!premiumTable) return;
+
+    if (!allPremiumProjects.length) {
+      premiumTable.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">Aucun projet premium</td></tr>';
+      return;
+    }
+
+    premiumTable.innerHTML = allPremiumProjects.map((project, index) => {
+      const initials = project.clientName ? project.clientName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
+      const depositPaid = !!project.depositPaid;
+      const status = project.status || 'pending';
+      const countdown = project.countdown;
+      const countdownText = depositPaid && countdown
+        ? (countdown.expired ? 'En retard' : `${countdown.days}j ${countdown.hours}h`)
+        : 'En attente paiement';
+
+      return `
+        <tr data-status="${escapeHtml(status)}">
+          <td><div class="user-cell"><div class="avatar premium">${escapeHtml(initials)}</div><div><div class="user-name-cell">${escapeHtml(project.clientName || 'N/A')}</div><div class="user-sub-cell">${escapeHtml(project.clientEmail || '')}</div></div></div></td>
+          <td>${escapeHtml(project.siteType || 'N/A')}</td>
+          <td><span class="badge ${depositPaid ? 'bg-green' : 'bg-red'}">${depositPaid ? 'Payé · ' + fmtMoney(project.depositAmount) : 'En attente'}</span></td>
+          <td style="color:${!depositPaid ? '#9ca3af' : '#e24b4a'};font-weight:500;">${depositPaid ? fmtMoney(project.remainingAmount) : '—'}</td>
+          <td><span class="badge ${project.urgent ? 'bg-red' : 'bg-amber'}">${project.deliveryDays || 28} jours · ${countdownText}</span></td>
+          <td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-wrap" style="width:60px;height:6px;"><div class="progress-fill" style="width:${project.progress || 0}%;"></div></div><span style="font-size:11px;font-weight:500;">${project.progress || 0}%</span></div></td>
+          <td><span class="status-dot ${status === 'completed' ? 'dot-green' : status === 'in_progress' ? 'dot-amber' : 'dot-red'}"></span>${status === 'completed' ? 'Livré' : status === 'in_progress' ? 'En cours' : 'Attente paiement'}</td>
+          <td><div class="action-btns"><button class="icon-btn" onclick="showPremiumDetail(${index})" title="Voir les détails">👁</button></div></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderPremiumCountdown() {
+    const countdownContainer = document.getElementById('countdown-projects');
+    const badgeCountdown = document.getElementById('badge-countdown');
+    const projectsWithDeposit = allPremiumProjects.filter(p => p.depositPaid && p.status !== 'completed' && p.status !== 'delivered');
+
+    if (badgeCountdown) {
+      badgeCountdown.textContent = projectsWithDeposit.length;
+      badgeCountdown.style.background = projectsWithDeposit.length > 0 ? '#fee2e2' : 'var(--brand-light)';
+      badgeCountdown.style.color = projectsWithDeposit.length > 0 ? '#a32d2d' : '#0f6e56';
+    }
+
+    if (!countdownContainer) return;
+    if (!projectsWithDeposit.length) {
+      countdownContainer.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px;">Aucun projet en cours</div>';
+      return;
+    }
+
+    countdownContainer.innerHTML = projectsWithDeposit.map(project => {
+      const countdown = project.countdown || { days: 0, hours: 0, expired: true };
+      const isUrgent = project.urgent || countdown.days < 7 || countdown.expired;
+      const start = project.depositDate ? new Date(project.depositDate).toLocaleDateString('fr-FR') : '—';
+      return `
+        <div class="countdown-project ${isUrgent ? 'urgent' : ''}">
+          <div>
+            <div class="cdown-client">${escapeHtml(project.company || project.clientName || 'N/A')}</div>
+            <div class="cdown-type">${escapeHtml(project.siteType || 'Site')} · ${project.deliveryDays || 28} jours · Démarré le ${start}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="cdown-days ${isUrgent ? 'urgent' : ''}">${countdown.expired ? 'En retard' : countdown.days + 'j ' + countdown.hours + 'h'}</div>
+            <div class="cdown-label">restants</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function showPremiumDetail(index) {
+    const project = allPremiumProjects[index];
+    const detail = document.getElementById('premium-detail');
+    if (!project || !detail) return;
+
+    const order = project.premiumOrder || {};
+    const logo = order.logo && order.logo.src ? renderAsset(order.logo.src, order.logo.name, 'logo-premium') : '<span class="premium-empty">Aucun logo</span>';
+    const countdown = project.countdown;
+    const countdownText = project.depositPaid && countdown
+      ? (countdown.expired ? 'En retard' : `${countdown.days}j ${countdown.hours}h restants`)
+      : 'Le décompte démarre après paiement de l’acompte';
+
+    detail.classList.add('show');
+    detail.innerHTML = `
+      <div class="premium-detail-head">
+        <div>
+          <div class="premium-detail-title">${escapeHtml(project.company || 'Projet Premium')}</div>
+          <div class="premium-detail-sub">Référence paiement : ${escapeHtml(project.reference || '—')}</div>
+        </div>
+        <button class="btn" onclick="document.getElementById('premium-detail').classList.remove('show')">Fermer</button>
+      </div>
+      <div class="premium-detail-grid">
+        <div class="premium-detail-card">
+          <div class="premium-detail-card-title">Client</div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Responsable</span><span class="premium-detail-value">${escapeHtml(project.clientName || '—')}</span></div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Email</span><span class="premium-detail-value">${escapeHtml(project.clientEmail || '—')}</span></div>
+          <div class="premium-detail-row"><span class="premium-detail-label">WhatsApp</span><span class="premium-detail-value">${escapeHtml(project.whatsapp || '—')}</span></div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Activité</span><span class="premium-detail-value">${escapeHtml(project.activity || '—')}</span></div>
+        </div>
+        <div class="premium-detail-card">
+          <div class="premium-detail-card-title">Paiement et délai</div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Statut paiement</span><span class="premium-detail-value">${project.depositPaid ? 'Acompte payé' : 'En attente'}</span></div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Acompte</span><span class="premium-detail-value">${fmtMoney(project.depositAmount)}</span></div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Solde</span><span class="premium-detail-value">${fmtMoney(project.remainingAmount)}</span></div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Décompte</span><span class="premium-detail-value">${escapeHtml(countdownText)}</span></div>
+        </div>
+        <div class="premium-detail-card full">
+          <div class="premium-detail-card-title">Description de l’activité</div>
+          <div class="premium-detail-text">${escapeHtml(order.activityDescription || '—')}</div>
+        </div>
+        <div class="premium-detail-card full">
+          <div class="premium-detail-card-title">Produits et photos téléchargeables</div>
+          <div class="premium-products">${renderPremiumProducts(order.products || [])}</div>
+        </div>
+        <div class="premium-detail-card">
+          <div class="premium-detail-card-title">Logo</div>
+          <div class="premium-assets">${logo}</div>
+        </div>
+        <div class="premium-detail-card">
+          <div class="premium-detail-card-title">Design</div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Style</span><span class="premium-detail-value">${escapeHtml(order.styleLabel || project.style || '—')}</span></div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Couleurs</span><span class="premium-detail-value">${escapeHtml(order.colors || '—')}</span></div>
+          <div class="premium-detail-row"><span class="premium-detail-label">Exemple</span><span class="premium-detail-value">${escapeHtml(order.exampleSite || '—')}</span></div>
+        </div>
+        <div class="premium-detail-card">
+          <div class="premium-detail-card-title">Sections</div>
+          <div class="premium-tags">${renderTags(order.sections || [])}</div>
+        </div>
+        <div class="premium-detail-card">
+          <div class="premium-detail-card-title">Fonctionnalités</div>
+          <div class="premium-tags">${renderTags(order.features || [])}</div>
+        </div>
+        <div class="premium-detail-card full">
+          <div class="premium-detail-card-title">Remarques</div>
+          <div class="premium-detail-text">${escapeHtml(order.notes || '—')}</div>
+        </div>
+      </div>
+    `;
+  }
 
   function showPage(id, el) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -449,7 +993,7 @@
   async function exportOverview() {
     try {
       const token = localStorage.getItem('shoplink_token');
-      const summaryRes = await fetch('http://localhost:5000/api/admin/summary', {
+      const summaryRes = await apiFetch('/admin/summary', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const summaryData = await summaryRes.json();
@@ -482,7 +1026,7 @@
   async function exportUsers() {
     try {
       const token = localStorage.getItem('shoplink_token');
-      const usersRes = await fetch('http://localhost:5000/api/admin/users', {
+      const usersRes = await apiFetch('/admin/users', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const usersData = await usersRes.json();
@@ -509,7 +1053,7 @@
   async function exportPayments() {
     try {
       const token = localStorage.getItem('shoplink_token');
-      const paymentsRes = await fetch('http://localhost:5000/api/admin/payments', {
+      const paymentsRes = await apiFetch('/admin/payments', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const paymentsData = await paymentsRes.json();
@@ -536,63 +1080,15 @@
   async function fetchPremiumProjects() {
     try {
       const token = localStorage.getItem('shoplink_token');
-      const res = await fetch('http://localhost:5000/api/admin/premium-projects', {
+      const res = await apiFetch('/admin/premium-projects', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
 
       if (data.success && data.projects) {
-        const countdownContainer = document.getElementById('countdown-projects');
-        const badgeCountdown = document.getElementById('badge-countdown');
-        
-        // Filter projects with deposits paid
-        const projectsWithDeposit = data.projects.filter(p => p.depositPaid && p.status !== 'completed' && p.status !== 'delivered');
-        
-        if (badgeCountdown) {
-          badgeCountdown.textContent = projectsWithDeposit.length;
-          // Make badge red if there are active projects
-          if (projectsWithDeposit.length > 0) {
-            badgeCountdown.style.background = '#fee2e2';
-            badgeCountdown.style.color = '#a32d2d';
-          } else {
-            badgeCountdown.style.background = 'var(--brand-light)';
-            badgeCountdown.style.color = '#0f6e56';
-          }
-        }
-
-        if (countdownContainer) {
-          if (projectsWithDeposit.length === 0) {
-            countdownContainer.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px;">Aucun projet en cours</div>';
-          } else {
-            countdownContainer.innerHTML = projectsWithDeposit.map(project => {
-              const depositDate = new Date(project.depositDate);
-              const deliveryDays = project.deliveryDays || 21; // Default 21 days
-              const deliveryDate = new Date(depositDate);
-              deliveryDate.setDate(deliveryDate.getDate() + deliveryDays);
-              
-              const now = new Date();
-              const remainingMs = deliveryDate - now;
-              const remainingDays = Math.max(0, Math.floor(remainingMs / (1000 * 60 * 60 * 24)));
-              const remainingHours = Math.max(0, Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
-              
-              const isUrgent = remainingDays < 14;
-              const isOverdue = remainingMs < 0;
-
-              return `
-                <div class="countdown-project ${isUrgent || isOverdue ? 'urgent' : ''}">
-                  <div>
-                    <div class="cdown-client">${project.clientName || 'N/A'}</div>
-                    <div class="cdown-type">${project.siteType || 'Site'} · ${deliveryDays} jours · Démarré le ${depositDate.toLocaleDateString('fr-FR')}</div>
-                  </div>
-                  <div style="text-align:right;">
-                    <div class="cdown-days ${isUrgent || isOverdue ? 'urgent' : ''}">${isOverdue ? 'En retard' : remainingDays + 'j ' + remainingHours + 'h'}</div>
-                    <div class="cdown-label">restants</div>
-                  </div>
-                </div>
-              `;
-            }).join('');
-          }
-        }
+        allPremiumProjects = data.projects;
+        renderPremiumProjects();
+        renderPremiumCountdown();
       }
     } catch (error) {
       console.error('Error fetching premium projects:', error);
@@ -636,7 +1132,7 @@
   async function fetchAdminData() {
     try {
       // Fetch summary
-      const summaryRes = await fetch('http://localhost:5000/api/admin/summary');
+      const summaryRes = await apiFetch('/admin/summary');
       const summaryData = await summaryRes.json();
       if (summaryData.success) {
         const data = summaryData.data;
@@ -660,7 +1156,7 @@
       }
 
       // Fetch users
-      const usersRes = await fetch('http://localhost:5000/api/admin/users');
+      const usersRes = await apiFetch('/admin/users');
       const usersData = await usersRes.json();
       if (usersData.success) {
         const usersTable = document.getElementById('users-table');
@@ -691,55 +1187,14 @@
       }
 
       // Fetch sites
-      const sitesRes = await fetch('http://localhost:5000/api/admin/sites');
+      const sitesRes = await apiFetch('/admin/sites');
       const sitesData = await sitesRes.json();
       if (sitesData.success) {
         console.log('Sites loaded:', sitesData.sites.length);
       }
 
-      // Fetch premium projects
-      const premiumRes = await fetch('http://localhost:5000/api/admin/premium-projects', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const premiumData = await premiumRes.json();
-      if (premiumData.success && premiumData.projects) {
-        const premiumTable = document.getElementById('premium-projects-tbody');
-        if (premiumTable) {
-          if (premiumData.projects.length === 0) {
-            premiumTable.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">Aucun projet premium</td></tr>';
-          } else {
-            premiumTable.innerHTML = '';
-            premiumData.projects.forEach(project => {
-              const row = document.createElement('tr');
-              row.dataset.status = project.status || 'pending';
-              const initials = project.clientName ? project.clientName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
-              const progress = project.progress || 0;
-              const depositPaid = project.depositPaid || false;
-              const status = project.status || 'pending';
-              
-              row.innerHTML = `
-                <td><div class="user-cell"><div class="avatar premium">${initials}</div><div><div class="user-name-cell">${project.clientName || 'N/A'}</div><div class="user-sub-cell">${project.clientEmail || ''}</div></div></div></td>
-                <td>${project.siteType || 'N/A'}</td>
-                <td><span class="badge ${depositPaid ? 'bg-green' : 'bg-red'}">${depositPaid ? '✓ ' + (project.depositAmount || '0') + ' F' : 'En attente'}</span></td>
-                <td style="color:${!depositPaid ? '#9ca3af' : '#e24b4a'};font-weight:500;">${depositPaid ? (project.totalAmount - project.depositAmount) || '0' : '—'}</td>
-                <td><span class="badge ${project.urgent ? 'bg-red' : 'bg-amber'}">${project.deliveryDays || 21} jours</span></td>
-                <td>
-                  <div style="display:flex;align-items:center;gap:8px;">
-                    <div class="progress-wrap" style="width:60px;height:6px;"><div class="progress-fill" style="width:${progress}%;"></div></div>
-                    <span style="font-size:11px;font-weight:500;">${progress}%</span>
-                  </div>
-                </td>
-                <td><span class="status-dot ${status === 'completed' ? 'dot-green' : status === 'in_progress' ? 'dot-amber' : 'dot-red'}"></span>${status === 'completed' ? 'Livré' : status === 'in_progress' ? 'En cours' : 'En attente'}</td>
-                <td><div class="action-btns"><div class="icon-btn">✏️</div><div class="icon-btn">📲</div></div></td>
-              `;
-              premiumTable.appendChild(row);
-            });
-          }
-        }
-      }
-
       // Fetch tickets
-      const ticketsRes = await fetch('http://localhost:5000/api/tickets');
+      const ticketsRes = await apiFetch('/tickets');
       const ticketsData = await ticketsRes.json();
       if (ticketsData.success) {
         allTickets = ticketsData.tickets;
@@ -770,7 +1225,7 @@
       }
 
       // Fetch payments
-      const paymentsRes = await fetch('http://localhost:5000/api/admin/payments');
+      const paymentsRes = await apiFetch('/admin/payments');
       const paymentsData = await paymentsRes.json();
       if (paymentsData.success) {
         // Update pending badge
@@ -812,7 +1267,7 @@
   // Fetch tickets from backend
   async function fetchTickets() {
     try {
-      const ticketsRes = await fetch('http://localhost:5000/api/tickets');
+      const ticketsRes = await apiFetch('/tickets');
       
       if (!ticketsRes.ok) {
         console.log('Tickets endpoint not available (404)');
@@ -922,7 +1377,7 @@
   async function closeTicket(id) {
     if (confirm('Fermer ce ticket ?')) {
       try {
-        const res = await fetch(`http://localhost:5000/api/tickets/${id}/status`, {
+        const res = await apiFetch(`/tickets/${id}/status`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'closed' })
@@ -939,7 +1394,5 @@
     }
   }
 </script>
-<link rel="stylesheet" href="/css/responsive.css">
-<script src="/js/mobile-nav.js"></script>
 </body>
 </html>

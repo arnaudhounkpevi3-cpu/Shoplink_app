@@ -239,7 +239,7 @@ router.post('/test-account', async (req, res) => {
   const testUser = await repo().createUser({
     name: `Test User ${testUserNum}`,
     email: `test-${Date.now()}@shoplink.dev`,
-    phone: '+22901671634811',
+    phone: '+2290167163481',
     role: 'user',
     passwordHash: '$2b$10$DummyHashForTestUser',
     createdAt: new Date().toISOString(),
@@ -252,7 +252,7 @@ router.post('/test-account', async (req, res) => {
     slogan: 'Boutique de test ShopLink',
     logo: 'shop',
     description: 'Ceci est une boutique de test ShopLink',
-    whatsapp: '+22901671634811',
+    whatsapp: '+2290167163481',
     address: 'Cotonou',
     activityType: 'Boutique',
     primaryColor: '#667eea',

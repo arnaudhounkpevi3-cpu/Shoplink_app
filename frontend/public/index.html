@@ -164,31 +164,35 @@
       margin-bottom: clamp(32px, 6vh, 60px);
     }
 
-    .bottom-bar {
-      position: fixed; bottom: 26px;
-      left: 0; right: 0;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0 clamp(20px, 5vw, 56px);
-      z-index: 10;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 2s;
-    }
+.bottom-bar {
+       position: fixed; bottom: 26px;
+       left: 0; right: 0;
+       display: flex; justify-content: space-between; align-items: center;
+       padding: 0 clamp(20px, 5vw, 56px);
+       z-index: 10;
+       opacity: 0;
+       animation: fadeUp 0.8s ease forwards 2s;
+     }
 
-    .bottom-bar span {
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
+     .bottom-bar span {
+       font-size: 11px;
+       letter-spacing: 0.2em;
+       text-transform: uppercase;
+       color: var(--muted);
+       display: flex;
+       align-items: center;
+       gap: 6px;
+     }
 
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--amber);
-      display: inline-block;
-      margin-right: 8px;
-      animation: pulse 2s ease infinite;
-    }
+     .dot {
+       width: 6px; height: 6px;
+       border-radius: 50%;
+       background: var(--amber);
+       display: inline-block;
+       margin-right: 8px;
+       animation: pulse 2s ease infinite;
+       box-shadow: 0 0 0 2px rgba(232,98,10,0.3);
+     }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(10px); }
@@ -691,12 +695,60 @@
       opacity: 0.018;
     }
 
-    .portal-nav {
-      top: 16px;
-      background: rgba(255,255,255,0.64);
-      border-color: rgba(15,31,23,0.08);
-      box-shadow: none;
-    }
+.portal-nav {
+       top: 16px;
+       background: rgba(255,255,255,0.72);
+       border-color: rgba(15,31,23,0.08);
+       box-shadow: 0 8px 32px rgba(15,31,23,0.08);
+       backdrop-filter: blur(16px) saturate(1.4);
+     }
+
+     .portal-nav .logo {
+       font-size: 20px;
+       letter-spacing: -0.02em;
+       font-weight: 800;
+     }
+
+      .logo-dot {
+        width: 10px;
+        height: 10px;
+        background: linear-gradient(135deg, #1a5c38, #0f6e56);
+        border-radius: 50%;
+        box-shadow: 0 0 0 3px rgba(26,92,56,0.2);
+        animation: none;
+      }
+
+     @keyframes pulse-dot {
+       0%, 100% { box-shadow: 0 0 0 3px rgba(26,92,56,0.2); }
+       50% { box-shadow: 0 0 0 6px rgba(26,92,56,0.3); }
+     }
+
+     .portal-nav-links a {
+       color: rgba(15,31,23,0.65);
+       font-weight: 600;
+       position: relative;
+       padding: 8px 12px;
+       border-radius: 8px;
+       transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+     }
+
+     .portal-nav-links a:hover {
+       background: rgba(26,92,56,0.08);
+       color: #0f1f17;
+       transform: translateY(-1px);
+     }
+
+     .portal-nav-cta .portal-nav-btn {
+       font-weight: 700;
+       letter-spacing: -0.01em;
+       border-radius: 10px;
+       transition: all 0.3s ease;
+     }
+
+     .portal-nav-cta .portal-nav-btn:hover {
+       transform: translateY(-2px);
+       box-shadow: 0 6px 20px rgba(26,92,56,0.25);
+     }
 
     .portal-nav::before {
       content: '';
@@ -819,6 +871,20 @@
       transform: translateY(-1px);
     }
 
+    .quick-ribbon a.featured-action {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 14px 34px rgba(26,92,56,0.2);
+    }
+
+    .quick-ribbon a.featured-action span {
+      color: rgba(255,255,255,0.78);
+    }
+
+    .quick-ribbon a.featured-action:hover {
+      background: #144f31;
+    }
+
     .quick-ribbon strong {
       font-size: 13px;
       font-weight: 900;
@@ -834,17 +900,22 @@
       margin-bottom: 34px;
     }
 
-    .category-title {
-      color: rgba(15,31,23,0.72);
-      font-size: 13px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
+.category-title {
+       color: rgba(15,31,23,0.72);
+       font-size: 13px;
+       letter-spacing: .08em;
+       text-transform: uppercase;
+       display: flex;
+       align-items: center;
+       gap: 8px;
+     }
 
-    .category-title::before {
-      height: 16px;
-      background: var(--green);
-    }
+     .category-title::before {
+       height: 16px;
+       background: var(--green);
+       border-radius: 2px;
+       box-shadow: 0 0 0 2px rgba(26,92,56,0.2);
+     }
 
     .grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -896,8 +967,41 @@
     }
 
     .footer {
-      border-top: 0;
-      color: rgba(15,31,23,0.42);
+      max-width: 1180px;
+      margin: 34px auto 0;
+      padding: 18px 20px;
+      border-top: 1px solid rgba(17,17,17,0.08);
+      color: rgba(15,31,23,0.58);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      font-size: 13px;
+    }
+
+    .footer-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(26,92,56,0.08);
+      border: 1px solid rgba(26,92,56,0.12);
+      color: var(--green);
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .footer-brand .logo-dot {
+      width: 7px;
+      height: 7px;
+    }
+
+    .footer-copy {
+      margin: 0;
+      text-align: right;
     }
 
     @media (max-width: 900px) {
@@ -921,12 +1025,211 @@
     }
 
     @media (max-width: 520px) {
+      body {
+        background:
+          radial-gradient(circle at 50% -8%, rgba(26,92,56,0.18), transparent 30%),
+          linear-gradient(180deg, #fbfaf6 0%, #f6f1e8 62%, #fff 100%);
+      }
+
+      canvas,
+      .grain,
+      .cursor,
+      .cursor-ring {
+        display: none !important;
+      }
+
+      .portal-nav {
+        position: sticky;
+        top: max(8px, env(safe-area-inset-top));
+        width: calc(100% - 20px);
+        margin: 8px auto 0;
+        padding: 9px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: center;
+        border-radius: 18px;
+      }
+
+      .portal-nav .logo {
+        width: auto;
+        justify-content: flex-start;
+        font-size: 17px !important;
+      }
+
+      .portal-nav-links {
+        grid-column: 1 / -1;
+        order: 3;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, max-content);
+        justify-content: start;
+        gap: 4px;
+        overflow-x: auto;
+        padding: 2px 0 0;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .portal-nav-links::-webkit-scrollbar { display: none; }
+
+      .portal-nav-links a {
+        min-height: 32px;
+        padding: 7px 9px;
+        font-size: 11px;
+        white-space: nowrap;
+        background: rgba(26,92,56,0.05);
+      }
+
+      .portal-nav-cta {
+        order: 2;
+        width: auto;
+        justify-content: flex-end;
+      }
+
+      .portal-nav-btn {
+        flex: 0 0 auto;
+        min-height: 34px;
+        padding: 8px 11px !important;
+        font-size: 12px !important;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .portal-nav-btn.secondary {
+        display: none !important;
+      }
+
+      .container {
+        padding: 34px 14px 38px !important;
+      }
+
+      .header {
+        margin-bottom: 16px;
+      }
+
+      .header h1 {
+        font-size: 11px !important;
+        padding: 6px 10px;
+      }
+
+      .header p {
+        margin-top: 10px;
+        font-size: 13px !important;
+        line-height: 1.45;
+      }
+
       .portal-title {
-        font-size: clamp(42px, 15vw, 62px);
+        font-size: clamp(28px, 8.8vw, 38px) !important;
+        line-height: 1.04;
+        letter-spacing: -0.045em;
+        max-width: 10ch;
+        margin: 0 auto;
+        text-wrap: balance;
+      }
+
+      .portal-subtitle {
+        max-width: 300px;
+        font-size: 15px !important;
+        line-height: 1.45;
+      }
+
+      .portal-text {
+        margin-bottom: 22px !important;
+        gap: 10px;
       }
 
       .quick-ribbon {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+        margin-bottom: 30px;
+        padding: 8px;
+        border-radius: 18px;
+      }
+
+      .quick-ribbon a.featured-action {
+        grid-column: 1 / -1;
+        min-height: 72px;
+      }
+
+      .quick-ribbon a.dashboard-action {
+        grid-column: 1 / -1;
+        justify-self: center;
+        width: calc((100% - 7px) / 2);
+      }
+
+      .quick-ribbon a {
+        min-height: 68px;
+        padding: 10px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.55);
+      }
+
+      .quick-ribbon strong {
+        font-size: 12px;
+      }
+
+      .quick-ribbon span {
+        font-size: 10px;
+        line-height: 1.25;
+      }
+
+      .category {
+        margin-bottom: 26px;
+      }
+
+      .category-title {
+        margin-bottom: 12px;
+        font-size: 12px !important;
+      }
+
+      .grid {
+        gap: 10px !important;
+      }
+
+      .card {
+        min-height: 0;
+        padding: 16px !important;
+        border-radius: 18px;
+        gap: 8px;
+      }
+
+      .card-title {
+        font-size: 17px !important;
+        line-height: 1.15;
+      }
+
+      .card-desc {
+        font-size: 13px !important;
+        line-height: 1.45;
+      }
+
+      .card-tag {
+        padding: 5px 9px;
+        font-size: 11px;
+      }
+
+      .footer {
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 20px;
+        padding: 18px 14px 24px !important;
+        font-size: 12px;
+      }
+
+      .footer-copy {
+        text-align: center;
+      }
+
+      .toast-container {
+        left: 12px;
+        right: 12px;
+        bottom: 18px;
+      }
+
+      .toast {
+        min-width: 0;
+        width: 100%;
       }
     }
 
@@ -990,15 +1293,8 @@
       <span class="logo-dot"></span>
       <span>ShopLink</span>
     </a>
-    <ul class="portal-nav-links">
-      <li><a href="/homepage-shoplink.html">Accueil</a></li>
-      <li><a href="/homepage-shoplink.html#features">Fonctionnalités</a></li>
-      <li><a href="/homepage-shoplink.html#pricing">Tarifs</a></li>
-      <li><a href="/faq.html">FAQ</a></li>
-    </ul>
     <div class="portal-nav-cta">
       <a href="/login.html" class="portal-nav-btn secondary">Connexion</a>
-      <a href="/register.html" class="portal-nav-btn primary">Créer mon site</a>
     </div>
   </nav>
 
@@ -1017,19 +1313,19 @@
     </div>
 
     <div class="quick-ribbon" aria-label="Accès rapide ShopLink">
+      <a href="/register.html" class="featured-action">
+        <strong>Créer mon site</strong>
+        <span>Lancer une boutique maintenant</span>
+      </a>
       <a href="/homepage-shoplink.html">
         <strong>Accueil</strong>
         <span>Voir la présentation</span>
-      </a>
-      <a href="/register.html">
-        <strong>Créer</strong>
-        <span>Lancer une boutique</span>
       </a>
       <a href="/login.html">
         <strong>Connexion</strong>
         <span>Ouvrir son espace</span>
       </a>
-      <a href="#" onclick="handleDashboard(); return false;">
+      <a href="/dashboard-client-shoplink.html" class="dashboard-action">
         <strong>Dashboard client</strong>
         <span>Gérer sa boutique</span>
       </a>
@@ -1040,36 +1336,42 @@
       <h2 class="category-title">Interfaces Client</h2>
       <div class="grid">
         <a href="homepage-shoplink.html" class="card">
+          <div class="card-icon"></div>
           <h3 class="card-title">Page d'Accueil</h3>
           <p class="card-desc">Découvrez notre plateforme et consultez les offres disponibles</p>
           <span class="card-tag">Public</span>
         </a>
 
         <a href="login.html" class="card">
+          <div class="card-icon"></div>
           <h3 class="card-title">Connexion</h3>
           <p class="card-desc">Connectez-vous à votre compte ShopLink</p>
           <span class="card-tag">Authentification</span>
         </a>
 
         <a href="register.html" class="card">
+          <div class="card-icon"></div>
           <h3 class="card-title">Inscription</h3>
           <p class="card-desc">Créez un nouveau compte pour commencer</p>
           <span class="card-tag">Authentification</span>
         </a>
 
-        <a href="#" onclick="handleDashboard(); return false;" class="card">
+        <a href="dashboard-client-shoplink.html" class="card">
+          <div class="card-icon"></div>
           <h3 class="card-title">Tableau de Bord Client</h3>
           <p class="card-desc">Gérez vos commandes et votre profil</p>
           <span class="card-tag">Utilisateur</span>
         </a>
 
         <a href="premium.html" class="card">
+          <div class="card-icon"></div>
           <h3 class="card-title">Plan Premium</h3>
           <p class="card-desc">Découvrez nos offres premium exclusives</p>
           <span class="card-tag">Premium</span>
         </a>
 
         <a href="payment.html" class="card">
+          <div class="card-icon"></div>
           <h3 class="card-title">Paiement Sécurisé</h3>
           <p class="card-desc">Effectuez vos paiements en toute sécurité</p>
           <span class="card-tag">Paiement</span>
@@ -1082,6 +1384,7 @@
       <h2 class="category-title">Pages Publiques</h2>
       <div class="grid">
         <a href="site-public.html" class="card">
+          <div class="card-icon"></div>
           <h3 class="card-title">Site Public</h3>
           <p class="card-desc">Page publique de présentation du site</p>
           <span class="card-tag">Public</span>
@@ -1094,6 +1397,7 @@
       <h2 class="category-title">Informations</h2>
       <div class="grid">
         <a href="faq.html" class="card">
+          <div class="card-icon"></div>
           <h3 class="card-title">FAQ - Questions Fréquentes</h3>
           <p class="card-desc">Trouvez réponses à vos questions sur ShopLink</p>
           <span class="card-tag">Aide</span>
@@ -1103,39 +1407,24 @@
   </div>
 
   <footer class="footer">
-    <p>&copy; 2026 ShopLink. Tous droits réservés. Bénin 🇧🇯</p>
+    <a href="/homepage-shoplink.html" class="footer-brand"><span class="logo-dot"></span>ShopLink</a>
+    <p class="footer-copy">&copy; 2026 ShopLink. Digitalise ta boutique</p>
   </footer>
 
 <script>
-  // Handle dashboard click with intelligent redirection
-  function handleDashboard() {
-    console.log('handleDashboard appelé');
-    const hasVisited = localStorage.getItem('hasVisited');
-    console.log('hasVisited:', hasVisited);
-
-    if (!hasVisited) {
-      localStorage.setItem('hasVisited', 'true');
-      console.log('Redirection vers /register');
-      window.location.href = '/register.html';
-    } else {
-      console.log('Redirection vers /login');
-      window.location.href = '/login.html';
-    }
-  }
-
   // Check authentication on dashboard card click
-const dashboardLinks = document.querySelectorAll('a[href*="dashboard-client-shoplink.html"]');
+const dashboardLinks = document.querySelectorAll('a[href="dashboard-client-shoplink.html"]');
 
 dashboardLinks.forEach(link => {
   link.addEventListener('click', function(e) {
     e.preventDefault();
     const token = localStorage.getItem('shoplink_token');
     const user = JSON.parse(localStorage.getItem('shoplink_user') || 'null');
-
+    
     if (token && user) {
-      window.location.href = '/dashboard-client-shoplink.html';
+      window.location.href = 'dashboard-client-shoplink.html';
     } else {
-      handleDashboard();
+      window.location.href = 'login.html';
     }
   });
 });
@@ -1257,7 +1546,5 @@ dashboardLinks.forEach(link => {
   }
 
 </script>
-<script src="/js/mobile-nav.js"></script>
-
 </body>
 </html>

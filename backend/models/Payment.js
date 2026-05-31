@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { Schema } = mongoose
 
 const paymentSchema = new mongoose.Schema(
   {
@@ -22,6 +23,10 @@ const paymentSchema = new mongoose.Schema(
     primaryColor: { type: String },
     secondaryColor: { type: String },
     logo: { type: String },
+    premiumOrder: { type: Schema.Types.Mixed },
+    paymentStatus: { type: String },
+    projectStatus: { type: String },
+    deliveryStartedAt: { type: Date },
     deliveryTargetAt: { type: Date },
     mobileMoneyPhone: { type: String },
     mobileMoneyProvider: { type: String },

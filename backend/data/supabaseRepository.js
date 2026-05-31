@@ -74,6 +74,15 @@ function mapPayment(p) {
   if (!p) {
     return null
   }
+  let premiumOrder = null
+  if (p.admin_note) {
+    try {
+      const parsed = JSON.parse(p.admin_note)
+      premiumOrder = parsed.premiumOrder || null
+    } catch (_e) {
+      premiumOrder = null
+    }
+  }
   return {
     id: p.id,
     userId: p.user_id,
@@ -84,6 +93,7 @@ function mapPayment(p) {
     status: p.status,
     reference: p.reference,
     adminNote: p.admin_note || '',
+    premiumOrder,
     paidAt: p.paid_at ? iso(p.paid_at) : undefined,
     createdAt: iso(p.created_at),
     updatedAt: p.updated_at ? iso(p.updated_at) : undefined,
@@ -438,7 +448,7 @@ module.exports = {
         status: data.status || 'pending',
         method: data.method || 'fedapay',
         reference: data.reference || `PAY-${Date.now()}`,
-        admin_note: data.adminNote || '',
+        admin_note: data.premiumOrder ? JSON.stringify({ premiumOrder: data.premiumOrder }) : (data.adminNote || ''),
         paid_at: data.paidAt ? new Date(data.paidAt).toISOString() : null,
         created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
       })

@@ -10,17 +10,27 @@ const MOBILE_MONEY_CONFIG = {
   MTN: {
     name: 'MTN Mobile Money',
     code: 'mtn',
-    adminPhone: '67163481',
+    adminPhone: '0167163481',
   },
   MOOV: {
     name: 'MOOV Money',
     code: 'moov',
-    adminPhone: '67163481',
+    adminPhone: '0167163481',
   },
 }
 
 function generateSMSCode() {
   return Math.floor(100000 + Math.random() * 900000).toString()
+}
+
+function premiumDeliveryDays(payment) {
+  return payment?.urgency === 'urgent' || payment?.premiumOrder?.delai === 'urgent' ? 21 : 28
+}
+
+function premiumDeliveryTarget(payment, startDate = new Date()) {
+  const targetDate = new Date(startDate)
+  targetDate.setDate(targetDate.getDate() + premiumDeliveryDays(payment))
+  return targetDate.toISOString()
 }
 
 async function publishPremiumSite(userId, paymentData) {
@@ -112,6 +122,14 @@ async function validateAndProcessPayment(req, paymentId, phoneNumber, provider) 
           transactionId,
           smsCode,
           validatedAt: new Date().toISOString(),
+          ...(payment.type === 'premium' && payment.step === 'acompte'
+            ? {
+                projectStatus: 'in_progress',
+                paymentStatus: 'paid',
+                deliveryStartedAt: new Date().toISOString(),
+                deliveryTargetAt: premiumDeliveryTarget(payment),
+              }
+            : {}),
         })
 
         let newSite = null
@@ -182,6 +200,50 @@ router.get('/promo-count', async (_req, res) => {
   })
 })
 
+router.post('/premium-order', async (req, res) => {
+  const { premiumOrder, amount, reference, name, email } = req.body
+
+  if (!premiumOrder || amount === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: 'premiumOrder et amount sont obligatoires',
+    })
+  }
+
+  const paymentPayload = {
+    userId: premiumOrder.userId || 'premium-guest',
+    type: 'premium',
+    amount,
+    step: 'acompte',
+    siteId: '',
+    urgency: premiumOrder.delai || 'normal',
+    status: 'pending',
+    validationStatus: 'pending',
+    reference: `PAY-${Date.now()}`,
+    clientReference: reference || '',
+    siteName: premiumOrder.company || '',
+    siteDescription: premiumOrder.activityDescription || '',
+    whatsappNumber: premiumOrder.whatsapp || '',
+    address: [premiumOrder.city, premiumOrder.district].filter(Boolean).join(', '),
+    activityType: premiumOrder.activity || '',
+    logo: premiumOrder.logo?.src || '',
+    premiumOrder,
+    paymentStatus: 'pending',
+    projectStatus: 'pending_payment',
+    clientName: premiumOrder.manager || name || 'Client Premium',
+    email: premiumOrder.email || email || '',
+    createdAt: new Date().toISOString(),
+  }
+
+  const payment = await repo().createPayment(paymentPayload)
+
+  return res.status(201).json({
+    success: true,
+    message: 'Commande premium creee en attente de paiement',
+    payment,
+  })
+})
+
 router.post('/initiate', requireAuth, async (req, res) => {
   const {
     userId,
@@ -203,6 +265,7 @@ router.post('/initiate', requireAuth, async (req, res) => {
     reference,
     email,
     name,
+    premiumOrder,
   } = req.body
 
   if (!type || amount === undefined) {
@@ -253,16 +316,12 @@ router.post('/initiate', requireAuth, async (req, res) => {
     primaryColor,
     secondaryColor,
     logo,
+    premiumOrder: premiumOrder || null,
+    paymentStatus: 'pending',
+    projectStatus: type === 'premium' ? 'pending_payment' : undefined,
     clientName: name || req.user.name,
     email: email || req.user.email,
     createdAt: new Date().toISOString(),
-  }
-
-  if (paymentPayload.type === 'premium' && paymentPayload.step === 'acompte') {
-    const durationDays = paymentPayload.urgency === 'urgent' ? 14 : 21
-    const targetDate = new Date()
-    targetDate.setDate(targetDate.getDate() + durationDays)
-    paymentPayload.deliveryTargetAt = targetDate.toISOString()
   }
 
   const payment = await repo().createPayment(paymentPayload)
@@ -274,11 +333,19 @@ router.post('/initiate', requireAuth, async (req, res) => {
   await repo().patchPayment(payment.id, {
     status: 'paid',
     validationStatus: 'sms_validated',
-    mobileMoneyPhone: '67163481',
+    mobileMoneyPhone: '0167163481',
     mobileMoneyProvider: 'mtn',
     transactionId,
     smsCode,
     validatedAt: new Date().toISOString(),
+    ...(payment.type === 'premium' && payment.step === 'acompte'
+      ? {
+          projectStatus: 'in_progress',
+          paymentStatus: 'paid',
+          deliveryStartedAt: new Date().toISOString(),
+          deliveryTargetAt: premiumDeliveryTarget(payment),
+        }
+      : {}),
   })
 
   let newSite = null
@@ -396,6 +463,14 @@ router.post('/confirm-received', async (req, res) => {
     mobileMoneyProvider: provider,
     smsCode: smsCode || generateSMSCode(),
     validatedAt: new Date().toISOString(),
+    ...(payment.type === 'premium' && payment.step === 'acompte'
+      ? {
+          projectStatus: 'in_progress',
+          paymentStatus: 'paid',
+          deliveryStartedAt: new Date().toISOString(),
+          deliveryTargetAt: premiumDeliveryTarget(payment),
+        }
+      : {}),
   })
 
   let newSite = null
@@ -494,6 +569,15 @@ router.post('/callback', async (req, res) => {
   await r.patchPayment(payment.id, {
     status,
     transactionId: transactionId || payment.transactionId,
+    ...(payment.type === 'premium' && payment.step === 'acompte' && (status === 'paid' || status === 'paye')
+      ? {
+          projectStatus: 'in_progress',
+          paymentStatus: 'paid',
+          deliveryStartedAt: new Date().toISOString(),
+          validatedAt: new Date().toISOString(),
+          deliveryTargetAt: premiumDeliveryTarget(payment),
+        }
+      : {}),
   })
 
   let newSite = null

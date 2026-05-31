@@ -29,7 +29,7 @@
   "type": "autonome",
   "amount": 4000,
   "siteName": "Jean Dupont",
-  "whatsappNumber": "+22967163481",
+  "whatsappNumber": "0167163481",
   "clientName": "Jean Dupont",
   "mobileMoneyProvider": "mtn"
 }
@@ -95,7 +95,7 @@ Validation en cours... (cela prendra 3 secondes)
   "userId": "user-xxxxx",
   "name": "Jean Dupont",
   "slug": "jean-d-abc12",
-  "whatsapp": "+22967163481",
+  "whatsapp": "0167163481",
   "status": "published",
   "publishedAt": "2026-04-03T10:30:00Z"
 }

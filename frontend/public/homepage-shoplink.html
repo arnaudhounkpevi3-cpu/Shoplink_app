@@ -2,21 +2,22 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
   :root {
-    --brand: #1a6b4a;
-    --brand-light: #e8f5ee;
-    --brand-mid: #2e9967;
-    --accent: #f59c1a;
+    --brand: #1a5c38;
+    --brand-light: #eef7f1;
+    --brand-mid: #0f6e56;
+    --accent: #E8620A;
     --accent-light: #fff6e0;
-    --dark: #0f1f17;
+    --dark: #111111;
     --gray: #6b7280;
-    --light: #f9fafb;
+    --light: #F5F0E8;
     --white: #ffffff;
-    --border: #e5e7eb;
+    --border: rgba(17,17,17,0.10);
+    --bg: #F5F0E8;
     --radius: 12px;
     --radius-lg: 20px;
   }
@@ -32,8 +33,11 @@
 
   body {
     font-family: 'DM Sans', sans-serif;
-    background: #fff;
-    color: #1a1a2e;
+    background:
+      radial-gradient(circle at 50% -8%, rgba(245,156,26,0.16), transparent 32%),
+      radial-gradient(circle at 12% 12%, rgba(26,92,56,0.14), transparent 28%),
+      var(--bg);
+    color: #1a1a1a;
     font-size: 15px;
     line-height: 1.6;
   }
@@ -48,10 +52,11 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(255,255,255,0.95);
+    background: #ffffff;
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
-    padding: 14px 40px;
+    box-shadow: 0 8px 26px rgba(15,31,23,0.06);
+    padding: 12px 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -65,14 +70,24 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(26,92,56,0.08);
+    border: 1px solid rgba(26,92,56,0.12);
+    text-decoration: none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+    max-width: 100%;
+    min-width: 0;
+    white-space: nowrap;
   }
 
   .logo-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--accent);
+    width: 9px;
+    height: 9px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-mid));
     border-radius: 50%;
     display: inline-block;
+    box-shadow: 0 0 0 3px rgba(26,92,56,0.16);
   }
 
   .nav-links {
@@ -101,13 +116,13 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 20px;
-    border-radius: var(--radius);
+    padding: 11px 20px;
+    border-radius: 999px;
     font-family: 'DM Sans', sans-serif;
     font-weight: 500;
     font-size: 14px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     border: none;
     text-decoration: none;
   }
@@ -123,13 +138,21 @@
   }
 
   .btn-primary {
-    background: var(--brand);
+    background: linear-gradient(135deg, var(--brand), var(--brand-mid));
     color: white;
+    border: 1px solid rgba(255,255,255,0.16);
+    box-shadow: 0 12px 28px rgba(26,92,56,0.24), inset 0 1px 0 rgba(255,255,255,0.22);
   }
 
   .btn-primary:hover {
-    background: #155c3d;
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, #164f31, var(--brand));
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(26,92,56,0.3), inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+
+  .btn-primary:active,
+  .btn-accent:active {
+    transform: translateY(0) scale(0.98);
   }
 
   .btn-accent {
@@ -143,9 +166,9 @@
   }
 
   .btn-lg {
-    padding: 14px 28px;
+    padding: 15px 28px;
     font-size: 15px;
-    border-radius: 14px;
+    border-radius: 999px;
   }
 
   /* HERO */
@@ -246,6 +269,14 @@
     background: var(--brand);
     padding: 14px 16px 10px;
     color: white;
+    display: grid;
+    grid-template-columns: 1fr 42px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .phone-bar-copy {
+    min-width: 0;
   }
 
   .phone-bar-name {
@@ -257,16 +288,22 @@
   .phone-bar-desc { font-size: 10px; opacity: 0.8; }
 
   .phone-logo-placeholder {
-    width: 36px;
-    height: 36px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 8px;
+    width: 42px;
+    height: 42px;
+    background: #ffffff;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    float: right;
-    margin-top: -32px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(26,92,56,0.08);
+  }
+
+  .phone-logo-img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    display: block;
   }
 
   .phone-products {
@@ -326,7 +363,7 @@
   /* TARGETS */
   .targets-section {
     background: var(--dark);
-    padding: 60px 40px;
+    padding: 46px 32px;
     text-align: center;
   }
 
@@ -336,23 +373,23 @@
     color: rgba(255,255,255,0.5);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
 
   .targets-grid {
     display: flex;
     justify-content: center;
-    gap: 16px;
+    gap: 10px;
     flex-wrap: wrap;
-    max-width: 700px;
+    max-width: 760px;
     margin: 0 auto;
   }
 
   .target-pill {
     background: rgba(255,255,255,0.07);
     border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 100px;
-    padding: 10px 22px;
+    border-radius: 16px;
+    padding: 9px 16px;
     color: white;
     font-size: 14px;
     display: flex;
@@ -368,6 +405,14 @@
   }
 
   .target-icon { font-size: 18px; }
+
+  .target-icon-img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex: 0 0 auto;
+    display: block;
+  }
 
   /* HOW IT WORKS */
   .how-section {
@@ -478,41 +523,44 @@
 
   /* EXAMPLES */
   .examples-section {
-    background: var(--light);
-    padding: 80px 40px;
+    background: rgba(255,255,255,0.42);
+    padding: 58px 32px;
   }
 
   .examples-section .inner {
-    max-width: 1000px;
+    max-width: 960px;
     margin: 0 auto;
   }
 
   .examples-header {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 32px;
   }
 
   .examples-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: 16px;
   }
 
   .example-card {
-    background: var(--white);
-    border-radius: var(--radius-lg);
+    background: rgba(255,255,255,0.84);
+    border-radius: 18px;
     overflow: hidden;
     border: 1px solid var(--border);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 14px 38px rgba(17,17,17,0.045);
+    backdrop-filter: blur(14px);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
   }
 
   .example-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.09);
+    border-color: rgba(26,92,56,0.18);
+    box-shadow: 0 18px 46px rgba(17,17,17,0.085);
   }
 
   .example-header {
-    padding: 20px;
+    padding: 14px 16px;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -520,13 +568,20 @@
   }
 
   .example-logo {
-    width: 46px;
-    height: 46px;
+    width: 38px;
+    height: 38px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 22px;
+  }
+
+  .example-logo-img {
+    width: 21px;
+    height: 21px;
+    object-fit: contain;
+    display: block;
   }
 
   .example-logo.restaurant { background: #fef2e0; }
@@ -535,7 +590,7 @@
 
   .example-name {
     font-family: 'Syne', sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--dark);
   }
@@ -546,7 +601,7 @@
   }
 
   .example-products {
-    padding: 14px 16px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -556,7 +611,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
+    padding: 7px 10px;
     background: var(--light);
     border-radius: 8px;
   }
@@ -592,35 +647,51 @@
     gap: 4px;
   }
 
+  .whatsapp-icon-img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+    display: inline-block;
+    flex: 0 0 auto;
+  }
+
+  .phone-product-btn .whatsapp-icon-img {
+    width: 9px;
+    height: 9px;
+  }
+
   /* PRICING */
   .pricing-section {
-    padding: 80px 40px;
-    max-width: 900px;
+    padding: 58px 32px;
+    max-width: 860px;
     margin: 0 auto;
   }
 
   .pricing-header {
     text-align: center;
-    margin-bottom: 52px;
+    margin-bottom: 34px;
   }
 
   .pricing-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 28px;
+    gap: 18px;
     align-items: start;
   }
 
   .pricing-card {
-    background: var(--white);
+    background: rgba(255,255,255,0.88);
     border: 1.5px solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: 20px;
     overflow: hidden;
-    transition: box-shadow 0.2s;
+    box-shadow: 0 16px 46px rgba(17,17,17,0.05);
+    backdrop-filter: blur(14px);
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
   }
 
   .pricing-card:hover {
-    box-shadow: 0 8px 32px rgba(0,0,0,0.09);
+    transform: translateY(-3px);
+    box-shadow: 0 22px 58px rgba(17,17,17,0.09);
   }
 
   .pricing-card.featured {
@@ -646,7 +717,7 @@
   }
 
   .pricing-card-header {
-    padding: 28px 28px 20px;
+    padding: 24px 24px 18px;
     border-bottom: 1px solid var(--border);
   }
 
@@ -661,10 +732,10 @@
 
   .pricing-name {
     font-family: 'Syne', sans-serif;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
     color: var(--dark);
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .pricing-price-block {
@@ -676,7 +747,7 @@
 
   .promo-price {
     font-family: 'Syne', sans-serif;
-    font-size: 38px;
+    font-size: 34px;
     font-weight: 800;
     color: var(--brand);
     line-height: 1;
@@ -742,37 +813,38 @@
   }
 
   .pricing-body {
-    padding: 22px 28px 28px;
+    padding: 18px 24px 24px;
   }
 
   .pricing-features {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 24px;
+    gap: 9px;
+    margin-bottom: 20px;
   }
 
   .pricing-features li {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    font-size: 14px;
+    font-size: 13px;
     color: #374151;
   }
 
   .check {
     width: 18px;
     height: 18px;
-    background: var(--brand-light);
+    background: var(--brand);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 10px;
-    color: var(--brand);
-    margin-top: 1px;
+    font-size: 11px;
+    color: #fff;
+    margin-top: 0;
+    font-weight: 800;
   }
 
   .pricing-note {
@@ -788,7 +860,7 @@
   /* CTA Section */
   .cta-section {
     background: var(--dark);
-    padding: 80px 40px;
+    padding: 58px 32px;
     text-align: center;
   }
 
@@ -930,50 +1002,127 @@
     max-width: 200px;
   }
 
-  /* MOBILE NAVBAR */
+  /* MOBILE HOMEPAGE */
   @media (max-width: 768px) {
     html,body{width:100% !important;min-width:100% !important;max-width:100% !important;overflow-x:hidden !important;}
+
+    body,
+    section,
+    nav,
+    .hero,
+    .hero-content,
+    .hero-visual,
+    .targets-section,
+    .targets-grid,
+    .target-pill,
+    .path-grid,
+    .path-step,
+    .examples-section,
+    .examples-section .inner,
+    .examples-grid,
+    .example-card,
+    .pricing-section,
+    .pricing-grid,
+    .pricing-card,
+    .cta-section,
+    footer {
+      max-width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    a,
+    span,
+    button,
+    .section-title,
+    .section-sub,
+    .target-pill,
+    .target-pill span,
+    .stat-num,
+    .stat-label,
+    .example-name,
+    .example-type,
+    .product-name-ex,
+    .product-price-ex,
+    .pricing-name,
+    .pricing-features li,
+    .pricing-note {
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
     
     nav {
-      padding: 6px 10px !important;
-      min-height: 45px !important;
+      padding: 10px 14px !important;
+      min-height: 58px !important;
       width:100% !important;
+      gap: 10px;
+      flex-wrap: nowrap !important;
     }
     .logo {
-      font-size: 14px !important;
+      font-size: 16px !important;
+      flex: 0 1 auto;
+      max-width: 142px;
+      padding: 7px 10px !important;
+      overflow: visible;
+      text-overflow: clip;
     }
     .logo-dot {
-      width: 5px !important;
-      height: 5px !important;
+      width: 7px !important;
+      height: 7px !important;
     }
     .nav-links {
       display: none !important;
     }
     .nav-cta {
-      gap: 4px !important;
+      gap: 8px !important;
+      margin-left: auto;
+      min-width: 0;
+      flex-shrink: 1;
     }
     .btn {
-      padding: 4px 8px !important;
-      font-size: 11px !important;
+      padding: 9px 12px !important;
+      font-size: 11.5px !important;
+      border-radius: 999px;
+      white-space: nowrap;
+      max-width: 100%;
     }
+    .nav-cta .btn-outline { display: none !important; }
     
     .hero {
-      padding: 40px 16px 32px !important;
-      gap: 28px !important;
+      padding: 34px 18px 38px !important;
+      gap: 26px !important;
       grid-template-columns: 1fr !important;
       width:100% !important;
+      text-align: left;
+      align-items: start;
+      overflow: hidden;
     }
     
     .hero-visual {
-      order: -1;
+      order: 2;
+    }
+
+    .hero-content {
+      order: 1;
     }
     
     .hero h1 {
-      font-size: 28px !important;
+      font-size: clamp(32px, 10vw, 42px) !important;
+      line-height: 1.03 !important;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px !important;
+      max-width: 11ch;
     }
     
     .hero p {
-      font-size: 14px !important;
+      font-size: 15px !important;
+      line-height: 1.6 !important;
+      margin-bottom: 24px !important;
+      max-width: 34ch;
     }
     
     .hero-btns {
@@ -984,52 +1133,371 @@
     .hero-btns .btn-lg {
       width: 100%;
       justify-content: center;
-      padding: 13px 20px !important;
+      padding: 14px 18px !important;
+      font-size: 14px !important;
     }
     
     .hero-stats {
-      gap: 16px !important;
-      flex-wrap: wrap;
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+      margin-top: 26px !important;
+      padding-top: 18px !important;
+      width: 100%;
+    }
+
+    .stat-item {
+      padding: 10px 8px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.74);
+      text-align: center;
     }
     
     .stat-num {
       font-size: 20px !important;
+      line-height: 1.05;
     }
     
-    .phone-mockup {
-      width: 220px !important;
-      margin: 0 auto;
+.phone-mockup {
+       width: min(230px, 76vw) !important;
+       margin: 0 auto;
+       border-radius: 30px !important;
+       padding: 10px !important;
+       box-shadow: 0 18px 48px rgba(0,0,0,0.16), 0 0 0 1px rgba(255,255,255,0.06) !important;
+      }
+
+    .phone-screen {
+      min-height: 405px !important;
+      border-radius: 22px !important;
     }
+
+    .phone-bar {
+      padding: 11px 12px 9px !important;
+      grid-template-columns: 1fr 38px;
+      gap: 8px;
+    }
+
+    .phone-bar-name {
+      font-size: 12px !important;
+      line-height: 1.15;
+    }
+
+    .phone-bar-desc {
+      font-size: 9px !important;
+    }
+
+    .phone-logo-placeholder {
+      width: 38px !important;
+      height: 38px !important;
+      font-size: 14px !important;
+      background: #fff !important;
+      border-radius: 11px !important;
+    }
+
+    .phone-logo-img {
+      width: 28px;
+      height: 28px;
+    }
+
+    .phone-products {
+      padding: 7px !important;
+      gap: 6px !important;
+    }
+
+    .phone-product {
+      border-radius: 8px !important;
+    }
+
+    .phone-product-img {
+      height: 54px !important;
+      font-size: 21px !important;
+    }
+
+    .phone-product-info {
+      padding: 5px 6px 7px !important;
+    }
+
+    .phone-product-name,
+    .phone-product-price {
+      font-size: 9px !important;
+      line-height: 1.2;
+    }
+
+    .phone-product-btn {
+      min-height: 20px;
+      font-size: 7px !important;
+      padding: 3px !important;
+    }
+
+    .targets-section,
+    .how-section,
+    #how-it-works,
+    .pricing-section,
+    .examples-section .inner,
+    .cta-section {
+      padding-left: 18px !important;
+      padding-right: 18px !important;
+    }
+
+    #how-it-works,
+    .examples-section,
+    .pricing-section,
+    .cta-section {
+      padding-top: 54px !important;
+      padding-bottom: 54px !important;
+    }
+
+    .section-label {
+      font-size: 11px !important;
+      margin-bottom: 12px !important;
+    }
+
+    .section-title {
+      font-size: clamp(26px, 8vw, 34px) !important;
+      line-height: 1.08 !important;
+      max-width: 12ch;
+      margin-left: auto;
+      margin-right: auto;
+      text-wrap: balance;
+    }
+
+    .section-sub {
+      font-size: 14px !important;
+      line-height: 1.5 !important;
+      max-width: 30ch;
+      margin: 0 auto 28px !important;
+    }
+
+    .path-tabs {
+      display: grid !important;
+      grid-template-columns: 1fr;
+      gap: 8px !important;
+      margin-bottom: 28px !important;
+    }
+
+    .path-tab {
+      width: 100%;
+      min-height: 44px;
+      padding: 11px 14px !important;
+    }
+
+    .path-grid {
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+      text-align: left;
+    }
+
+    .path-step {
+      display: grid;
+      grid-template-columns: 1fr;
+      justify-items: center;
+      row-gap: 6px;
+      padding: 11px 12px !important;
+      text-align: center;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .path-step::after {
+      display: none !important;
+    }
+
+    .path-icon {
+      width: 30px !important;
+      height: 30px !important;
+      margin: 0 !important;
+      border-width: 1px !important;
+    }
+
+    .path-step-title {
+      font-size: 13px !important;
+      line-height: 1.15;
+      margin-bottom: 0 !important;
+    }
+
+    .path-step-desc {
+      max-width: 24ch;
+      margin: 0 auto;
+      font-size: 11px !important;
+      line-height: 1.3;
+    }
+
+    .examples-header {
+      margin-bottom: 28px !important;
+    }
+
+    .examples-grid,
+    .pricing-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+
+    .example-header,
+    .example-products,
+    .example-footer,
+    .pricing-card-header,
+    .pricing-body {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+
+    .example-footer {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .example-link {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .whatsapp-btn {
+      width: 100%;
+      justify-content: center;
+      min-height: 38px;
+    }
+
+    .pricing-header {
+      margin-bottom: 30px !important;
+    }
+
+    .pricing-card-header {
+      padding-top: 26px !important;
+    }
+
+    .pricing-name {
+      font-size: 20px !important;
+    }
+
+    .promo-price {
+      font-size: 34px !important;
+    }
+
+    .countdown-bar {
+      flex-direction: column;
+      align-items: flex-start !important;
+      gap: 8px;
+    }
+
+    .pricing-features li {
+      font-size: 13px !important;
+      line-height: 1.45;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(28px, 9vw, 36px) !important;
+      line-height: 1.08;
+    }
+
+    .cta-section p {
+      max-width: 28ch;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 15px !important;
+      line-height: 1.5;
+    }
+
+    footer {
+      padding: 28px 18px !important;
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .targets-grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px !important;
+      width: 100%;
+    }
+
+    .target-pill {
+      justify-content: flex-start;
+      text-align: left;
+      min-height: 54px;
+      height: 100%;
+      padding: 11px 12px !important;
+      border-radius: 16px !important;
+      gap: 8px !important;
+      line-height: 1.2;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .target-icon {
+      width: 24px;
+      min-width: 24px;
+      text-align: center;
+      font-size: 18px !important;
+    }
+
+    .target-icon-img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .target-pill span:last-child {
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 0;
+    }
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top, 0px);
+    background: #ffffff;
+    z-index: 101;
+    pointer-events: none;
   }
 
   @media (max-width: 480px) {
     html,body{width:100% !important;min-width:100% !important;max-width:100% !important;overflow-x:hidden !important;}
     
     nav {
-      padding: 4px 8px !important;
-      min-height: 40px !important;
+      padding: 9px 12px !important;
+      min-height: 54px !important;
+      gap: 6px !important;
     }
     
     .logo {
-      font-size: 13px !important;
+      font-size: 14px !important;
+      max-width: 118px;
+      padding: 6px 8px !important;
+    }
+
+    .nav-cta .btn-primary {
+      max-width: calc(100vw - 148px);
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .btn {
-      padding: 3px 6px !important;
-      font-size: 10px !important;
+      padding: 8px 9px !important;
+      font-size: 11px !important;
     }
     
     .hero h1 {
-      font-size: 24px !important;
+      font-size: clamp(30px, 10.5vw, 38px) !important;
+      max-width: 10.5ch;
     }
     
     .hero p {
       font-size: 13px !important;
+      max-width: 32ch;
     }
     
     .hero-badge {
-      font-size: 11px !important;
-      padding: 4px 10px !important;
+      font-size: 10px !important;
+      padding: 6px 10px !important;
+      line-height: 1.25;
     }
     
     .stat-num {
@@ -1037,11 +1505,73 @@
     }
     
     .stat-label {
-      font-size: 11px !important;
+      font-size: 10px !important;
+      line-height: 1.25;
     }
     
     .phone-mockup {
-      width: 180px !important;
+      width: min(210px, 74vw) !important;
+    }
+
+    .phone-screen {
+      min-height: 378px !important;
+    }
+
+    .phone-product-img {
+      height: 46px !important;
+    }
+
+    .phone-products {
+      gap: 5px !important;
+    }
+
+    .targets-section h2 {
+      font-size: 13px !important;
+      line-height: 1.35;
+      margin-bottom: 18px !important;
+    }
+
+    .targets-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+    }
+
+    .target-pill {
+      min-height: 50px;
+      height: 50px;
+      padding: 10px 8px !important;
+      gap: 6px !important;
+    }
+
+    .target-pill span:last-child {
+      font-size: 11.5px;
+      line-height: 1.2;
+    }
+
+    .hero-stats {
+      grid-template-columns: 1fr !important;
+    }
+
+    .path-grid {
+      gap: 8px !important;
+    }
+
+    .path-step {
+      padding: 10px !important;
+      border-radius: 13px;
+    }
+
+    .path-icon {
+      width: 28px !important;
+      height: 28px !important;
+    }
+
+    .path-step-title {
+      font-size: 12.5px !important;
+    }
+
+    .path-step-desc {
+      font-size: 10.5px !important;
     }
   }
 
@@ -1065,16 +1595,16 @@
   </ul>
   <div class="nav-cta">
     <a href="/login.html" class="btn btn-outline">Connexion</a>
-    <a href="/register.html" class="btn btn-primary">Créer mon site →</a>
+    <a href="/register.html" class="btn btn-primary">Créer mon site</a>
   </div>
 </nav>
 
 <!-- HERO -->
-<section style="background: linear-gradient(160deg, #f0fbf5 0%, #fff 55%, #fff8ee 100%);">
+<section style="background: transparent;">
   <div class="hero">
     <div class="hero-content">
       <div class="hero-badge">
-        ✦ <span>Solution de digitalisation pour le Bénin</span>
+        <span>Solution de digitalisation pour le Bénin</span>
       </div>
       <h1>
         <span>Fais connaître ta boutique<br><span>en ligne en minutes</span></span>
@@ -1083,8 +1613,8 @@
         <span>Crée ton site vitrine, présente tes produits et reçois des commandes directement via WhatsApp — sans coder, sans technicien.</span>
       </p>
       <div class="hero-btns">
-        <a href="/register.html" class="btn btn-primary btn-lg">🚀 Créer mon site</a>
-        <a href="/premium.html" class="btn btn-accent btn-lg">Confier mon projet →</a>
+        <a href="/register.html" class="btn btn-primary btn-lg">Créer mon site</a>
+        <a href="/premium.html" class="btn btn-accent btn-lg">Service Premium</a>
       </div>
       <div class="hero-stats">
         <div class="stat-item">
@@ -1104,54 +1634,56 @@
 
     <!-- PHONE MOCKUP -->
     <div class="hero-visual">
-      <div class="phone-mockup">
+      <div class="phone-mockup" style="width: 220px;">
         <div class="phone-screen">
           <div class="phone-bar">
-            <div class="phone-logo-placeholder">🍔</div>
-            <div class="phone-bar-name">Chez Maman Délices</div>
-            <div class="phone-bar-desc">Restaurant • Cotonou, Gbèdjromèdé</div>
+            <div class="phone-bar-copy">
+              <div class="phone-bar-name" style="font-size: 12px;">Chez Maman Délices</div>
+              <div class="phone-bar-desc" style="font-size: 8px;">Fast-food • Cotonou</div>
+            </div>
+            <div class="phone-logo-placeholder"><img class="phone-logo-img" src="https://cdn-icons-png.flaticon.com/512/738/738079.png" alt="Fast-food"></div>
           </div>
-          <div style="padding: 8px 10px 0; display: flex; gap: 6px; overflow: hidden;">
-            <div style="background: var(--brand); color: white; border-radius: 100px; padding: 4px 12px; font-size: 10px; font-weight: 600; white-space: nowrap;">Tout</div>
-            <div style="background: var(--light); border-radius: 100px; padding: 4px 10px; font-size: 10px; color: var(--gray); white-space: nowrap;">Plats</div>
-            <div style="background: var(--light); border-radius: 100px; padding: 4px 10px; font-size: 10px; color: var(--gray); white-space: nowrap;">Boissons</div>
+          <div style="padding: 6px 8px 0; display: flex; gap: 4px; overflow: hidden;">
+            <div style="background: var(--brand); color: white; border-radius: 100px; padding: 2px 8px; font-size: 8px; font-weight: 600; white-space: nowrap;">Tout</div>
+            <div style="background: var(--light); border-radius: 100px; padding: 2px 6px; font-size: 8px; color: var(--gray); white-space: nowrap;">Plats</div>
+            <div style="background: var(--light); border-radius: 100px; padding: 2px 6px; font-size: 8px; color: var(--gray); white-space: nowrap;">Boissons</div>
           </div>
-          <div class="phone-products">
-            <div class="phone-product">
-              <div class="phone-product-img" style="background: #fff8e0;">🍛</div>
-              <div class="phone-product-info">
-                <div class="phone-product-name">Riz sauce arachide</div>
-                <div class="phone-product-price">1 500 FCFA</div>
-                <button class="phone-product-btn">📲 Commander</button>
+          <div class="phone-products" style="padding: 6px; gap: 4px;">
+            <div class="phone-product" style="border-radius: 6px;">
+              <div class="phone-product-img" style="height: 50px; font-size: 20px;">🍛</div>
+              <div class="phone-product-info" style="padding: 4px 6px 6px;">
+                <div class="phone-product-name" style="font-size: 9px;">Riz sauce arachide</div>
+                <div class="phone-product-price" style="font-size: 9px;">1 500 FCFA</div>
+                <button class="phone-product-btn" style="font-size: 7px; padding: 2px;"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> Commander</button>
               </div>
             </div>
-            <div class="phone-product">
-              <div class="phone-product-img" style="background: #fce8e8;">🍗</div>
-              <div class="phone-product-info">
-                <div class="phone-product-name">Poulet braisé</div>
-                <div class="phone-product-price">2 000 FCFA</div>
-                <button class="phone-product-btn">📲 Commander</button>
+            <div class="phone-product" style="border-radius: 6px;">
+              <div class="phone-product-img" style="height: 50px; font-size: 20px;">🍗</div>
+              <div class="phone-product-info" style="padding: 4px 6px 6px;">
+                <div class="phone-product-name" style="font-size: 9px;">Poulet braisé</div>
+                <div class="phone-product-price" style="font-size: 9px;">2 000 FCFA</div>
+                <button class="phone-product-btn" style="font-size: 7px; padding: 2px;"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> Commander</button>
               </div>
             </div>
-            <div class="phone-product">
-              <div class="phone-product-img" style="background: #e8f5ee;">🥤</div>
-              <div class="phone-product-info">
-                <div class="phone-product-name">Bissap glacé</div>
-                <div class="phone-product-price">500 FCFA</div>
-                <button class="phone-product-btn">📲 Commander</button>
+            <div class="phone-product" style="border-radius: 6px;">
+              <div class="phone-product-img" style="height: 50px; font-size: 20px;">🥤</div>
+              <div class="phone-product-info" style="padding: 4px 6px 6px;">
+                <div class="phone-product-name" style="font-size: 9px;">Bissap glacé</div>
+                <div class="phone-product-price" style="font-size: 9px;">500 FCFA</div>
+                <button class="phone-product-btn" style="font-size: 7px; padding: 2px;"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> Commander</button>
               </div>
             </div>
-            <div class="phone-product">
-              <div class="phone-product-img" style="background: #f0e8fc;">🍲</div>
-              <div class="phone-product-info">
-                <div class="phone-product-name">Gboma dessi</div>
-                <div class="phone-product-price">1 800 FCFA</div>
-                <button class="phone-product-btn">📲 Commander</button>
+            <div class="phone-product" style="border-radius: 6px;">
+              <div class="phone-product-img" style="height: 50px; font-size: 20px;">🍲</div>
+              <div class="phone-product-info" style="padding: 4px 6px 6px;">
+                <div class="phone-product-name" style="font-size: 9px;">Gboma dessi</div>
+                <div class="phone-product-price" style="font-size: 9px;">1 800 FCFA</div>
+                <button class="phone-product-btn" style="font-size: 7px; padding: 2px;"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> Commander</button>
               </div>
             </div>
           </div>
-          <div style="padding: 10px 10px; text-align: center;">
-            <div style="font-size: 10px; color: var(--gray);">shoplink.bj/chezmamamelices</div>
+          <div style="padding: 6px; text-align: center;">
+            <div style="font-size: 8px; color: var(--gray);">shoplink.bj/chezmamamelices</div>
           </div>
         </div>
       </div>
@@ -1163,13 +1695,12 @@
 <section id="features" class="targets-section">
   <h2>Pour qui est ShopLink ?</h2>
   <div class="targets-grid">
-    <div class="target-pill"><span class="target-icon">🍽️</span> <span>Restaurants</span></div>
-    <div class="target-pill"><span class="target-icon">🍟</span> <span>Fast-food</span></div>
-    <div class="target-pill"><span class="target-icon">👗</span> <span>Boutiques</span></div>
-    <div class="target-pill"><span class="target-icon">🛒</span> <span>Commerçants</span></div>
-    <div class="target-pill"><span class="target-icon">💄</span> <span>Cosmétiques</span></div>
-    <div class="target-pill"><span class="target-icon">📱</span> <span>Vendeurs WhatsApp</span></div>
-    <div class="target-pill"><span class="target-icon">📸</span> <span>Vendeurs Instagram</span></div>
+    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/562/562678.png" alt="Restaurants"> <span>Restaurants</span></div>
+    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/738/738079.png" alt="Fast-food"> <span>Fast-food</span></div>
+    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/11746/11746073.png" alt="Boutiques"> <span>Boutiques</span></div>
+    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" alt="Commerçants"> <span>Commerçants</span></div>
+    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/8023/8023928.png" alt="Cosmétiques"> <span>Cosmétiques</span></div>
+    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/4121/4121823.png" alt="Vendeurs WhatsApp"> <span>Vendeurs WhatsApp</span></div>
   </div>
 </section>
 
@@ -1180,8 +1711,8 @@
   <p class="section-sub">Choisissez votre mode de création et lancez-vous</p>
 
   <div class="path-tabs">
-    <button class="path-tab active" onclick="switchTab('autonome', this)">🧑‍💻 Création autonome</button>
-    <button class="path-tab" onclick="switchTab('premium', this)">⭐ Service Premium</button>
+    <button class="path-tab active" onclick="switchTab('autonome', this)">Création autonome</button>
+    <button class="path-tab" onclick="switchTab('premium', this)">Service Premium</button>
   </div>
 
   <div id="autonome" class="path-content active">
@@ -1207,7 +1738,7 @@
         <div class="path-step-desc">4 000 FCFA (offre lancement)</div>
       </div>
       <div class="path-step">
-        <div class="path-icon">🚀</div>
+        <div class="path-icon"></div>
         <div class="path-step-title">En ligne !</div>
         <div class="path-step-desc">Partagez votre lien unique</div>
       </div>
@@ -1222,7 +1753,7 @@
         <div class="path-step-desc">Remplissez vos besoins détaillés</div>
       </div>
       <div class="path-step">
-        <div class="path-icon">💰</div>
+        <div class="path-icon"></div>
         <div class="path-step-title">Acompte 50%</div>
         <div class="path-step-desc">5 000 FCFA pour démarrer</div>
       </div>
@@ -1232,7 +1763,7 @@
         <div class="path-step-desc">Nous créons votre site pro</div>
       </div>
       <div class="path-step">
-        <div class="path-icon">✅</div>
+        <div class="path-icon"></div>
         <div class="path-step-title">Validation</div>
         <div class="path-step-desc">Solde final + retouches</div>
       </div>
@@ -1257,7 +1788,7 @@
       <!-- Restaurant -->
       <div class="example-card">
         <div class="example-header">
-          <div class="example-logo restaurant">🍽️</div>
+          <div class="example-logo restaurant"><img class="example-logo-img" src="https://cdn-icons-png.flaticon.com/512/562/562678.png" alt="Restaurant"></div>
           <div>
             <div class="example-name">Le Jardin d'Akpakpa</div>
             <div class="example-type">Restaurant — Cotonou</div>
@@ -1279,14 +1810,14 @@
         </div>
         <div class="example-footer">
           <span class="example-link">shoplink.bj/jardinakpakpa</span>
-          <button class="whatsapp-btn">📲 WhatsApp</button>
+          <button class="whatsapp-btn"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> WhatsApp</button>
         </div>
       </div>
 
       <!-- Boutique -->
       <div class="example-card">
         <div class="example-header">
-          <div class="example-logo boutique">👗</div>
+          <div class="example-logo boutique"><img class="example-logo-img" src="https://cdn-icons-png.flaticon.com/512/11746/11746073.png" alt="Boutique"></div>
           <div>
             <div class="example-name">Boutique Grâce Mode</div>
             <div class="example-type">Vêtements — Porto-Novo</div>
@@ -1308,14 +1839,14 @@
         </div>
         <div class="example-footer">
           <span class="example-link">shoplink.bj/gracemode</span>
-          <button class="whatsapp-btn">📲 WhatsApp</button>
+          <button class="whatsapp-btn"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> WhatsApp</button>
         </div>
       </div>
 
       <!-- Cosmétiques -->
       <div class="example-card">
         <div class="example-header">
-          <div class="example-logo cosmetique">💄</div>
+          <div class="example-logo cosmetique"><img class="example-logo-img" src="https://cdn-icons-png.flaticon.com/512/8023/8023928.png" alt="Cosmétiques"></div>
           <div>
             <div class="example-name">Beauty by Sèmè</div>
             <div class="example-type">Cosmétiques — Sèmè-Kpodji</div>
@@ -1331,13 +1862,13 @@
             <span class="product-price-ex">2 000 F</span>
           </div>
           <div class="example-product-row">
-            <span class="product-name-ex">✨ Savon au miel</span>
+            <span class="product-name-ex">Savon au miel</span>
             <span class="product-price-ex">1 000 F</span>
           </div>
         </div>
         <div class="example-footer">
           <span class="example-link">shoplink.bj/beautyseme</span>
-          <button class="whatsapp-btn">📲 WhatsApp</button>
+          <button class="whatsapp-btn"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> WhatsApp</button>
         </div>
       </div>
     </div>
@@ -1355,7 +1886,7 @@
   <div class="pricing-grid">
     <!-- Autonome -->
     <div class="pricing-card featured">
-      <div class="pricing-badge">⚡ Offre de lancement</div>
+      <div class="pricing-badge">Offre de lancement</div>
       <div class="pricing-card-header" style="padding-top: 36px;">
         <div class="pricing-type">Création autonome</div>
         <div class="pricing-name">ShopLink Starter</div>
@@ -1364,7 +1895,7 @@
           <span class="promo-price">4 000</span>
           <span class="old-price">5 000</span>
         </div>
-        <div class="promo-tag">⚡ Valable pour les 10 premiers</div>
+        <div class="promo-tag">Valable pour les 10 premiers</div>
         <div class="countdown-bar">
           <span>Places restantes</span>
           <div class="places-left">
@@ -1384,17 +1915,17 @@
       </div>
       <div class="pricing-body">
         <ul class="pricing-features">
-          <li><div class="check">✓</div> <span>Site vitrine en ligne instantanément</span></li>
-          <li><div class="check">✓</div> <span>Jusqu'à 20+ produits avec photos</span></li>
-          <li><div class="check">✓</div> <span>Lien unique personnalisé</span></li>
-          <li><div class="check">✓</div> <span>Bouton Commander via WhatsApp</span></li>
-          <li><div class="check">✓</div> <span>Catégories de produits</span></li>
-          <li><div class="check">✓</div> <span>Gestion autonome des produits</span></li>
-          <li><div class="check">✓</div> <span>Tableau de bord statistiques</span></li>
+          <li><div class="check">✓</div><span>Site vitrine en ligne instantanément</span></li>
+          <li><div class="check">✓</div><span>Jusqu'à 20+ produits avec photos</span></li>
+          <li><div class="check">✓</div><span>Lien unique personnalisé</span></li>
+          <li><div class="check">✓</div><span>Bouton Commander via WhatsApp</span></li>
+          <li><div class="check">✓</div><span>Catégories de produits</span></li>
+          <li><div class="check">✓</div><span>Gestion autonome des produits</span></li>
+          <li><div class="check">✓</div><span>Tableau de bord statistiques</span></li>
         </ul>
-        <button class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
-          <span>Payer et publier mon site →</span>
-        </button>
+<button class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
+                          Payer et publier mon site
+                       </button>
       </div>
     </div>
 
@@ -1408,7 +1939,7 @@
           <span class="promo-price" style="color: var(--accent);">10 000</span>
           <span class="old-price">12 000</span>
         </div>
-        <div class="promo-tag" style="background: var(--accent-light); color: #9a5c00;">⭐ 10 premiers clients</div>
+        <div class="promo-tag" style="background: var(--accent-light); color: #9a5c00;">10 premiers clients</div>
         <div class="countdown-bar" style="background: var(--accent-light); border-color: #fcd88a; color: #9a5c00;">
           <span>Paiement en 2 étapes</span>
           <span style="font-weight: 700;">50% acompte + 50% livraison</span>
@@ -1418,18 +1949,18 @@
         <div class="pricing-note">
           <strong>Acompte :</strong> 5 000 FCFA pour démarrer<br>
           <strong>Solde :</strong> 5 000 FCFA à la livraison du site<br>
-          <strong>Délai :</strong> 3 semaines (2 semaines en urgent)
+          <strong>Délai :</strong> 4 semaines (3 semaines en urgent)
         </div>
         <ul class="pricing-features">
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Design professionnel sur mesure</span></li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Organisation avancée des produits</span></li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Section À propos, Contact, Accueil</span></li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Intégration Google Maps</span></li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Support et suivi personnalisé</span></li>
-          <li><div class="check" style="background: var(--accent-light); color: var(--accent);">✓</div> <span>Livraison par email & WhatsApp</span></li>
+          <li><div class="check" style="background: var(--accent);">✓</div><span>Design professionnel sur mesure</span></li>
+          <li><div class="check" style="background: var(--accent);">✓</div><span>Organisation avancée des produits</span></li>
+          <li><div class="check" style="background: var(--accent);">✓</div><span>Section À propos, Contact, Accueil</span></li>
+          <li><div class="check" style="background: var(--accent);">✓</div><span>Intégration Google Maps</span></li>
+          <li><div class="check" style="background: var(--accent);">✓</div><span>Support et suivi personnalisé</span></li>
+          <li><div class="check" style="background: var(--accent);">✓</div><span>Livraison par email & WhatsApp</span></li>
         </ul>
         <button class="btn btn-accent btn-lg" style="width: 100%; justify-content: center;">
-          <span>Commander mon site ⭐</span>
+          <span>Commander mon site</span>
         </button>
       </div>
     </div>
@@ -1441,8 +1972,8 @@
   <h2>Prêt à te lancer ?</h2>
   <p>Rejoins les commerçants du Bénin qui vendent en ligne avec ShopLink</p>
   <div class="cta-btns">
-    <a href="/register.html" class="btn btn-primary btn-lg" style="font-size: 16px; padding: 16px 32px;">🚀 Créer mon site maintenant</a>
-    <a href="/premium.html" class="btn btn-lg" style="background: rgba(255,255,255,0.1); color: white; border: 1.5px solid rgba(255,255,255,0.3); text-decoration: none;">Confier mon projet →</a>
+    <a href="/register.html" class="btn btn-primary btn-lg" style="font-size: 16px; padding: 16px 32px;">Créer mon site maintenant</a>
+    <a href="/premium.html" class="btn btn-lg" style="background: rgba(255,255,255,0.1); color: white; border: 1.5px solid rgba(255,255,255,0.3); text-decoration: none;">Confier mon projet</a>
   </div>
 </section>
 
@@ -1453,7 +1984,6 @@
     ShopLink
   </div>
   <p>© 2026 ShopLink — Digitaliser les entreprises du Bénin</p>
-  <p style="color: rgba(255,255,255,0.3); font-size: 12px;">Cotonou, Bénin 🇧🇯</p>
 </footer>
 
 <script>
@@ -1464,7 +1994,5 @@ function switchTab(id, btn) {
   btn.classList.add('active');
 }
 </script>
-<script src="/js/mobile-nav.js"></script>
-
 </body>
 </html>

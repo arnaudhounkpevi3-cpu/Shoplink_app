@@ -2,27 +2,27 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>ShopLink — Créer un compte</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <script src="/js/api-config.js"></script>
   <style>
     :root{
       --green:#1a5c38; --green-light:#eef7f1; --green-mid:#0f6e56;
-      --amber:#f59c1a; --amber-light:#fef3de;
-      --dark:#0f1f17; --bg:#fdf6ee; --white:#fff;
-      --border:#e8ddd0; --text:#1a1a1a; --muted:#6b5744; --soft:#9a7d5a;
+      --amber:#E8620A; --amber-light:#fff6e0;
+      --dark:#111111; --bg:#F5F0E8; --white:#fff;
+      --border:rgba(17,17,17,0.10); --text:#1a1a1a; --muted:rgba(17,17,17,0.52); --soft:#9a7d5a;
       --radius:12px; --radius-lg:18px;
     }
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+    body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 50% -8%, rgba(245,156,26,0.16), transparent 32%),radial-gradient(circle at 12% 12%, rgba(26,92,56,0.14), transparent 28%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
     h1,h2{font-family:'Syne',sans-serif;}
 
     /* NAV */
     nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;}
-    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;}
-    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;}
-    .nav-link{color:rgba(255,255,255,0.7);font-size:13px;text-decoration:none;}
+    .logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;text-decoration:none;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.12);}
+    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;box-shadow:0 0 0 3px rgba(232,98,10,0.18);}
+    .nav-link{color:rgba(255,255,255,0.74);font-size:13px;text-decoration:none;font-weight:600;}
     .nav-link:hover{color:#fff;}
 
     /* LAYOUT */
@@ -43,7 +43,7 @@
     .promo-box-text{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5;}
 
     /* RIGHT PANEL */
-    .right-panel{background:var(--bg);padding:50px 60px;display:flex;flex-direction:column;justify-content:flex-start;min-height:100%;}
+    .right-panel{background:transparent;padding:50px 60px;display:flex;flex-direction:column;justify-content:flex-start;min-height:100%;}
     .form-header{margin-bottom:32px;}
     .form-title{font-size:26px;font-weight:800;color:var(--text);margin-bottom:6px;}
     .form-sub{font-size:14px;color:var(--muted);}
@@ -59,12 +59,20 @@
     .error-msg{font-size:12px;color:#e24b4a;margin-top:3px;}
     .form-hint{font-size:12px;color:var(--soft);margin-top:3px;}
 
+    .password-field{position:relative;display:flex;align-items:center;}
+    .password-field .form-input{width:100%;padding-right:48px;}
+    .password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:10px;background:var(--green-light);color:var(--green);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;line-height:1;}
+    .password-toggle svg{width:1em;height:1em;display:block;}
+    .password-toggle.is-visible{color:var(--soft);}
+    .password-toggle:active{transform:translateY(-50%) scale(0.96);}
+
     /* ACTIVITY TYPE */
     .activity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
     .activity-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:12px 8px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
     .activity-card:hover{border-color:var(--green);background:var(--green-light);}
     .activity-card.selected{border-color:var(--green);background:var(--green-light);}
     .activity-card-icon{font-size:22px;margin-bottom:6px;}
+    .activity-card-icon-img{width:24px;height:24px;object-fit:contain;display:block;margin:0 auto 6px;}
     .activity-card-label{font-size:12px;font-weight:500;color:var(--muted);}
     .activity-card.selected .activity-card-label{color:var(--green);}
 
@@ -105,9 +113,9 @@
 
     /* MOBILE RESPONSIVE */
     @media (max-width: 768px) {
-      nav{padding:0 20px;}
+      nav{padding:0 16px;height:48px;min-height:48px;}
       .nav-link{font-size:12px;}
-      
+
       .page-body{grid-template-columns:1fr;}
       .left-panel{display:none;}
       .right-panel{padding:30px 20px;}
@@ -131,10 +139,10 @@
     }
 
     @media (max-width: 480px) {
-      nav{padding:0 16px;height:50px;}
-      .logo{font-size:15px;}
+      nav{padding:0 12px;height:44px;min-height:44px;}
+      .logo{font-size:14px;padding:6px 10px;}
       .nav-link{font-size:11px;}
-      
+
       .right-panel{padding:24px 16px;}
       .form-title{font-size:22px;}
       .form-sub{font-size:12px;}
@@ -170,7 +178,7 @@
 <!-- NAV -->
 <nav>
   <a href="/index.html" class="logo"><span class="logo-dot"></span>ShopLink</a>
-  <a href="/login.html" class="nav-link">Déjà un compte ? Se connecter →</a>
+  <a href="/login.html" class="nav-link">Se connecter</a>
 </nav>
 
 <div class="page-body">
@@ -183,7 +191,7 @@
     </div>
     <div class="feature-list">
       <div class="feature-item">
-        <div class="feature-icon">🚀</div>
+        <div class="feature-icon"></div>
         <div class="feature-text"><strong>Site en ligne en 5 minutes</strong><br>Remplissez le formulaire et votre boutique est prête.</div>
       </div>
       <div class="feature-item">
@@ -250,7 +258,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Numéro de téléphone *</label>
-          <input class="form-input" type="tel" id="phone" placeholder="+229 XX XX XX XX" autocomplete="tel"/>
+          <input class="form-input" type="tel" id="phone" placeholder="+229 XXXXXXXX" autocomplete="tel"/>
           <div class="form-hint">Ce numéro sera utilisé pour WhatsApp</div>
           <div class="error-msg" id="err-phone"></div>
         </div>
@@ -261,25 +269,31 @@
       <div id="step-2" style="display:none;">
         <div class="form-group">
           <label class="form-label">Mot de passe *</label>
-          <input class="form-input" type="password" id="password" placeholder="Minimum 6 caractères" oninput="checkStrength(this.value)"/>
+          <div class="password-field">
+            <input class="form-input" type="password" id="password" placeholder="Minimum 6 caractères" autocomplete="new-password" oninput="checkStrength(this.value)"/>
+            <button class="password-toggle" type="button" onclick="togglePasswordVisibility('password', this)" aria-label="Afficher le mot de passe"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" fill-rule="evenodd" d="m18.922 16.8l3.17 3.17l-1.06 1.061L4.06 4.061L5.12 3l2.74 2.738A11.9 11.9 0 0 1 12 5c4.808 0 8.972 2.848 11 7a12.66 12.66 0 0 1-4.078 4.8m-8.098-8.097l4.473 4.473a3.5 3.5 0 0 0-4.474-4.474zm5.317 9.56A11.9 11.9 0 0 1 12 19c-4.808 0-8.972-2.848-11-7a12.66 12.66 0 0 1 4.078-4.8l3.625 3.624a3.5 3.5 0 0 0 4.474 4.474l2.964 2.964z"/></svg></button>
+          </div>
           <div class="strength-bar" id="strength-bar" style="background:var(--border);width:0%;"></div>
           <div class="strength-label" id="strength-label" style="color:var(--soft);"></div>
           <div class="error-msg" id="err-password"></div>
         </div>
         <div class="form-group">
           <label class="form-label">Confirmer le mot de passe *</label>
-          <input class="form-input" type="password" id="password2" placeholder="Répétez votre mot de passe"/>
+          <div class="password-field">
+            <input class="form-input" type="password" id="password2" placeholder="Répétez votre mot de passe" autocomplete="new-password"/>
+            <button class="password-toggle" type="button" onclick="togglePasswordVisibility('password2', this)" aria-label="Afficher le mot de passe"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" fill-rule="evenodd" d="m18.922 16.8l3.17 3.17l-1.06 1.061L4.06 4.061L5.12 3l2.74 2.738A11.9 11.9 0 0 1 12 5c4.808 0 8.972 2.848 11 7a12.66 12.66 0 0 1-4.078 4.8m-8.098-8.097l4.473 4.473a3.5 3.5 0 0 0-4.474-4.474zm5.317 9.56A11.9 11.9 0 0 1 12 19c-4.808 0-8.972-2.848-11-7a12.66 12.66 0 0 1 4.078-4.8l3.625 3.624a3.5 3.5 0 0 0 4.474 4.474l2.964 2.964z"/></svg></button>
+          </div>
           <div class="error-msg" id="err-password2"></div>
         </div>
         <div class="form-group">
           <label class="form-label">Type d'activité *</label>
           <div class="activity-grid" id="activity-grid">
-            <div class="activity-card selected" onclick="selectActivity(this,'restaurant')"><div class="activity-card-icon">🍽️</div><div class="activity-card-label">Restaurant</div></div>
-            <div class="activity-card" onclick="selectActivity(this,'boutique')"><div class="activity-card-icon">👗</div><div class="activity-card-label">Boutique</div></div>
-            <div class="activity-card" onclick="selectActivity(this,'fastfood')"><div class="activity-card-icon">🍟</div><div class="activity-card-label">Fast-food</div></div>
-            <div class="activity-card" onclick="selectActivity(this,'cosmetique')"><div class="activity-card-icon">💄</div><div class="activity-card-label">Cosmétiques</div></div>
-            <div class="activity-card" onclick="selectActivity(this,'commerce')"><div class="activity-card-icon">🛒</div><div class="activity-card-label">Commerce</div></div>
-            <div class="activity-card" onclick="selectActivity(this,'autre')"><div class="activity-card-icon">✨</div><div class="activity-card-label">Autre</div></div>
+            <div class="activity-card selected" onclick="selectActivity(this,'restaurant')"><img class="activity-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/562/562678.png" alt="Restaurant"><div class="activity-card-label">Restaurant</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'boutique')"><img class="activity-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/11746/11746073.png" alt="Boutique"><div class="activity-card-label">Boutique</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'fastfood')"><img class="activity-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/738/738079.png" alt="Fast-food"><div class="activity-card-label">Fast-food</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'cosmetique')"><img class="activity-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/8023/8023928.png" alt="Cosmétiques"><div class="activity-card-label">Cosmétiques</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'commerce')"><img class="activity-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" alt="Commerce"><div class="activity-card-label">Commerce</div></div>
+            <div class="activity-card" onclick="selectActivity(this,'autre')"><img class="activity-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/3388/3388695.png" alt="Autre"><div class="activity-card-label">Autre</div></div>
           </div>
           <input type="hidden" id="activity-type" value="restaurant"/>
           <div class="error-msg" id="err-activity"></div>
@@ -315,7 +329,7 @@
 
         <div style="display:flex;gap:10px;">
           <button type="button" style="flex:1;padding:13px;border-radius:var(--radius);border:1.5px solid var(--border);background:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;" onclick="goStep(2)">← Retour</button>
-          <button type="submit" class="btn-submit" style="flex:2;" id="submit-btn">🚀 Créer mon compte</button>
+          <button type="submit" class="btn-submit" style="flex:2;" id="submit-btn">Créer mon compte</button>
         </div>
 
         <div class="terms">En créant un compte vous acceptez nos <a href="#">Conditions d'utilisation</a> et notre <a href="#">Politique de confidentialité</a></div>
@@ -328,6 +342,15 @@
 <script>
   let currentStep = 1;
   const selectedActivity = { value: 'restaurant' };
+
+  function togglePasswordVisibility(inputId, button) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const shouldShow = input.type === 'password';
+    input.type = shouldShow ? 'text' : 'password';
+    button.classList.toggle('is-visible', shouldShow);
+    button.setAttribute('aria-label', shouldShow ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+  }
 
   function goStep(n) {
     document.getElementById('step-' + currentStep).style.display = 'none';
@@ -444,13 +467,13 @@
         console.error('Registration failed:', data.message);
         showGlobalError(data.message || 'Erreur lors de l\'inscription');
         btn.disabled = false;
-        btn.textContent = '🚀 Créer mon compte';
+        btn.textContent = 'Créer mon compte';
       }
     } catch(err) {
       console.error('Registration error:', err);
       showGlobalError('Erreur de connexion au serveur');
       btn.disabled = false;
-      btn.textContent = '🚀 Créer mon compte';
+      btn.textContent = 'Créer mon compte';
     }
   });
 
@@ -473,6 +496,5 @@ document.addEventListener('DOMContentLoaded', () => {
   window.scrollTo(0, 0);
 });
 </script>
-<script src="/js/mobile-nav.js"></script>
 </body>
 </html>

@@ -395,7 +395,7 @@ function App() {
               : relatedSite?.activityType || 'Site premium',
       depositAmount: Number(payment.amount || 0),
       remainingBalance,
-      deadlineLabel: isUrgent ? 'Urgent · 2 sem.' : 'Normal · 3 sem.',
+      deadlineLabel: isUrgent ? 'Urgent · 3 sem.' : 'Normal · 4 sem.',
       statusLabel: isPaid ? 'En cours' : 'Bloque',
       statusTone: isPaid ? 'amber' : 'red',
       urgency: payment.urgency || 'normal',

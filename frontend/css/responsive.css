@@ -193,8 +193,9 @@ input, textarea, select, button { max-width: 100%; font-family: inherit; }
 .mobile-nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: rgba(255,255,255,0.75); font-size: 15px; border-radius: 10px; cursor: pointer; text-decoration: none; transition: background 0.15s; border: none; background: none; width: 100%; font-family: inherit; }
 .mobile-nav-item:hover, .mobile-nav-item.active { background: rgba(26,107,74,0.3); color: #6dd9a8; }
 .mobile-nav-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 8px 0; }
-.hamburger-btn { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; background: #1a6b4a; border: none; border-radius: 8px; }
+.hamburger-btn { display: none; align-items: center; justify-content: center; width: 36px; height: 36px; flex: 0 0 36px; margin-left: auto; order: 99; align-self: center; cursor: pointer; padding: 7px; background: #1a6b4a; border: none; border-radius: 10px; overflow: hidden; }
 .hamburger-btn span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: all 0.3s; }
+.hamburger-btn img { width: 100%; height: 100%; max-width: 20px; max-height: 20px; object-fit: contain; display: block; }
 @media (max-width: 768px) { .hamburger-btn { display: flex !important; } }
 
 /* Réduire la navbar sur mobile */
@@ -202,6 +203,8 @@ input, textarea, select, button { max-width: 100%; font-family: inherit; }
   nav {
     padding: 8px 12px !important;
     min-height: 50px !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
   }
   .logo {
     font-size: 16px !important;

@@ -33,7 +33,7 @@ const MobileNav = {
     const btn = document.createElement('button');
     btn.className = 'hamburger-btn';
     btn.setAttribute('aria-label', 'Menu');
-    btn.innerHTML = `<span></span><span></span><span></span>`;
+    btn.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/18249/18249396.png" alt="" aria-hidden="true">`;
     btn.onclick = () => this.openMenu();
     nav.appendChild(btn);
   },

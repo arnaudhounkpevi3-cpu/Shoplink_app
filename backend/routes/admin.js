@@ -32,6 +32,51 @@ function isPaid(status) {
   return ['paid', 'paye'].includes(String(status || '').toLowerCase())
 }
 
+function premiumDeliveryDays(payment) {
+  return payment?.urgency === 'urgent' || payment?.premiumOrder?.delai === 'urgent' ? 21 : 28
+}
+
+function toPremiumProject(payment) {
+  const order = payment.premiumOrder || {}
+  const depositPaid = isPaid(payment.status)
+  const deliveryDays = premiumDeliveryDays(payment)
+  const deliveryTargetAt = payment.deliveryTargetAt || null
+  const countdown = depositPaid ? getCountdown(deliveryTargetAt) : null
+  const totalAmount = Number(order.totalPrice || payment.totalPrice || payment.amount * 2 || 0)
+  const depositAmount = Number(payment.amount || order.amount || 0)
+
+  return {
+    id: payment.id,
+    paymentId: payment.id,
+    reference: payment.reference,
+    clientName: order.manager || payment.clientName || 'N/A',
+    clientEmail: order.email || payment.email || '',
+    whatsapp: order.whatsapp || payment.whatsappNumber || payment.mobileMoneyPhone || '',
+    company: order.company || payment.siteName || 'Projet Premium',
+    activity: order.activity || payment.activityType || '',
+    siteType: order.siteTypeLabel || order.siteType || payment.siteType || 'Site premium',
+    style: order.styleLabel || order.style || '',
+    totalAmount,
+    depositAmount,
+    remainingAmount: Math.max(0, totalAmount - depositAmount),
+    depositPaid,
+    paymentStatus: payment.status || 'pending',
+    validationStatus: payment.validationStatus || 'pending',
+    status: depositPaid ? (payment.projectStatus || 'in_progress') : 'pending',
+    progress: depositPaid ? 10 : 0,
+    urgent: order.delai === 'urgent' || payment.urgency === 'urgent',
+    deliveryDays,
+    depositDate: payment.validatedAt || payment.deliveryStartedAt || payment.updatedAt || payment.createdAt,
+    deliveryStartedAt: payment.deliveryStartedAt || payment.validatedAt || null,
+    deliveryTargetAt,
+    countdown,
+    createdAt: payment.createdAt,
+    validatedAt: payment.validatedAt,
+    transactionId: payment.transactionId,
+    premiumOrder: order,
+  }
+}
+
 router.get('/summary', async (_req, res) => {
   // Use Supabase-specific summary function if available
   if (repo().getSummary) {
@@ -55,7 +100,7 @@ router.get('/summary', async (_req, res) => {
   let countdown
   if (activeCountdownPayment) {
     const start = new Date(activeCountdownPayment.validatedAt || activeCountdownPayment.createdAt)
-    const days = activeCountdownPayment.urgency === 'urgent' ? 14 : 21
+    const days = premiumDeliveryDays(activeCountdownPayment)
     const now = new Date()
     const diffMs = now - start
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
@@ -213,15 +258,19 @@ router.get('/tickets', async (_req, res) => {
 
 router.get('/premium-projects', async (_req, res) => {
   try {
-    // Use Supabase-specific function if available
-    if (repo().listPremiumProjects) {
-      return repo().listPremiumProjects()
-    }
-    
-    // Fallback for MongoDB/JSON
-    res.json({
+    const payments = await repo().listPayments()
+    const projects = payments
+      .filter((payment) => payment.type === 'premium')
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt || b.validatedAt || 0) -
+          new Date(a.createdAt || a.validatedAt || 0),
+      )
+      .map(toPremiumProject)
+
+    return res.json({
       success: true,
-      projects: []
+      projects,
     })
   } catch (error) {
     console.error('Error fetching premium projects:', error)

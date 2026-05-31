@@ -10,7 +10,7 @@ VALUES (
   'test-user-001',
   'Test User',
   'test@shoplink.bj',
-  '+22901671634811',
+  '+2290167163481',
   'user',
   '$2b$10$LPMaJyJJ1N93KHPjDJKdEeOCsKPhWLypPXOS1fBQIaQMVRTgRWQNO',
   true,

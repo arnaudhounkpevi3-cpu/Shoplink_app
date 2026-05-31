@@ -2,27 +2,27 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>ShopLink — Connexion</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <script src="/js/api-config.js"></script>
   <style>
     :root{
       --green:#1a5c38; --green-light:#eef7f1; --green-mid:#0f6e56;
-      --amber:#f59c1a; --amber-light:#fef3de;
-      --dark:#0f1f17; --bg:#fdf6ee; --white:#fff;
-      --border:#e8ddd0; --text:#1a1a1a; --muted:#6b5744; --soft:#9a7d5a;
+      --amber:#E8620A; --amber-light:#fff6e0;
+      --dark:#111111; --bg:#F5F0E8; --white:#fff;
+      --border:rgba(17,17,17,0.10); --text:#1a1a1a; --muted:rgba(17,17,17,0.52); --soft:#9a7d5a;
       --radius:12px;
     }
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+    body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 50% -8%, rgba(245,156,26,0.16), transparent 32%),radial-gradient(circle at 12% 12%, rgba(26,92,56,0.14), transparent 28%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
     h1,h2{font-family:'Syne',sans-serif;}
 
     /* NAV */
     nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;}
-    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;}
-    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;}
-    .nav-link{color:rgba(255,255,255,0.7);font-size:13px;text-decoration:none;}
+    .logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;text-decoration:none;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.12);}
+    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;box-shadow:0 0 0 3px rgba(232,98,10,0.18);}
+    .nav-link{color:rgba(255,255,255,0.74);font-size:13px;text-decoration:none;font-weight:600;}
     .nav-link:hover{color:#fff;}
 
     /* LAYOUT */
@@ -54,7 +54,7 @@
     .demo-stat-label{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
 
     /* RIGHT */
-    .right-panel{background:var(--bg);padding:60px;display:flex;flex-direction:column;justify-content:flex-start;min-height:100%;}
+    .right-panel{background:transparent;padding:60px;display:flex;flex-direction:column;justify-content:flex-start;min-height:100%;}
     .form-header{margin-bottom:32px;}
     .form-title{font-size:28px;font-weight:800;color:var(--text);margin-bottom:6px;}
     .form-sub{font-size:14px;color:var(--muted);}
@@ -67,6 +67,13 @@
     .form-input:focus{border-color:var(--green);}
     .form-input.error{border-color:#e24b4a;}
     .error-msg{font-size:12px;color:#e24b4a;}
+
+    .password-field{position:relative;display:flex;align-items:center;}
+    .password-field .form-input{width:100%;padding-right:48px;}
+    .password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:10px;background:var(--green-light);color:var(--green);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;line-height:1;}
+    .password-toggle svg{width:1em;height:1em;display:block;}
+    .password-toggle.is-visible{color:var(--soft);}
+    .password-toggle:active{transform:translateY(-50%) scale(0.96);}
 
     /* PASSWORD TOGGLE */
     .password-wrap{display:flex;align-items:center;padding:12px 14px;border-radius:var(--radius);border:1.5px solid var(--border);background:#fff;transition:border-color 0.2s;}
@@ -105,9 +112,9 @@
 
     /* MOBILE RESPONSIVE */
     @media (max-width: 768px) {
-      nav{padding:0 20px;}
+      nav{padding:0 16px;height:48px;min-height:48px;}
       .nav-link{font-size:12px;}
-      
+
       .page-body{grid-template-columns:1fr;}
       .left-panel{display:none;}
       .right-panel{padding:30px 20px;}
@@ -127,10 +134,10 @@
     }
 
     @media (max-width: 480px) {
-      nav{padding:0 16px;height:50px;}
-      .logo{font-size:15px;}
+      nav{padding:0 12px;height:44px;min-height:44px;}
+      .logo{font-size:14px;padding:6px 10px;}
       .nav-link{font-size:11px;}
-      
+
       .right-panel{padding:24px 16px;}
       .form-title{font-size:22px;}
       .form-sub{font-size:12px;}
@@ -157,7 +164,7 @@
 <!-- NAV -->
 <nav>
   <a href="/index.html" class="logo"><span class="logo-dot"></span>ShopLink</a>
-  <a href="/register.html" class="nav-link">Pas encore de compte ? S'inscrire →</a>
+  <a href="/register.html" class="nav-link">Créer un compte</a>
 </nav>
 
 <div class="page-body">
@@ -214,7 +221,10 @@
 
       <div class="form-group">
         <label class="form-label">Mot de passe</label>
-        <input class="form-input" type="password" id="password" placeholder="Votre mot de passe" autocomplete="current-password"/>
+        <div class="password-field">
+          <input class="form-input" type="password" id="password" placeholder="Votre mot de passe" autocomplete="current-password"/>
+          <button class="password-toggle" type="button" onclick="togglePasswordVisibility('password', this)" aria-label="Afficher le mot de passe"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" fill-rule="evenodd" d="m18.922 16.8l3.17 3.17l-1.06 1.061L4.06 4.061L5.12 3l2.74 2.738A11.9 11.9 0 0 1 12 5c4.808 0 8.972 2.848 11 7a12.66 12.66 0 0 1-4.078 4.8m-8.098-8.097l4.473 4.473a3.5 3.5 0 0 0-4.474-4.474zm5.317 9.56A11.9 11.9 0 0 1 12 19c-4.808 0-8.972-2.848-11-7a12.66 12.66 0 0 1 4.078-4.8l3.625 3.624a3.5 3.5 0 0 0 4.474 4.474l2.964 2.964z"/></svg></button>
+        </div>
         <div class="error-msg" id="err-password"></div>
       </div>
 
@@ -230,7 +240,7 @@
 
     <div class="register-box">
       <p>Vous n'avez pas encore de compte ShopLink ?</p>
-      <a href="/register.html" class="btn-outline">🚀 Créer mon site gratuitement</a>
+      <a href="/register.html" class="btn-outline">Créer mon site gratuitement</a>
     </div>
 
     <!-- Connexion admin (caché, accessible via URL) -->
@@ -249,6 +259,15 @@
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
   const submitBtn = document.getElementById('submit-btn');
+
+  function togglePasswordVisibility(inputId, button) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const shouldShow = input.type === 'password';
+    input.type = shouldShow ? 'text' : 'password';
+    button.classList.toggle('is-visible', shouldShow);
+    button.setAttribute('aria-label', shouldShow ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+  }
 
   // Validation
   emailInput.addEventListener('input', () => {
@@ -374,6 +393,5 @@ document.addEventListener('DOMContentLoaded', () => {
   window.scrollTo(0, 0);
 });
 </script>
-<script src="/js/mobile-nav.js"></script>
 </body>
 </html>

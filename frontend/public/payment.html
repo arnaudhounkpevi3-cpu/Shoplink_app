@@ -2,22 +2,22 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>ShopLink — Paiement sécurisé</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     :root{
       --green:#1a5c38;--green-light:#eef7f1;--green-mid:#0f6e56;
-      --amber:#f59c1a;--amber-light:#fef3de;
-      --dark:#0f1f17;--bg:#fdf6ee;--white:#fff;
-      --border:#e8ddd0;--text:#1a1a1a;--muted:#6b5744;--soft:#9a7d5a;
+      --amber:#E8620A;--amber-light:#fff6e0;
+      --dark:#111111;--bg:#F5F0E8;--white:#fff;
+      --border:rgba(17,17,17,0.10);--text:#1a1a1a;--muted:rgba(17,17,17,0.52);--soft:#9a7d5a;
       --radius:12px;--radius-lg:18px;
     }
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+    body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 50% -8%, rgba(245,156,26,0.16), transparent 32%),radial-gradient(circle at 12% 12%, rgba(26,92,56,0.14), transparent 28%),var(--bg);color:var(--text);min-height:100vh;}
     nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;}
-    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;}
-    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;}
+    .logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;text-decoration:none;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.12);}
+    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;box-shadow:0 0 0 3px rgba(232,98,10,0.18);}
     .timer-bar{background:var(--amber-light);border-bottom:1px solid #f5c878;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;font-size:13px;}
     .timer-label{color:#854f0b;}
     .timer-val{font-weight:500;color:#854f0b;font-family:'Syne',sans-serif;font-size:15px;}
@@ -50,7 +50,8 @@
     .owner-number-label{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:4px;}
     .owner-number{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--amber);letter-spacing:0.05em;}
     .owner-name{font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;}
-    .copy-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;padding:8px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;}
+    .copy-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;padding:8px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+    .copy-btn-icon{width:15px;height:15px;object-fit:contain;display:block;flex:0 0 auto;filter:brightness(0) invert(1);}
     .copy-btn:hover{background:rgba(255,255,255,0.2);}
     .copy-btn.copied{background:rgba(26,107,74,0.4);border-color:var(--green);}
     .amount-to-send{background:var(--green-light);border:1px solid #9fe1cb;border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
@@ -105,7 +106,7 @@
     @media (max-width: 768px) {
       html,body{width:100%;min-width:100%;max-width:100%;overflow-x:hidden;}
       nav{padding:0 16px;}
-      .logo{font-size:15px;}
+      .logo{font-size:15px;padding:6px 10px;}
       .logo-dot{width:6px;height:6px;}
       .timer-bar{padding:8px 16px;font-size:12px;}
       .timer-val{font-size:14px;}
@@ -186,10 +187,6 @@
 </div>
 
 <div id="payment-page">
-  <div class="timer-bar">
-    <span class="timer-label">⏱ Cette session expire dans</span>
-    <span class="timer-val" id="timer">15:00</span>
-  </div>
   <div class="pay-layout">
     <div class="pay-col">
 
@@ -208,8 +205,8 @@
             </div>
             <div class="form-group">
               <label class="form-label">Votre numéro de téléphone *</label>
-              <input class="form-input" id="pay-phone" placeholder="+229 01 XX XX XX" oninput="formatPhone(this)"/>
-              <div class="form-hint">Format béninois : +229 01 XX XX XX</div>
+              <input class="form-input" id="pay-phone" placeholder="+229 01XXXXXXXX" oninput="formatPhone(this)"/>
+              <div class="form-hint">Format béninois : +229 01XXXXXXXX</div>
               <div class="err-msg" id="err-phone"></div>
             </div>
           </div>
@@ -263,20 +260,16 @@
             <div class="owner-number-box">
               <div>
                 <div class="owner-number-label" id="op-label">Numéro MTN MoMo ShopLink</div>
-                <div class="owner-number">+229 67 16 34 81</div>
+                <div class="owner-number">0167163481</div>
                 <div class="owner-name">ShopLink Bénin — Administrateur</div>
               </div>
-              <button class="copy-btn" id="copy-btn" onclick="copyNumber()">📋 Copier</button>
+              <button class="copy-btn" id="copy-btn" onclick="copyNumber()"><img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier</button>
             </div>
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">📋 Étapes :</div>
             <div class="payment-steps" id="steps-list"></div>
           </div>
 
 
-          <div style="background:var(--green-light);border-radius:var(--radius);padding:14px 16px;font-size:13px;color:var(--green-mid);line-height:1.6;">
-            ✓ Notre équipe vérifie votre paiement sous <strong>15 min à 1 heure</strong>.<br>
-            ✓ Vous recevrez une confirmation par <strong>SMS et email</strong>.
-          </div>
         </div>
       </div>
     </div>
@@ -293,7 +286,7 @@
           <div class="recap-row"><span class="recap-label">Plan</span><span class="recap-val" id="r-plan">ShopLink Starter</span></div>
           <div class="recap-row" id="r-step-row" style="display:none;"><span class="recap-label">Étape</span><span class="recap-val" id="r-step">Acompte 50%</span></div>
           <div class="recap-row"><span class="recap-label">Opérateur</span><span class="recap-val" id="r-op">MTN MoMo</span></div>
-          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" style="font-family:monospace;color:var(--amber);">+229 67 16 34 81</span></div>
+          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" style="font-family:monospace;color:var(--amber);">0167163481</span></div>
         </div>
         <div class="recap-total">
           <div class="recap-total-label">À payer</div>
@@ -305,19 +298,18 @@
             ✅ Confirmer mon paiement — <span id="btn-amt">4 000 FCFA</span>
           </button>
         </div>
-        <div class="secure-badges">
-          <div class="secure-badge">🔒 HTTPS</div>
-          <div class="secure-badge">✅ Vérification manuelle</div>
-          <div class="secure-badge">🇧🇯 Bénin</div>
-        </div>
       </div>
 
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-top:14px;text-align:center;">
         <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Un problème ? Contactez-nous</div>
-        <a href="https://wa.me/22967163481?text=Bonjour ShopLink, j'ai un problème avec mon paiement."
+        <a href="https://wa.me/2290167163481?text=Bonjour ShopLink, j'ai un problème avec mon paiement."
            target="_blank"
            style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border-radius:var(--radius);padding:10px 20px;font-size:13px;font-weight:500;text-decoration:none;">
-          📲 Support WhatsApp
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="width:18px;height:18px;flex:0 0 auto;">
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path fill="#76c348" d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91c0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23c-1.48 0-2.93-.39-4.19-1.15l-.3-.17l-3.12.82l.83-3.04l-.2-.32a8.2 8.2 0 0 1-1.26-4.38c.01-4.54 3.7-8.24 8.25-8.24M8.53 7.33c-.16 0-.43.06-.66.31c-.22.25-.87.86-.87 2.07c0 1.22.89 2.39 1 2.56c.14.17 1.76 2.67 4.25 3.73c.59.27 1.05.42 1.41.53c.59.19 1.13.16 1.56.1c.48-.07 1.46-.6 1.67-1.18s.21-1.07.15-1.18c-.07-.1-.23-.16-.48-.27c-.25-.14-1.47-.74-1.69-.82c-.23-.08-.37-.12-.56.12c-.16.25-.64.81-.78.97c-.15.17-.29.19-.53.07c-.26-.13-1.06-.39-2-1.23c-.74-.66-1.23-1.47-1.38-1.72c-.12-.24-.01-.39.11-.5c.11-.11.27-.29.37-.44c.13-.14.17-.25.25-.41c.08-.17.04-.31-.02-.43c-.06-.11-.56-1.35-.77-1.84c-.2-.48-.4-.42-.56-.43c-.14 0-.3-.01-.47-.01" />
+          </svg>
+          Support WhatsApp
         </a>
       </div>
     </div>
@@ -345,7 +337,7 @@
     ✓ Activation automatique de votre site après validation
   </div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-    <a href="https://wa.me/22967163481" target="_blank" style="background:#25d366;color:#fff;border-radius:var(--radius);padding:12px 24px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">📲 Suivre sur WhatsApp</a>
+    <a href="https://wa.me/2290167163481" target="_blank" style="background:#25d366;color:#fff;border-radius:var(--radius);padding:12px 24px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">📲 Suivre sur WhatsApp</a>
     <a href="/dashboard-client-shoplink.html" class="btn-out">📊 Mon tableau de bord</a>
   </div>
 </div>
@@ -376,9 +368,21 @@
 </div>
 
 <script>
+  const API_BASE = `${window.location.protocol}//${window.location.hostname}:5000/api`;
+  const API_FALLBACK = '/api';
+
+  async function apiFetch(path, options = {}) {
+    try {
+      return await fetch(`${API_BASE}${path}`, options);
+    } catch (primaryError) {
+      console.warn('API directe indisponible, tentative via proxy:', primaryError);
+      return fetch(`${API_FALLBACK}${path}`, options);
+    }
+  }
+
   // CONFIG
-  const OWNER_NUMBER = '+229 67 16 34 81';
-  const OWNER_RAW    = '22967163481';
+  const OWNER_NUMBER = '0167163481';
+  const OWNER_RAW    = '2290167163481';
 
   const OPS = {
     mtn:  { label:'MTN Mobile Money',  badge:'🟡 MTN Mobile Money sélectionné',  opLabel:'Numéro MTN MoMo ShopLink' },
@@ -387,9 +391,9 @@
   };
 
   const STEPS = {
-    mtn:  ['Composez <strong>#171#</strong> sur votre téléphone MTN','Choisissez <strong>"Transfert d\'argent"</strong>','Entrez le numéro : <strong>+229 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN MoMo</strong>'],
-    moov: ['Composez <strong>#555#</strong> sur votre téléphone Moov','Choisissez <strong>"Envoi d\'argent"</strong>','Entrez le numéro : <strong>+229 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN Flooz</strong>'],
-    celtiis: ['Ouvrez l\'<strong>application Celtiis</strong>','Appuyez sur <strong>"Transfert"</strong>','Entrez le numéro : <strong>+229 67 16 34 81</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez le transfert dans l\'app']
+    mtn:  ['Composez <strong>#171#</strong> sur votre téléphone MTN','Choisissez <strong>"Transfert d\'argent"</strong>','Entrez le numéro : <strong>0167163481</strong>','Entrez le montant : <strong id="sa">—</strong>'],
+    moov: ['Composez <strong>#555#</strong> sur votre téléphone Moov','Choisissez <strong>"Envoi d\'argent"</strong>','Entrez le numéro : <strong>0167163481</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN Flooz</strong>'],
+    celtiis: ['Ouvrez l\'<strong>application Celtiis</strong>','Appuyez sur <strong>"Transfert"</strong>','Entrez le numéro : <strong>0167163481</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez le transfert dans l\'app']
   };
 
   // Paramètres URL
@@ -397,6 +401,7 @@
   const payType = P.get('type')   || 'autonome';
   const payStep = P.get('step')   || 'full';
   const payAmt  = parseInt(P.get('amount')) || 4000;
+  const existingPaymentId = P.get('paymentId') || '';
   let   selOp   = 'mtn';
 
   function init() {
@@ -418,7 +423,7 @@
     if (u.email) document.getElementById('pay-email').value = u.email;
     if (u.phone) document.getElementById('pay-phone').value = toDisplay(u.phone);
     renderSteps('mtn');
-    startTimer(900);
+    // Compte à rebours retiré de l'interface de paiement.
 
     // Add click listener to pay button
     document.getElementById('pay-btn').addEventListener('click', submit);
@@ -428,17 +433,12 @@
     let v = input.value.replace(/\D/g,'');
     if (v.startsWith('229')) v = v.slice(3);
     v = v.slice(0,10);
-    let f = '';
-    for (let i=0;i<v.length;i++) {
-      if (i===2||i===4||i===6||i===8) f+=' ';
-      f+=v[i];
-    }
-    input.value = v.length ? '+229 '+f : '';
+    input.value = v.length ? '+229 '+v : '';
   }
 
   function toDisplay(phone) {
     const d = phone.replace(/\D/g,'').replace(/^229/,'').slice(0,10).padEnd(10,'X');
-    return '+229 '+d.slice(0,2)+' '+d.slice(2,4)+' '+d.slice(4,6)+' '+d.slice(6,8)+' '+d.slice(8,10);
+    return '+229 '+d;
   }
 
   function toRaw(phone) {
@@ -480,7 +480,7 @@
       document.execCommand('copy');
       const b = document.getElementById('copy-btn');
       b.textContent='✓ Copié !'; b.classList.add('copied');
-      setTimeout(()=>{ b.textContent='📋 Copier'; b.classList.remove('copied'); },2500);
+      setTimeout(()=>{ b.innerHTML='<img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier'; b.classList.remove('copied'); },2500);
     } catch (err) {
       alert('Numéro : '+OWNER_NUMBER);
     }
@@ -507,13 +507,17 @@
     const token = localStorage.getItem('shoplink_token');
     const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
     const site = JSON.parse(localStorage.getItem('shoplink_site') || 'null');
+    const premiumOrder = payType === 'premium'
+      ? JSON.parse(localStorage.getItem('shoplink_order') || 'null')
+      : null;
     
     console.log('Submit payment:', { name, phone, email, token, user, site });
     
     let ok = true;
 
     if (!name)                          { setE('err-name','Nom requis'); ok=false; } else clrE('err-name');
-    if (!phone||phone.replace(/\D/g,'').length<11) { setE('err-phone','Numéro invalide — Format : +229 01 XX XX XX'); ok=false; } else clrE('err-phone');
+    const localPhone = phone.replace(/\D/g,'').replace(/^229/,'');
+    if (!phone || localPhone.length !== 10 || !localPhone.startsWith('01')) { setE('err-phone','Numéro invalide — Format : +229 01XXXXXXXX'); ok=false; } else clrE('err-phone');
     if (!email||!email.includes('@'))   { setE('err-email','Email invalide'); ok=false; } else clrE('err-email');
     
     // Disable token/site validation for testing
@@ -528,6 +532,56 @@
     document.getElementById('loading-overlay').classList.add('show');
     document.getElementById('pay-btn').disabled = true;
 
+    if (payType === 'premium' && existingPaymentId) {
+      try {
+        const res = await apiFetch('/payments/confirm-received', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            paymentId: existingPaymentId,
+            phoneNumber: toRaw(phone),
+            provider: selOp,
+          })
+        });
+        const data = await res.json();
+        document.getElementById('loading-overlay').classList.remove('show');
+
+        if (!res.ok || !data.success) {
+          setE('err-ref', data.message || 'Impossible de valider le paiement');
+          document.getElementById('pay-btn').disabled = false;
+          return;
+        }
+
+        const premiumOrder = JSON.parse(localStorage.getItem('shoplink_order') || '{}');
+        localStorage.setItem('shoplink_order', JSON.stringify({
+          ...premiumOrder,
+          paymentStatus: 'paid',
+          projectStatus: 'in_progress',
+          validatedAt: data.payment?.validatedAt || new Date().toISOString(),
+          deliveryTargetAt: data.payment?.deliveryTargetAt || '',
+        }));
+
+        showPending({
+          name,
+          email,
+          phone: toRaw(phone),
+          type: payType,
+          step: payStep,
+          amount: payAmt,
+          method: selOp,
+          paymentId: existingPaymentId,
+          paymentReference: data.payment?.reference || P.get('reference') || '',
+        });
+        return;
+      } catch (e) {
+        console.error('Premium payment confirmation error:', e);
+        document.getElementById('loading-overlay').classList.remove('show');
+        setE('err-ref', 'Erreur de connexion au serveur: ' + e.message);
+        document.getElementById('pay-btn').disabled = false;
+        return;
+      }
+    }
+
     const body = {
       userId: user.id || 'demo-user',
       name,
@@ -537,25 +591,26 @@
       step: payStep,
       amount: payAmt,
       method: selOp,
+      premiumOrder,
+      urgency: premiumOrder && premiumOrder.delai ? premiumOrder.delai : 'normal',
       reference: 'AUTO-' + Date.now(),
       siteId: site && site.id ? site.id : '',
-      siteName: site && site.name ? site.name : '',
+      siteName: premiumOrder && premiumOrder.company ? premiumOrder.company : (site && site.name ? site.name : ''),
       slogan: site && site.slogan ? site.slogan : '',
-      siteDescription: site && site.description ? site.description : '',
-      whatsappNumber: site && site.whatsapp ? site.whatsapp : toRaw(phone),
+      siteDescription: premiumOrder && premiumOrder.activityDescription ? premiumOrder.activityDescription : (site && site.description ? site.description : ''),
+      whatsappNumber: premiumOrder && premiumOrder.whatsapp ? premiumOrder.whatsapp : (site && site.whatsapp ? site.whatsapp : toRaw(phone)),
       secondaryPhone: site && site.secondaryPhone ? site.secondaryPhone : '',
-      address: site && site.address ? site.address : '',
-      activityType: site && site.activityType ? site.activityType : '',
+      address: premiumOrder ? [premiumOrder.city, premiumOrder.district].filter(Boolean).join(', ') : (site && site.address ? site.address : ''),
+      activityType: premiumOrder && premiumOrder.activity ? premiumOrder.activity : (site && site.activityType ? site.activityType : ''),
       primaryColor: site && site.primaryColor ? site.primaryColor : '',
       secondaryColor: site && site.secondaryColor ? site.secondaryColor : '',
-      logo: site && site.logo ? site.logo : ''
+      logo: premiumOrder && premiumOrder.logo && premiumOrder.logo.src ? premiumOrder.logo.src : (site && site.logo ? site.logo : '')
     };
 
     console.log('Sending payment request:', body);
 
     try {
-      const apiBase = 'http://localhost:5000/api';
-      const res = await fetch(apiBase + '/payments/initiate',{
+      const res = await apiFetch('/payments/initiate',{
         method:'POST',
         headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
         body: JSON.stringify(body)
@@ -625,6 +680,5 @@
   init();
 </script>
 <link rel="stylesheet" href="/css/responsive.css">
-<script src="/js/mobile-nav.js"></script>
 </body>
 </html>

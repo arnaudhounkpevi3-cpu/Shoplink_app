@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>FAQ - ShopLink</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
@@ -10,14 +10,14 @@
       --green: #1a5c38;
       --green-light: #eef7f1;
       --green-dark: #0f6e56;
-      --amber: #f59c1a;
-      --amber-light: #fef3de;
-      --dark: #0f1f17;
-      --bg: #fdf6ee;
+      --amber: #E8620A;
+      --amber-light: #fff6e0;
+      --dark: #111111;
+      --bg: #F5F0E8;
       --white: #fff;
-      --border: #e8ddd0;
+      --border: rgba(17,17,17,0.10);
       --text: #1a1a1a;
-      --muted: #6b5744;
+      --muted: rgba(17,17,17,0.52);
       --soft: #9a7d5a;
       --radius: 12px;
       --radius-lg: 18px;
@@ -31,7 +31,10 @@
 
     body {
       font-family: 'DM Sans', sans-serif;
-      background: linear-gradient(135deg, var(--bg) 0%, #f0ebe0 100%);
+      background:
+        radial-gradient(circle at 50% -8%, rgba(245,156,26,0.16), transparent 32%),
+        radial-gradient(circle at 12% 12%, rgba(26,92,56,0.14), transparent 28%),
+        var(--bg);
       color: var(--text);
       min-height: 100vh;
     }
@@ -43,7 +46,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 30px rgba(17,17,17,0.10);
     }
 
     .logo {
@@ -55,6 +58,11 @@
       gap: 8px;
       text-decoration: none;
       font-family: 'Syne', sans-serif;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
     }
 
     .logo-dot {
@@ -62,6 +70,7 @@
       height: 8px;
       background: var(--amber);
       border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(232,98,10,0.18);
     }
 
     .nav-link {
@@ -87,11 +96,12 @@
       font-weight: 800;
       margin-bottom: 12px;
       color: var(--dark);
+      letter-spacing: -0.04em;
     }
 
     .header p {
       font-size: 16px;
-      color: var(--soft);
+      color: var(--muted);
     }
 
     .faq-section {
@@ -118,16 +128,19 @@
     }
 
     .faq-item {
-      background: var(--white);
+      background: rgba(255,255,255,0.82);
       border: 1.5px solid var(--border);
       border-radius: var(--radius-lg);
       margin-bottom: 16px;
       transition: all 0.3s ease;
+      box-shadow: 0 14px 38px rgba(17,17,17,0.045);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
 
     .faq-item:hover {
       border-color: var(--amber);
-      box-shadow: 0 4px 12px rgba(245, 156, 26, 0.15);
+      box-shadow: 0 18px 46px rgba(17,17,17,0.08);
     }
 
     .faq-question {
@@ -205,7 +218,7 @@
     .price-tag {
       display: inline-block;
       background: var(--amber-light);
-      color: var(--dark);
+      color: var(--amber);
       padding: 4px 12px;
       border-radius: 6px;
       font-weight: 600;
@@ -214,12 +227,43 @@
     }
 
     .footer {
-      text-align: center;
-      padding: 40px 20px;
+      max-width: 900px;
+      margin: 50px auto 0;
+      padding: 18px 20px 26px;
       border-top: 1px solid var(--border);
-      margin-top: 60px;
-      color: var(--soft);
+      color: var(--muted);
       font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .footer-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(26,92,56,0.08);
+      border: 1px solid rgba(26,92,56,0.12);
+      color: var(--green);
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .footer-brand .logo-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      box-shadow: 0 0 0 3px rgba(26,92,56,0.15);
+    }
+
+    .footer-copy {
+      margin: 0;
+      text-align: right;
     }
 
     .back-link {
@@ -250,6 +294,18 @@
 
       .faq-answer {
         padding: 0 18px 16px;
+      }
+
+      .footer {
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 34px;
+        padding: 18px 20px 24px;
+        font-size: 12px;
+      }
+
+      .footer-copy {
+        text-align: center;
       }
     }
   </style>
@@ -300,7 +356,7 @@
           <p><strong>ShopLink propose 2 formules :</strong></p>
           <ul>
             <li><strong>Autonome - 4 000 FCFA :</strong> Créez et publiez vous-même votre site en quelques minutes</li>
-            <li><strong>Premium - 5 000 FCFA (acompte) :</strong> Nous créons votre site professionnel pour vous (21 jours normal ou 14 jours urgent)</li>
+            <li><strong>Premium - 5 000 FCFA (acompte) :</strong> Nous créons votre site professionnel pour vous (28 jours normal ou 21 jours urgent)</li>
           </ul>
           <p style="margin-top: 10px;">Aucun frais supplémentaire, paiement unique.</p>
         </div>
@@ -488,7 +544,7 @@
             <li>Intégration des systèmes de paiement</li>
             <li>Tests complets et support</li>
           </ul>
-          <p style="margin-top: 10px;">Délai : <strong>21 jours</strong> (normal) ou <strong>14 jours</strong> (urgent)</p>
+          <p style="margin-top: 10px;">Délai : <strong>28 jours</strong> (normal) ou <strong>21 jours</strong> (urgent)</p>
         </div>
       </div>
 
@@ -537,8 +593,8 @@
           <p>Vous pouvez nous contacter via :</p>
           <ul>
             <li>Email : support@shoplink.bj</li>
-            <li>WhatsApp : +229 67 16 34 81</li>
-            <li>Téléphone : +229 0167163481</li>
+            <li>WhatsApp : 0167163481</li>
+            <li>Téléphone : 0167163481</li>
             <li>Formulaire sur notre site</li>
           </ul>
           <p style="margin-top: 10px;">Notre équipe répond en moins de 24h.</p>
@@ -563,7 +619,8 @@
   </div>
 
   <footer class="footer">
-    <p>&copy; 2026 ShopLink. Tous droits réservés.</p>
+    <a href="/homepage-shoplink.html" class="footer-brand"><span class="logo-dot"></span>ShopLink</a>
+    <p class="footer-copy">&copy; 2026 ShopLink. Digitalise ta boutique</p>
   </footer>
 
   <script>
@@ -574,7 +631,5 @@
       });
     });
   </script>
-<script src="/js/mobile-nav.js"></script>
-
 </body>
 </html>

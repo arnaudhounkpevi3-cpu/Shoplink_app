@@ -102,6 +102,10 @@ function mapPayment(p) {
     primaryColor: o.primaryColor,
     secondaryColor: o.secondaryColor,
     logo: o.logo,
+    premiumOrder: o.premiumOrder || null,
+    paymentStatus: o.paymentStatus,
+    projectStatus: o.projectStatus,
+    deliveryStartedAt: o.deliveryStartedAt ? iso(o.deliveryStartedAt) : undefined,
     deliveryTargetAt: o.deliveryTargetAt ? iso(o.deliveryTargetAt) : undefined,
     mobileMoneyPhone: o.mobileMoneyPhone,
     mobileMoneyProvider: o.mobileMoneyProvider,
@@ -396,6 +400,10 @@ module.exports = {
       primaryColor: data.primaryColor,
       secondaryColor: data.secondaryColor,
       logo: data.logo,
+      premiumOrder: data.premiumOrder || null,
+      paymentStatus: data.paymentStatus,
+      projectStatus: data.projectStatus,
+      deliveryStartedAt: data.deliveryStartedAt ? new Date(data.deliveryStartedAt) : undefined,
       clientName: data.clientName,
       email: data.email,
       clientReference: data.clientReference,
@@ -407,7 +415,7 @@ module.exports = {
 
   async patchPayment(id, patch) {
     const set = { ...patch, updatedAt: new Date() }
-    for (const k of ['deliveryTargetAt', 'validatedAt', 'createdAt', 'updatedAt']) {
+    for (const k of ['deliveryTargetAt', 'deliveryStartedAt', 'validatedAt', 'createdAt', 'updatedAt']) {
       if (set[k]) {
         set[k] = new Date(set[k])
       }

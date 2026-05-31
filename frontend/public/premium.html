@@ -2,39 +2,53 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>ShopLink — Commander un site Premium</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     :root{
       --green:#1a5c38; --green-light:#eef7f1; --green-mid:#0f6e56;
-      --amber:#f59c1a; --amber-light:#fef3de;
-      --dark:#0f1f17; --bg:#fdf6ee; --white:#fff;
-      --border:#e8ddd0; --text:#1a1a1a; --muted:#6b5744; --soft:#9a7d5a;
+      --amber:#E8620A; --amber-light:#fff6e0;
+      --dark:#111111; --bg:#F5F0E8; --white:#fff;
+      --border:rgba(17,17,17,0.10); --text:#1a1a1a; --muted:rgba(17,17,17,0.52); --soft:#9a7d5a;
       --radius:12px; --radius-lg:18px;
     }
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+    body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 50% -8%, rgba(245,156,26,0.16), transparent 32%),radial-gradient(circle at 12% 12%, rgba(26,92,56,0.14), transparent 28%),var(--bg);color:var(--text);font-size:14px;}
     h1,h2,h3{font-family:'Syne',sans-serif;}
 
     /* NAV */
-    nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;}
-    .logo{font-size:17px;font-weight:500;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;}
-    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;}
+    nav{background:var(--green);padding:0 40px;height:56px;display:flex;align-items:center!important;justify-content:space-between;gap:14px;}
+    .nav-subtitle{display:flex;align-items:center;align-self:center;height:100%;color:rgba(255,255,255,0.68);font-size:10px;line-height:1;white-space:nowrap;text-align:right;margin-left:auto;letter-spacing:0.02em;}
+    .logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;text-decoration:none;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.12);}
+    .logo-dot{width:7px;height:7px;background:var(--amber);border-radius:50%;box-shadow:0 0 0 3px rgba(232,98,10,0.18);}
 
     /* HERO */
     .hero-section{background:var(--dark);padding:50px 40px;text-align:center;}
     .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,156,26,0.2);border:1px solid rgba(245,156,26,0.4);border-radius:100px;padding:5px 16px;font-size:12px;font-weight:600;color:var(--amber);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.05em;}
+    .hero-badge-icon{width:16px;height:16px;object-fit:contain;display:block;flex:0 0 auto;}
     .hero-title{font-size:36px;font-weight:800;color:#fff;margin-bottom:10px;}
     .hero-title span{color:var(--amber);}
     .hero-sub{font-size:15px;color:rgba(255,255,255,0.6);max-width:520px;margin:0 auto 28px;line-height:1.6;}
-    .price-display{display:inline-flex;align-items:baseline;gap:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-lg);padding:16px 32px;margin-bottom:8px;}
+    .price-display{display:inline-flex;align-items:baseline;justify-content:center;gap:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-lg);padding:16px 32px;margin-bottom:8px;white-space:nowrap;max-width:100%;}
     .price-amount{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;color:var(--amber);}
-    .price-currency{font-size:18px;color:rgba(255,255,255,0.7);}
-    .price-old{font-size:16px;color:rgba(255,255,255,0.35);text-decoration:line-through;}
+    .price-currency{font-size:18px;color:rgba(255,255,255,0.7);flex:0 0 auto;}
+    .price-old{font-size:16px;color:rgba(255,255,255,0.35);text-decoration:line-through;flex:0 0 auto;}
+
+    @media (max-width:480px){
+      nav{height:48px!important;min-height:48px!important;padding:0 12px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;flex-wrap:nowrap!important;}
+      .logo{font-size:14px!important;padding:6px 9px!important;flex:0 0 auto!important;white-space:nowrap!important;}
+      .nav-subtitle{display:flex!important;align-items:center!important;justify-content:flex-end!important;height:100%!important;min-width:0!important;flex:1 1 auto!important;margin-left:8px!important;font-size:8.5px!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:right!important;}
+      .price-display{gap:6px;padding:13px 16px;}
+      .price-currency{font-size:14px;}
+      .price-amount{font-size:34px;}
+      .price-old{font-size:13px;}
+      .payment-steps{grid-template-columns:repeat(3,minmax(0,1fr));max-width:340px;gap:5px;}
+      .payment-step-pill{min-height:40px;padding:6px 5px;font-size:9px;}
+    }
     .price-note{font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;}
-    .payment-steps{display:flex;gap:20px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
-    .payment-step-pill{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border-radius:100px;padding:8px 18px;font-size:13px;color:rgba(255,255,255,0.8);}
+    .payment-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;justify-content:center;max-width:680px;margin:16px auto 0;}
+    .payment-step-pill{display:flex;align-items:center;justify-content:center;min-height:46px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:9px 10px;font-size:11px;line-height:1.25;color:rgba(255,255,255,0.84);text-align:center;}
 
     /* PROGRESS STEPPER */
     .form-stepper{max-width:820px;margin:0 auto;padding:40px 20px;}
@@ -51,6 +65,7 @@
     /* FORM SECTIONS */
     .form-section{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:20px;}
     .form-section-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+    .form-section-title-icon{width:18px;height:18px;object-fit:contain;display:block;flex:0 0 auto;}
     .form-section-sub{font-size:13px;color:var(--soft);margin-bottom:20px;}
     .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:16px;}
     .form-label{font-size:13px;color:var(--muted);font-weight:500;}
@@ -60,6 +75,8 @@
     .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
     .error-msg{font-size:12px;color:#e24b4a;}
     .form-hint{font-size:12px;color:var(--soft);}
+    .conditional-field{display:none;margin-top:12px;}
+    .conditional-field.show{display:flex;}
 
     /* OPTION CARDS */
     .option-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;}
@@ -67,6 +84,7 @@
     .option-card:hover{border-color:var(--green);background:var(--green-light);}
     .option-card.sel{border-color:var(--green);background:var(--green-light);}
     .option-card-icon{font-size:24px;margin-bottom:6px;}
+    .option-card-icon-img{width:26px;height:26px;object-fit:contain;display:block;margin:0 auto 6px;}
     .option-card-label{font-size:12px;font-weight:500;color:var(--muted);}
     .option-card.sel .option-card-label{color:var(--green);}
 
@@ -106,6 +124,20 @@
     .summary-row:last-child{border-bottom:none;}
     .summary-label{color:var(--muted);}
     .summary-val{font-weight:500;color:var(--text);}
+    .summary-section{margin-top:16px;padding-top:14px;border-top:1px solid rgba(15,110,86,0.16);}
+    .summary-section-title{font-size:13px;font-weight:700;color:var(--green-mid);margin-bottom:8px;}
+    .summary-text{font-size:13px;color:var(--text);line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;}
+    .summary-tags{display:flex;flex-wrap:wrap;gap:6px;}
+    .summary-tag{display:inline-flex;align-items:center;border-radius:999px;background:#fff;border:1px solid rgba(26,92,56,0.14);padding:5px 9px;font-size:12px;color:var(--green-mid);}
+    .summary-products{display:flex;flex-direction:column;gap:10px;}
+    .summary-product{background:#fff;border:1px solid rgba(26,92,56,0.14);border-radius:var(--radius);padding:12px;}
+    .summary-product-head{display:flex;justify-content:space-between;gap:12px;font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;}
+    .summary-product-meta{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:8px;}
+    .summary-photo-grid{display:grid;grid-template-columns:repeat(2,72px);gap:8px;}
+    .summary-photo{width:72px;height:72px;border-radius:10px;border:1px solid var(--border);background:var(--bg);object-fit:cover;display:block;}
+    .summary-empty{font-size:12px;color:var(--soft);font-style:italic;}
+    .summary-logo{display:flex;align-items:center;gap:10px;}
+    .summary-logo img{width:54px;height:54px;border-radius:10px;object-fit:contain;background:#fff;border:1px solid var(--border);padding:5px;}
     .summary-total{display:flex;justify-content:space-between;font-size:15px;font-weight:500;padding-top:12px;margin-top:4px;}
     .summary-total-label{color:var(--green-mid);}
     .summary-total-val{color:var(--green);font-size:18px;}
@@ -135,13 +167,26 @@
     .upload-area{border:2px dashed #c8b89a;border-radius:var(--radius);padding:20px;text-align:center;background:var(--bg);cursor:pointer;transition:all 0.2s;}
     .upload-area:hover{border-color:var(--green);background:var(--green-light);}
     .upload-icon{font-size:28px;margin-bottom:8px;}
+    .upload-icon-img{width:34px;height:34px;object-fit:contain;display:block;margin:0 auto 8px;}
     .upload-text{font-size:13px;color:var(--soft);}
+    .logo-preview{display:none;margin-top:12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;padding:12px;align-items:center;gap:12px;}
+    .logo-preview.show{display:flex;}
+    .logo-preview img{width:64px;height:64px;border-radius:12px;object-fit:contain;background:var(--bg);border:1px solid var(--border);padding:6px;}
+    .logo-preview-text{min-width:0;font-size:12px;color:var(--muted);line-height:1.35;}
+    .logo-preview-text strong{display:block;color:var(--green);font-size:13px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
     /* PRODUCT ROWS */
     .product-entry{background:var(--bg);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;border:1px solid var(--border);}
     .product-entry-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
     .product-entry-title{font-size:13px;font-weight:500;}
     .remove-btn{font-size:12px;color:#e24b4a;cursor:pointer;background:none;border:none;}
+    .product-photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    .product-photo-slot{position:relative;min-height:112px;border:1.5px dashed #c8b89a;border-radius:var(--radius);background:#fff;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;transition:all 0.2s;}
+    .product-photo-slot:hover{border-color:var(--green);background:var(--green-light);}
+    .product-photo-slot img{width:100%;height:112px;object-fit:cover;display:block;}
+    .product-photo-placeholder{padding:12px;font-size:12px;color:var(--soft);line-height:1.35;}
+    .product-photo-placeholder strong{display:block;color:var(--green);font-size:13px;margin-bottom:3px;}
+    .product-photo-input{display:none;}
   </style>
   <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
@@ -150,12 +195,12 @@
 <!-- NAV -->
 <nav>
   <a href="/index.html" class="logo"><span class="logo-dot"></span>ShopLink</a>
-  <span style="color:rgba(255,255,255,0.7);font-size:13px;">Service Premium — Création sur mesure</span>
+  <span class="nav-subtitle">Service Premium — Création sur mesure</span>
 </nav>
 
 <!-- HERO -->
 <div class="hero-section">
-  <div class="hero-badge">⭐ Service Premium</div>
+  <div class="hero-badge"><img class="hero-badge-icon" src="https://cdn-icons-png.flaticon.com/512/17301/17301418.png" alt="Premium"> Service Premium</div>
   <div class="hero-title">Votre site professionnel<br><span>créé sur mesure</span></div>
   <div class="hero-sub">Remplissez ce formulaire en détail. Notre équipe crée votre site et vous le livre dans les délais.</div>
   <div class="price-display">
@@ -165,9 +210,9 @@
   </div>
   <div class="price-note" id="display-note">Offre de lancement · 10 premiers clients</div>
   <div class="payment-steps">
-    <div class="payment-step-pill">💳 Acompte 50% pour démarrer</div>
-    <div class="payment-step-pill">🚀 Livraison sous 3 semaines</div>
-    <div class="payment-step-pill">✅ Solde à la livraison</div>
+    <div class="payment-step-pill">Acompte 50% pour démarrer</div>
+    <div class="payment-step-pill">Livraison sous 4 semaines</div>
+    <div class="payment-step-pill">Solde à la livraison</div>
   </div>
 </div>
 
@@ -190,14 +235,14 @@
   <!-- ── ÉTAPE 1 : Informations entreprise ── -->
   <div class="step-panel active" id="sp-1">
     <div class="form-section">
-      <div class="form-section-title">🏢 Informations générales</div>
+      <div class="form-section-title"><img class="form-section-title-icon" src="https://cdn-icons-png.flaticon.com/512/6593/6593003.png" alt="Informations générales"> Informations générales</div>
       <div class="form-section-sub">Renseignez les informations de votre entreprise</div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Nom de l'entreprise *</label><input class="form-input" id="p-company" placeholder="Ex : Chez Maman Délices"/></div>
         <div class="form-group"><label class="form-label">Nom du responsable *</label><input class="form-input" id="p-manager" placeholder="Ex : Adjovi Sèmê"/></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Numéro WhatsApp / Appel *</label><input class="form-input" id="p-whatsapp" placeholder="+229 97 XX XX XX"/></div>
+        <div class="form-group"><label class="form-label">Numéro WhatsApp / Appel *</label><input class="form-input" id="p-whatsapp" placeholder="+229 XXXXXXXX"/></div>
         <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="p-email" type="email" placeholder="contact@entreprise.com"/></div>
       </div>
       <div class="form-row">
@@ -207,19 +252,24 @@
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">📋 Activité de l'entreprise</div>
+      <div class="form-section-title"><img class="form-section-title-icon" src="https://cdn-icons-png.flaticon.com/512/6593/6593003.png" alt="Activité de l'entreprise"> Activité de l'entreprise</div>
       <div class="form-section-sub">Décrivez votre activité pour un design adapté</div>
       <div class="form-group">
         <label class="form-label">Type d'activité *</label>
         <div class="option-grid">
-          <div class="option-card sel" onclick="selectOpt(this,'p-activity','restaurant')"><div class="option-card-icon">🍽️</div><div class="option-card-label">Restaurant</div></div>
-          <div class="option-card" onclick="selectOpt(this,'p-activity','boutique')"><div class="option-card-icon">👗</div><div class="option-card-label">Boutique</div></div>
-          <div class="option-card" onclick="selectOpt(this,'p-activity','cosmetique')"><div class="option-card-icon">💄</div><div class="option-card-label">Cosmétique</div></div>
-          <div class="option-card" onclick="selectOpt(this,'p-activity','fastfood')"><div class="option-card-icon">🍟</div><div class="option-card-label">Fast-food</div></div>
-          <div class="option-card" onclick="selectOpt(this,'p-activity','commerce')"><div class="option-card-icon">🛒</div><div class="option-card-label">Commerce</div></div>
-          <div class="option-card" onclick="selectOpt(this,'p-activity','autre')"><div class="option-card-icon">✨</div><div class="option-card-label">Autre</div></div>
+          <div class="option-card sel" onclick="selectOpt(this,'p-activity','restaurant')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/562/562678.png" alt="Restaurant"><div class="option-card-label">Restaurant</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','boutique')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/11746/11746073.png" alt="Boutique"><div class="option-card-label">Boutique</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','cosmetique')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/8023/8023928.png" alt="Cosmétique"><div class="option-card-label">Cosmétique</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','fastfood')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/738/738079.png" alt="Fast-food"><div class="option-card-label">Fast-food</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','commerce')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" alt="Commerce"><div class="option-card-label">Commerce</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-activity','autre')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/3388/3388695.png" alt="Autre"><div class="option-card-label">Autre</div></div>
         </div>
         <input type="hidden" id="p-activity" value="restaurant"/>
+        <div class="form-group conditional-field" id="p-activity-other-wrap">
+          <label class="form-label">Précisez votre activité *</label>
+          <input class="form-input" id="p-activity-other" placeholder="Ex : Imprimerie, salon de coiffure, formation..."/>
+          <div class="error-msg" id="err-activity-other"></div>
+        </div>
       </div>
       <div class="form-group">
         <label class="form-label">Description de l'activité *</label>
@@ -251,20 +301,20 @@
             <div class="form-group"><label class="form-label">Catégorie</label><input class="form-input" placeholder="Ex : Plats · Boissons · Desserts"/></div>
             <div class="form-group"><label class="form-label">Description courte</label><input class="form-input" placeholder="Ex : Riz basmati sauce arachide maison"/></div>
           </div>
+          <div class="product-photo-grid">
+            <label class="product-photo-slot">
+              <input class="product-photo-input" type="file" accept="image/*" onchange="previewProductPhoto(this)"/>
+              <div class="product-photo-preview"><div class="product-photo-placeholder"><strong>Photo 1</strong>Choisir une image</div></div>
+            </label>
+            <label class="product-photo-slot">
+              <input class="product-photo-input" type="file" accept="image/*" onchange="previewProductPhoto(this)"/>
+              <div class="product-photo-preview"><div class="product-photo-placeholder"><strong>Photo 2</strong>Choisir une image</div></div>
+            </label>
+          </div>
         </div>
       </div>
 
       <button type="button" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--radius);border:1.5px dashed #c8b89a;background:var(--bg);font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;" onclick="addProduct()">+ Ajouter un produit</button>
-
-      <div class="form-group">
-        <label class="form-label">Photos des produits</label>
-        <div class="upload-area" onclick="document.getElementById('product-photos').click()">
-          <div class="upload-icon">📷</div>
-          <div class="upload-text">Cliquez pour envoyer vos photos (JPG, PNG — max 5Mo chacune)</div>
-          <input type="file" id="product-photos" multiple accept="image/*" style="display:none;" onchange="showFileNames(this,'photos-names')"/>
-        </div>
-        <div id="photos-names" style="font-size:12px;color:var(--green);margin-top:6px;"></div>
-      </div>
     </div>
 
     <div class="nav-btns">
@@ -282,11 +332,17 @@
       <div class="form-group">
         <label class="form-label">Logo de l'entreprise (optionnel)</label>
         <div class="upload-area" onclick="document.getElementById('logo-input').click()">
-          <div class="upload-icon">🖼️</div>
+          <img class="upload-icon-img" src="https://cdn-icons-png.flaticon.com/512/17194/17194772.png" alt="Image">
           <div class="upload-text">Cliquez pour envoyer votre logo (PNG, SVG de préférence)</div>
-          <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="showFileNames(this,'logo-name')"/>
+          <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="previewLogo(this)"/>
         </div>
-        <div id="logo-name" style="font-size:12px;color:var(--green);margin-top:6px;"></div>
+        <div class="logo-preview" id="logo-preview">
+          <img id="logo-preview-img" src="" alt="Aperçu du logo">
+          <div class="logo-preview-text">
+            <strong id="logo-name"></strong>
+            <span>Logo choisi pour la création du site.</span>
+          </div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -312,20 +368,20 @@
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">🏗️ Structure du site</div>
+      <div class="form-section-title"><img class="form-section-title-icon" src="https://cdn-icons-png.flaticon.com/512/5241/5241811.png" alt="Structure du site"> Structure du site</div>
       <div class="form-section-sub">Choisissez les sections à inclure dans votre site</div>
       <div class="form-group">
         <label class="form-label">Type de site *</label>
-        <div class="option-grid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="option-grid" id="p-site-type-grid" style="grid-template-columns:1fr 1fr 1fr;">
           <div class="option-card sel" onclick="selectOpt(this,'p-site-type','catalogue')"><div class="option-card-icon">📋</div><div class="option-card-label">Catalogue</div></div>
-          <div class="option-card" onclick="selectOpt(this,'p-site-type','menu')"><div class="option-card-icon">🍽️</div><div class="option-card-label">Menu restaurant</div></div>
-          <div class="option-card" onclick="selectOpt(this,'p-site-type','boutique')"><div class="option-card-icon">🛍️</div><div class="option-card-label">Boutique</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-site-type','menu')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/562/562678.png" alt="Menu restaurant"><div class="option-card-label">Menu restaurant</div></div>
+          <div class="option-card" onclick="selectOpt(this,'p-site-type','boutique')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/11746/11746073.png" alt="Boutique"><div class="option-card-label">Boutique</div></div>
         </div>
         <input type="hidden" id="p-site-type" value="catalogue"/>
       </div>
       <div class="form-group">
         <label class="form-label">Sections souhaitées</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+        <div id="p-sections" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green);"> Page d'accueil</label>
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green);"> Catalogue produits</label>
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green);"> Page contact</label>
@@ -369,12 +425,12 @@
       <div class="delai-grid">
         <div class="delai-card sel" id="delai-normal" onclick="selectDelai('normal')">
           <div class="delai-card-title">Normal</div>
-          <div class="delai-card-sub">Livraison sous 3 semaines à partir du paiement de l'acompte</div>
+          <div class="delai-card-sub">Livraison sous 4 semaines à partir du paiement de l'acompte</div>
           <div class="delai-card-price">Inclus dans le prix</div>
         </div>
         <div class="delai-card urgent" id="delai-urgent" onclick="selectDelai('urgent')">
           <div class="delai-card-title">Urgent ⚡</div>
-          <div class="delai-card-sub">Livraison sous 2 semaines — traitement prioritaire</div>
+          <div class="delai-card-sub">Livraison sous 3 semaines — traitement prioritaire</div>
           <div class="delai-card-price" style="color:var(--amber);">Même tarif</div>
         </div>
       </div>
@@ -400,10 +456,55 @@
     <div class="summary-box">
       <div class="summary-title">✓ Résumé de votre commande</div>
       <div class="summary-row"><span class="summary-label">Entreprise</span><span class="summary-val" id="sum-company">—</span></div>
+      <div class="summary-row"><span class="summary-label">Responsable</span><span class="summary-val" id="sum-manager">—</span></div>
+      <div class="summary-row"><span class="summary-label">Email</span><span class="summary-val" id="sum-email">—</span></div>
       <div class="summary-row"><span class="summary-label">Type d'activité</span><span class="summary-val" id="sum-activity">—</span></div>
+      <div class="summary-row"><span class="summary-label">Ville / Quartier</span><span class="summary-val" id="sum-location">—</span></div>
       <div class="summary-row"><span class="summary-label">Style souhaité</span><span class="summary-val" id="sum-style">Moderne</span></div>
-      <div class="summary-row"><span class="summary-label">Délai</span><span class="summary-val" id="sum-delai">Normal · 3 semaines</span></div>
+      <div class="summary-row"><span class="summary-label">Type de site</span><span class="summary-val" id="sum-site-type">Catalogue</span></div>
+      <div class="summary-row"><span class="summary-label">Délai</span><span class="summary-val" id="sum-delai">Normal · 4 semaines</span></div>
       <div class="summary-row"><span class="summary-label">WhatsApp</span><span class="summary-val" id="sum-wa">—</span></div>
+
+      <div class="summary-section">
+        <div class="summary-section-title">Description de l'activité</div>
+        <div class="summary-text" id="sum-description">—</div>
+      </div>
+
+      <div class="summary-section">
+        <div class="summary-section-title">Cible clientèle</div>
+        <div class="summary-text" id="sum-target">—</div>
+      </div>
+
+      <div class="summary-section">
+        <div class="summary-section-title">Produits / services</div>
+        <div class="summary-products" id="sum-products"></div>
+      </div>
+
+      <div class="summary-section">
+        <div class="summary-section-title">Logo choisi</div>
+        <div id="sum-logo" class="summary-text">—</div>
+      </div>
+
+      <div class="summary-section">
+        <div class="summary-section-title">Préférences design</div>
+        <div class="summary-text" id="sum-design">—</div>
+      </div>
+
+      <div class="summary-section">
+        <div class="summary-section-title">Sections souhaitées</div>
+        <div class="summary-tags" id="sum-sections"></div>
+      </div>
+
+      <div class="summary-section">
+        <div class="summary-section-title">Fonctionnalités</div>
+        <div class="summary-tags" id="sum-features"></div>
+      </div>
+
+      <div class="summary-section">
+        <div class="summary-section-title">Informations complémentaires</div>
+        <div class="summary-text" id="sum-notes">—</div>
+      </div>
+
       <div class="summary-total">
         <span class="summary-total-label">Prix total</span>
         <span class="summary-total-val" id="sum-total">10 000 FCFA</span>
@@ -420,7 +521,7 @@
     </div>
 
     <div class="livraison-note">
-      <strong>NB :</strong> Site disponible <strong id="note-delai">3 semaines</strong> après paiement de l'acompte.<br>
+      <strong>NB :</strong> Site disponible <strong id="note-delai">4 semaines</strong> après paiement de l'acompte.<br>
       Vous serez contacté par WhatsApp et email pour le suivi de votre projet.
     </div>
 
@@ -441,12 +542,32 @@
 </div><!-- /form-stepper -->
 
 <script>
+  const API_BASE = `${window.location.protocol}//${window.location.hostname}:5000/api`;
+  const API_FALLBACK = '/api';
+
+  async function apiFetch(path, options = {}) {
+    const withTimeout = (url) => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 7000);
+      return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeout));
+    };
+
+    try {
+      return await withTimeout(`${API_BASE}${path}`);
+    } catch (primaryError) {
+      console.warn('API directe indisponible, tentative via proxy:', primaryError);
+      return withTimeout(`${API_FALLBACK}${path}`);
+    }
+  }
+
   let currentSP = 1;
   const totalSteps = 5;
   let selectedDelai = 'normal';
   let totalPrice = 10000;
 
   function goSP(n) {
+    if (currentSP === 1 && n > 1 && !validateActivityOther()) return;
+
     // Marquer l'étape actuelle comme done
     document.getElementById('sp-' + currentSP).classList.remove('active');
     document.getElementById('sd-' + currentSP).classList.remove('active');
@@ -472,6 +593,40 @@
     el.closest('.option-grid').querySelectorAll('.option-card').forEach(c => c.classList.remove('sel'));
     el.classList.add('sel');
     document.getElementById(inputId).value = val;
+
+    if (inputId === 'p-activity') {
+      const otherWrap = document.getElementById('p-activity-other-wrap');
+      const otherInput = document.getElementById('p-activity-other');
+      const otherError = document.getElementById('err-activity-other');
+      const isOther = val === 'autre';
+      otherWrap.classList.toggle('show', isOther);
+      if (!isOther) {
+        otherInput.value = '';
+        otherError.textContent = '';
+      } else {
+        otherInput.focus();
+      }
+    }
+  }
+
+  function getActivityValue() {
+    const activity = document.getElementById('p-activity').value;
+    if (activity !== 'autre') return activity;
+    return document.getElementById('p-activity-other').value.trim();
+  }
+
+  function validateActivityOther() {
+    const activity = document.getElementById('p-activity').value;
+    const otherInput = document.getElementById('p-activity-other');
+    const otherError = document.getElementById('err-activity-other');
+    if (activity !== 'autre') return true;
+    if (!otherInput.value.trim()) {
+      otherError.textContent = 'Veuillez renseigner votre activité.';
+      otherInput.focus();
+      return false;
+    }
+    otherError.textContent = '';
+    return true;
   }
 
   function selectStyle(el, val) {
@@ -485,8 +640,8 @@
     document.getElementById('p-delai').value = val;
     document.getElementById('delai-normal').classList.toggle('sel', val === 'normal');
     document.getElementById('delai-urgent').classList.toggle('sel', val === 'urgent');
-    document.getElementById('sum-delai').textContent = val === 'urgent' ? 'Urgent · 2 semaines' : 'Normal · 3 semaines';
-    document.getElementById('note-delai').textContent = val === 'urgent' ? '2 semaines' : '3 semaines';
+    document.getElementById('sum-delai').textContent = val === 'urgent' ? 'Urgent · 3 semaines' : 'Normal · 4 semaines';
+    document.getElementById('note-delai').textContent = val === 'urgent' ? '3 semaines' : '4 semaines';
   }
 
   let productCount = 1;
@@ -508,6 +663,16 @@
       <div class="form-row">
         <div class="form-group"><label class="form-label">Catégorie</label><input class="form-input" placeholder="Ex : Plats chauds"/></div>
         <div class="form-group"><label class="form-label">Description courte</label><input class="form-input" placeholder="Ex : Poulet grillé sauce piment"/></div>
+      </div>
+      <div class="product-photo-grid">
+        <label class="product-photo-slot">
+          <input class="product-photo-input" type="file" accept="image/*" onchange="previewProductPhoto(this)"/>
+          <div class="product-photo-preview"><div class="product-photo-placeholder"><strong>Photo 1</strong>Choisir une image</div></div>
+        </label>
+        <label class="product-photo-slot">
+          <input class="product-photo-input" type="file" accept="image/*" onchange="previewProductPhoto(this)"/>
+          <div class="product-photo-preview"><div class="product-photo-placeholder"><strong>Photo 2</strong>Choisir une image</div></div>
+        </label>
       </div>`;
     container.appendChild(div);
     document.getElementById('pe-0').querySelector('.remove-btn').style.display = 'block';
@@ -518,17 +683,250 @@
     if (el) el.remove();
   }
 
+  function compressImageFile(file, maxSize = 900, quality = 0.72) {
+    return new Promise((resolve, reject) => {
+      if (!file || !file.type.startsWith('image/')) {
+        reject(new Error('Fichier image invalide'));
+        return;
+      }
+
+      if (file.type === 'image/svg+xml') {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(img.width * ratio));
+          canvas.height = Math.max(1, Math.round(img.height * ratio));
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = () => reject(new Error('Impossible de lire cette image'));
+        img.src = reader.result;
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function previewProductPhoto(input) {
+    const file = input.files && input.files[0];
+    const preview = input.closest('.product-photo-slot').querySelector('.product-photo-preview');
+    if (!file || !preview) return;
+
+    try {
+      const imageSrc = await compressImageFile(file);
+      input.dataset.previewSrc = imageSrc;
+      input.dataset.fileName = file.name;
+      preview.innerHTML = `<img src="${imageSrc}" alt="Aperçu produit">`;
+    } catch (error) {
+      alert('Impossible de charger cette photo : ' + error.message);
+      input.value = '';
+    }
+  }
+
+  async function previewLogo(input) {
+    const file = input.files && input.files[0];
+    const preview = document.getElementById('logo-preview');
+    const image = document.getElementById('logo-preview-img');
+    const name = document.getElementById('logo-name');
+    if (!file || !preview || !image || !name) return;
+
+    try {
+      const imageSrc = await compressImageFile(file, 700, 0.75);
+      input.dataset.previewSrc = imageSrc;
+      input.dataset.fileName = file.name;
+      image.src = imageSrc;
+      name.textContent = file.name;
+      preview.classList.add('show');
+    } catch (error) {
+      alert('Impossible de charger ce logo : ' + error.message);
+      input.value = '';
+    }
+  }
+
   function showFileNames(input, targetId) {
     const names = Array.from(input.files).map(f => f.name).join(', ');
     document.getElementById(targetId).textContent = names ? '✓ ' + names : '';
   }
 
+  function valueOf(id) {
+    return document.getElementById(id)?.value?.trim() || '';
+  }
+
+  function selectedLabel(selector, fallback = '—') {
+    const selected = document.querySelector(selector);
+    return selected ? selected.textContent.trim() : fallback;
+  }
+
+  function getSelectedSections() {
+    return Array.from(document.querySelectorAll('#p-sections label'))
+      .filter(label => label.querySelector('input')?.checked)
+      .map(label => label.textContent.trim());
+  }
+
+  function getSelectedFeatures() {
+    const features = [
+      ['feat-whatsapp', 'Bouton Commander via WhatsApp'],
+      ['feat-delivery', 'Option Livraison'],
+      ['feat-maps', 'Localisation Google Maps'],
+      ['feat-phone2', 'Numéro de téléphone secondaire']
+    ];
+
+    return features
+      .filter(([id]) => document.getElementById(id)?.checked)
+      .map(([, label]) => label);
+  }
+
+  function getProductData() {
+    return Array.from(document.querySelectorAll('.product-entry')).map((entry, index) => {
+      const fields = entry.querySelectorAll('input.form-input');
+      const photoInputs = entry.querySelectorAll('.product-photo-input');
+      const photos = Array.from(photoInputs)
+        .map(input => {
+          const file = input.files && input.files[0];
+          return file ? { name: input.dataset.fileName || file.name, src: input.dataset.previewSrc || '' } : null;
+        })
+        .filter(Boolean);
+
+      return {
+        title: `Produit ${index + 1}`,
+        name: fields[0]?.value?.trim() || '',
+        price: fields[1]?.value?.trim() || '',
+        category: fields[2]?.value?.trim() || '',
+        description: fields[3]?.value?.trim() || '',
+        photos
+      };
+    }).filter(product => product.name || product.price || product.category || product.description || product.photos.length);
+  }
+
+  function getLogoData() {
+    const file = document.getElementById('logo-input')?.files?.[0];
+    const input = document.getElementById('logo-input');
+    return file ? { name: input.dataset.fileName || file.name, src: input.dataset.previewSrc || '' } : null;
+  }
+
+  function stripHeavyMedia(data) {
+    return {
+      ...data,
+      logo: data.logo ? { name: data.logo.name, hasImage: true } : null,
+      products: (data.products || []).map(product => ({
+        ...product,
+        photos: (product.photos || []).map(photo => ({ name: photo.name, hasImage: true }))
+      }))
+    };
+  }
+
+  function renderTags(targetId, items) {
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    target.innerHTML = items.length
+      ? items.map(item => `<span class="summary-tag">${item}</span>`).join('')
+      : '<span class="summary-empty">Aucune option sélectionnée</span>';
+  }
+
+  function renderProducts(products) {
+    const target = document.getElementById('sum-products');
+    if (!target) return;
+
+    if (!products.length) {
+      target.innerHTML = '<div class="summary-empty">Aucun produit renseigné</div>';
+      return;
+    }
+
+    target.innerHTML = products.map(product => {
+      const price = product.price ? `${Number(product.price).toLocaleString('fr-FR')} FCFA` : 'Prix non renseigné';
+      const photos = product.photos.length
+        ? `<div class="summary-photo-grid">${product.photos.map(photo => `<img class="summary-photo" src="${photo.src}" alt="${photo.name}">`).join('')}</div>`
+        : '<div class="summary-empty">Aucune photo ajoutée</div>';
+
+      return `
+        <div class="summary-product">
+          <div class="summary-product-head"><span>${product.name || product.title}</span><span>${price}</span></div>
+          <div class="summary-product-meta">
+            Catégorie : ${product.category || '—'}<br>
+            Description : ${product.description || '—'}
+          </div>
+          ${photos}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderLogo(logo) {
+    const target = document.getElementById('sum-logo');
+    if (!target) return;
+    target.className = logo ? 'summary-logo' : 'summary-text';
+    target.innerHTML = logo
+      ? `<img src="${logo.src}" alt="Logo choisi"><span>${logo.name}</span>`
+      : '—';
+  }
+
+  function getPremiumFormData() {
+    return {
+      company: valueOf('p-company'),
+      manager: valueOf('p-manager'),
+      whatsapp: valueOf('p-whatsapp'),
+      email: valueOf('p-email'),
+      city: valueOf('p-city'),
+      district: valueOf('p-district'),
+      activity: getActivityValue(),
+      activityDescription: valueOf('p-description'),
+      target: valueOf('p-target'),
+      products: getProductData(),
+      logo: getLogoData(),
+      colors: valueOf('p-colors'),
+      style: document.getElementById('p-style').value,
+      styleLabel: selectedLabel('.style-card.sel .style-card-name', document.getElementById('p-style').value),
+      exampleSite: valueOf('p-example-site'),
+      siteType: document.getElementById('p-site-type').value,
+      siteTypeLabel: selectedLabel('#p-site-type-grid .option-card.sel .option-card-label', document.getElementById('p-site-type').value),
+      sections: getSelectedSections(),
+      features: getSelectedFeatures(),
+      delai: selectedDelai,
+      delaiLabel: selectedDelai === 'urgent' ? 'Urgent · 3 semaines' : 'Normal · 4 semaines',
+      notes: valueOf('p-notes'),
+      totalPrice,
+      step: 'acompte',
+      amount: totalPrice / 2,
+      type: 'premium'
+    };
+  }
+
   function fillSummary() {
-    document.getElementById('sum-company').textContent  = document.getElementById('p-company').value || '—';
-    document.getElementById('sum-activity').textContent = document.getElementById('p-activity').value;
-    document.getElementById('sum-style').textContent    = document.getElementById('p-style').value;
-    document.getElementById('sum-delai').textContent    = selectedDelai === 'urgent' ? 'Urgent · 2 semaines' : 'Normal · 3 semaines';
-    document.getElementById('sum-wa').textContent       = document.getElementById('p-whatsapp').value || '—';
+    const data = getPremiumFormData();
+
+    document.getElementById('sum-company').textContent     = data.company || '—';
+    document.getElementById('sum-manager').textContent     = data.manager || '—';
+    document.getElementById('sum-email').textContent       = data.email || '—';
+    document.getElementById('sum-activity').textContent    = data.activity || '—';
+    document.getElementById('sum-location').textContent    = [data.city, data.district].filter(Boolean).join(' · ') || '—';
+    document.getElementById('sum-style').textContent       = data.styleLabel || '—';
+    document.getElementById('sum-site-type').textContent   = data.siteTypeLabel || data.siteType || '—';
+    document.getElementById('sum-delai').textContent       = data.delaiLabel;
+    document.getElementById('sum-wa').textContent          = data.whatsapp || '—';
+    document.getElementById('sum-description').textContent = data.activityDescription || '—';
+    document.getElementById('sum-target').textContent      = data.target || '—';
+    document.getElementById('sum-design').textContent      = [
+      data.colors ? `Couleurs : ${data.colors}` : '',
+      data.exampleSite ? `Exemple : ${data.exampleSite}` : ''
+    ].filter(Boolean).join('\n') || '—';
+    document.getElementById('sum-notes').textContent       = data.notes || '—';
+
+    renderProducts(data.products);
+    renderLogo(data.logo);
+    renderTags('sum-sections', data.sections);
+    renderTags('sum-features', data.features);
+
     const half = Math.round(totalPrice / 2).toLocaleString('fr-FR');
     document.getElementById('sum-total').textContent       = totalPrice.toLocaleString('fr-FR') + ' FCFA';
     document.getElementById('acompte-amount').textContent  = half + ' FCFA';
@@ -536,34 +934,52 @@
     document.getElementById('acompte-btn-amount').textContent = half + ' FCFA';
   }
 
-  function proceedPayment() {
+  async function proceedPayment() {
     if (!document.getElementById('confirm-check').checked) {
       alert('Veuillez cocher la case de confirmation avant de procéder au paiement.');
       return;
     }
-    // Enregistrer les données du formulaire et rediriger vers la page de paiement
-    const formData = {
-      company:    document.getElementById('p-company').value,
-      manager:    document.getElementById('p-manager').value,
-      whatsapp:   document.getElementById('p-whatsapp').value,
-      email:      document.getElementById('p-email').value,
-      activity:   document.getElementById('p-activity').value,
-      style:      document.getElementById('p-style').value,
-      delai:      selectedDelai,
-      siteType:   document.getElementById('p-site-type').value,
-      totalPrice: totalPrice,
-      step:       'acompte',
-      amount:     totalPrice / 2,
-      type:       'premium'
-    };
-    localStorage.setItem('shoplink_order', JSON.stringify(formData));
-    window.location.href = '/payment.html?type=premium&step=acompte&amount=' + (totalPrice/2);
+    const payBtn = document.getElementById('pay-btn');
+    const originalText = payBtn.innerHTML;
+    payBtn.disabled = true;
+    payBtn.innerHTML = 'Création de la commande...';
+
+    try {
+      // Les images restent envoyées au backend, mais pas stockées dans localStorage mobile.
+      const formData = getPremiumFormData();
+      const res = await apiFetch('/payments/premium-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          premiumOrder: formData,
+          amount: totalPrice / 2,
+          name: formData.manager,
+          email: formData.email,
+          reference: 'PREMIUM-' + Date.now()
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success || !data.payment) {
+        alert(data.message || 'Impossible de créer la commande premium.');
+        payBtn.disabled = false;
+        payBtn.innerHTML = originalText;
+        return;
+      }
+
+      const nextOrder = { ...stripHeavyMedia(formData), paymentId: data.payment.id, paymentReference: data.payment.reference };
+      localStorage.setItem('shoplink_order', JSON.stringify(nextOrder));
+      window.location.href = '/payment.html?type=premium&step=acompte&amount=' + (totalPrice/2) + '&paymentId=' + encodeURIComponent(data.payment.id) + '&reference=' + encodeURIComponent(data.payment.reference);
+    } catch (error) {
+      alert('Erreur de connexion lors de la création de la commande premium : ' + error.message);
+      payBtn.disabled = false;
+      payBtn.innerHTML = originalText;
+    }
   }
 
   // Charger le prix promo depuis l'API
   async function loadPrice() {
     try {
-      const res = await fetch('/api/payments/promo-count');
+      const res = await apiFetch('/payments/promo-count');
       const data = await res.json();
       if (data.premiumCount >= 10) {
         totalPrice = 12000;
@@ -576,6 +992,5 @@
   loadPrice();
 </script>
 <link rel="stylesheet" href="/css/responsive.css">
-<script src="/js/mobile-nav.js"></script>
 </body>
 </html>
