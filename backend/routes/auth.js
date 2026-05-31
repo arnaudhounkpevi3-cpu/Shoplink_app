@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const { repo } = require('../data/repository')
 const { sanitizeUser } = require('../utils/sanitizeUser')
 const { uniqueSlug } = require('../utils/slug')
+const { sendPasswordResetEmail } = require('../services/emailService')
 
 const router = express.Router()
 
@@ -20,6 +21,14 @@ function createToken(user) {
       expiresIn: '7d',
     },
   )
+}
+
+function getFrontendBaseUrl(req) {
+  return (
+    process.env.FRONTEND_URL ||
+    req.headers.origin ||
+    `${req.protocol}://${req.hostname}:5173`
+  ).replace(/\/$/, '')
 }
 
 async function getAutonomousPricing() {
@@ -320,7 +329,7 @@ router.post('/forgot-password', async (req, res) => {
   if (!user) {
     // Don't reveal if email exists
     return res.json({
-      success: false,
+      success: true,
       message: 'Si cet email existe, vous recevrez un lien de réinitialisation',
     })
   }
@@ -329,20 +338,35 @@ router.post('/forgot-password', async (req, res) => {
   const token = require('crypto').randomBytes(32).toString('hex')
   resetTokens.set(token, { email, expiresAt: Date.now() + 60 * 60 * 1000 }) // 1 hour
 
-  console.log('=== TOKEN DE RÉINITIALISATION ===')
-  console.log(`Email: ${email}`)
-  console.log(`Token: ${token}`)
-  console.log(`Expire dans: 1 heure`)
-  console.log('================================')
+  const resetLink = `${getFrontendBaseUrl(req)}/reset-password.html?token=${token}`
+  const emailResult = await sendPasswordResetEmail(user.email, resetLink)
 
-  // In production, send email with link here
-  // For now, return the link in response for testing
-  const resetLink = `${req.protocol}://${req.get('host')}/reset-password.html?token=${token}`
+  if (!emailResult.success) {
+    resetTokens.delete(token)
+
+    if (
+      emailResult.provider === 'resend' &&
+      emailResult.statusCode === 403 &&
+      String(emailResult.error || '').includes('verify a domain')
+    ) {
+      return res.status(403).json({
+        success: false,
+        message:
+          'Resend est en mode test : vous pouvez seulement envoyer vers l’email propriétaire du compte Resend. Pour envoyer à tous les utilisateurs, vérifiez un domaine sur resend.com/domains puis utilisez une adresse RESEND_FROM de ce domaine.',
+      })
+    }
+
+    return res.status(500).json({
+      success: false,
+      message:
+        emailResult.error ||
+        'Impossible d’envoyer l’email de réinitialisation. Vérifiez la configuration email du serveur.',
+    })
+  }
   
   return res.json({
     success: true,
-    message: 'Lien de réinitialisation généré',
-    resetLink: resetLink, // Remove this in production
+    message: 'Email de réinitialisation envoyé',
   })
 })
 
@@ -394,6 +418,50 @@ router.post('/reset-password', async (req, res) => {
     token: createToken(user),
     user: sanitizeUser(user),
   })
+})
+
+router.post('/reset-password-form', async (req, res) => {
+  const { token, newPassword } = req.body
+  const frontendBase = getFrontendBaseUrl(req)
+
+  function redirectWithError(message) {
+    const params = new URLSearchParams({
+      token: token || '',
+      error: message,
+    })
+    return res.redirect(`${frontendBase}/reset-password.html?${params.toString()}`)
+  }
+
+  if (!token || !newPassword) {
+    return redirectWithError('Token et nouveau mot de passe requis')
+  }
+
+  if (String(newPassword).length < 6) {
+    return redirectWithError('Le mot de passe doit contenir au moins 6 caractères')
+  }
+
+  const resetData = resetTokens.get(token)
+
+  if (!resetData) {
+    return redirectWithError('Token invalide ou expiré')
+  }
+
+  if (resetData.expiresAt < Date.now()) {
+    resetTokens.delete(token)
+    return redirectWithError('Token expiré')
+  }
+
+  const user = await repo().findUserByEmail(resetData.email)
+
+  if (!user) {
+    return redirectWithError('Utilisateur introuvable')
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 10)
+  await repo().updateUser(user.id, { passwordHash })
+  resetTokens.delete(token)
+
+  return res.redirect(`${frontendBase}/login.html?passwordReset=success`)
 })
 
 module.exports = router

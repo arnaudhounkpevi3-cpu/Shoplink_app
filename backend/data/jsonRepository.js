@@ -45,6 +45,17 @@ module.exports = {
     return mapUser(user)
   },
 
+  async updateUser(id, patch) {
+    const user = state.users.find((entry) => entry.id === id)
+    if (!user) {
+      return null
+    }
+
+    Object.assign(user, patch, { updatedAt: new Date().toISOString() })
+    saveState()
+    return mapUser(user)
+  },
+
   async listUsers() {
     return state.users.map(mapUser)
   },

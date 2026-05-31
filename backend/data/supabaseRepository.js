@@ -235,6 +235,26 @@ module.exports = {
     return error || !result ? null : mapUser(result)
   },
 
+  async updateUser(id, patch) {
+    const update = {}
+
+    if (patch.name !== undefined) update.name = patch.name
+    if (patch.email !== undefined) update.email = String(patch.email).toLowerCase()
+    if (patch.phone !== undefined) update.phone = patch.phone
+    if (patch.role !== undefined) update.role = patch.role
+    if (patch.passwordHash !== undefined) update.password = patch.passwordHash
+    update.updated_at = new Date().toISOString()
+
+    const { data: result, error } = await supabase
+      .from('users')
+      .update(update)
+      .eq('id', id)
+      .select()
+      .single()
+
+    return error || !result ? null : mapUser(result)
+  },
+
   async listUsers() {
     const { data, error } = await supabase.from('users').select('*')
     return error ? [] : data.map(mapUser)

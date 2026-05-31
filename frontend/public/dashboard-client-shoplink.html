@@ -32,12 +32,14 @@
     @media(max-width:768px){.activity-product-panel .activity-product-fields{grid-template-columns:1fr;padding:12px}.activity-product-toggle{font-size:12px}}
     .quick-guide-overlay{position:fixed;inset:0;z-index:2800;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,31,23,.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}.quick-guide-overlay.open{display:flex}.quick-guide-modal{width:min(920px,100%);max-height:88dvh;overflow:hidden;display:flex;flex-direction:column;background:#fff;border-radius:24px;box-shadow:0 28px 90px rgba(0,0,0,.32);border:1px solid rgba(15,31,23,.08)}.quick-guide-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:18px 20px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fff,#fdf6ee)}.quick-guide-title{font-size:20px;font-weight:900;color:var(--text);letter-spacing:-.03em}.quick-guide-sub{font-size:13px;color:var(--muted);line-height:1.45;margin-top:3px}.quick-guide-close{width:36px;height:36px;border:0;border-radius:999px;background:#f5f0ea;color:var(--text);font-size:20px;cursor:pointer;flex:0 0 auto}.quick-guide-body{padding:18px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch}.quick-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.guide-card{border:1px solid var(--border);border-radius:16px;padding:14px;background:#fff;display:grid;gap:8px}.guide-card-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:900;color:var(--green)}.guide-card-title i{font-size:17px}.guide-card p{font-size:12.5px;color:var(--muted);line-height:1.55;margin:0}.guide-card ul{margin:0;padding-left:18px;color:var(--muted);font-size:12.5px;line-height:1.6}.guide-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.guide-action-btn{border:0;border-radius:999px;background:var(--green);color:#fff;padding:8px 12px;font:800 12px var(--font-sans);cursor:pointer}.guide-action-btn.secondary{background:#f5f0ea;color:var(--text)}@media(max-width:760px){.quick-guide-modal{max-height:92dvh;border-radius:20px}.quick-guide-head{padding:15px}.quick-guide-body{padding:14px}.quick-guide-grid{grid-template-columns:1fr}.quick-guide-title{font-size:18px}}
     #p-support .support-card.whatsapp-guide-open{max-height:420px;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;border-color:rgba(26,107,74,.28);box-shadow:0 14px 38px rgba(26,107,74,.08)}#p-support .support-card.whatsapp-guide-open::-webkit-scrollbar{width:6px}#p-support .support-card.whatsapp-guide-open::-webkit-scrollbar-thumb{background:rgba(26,107,74,.25);border-radius:999px}@media(max-width:768px){#p-support .support-card.whatsapp-guide-open{max-height:58vh}}
+    .hamburger-btn,.mobile-nav-menu,.mobile-nav-overlay,#mobile-nav-menu,#mobile-nav-overlay{display:none!important;visibility:hidden!important;pointer-events:none!important}
+    .topnav .logo,.client-logo-badge{display:inline-flex;align-items:center;gap:8px;width:max-content;max-width:100%;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);font-family:var(--font-display);font-weight:800;color:#fff;white-space:nowrap}.topnav .logo .logo-dot,.client-logo-badge .logo-dot{box-shadow:0 0 0 3px rgba(232,98,10,.18)}@media(max-width:768px){.client-logo-badge{font-size:14px;padding:6px 10px}.topnav .logo{font-size:15px;padding:7px 11px}#p-monsite>div[style*="grid-template-columns:1fr 220px"]{display:grid!important;grid-template-columns:1fr!important;gap:16px!important}#p-monsite>div[style*="grid-template-columns:1fr 220px"]>div:first-child{order:1!important}#p-monsite>div[style*="grid-template-columns:1fr 220px"]>div:last-child{order:2!important;justify-self:center;width:100%;max-width:260px;margin-top:2px}#p-monsite .phone{margin-left:auto!important;margin-right:auto!important;max-width:100%!important}}
   </style>
 </head>
 <body>
   <div class="mobile-client-topbar">
     <button class="client-menu-btn" onclick="openClientMenu()"><i class="fi fi-rr-bars-staggered"></i> Menu</button>
-    <div style="display:flex;align-items:center;gap:8px;font-weight:700;"><span class="logo-dot"></span>ShopLink</div>
+    <div class="client-logo-badge"><span class="logo-dot"></span>ShopLink</div>
   </div>
   <div class="client-overlay" onclick="closeClientMenu()"></div>
 
@@ -2659,6 +2661,5 @@
       }
     });
   </script>
-<script src="/js/mobile-nav.js"></script>
 </body>
 </html>

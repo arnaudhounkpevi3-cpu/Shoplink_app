@@ -24,8 +24,9 @@
       "email": "arnaudhounkpevi3@gmail.com",
       "phone": "47000674",
       "role": "user",
-      "passwordHash": "$2b$10$bK6NmrUhAHFsHdzXAMDv1udlRzHHbTqlL1yHyUwKbQOzQJVkRXjTu",
-      "createdAt": "2026-04-02T17:06:43.219Z"
+      "passwordHash": "$2b$10$xSxAsc/UYeR472sXVQSk1OZI1USPoZaHpbXvFxSq7IEPTtEOnH2Qm",
+      "createdAt": "2026-04-02T17:06:43.219Z",
+      "updatedAt": "2026-05-31T12:28:06.699Z"
     },
     {
       "id": "user-4",
@@ -509,6 +510,25 @@
       "publishedAt": "2026-05-31T00:24:26.631Z",
       "updatedAt": "2026-05-31T01:11:39.039Z",
       "siteName": "Lamoronis fashion"
+    },
+    {
+      "id": "site-21",
+      "userId": "user-3",
+      "name": "votre boutique",
+      "slug": "votre-boutique",
+      "slogan": "",
+      "logo": "",
+      "description": "",
+      "whatsapp": "+2290147000674",
+      "secondaryPhone": "+2290147000674",
+      "address": "Bénin",
+      "activityType": "Boutique",
+      "primaryColor": "#d9643a",
+      "secondaryColor": "#176b5b",
+      "status": "published",
+      "createdAt": "2026-05-31T12:28:18.412Z",
+      "siteName": "votre boutique",
+      "updatedAt": "2026-05-31T12:28:43.052Z"
     }
   ],
   "products": [

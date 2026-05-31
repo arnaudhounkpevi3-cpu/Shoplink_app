@@ -255,6 +255,12 @@ module.exports = {
     return mapUser(doc)
   },
 
+  async updateUser(id, patch) {
+    const update = { ...patch, updatedAt: new Date() }
+    const doc = await User.findByIdAndUpdate(id, update, { new: true }).lean()
+    return doc ? mapUser(doc) : null
+  },
+
   async listUsers() {
     const list = await User.find().lean()
     return list.map(mapUser)

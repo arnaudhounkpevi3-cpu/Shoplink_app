@@ -59,6 +59,18 @@ async function main() {
     }),
   )
   app.use(express.json({ limit: '25mb' }))
+  app.use(express.urlencoded({ extended: false, limit: '25mb' }))
+
+  app.use((error, req, res, next) => {
+    if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Requête JSON invalide',
+      })
+    }
+
+    return next(error)
+  })
 
   const publicPath = path.join(__dirname, '../frontend/public')
   const publicSitePath = path.join(publicPath, 'site-public.html')
