@@ -23,6 +23,45 @@ function createToken(user) {
   )
 }
 
+function createPasswordResetToken(user) {
+  return jwt.sign(
+    {
+      sub: user.id,
+      email: user.email,
+      purpose: 'password-reset',
+    },
+    process.env.JWT_SECRET || 'change-me',
+    {
+      expiresIn: '1h',
+    },
+  )
+}
+
+async function findUserFromPasswordResetToken(token) {
+  let payload
+
+  try {
+    payload = jwt.verify(token, process.env.JWT_SECRET || 'change-me')
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return { error: 'Token expiré' }
+    }
+    return { error: 'Token invalide ou expiré' }
+  }
+
+  if (!payload || payload.purpose !== 'password-reset' || !payload.sub || !payload.email) {
+    return { error: 'Token invalide ou expiré' }
+  }
+
+  const user = await repo().findUserById(payload.sub)
+
+  if (!user || String(user.email).toLowerCase() !== String(payload.email).toLowerCase()) {
+    return { error: 'Utilisateur introuvable' }
+  }
+
+  return { user }
+}
+
 function getFrontendBaseUrl(req) {
   return (
     process.env.FRONTEND_URL ||
@@ -242,9 +281,6 @@ router.get('/me', async (req, res) => {
   }
 })
 
-// Store reset tokens in memory (for development)
-const resetTokens = new Map()
-
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body
 
@@ -265,16 +301,11 @@ router.post('/forgot-password', async (req, res) => {
     })
   }
 
-  // Generate a unique token
-  const token = require('crypto').randomBytes(32).toString('hex')
-  resetTokens.set(token, { email, expiresAt: Date.now() + 60 * 60 * 1000 }) // 1 hour
-
+  const token = createPasswordResetToken(user)
   const resetLink = `${getFrontendBaseUrl(req)}/reset-password.html?token=${token}`
   const emailResult = await sendPasswordResetEmail(user.email, resetLink)
 
   if (!emailResult.success) {
-    resetTokens.delete(token)
-
     if (
       emailResult.provider === 'resend' &&
       emailResult.statusCode === 403 &&
@@ -311,36 +342,17 @@ router.post('/reset-password', async (req, res) => {
     })
   }
 
-  const resetData = resetTokens.get(token)
+  const { user, error } = await findUserFromPasswordResetToken(token)
 
-  if (!resetData) {
+  if (error) {
     return res.status(400).json({
       success: false,
-      message: 'Token invalide ou expiré',
-    })
-  }
-
-  if (resetData.expiresAt < Date.now()) {
-    resetTokens.delete(token)
-    return res.status(400).json({
-      success: false,
-      message: 'Token expiré',
-    })
-  }
-
-  const user = await repo().findUserByEmail(resetData.email)
-
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: 'Utilisateur introuvable',
+      message: error,
     })
   }
 
   const passwordHash = await bcrypt.hash(newPassword, 10)
   await repo().updateUser(user.id, { passwordHash })
-
-  resetTokens.delete(token)
 
   // Return user data for auto-login
   return res.json({
@@ -371,26 +383,14 @@ router.post('/reset-password-form', async (req, res) => {
     return redirectWithError('Le mot de passe doit contenir au moins 6 caractères')
   }
 
-  const resetData = resetTokens.get(token)
+  const { user, error } = await findUserFromPasswordResetToken(token)
 
-  if (!resetData) {
-    return redirectWithError('Token invalide ou expiré')
-  }
-
-  if (resetData.expiresAt < Date.now()) {
-    resetTokens.delete(token)
-    return redirectWithError('Token expiré')
-  }
-
-  const user = await repo().findUserByEmail(resetData.email)
-
-  if (!user) {
-    return redirectWithError('Utilisateur introuvable')
+  if (error) {
+    return redirectWithError(error)
   }
 
   const passwordHash = await bcrypt.hash(newPassword, 10)
   await repo().updateUser(user.id, { passwordHash })
-  resetTokens.delete(token)
 
   return res.redirect(303, `${frontendBase}/login.html?passwordReset=success`)
 })
