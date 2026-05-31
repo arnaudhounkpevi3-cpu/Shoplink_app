@@ -6,6 +6,17 @@
   <title>ShopLink — Portail Principal</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/css/responsive.css"/>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var wantsPortal = params.get('portal') === '1';
+      var isDesktop = window.matchMedia('(min-width: 901px)').matches;
+
+      if (isDesktop && !wantsPortal) {
+        window.location.replace('/homepage-shoplink.html');
+      }
+    })();
+  </script>
   <style>
     :root {
       --green: #1a5c38;
@@ -1279,6 +1290,107 @@
       }
     }
 
+    @media (min-width: 901px) {
+      .portal-nav {
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 18px 48px !important;
+        border-radius: 0 !important;
+        background: rgba(245,240,232,0.36) !important;
+        border: 0 !important;
+        border-bottom: 1px solid rgba(17,17,17,0.06) !important;
+        box-shadow: none !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+        transition: width .24s ease, margin .24s ease, top .24s ease, padding .24s ease, border-radius .24s ease, background .24s ease, box-shadow .24s ease, border-color .24s ease !important;
+      }
+
+      .portal-nav.is-scrolled {
+        top: 14px !important;
+        width: min(1080px, calc(100% - 56px)) !important;
+        margin: 0 auto !important;
+        padding: 10px 18px !important;
+        border-radius: 999px !important;
+        background: rgba(255,255,255,0.94) !important;
+        border: 1px solid rgba(17,17,17,0.10) !important;
+        box-shadow: 0 18px 54px rgba(17,17,17,0.16) !important;
+        backdrop-filter: blur(20px) saturate(1.25) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(1.25) !important;
+      }
+
+      .portal-nav.is-scrolled .logo {
+        transform: scale(.96);
+      }
+
+      .portal-nav.is-scrolled .portal-nav-links a {
+        padding: 8px 12px !important;
+        border-radius: 999px !important;
+        background: rgba(26,92,56,0.05) !important;
+      }
+
+      .portal-nav.is-scrolled .portal-nav-btn {
+        min-height: 36px !important;
+        padding: 9px 14px !important;
+        border-radius: 999px !important;
+      }
+    }
+    @media (min-width: 901px) {
+      body {
+        padding-top: 82px;
+      }
+
+      .portal-nav {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 18px 48px !important;
+        border-radius: 0 !important;
+        background: rgba(245,240,232,0.42) !important;
+        border: 0 !important;
+        border-bottom: 1px solid rgba(17,17,17,0.06) !important;
+        box-shadow: none !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+        transform: translateY(0) !important;
+        transition: width .24s ease, left .24s ease, right .24s ease, top .24s ease, padding .24s ease, border-radius .24s ease, background .24s ease, box-shadow .24s ease, border-color .24s ease, transform .24s ease !important;
+      }
+
+      .portal-nav.is-scrolled {
+        top: 14px !important;
+        left: 50% !important;
+        right: auto !important;
+        width: min(1080px, calc(100% - 56px)) !important;
+        margin: 0 !important;
+        padding: 10px 18px !important;
+        border-radius: 999px !important;
+        background: rgba(255,255,255,0.96) !important;
+        border: 1px solid rgba(17,17,17,0.10) !important;
+        box-shadow: 0 20px 58px rgba(17,17,17,0.18) !important;
+        backdrop-filter: blur(22px) saturate(1.25) !important;
+        -webkit-backdrop-filter: blur(22px) saturate(1.25) !important;
+        transform: translateX(-50%) !important;
+      }
+
+      .portal-nav.is-scrolled .logo {
+        transform: scale(.96);
+      }
+
+      .portal-nav.is-scrolled .portal-nav-links a {
+        padding: 8px 12px !important;
+        border-radius: 999px !important;
+        background: rgba(26,92,56,0.06) !important;
+      }
+
+      .portal-nav.is-scrolled .portal-nav-btn {
+        min-height: 36px !important;
+        padding: 9px 14px !important;
+        border-radius: 999px !important;
+      }
+    }
   </style>
   <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
@@ -1412,6 +1524,24 @@
   </footer>
 
 <script>
+  (function initPortalNavbarBehavior() {
+    const nav = document.querySelector('.portal-nav');
+    if (!nav) return;
+
+    const desktop = window.matchMedia('(min-width: 901px)');
+    const update = () => {
+      if (!desktop.matches) {
+        nav.classList.remove('is-scrolled');
+        return;
+      }
+      nav.classList.toggle('is-scrolled', window.scrollY > 4);
+    };
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+  })();
+
   // Check authentication on dashboard card click
 const dashboardLinks = document.querySelectorAll('a[href="dashboard-client-shoplink.html"]');
 
