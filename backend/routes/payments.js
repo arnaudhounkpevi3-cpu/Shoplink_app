@@ -211,11 +211,11 @@ router.post('/premium-order', async (req, res) => {
   }
 
   const paymentPayload = {
-    userId: premiumOrder.userId || 'premium-guest',
+    userId: premiumOrder.userId || null,
     type: 'premium',
     amount,
     step: 'acompte',
-    siteId: '',
+    siteId: null,
     urgency: premiumOrder.delai || 'normal',
     status: 'pending',
     validationStatus: 'pending',
@@ -236,6 +236,13 @@ router.post('/premium-order', async (req, res) => {
   }
 
   const payment = await repo().createPayment(paymentPayload)
+
+  if (!payment) {
+    return res.status(500).json({
+      success: false,
+      message: 'Impossible de créer la commande premium dans la base de données',
+    })
+  }
 
   return res.status(201).json({
     success: true,

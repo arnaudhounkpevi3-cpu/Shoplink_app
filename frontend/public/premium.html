@@ -78,6 +78,18 @@
     .conditional-field{display:none;margin-top:12px;}
     .conditional-field.show{display:flex;}
 
+    .premium-toast{position:fixed;top:50%;left:50%;z-index:9999;transform:translate(-50%,-50%) scale(.96);opacity:0;width:min(360px,calc(100% - 32px));background:#fff;border:1px solid rgba(26,92,56,0.16);border-radius:16px;box-shadow:0 22px 70px rgba(17,17,17,0.22);padding:22px 20px;text-align:center;transition:transform .22s ease,opacity .22s ease;font-size:14px;color:var(--text);pointer-events:none;}
+    .premium-toast.show{transform:translate(-50%,-50%) scale(1);opacity:1;}
+    .premium-toast-dot{width:12px;height:12px;border-radius:999px;background:var(--green);box-shadow:0 0 0 5px rgba(26,92,56,0.12);margin:0 auto 12px;display:block;}
+    .premium-toast-title{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:var(--green);margin-bottom:6px;}
+    .premium-toast-text{color:var(--muted);line-height:1.45;}
+    .premium-toast.error{border-color:rgba(226,75,74,0.22);}
+    .premium-toast.error .premium-toast-dot{background:#e24b4a;box-shadow:0 0 0 4px rgba(226,75,74,0.12);}
+    .premium-toast.error .premium-toast-title{color:#b42322;}
+    .premium-toast.warning{border-color:rgba(232,98,10,0.24);}
+    .premium-toast.warning .premium-toast-dot{background:var(--amber);box-shadow:0 0 0 4px rgba(232,98,10,0.14);}
+    .premium-toast.warning .premium-toast-title{color:#9a4f07;}
+
     /* OPTION CARDS */
     .option-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;}
     .option-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
@@ -191,6 +203,14 @@
   <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
+
+<div class="premium-toast" id="premium-toast" role="status" aria-live="polite">
+  <span class="premium-toast-dot"></span>
+  <div>
+    <div class="premium-toast-title" id="premium-toast-title">Commande initiée</div>
+    <div class="premium-toast-text" id="premium-toast-text">Veuillez à présent payer.</div>
+  </div>
+</div>
 
 <!-- NAV -->
 <nav>
@@ -371,15 +391,6 @@
       <div class="form-section-title"><img class="form-section-title-icon" src="https://cdn-icons-png.flaticon.com/512/5241/5241811.png" alt="Structure du site"> Structure du site</div>
       <div class="form-section-sub">Choisissez les sections à inclure dans votre site</div>
       <div class="form-group">
-        <label class="form-label">Type de site *</label>
-        <div class="option-grid" id="p-site-type-grid" style="grid-template-columns:1fr 1fr 1fr;">
-          <div class="option-card sel" onclick="selectOpt(this,'p-site-type','catalogue')"><div class="option-card-icon">📋</div><div class="option-card-label">Catalogue</div></div>
-          <div class="option-card" onclick="selectOpt(this,'p-site-type','menu')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/562/562678.png" alt="Menu restaurant"><div class="option-card-label">Menu restaurant</div></div>
-          <div class="option-card" onclick="selectOpt(this,'p-site-type','boutique')"><img class="option-card-icon-img" src="https://cdn-icons-png.flaticon.com/512/11746/11746073.png" alt="Boutique"><div class="option-card-label">Boutique</div></div>
-        </div>
-        <input type="hidden" id="p-site-type" value="catalogue"/>
-      </div>
-      <div class="form-group">
         <label class="form-label">Sections souhaitées</label>
         <div id="p-sections" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green);"> Page d'accueil</label>
@@ -387,6 +398,10 @@
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--green);"> Page contact</label>
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--green);"> À propos</label>
         </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Autre section à ajouter (optionnel)</label>
+        <input class="form-input" id="p-section-other" placeholder="Ex : Galerie, témoignages, réservation, équipe..."/>
       </div>
     </div>
 
@@ -461,7 +476,6 @@
       <div class="summary-row"><span class="summary-label">Type d'activité</span><span class="summary-val" id="sum-activity">—</span></div>
       <div class="summary-row"><span class="summary-label">Ville / Quartier</span><span class="summary-val" id="sum-location">—</span></div>
       <div class="summary-row"><span class="summary-label">Style souhaité</span><span class="summary-val" id="sum-style">Moderne</span></div>
-      <div class="summary-row"><span class="summary-label">Type de site</span><span class="summary-val" id="sum-site-type">Catalogue</span></div>
       <div class="summary-row"><span class="summary-label">Délai</span><span class="summary-val" id="sum-delai">Normal · 4 semaines</span></div>
       <div class="summary-row"><span class="summary-label">WhatsApp</span><span class="summary-val" id="sum-wa">—</span></div>
 
@@ -733,7 +747,7 @@
       input.dataset.fileName = file.name;
       preview.innerHTML = `<img src="${imageSrc}" alt="Aperçu produit">`;
     } catch (error) {
-      alert('Impossible de charger cette photo : ' + error.message);
+      showPremiumToast('Photo non chargée', 'Impossible de charger cette photo : ' + error.message, 'error');
       input.value = '';
     }
   }
@@ -753,7 +767,7 @@
       name.textContent = file.name;
       preview.classList.add('show');
     } catch (error) {
-      alert('Impossible de charger ce logo : ' + error.message);
+      showPremiumToast('Logo non chargé', 'Impossible de charger ce logo : ' + error.message, 'error');
       input.value = '';
     }
   }
@@ -773,9 +787,16 @@
   }
 
   function getSelectedSections() {
-    return Array.from(document.querySelectorAll('#p-sections label'))
+    const sections = Array.from(document.querySelectorAll('#p-sections label'))
       .filter(label => label.querySelector('input')?.checked)
       .map(label => label.textContent.trim());
+
+    const otherSection = valueOf('p-section-other');
+    if (otherSection) {
+      sections.push(otherSection);
+    }
+
+    return sections;
   }
 
   function getSelectedFeatures() {
@@ -875,6 +896,23 @@
       : '—';
   }
 
+  function showPremiumToast(title = 'Commande initiée', message = 'Veuillez à présent payer.', type = 'success') {
+    const toast = document.getElementById('premium-toast');
+    if (!toast) return;
+
+    document.getElementById('premium-toast-title').textContent = title;
+    document.getElementById('premium-toast-text').textContent = message;
+    toast.classList.remove('error', 'warning');
+    if (type === 'error' || type === 'warning') {
+      toast.classList.add(type);
+    }
+
+    toast.classList.add('show');
+    window.setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2600);
+  }
+
   function getPremiumFormData() {
     return {
       company: valueOf('p-company'),
@@ -892,9 +930,8 @@
       style: document.getElementById('p-style').value,
       styleLabel: selectedLabel('.style-card.sel .style-card-name', document.getElementById('p-style').value),
       exampleSite: valueOf('p-example-site'),
-      siteType: document.getElementById('p-site-type').value,
-      siteTypeLabel: selectedLabel('#p-site-type-grid .option-card.sel .option-card-label', document.getElementById('p-site-type').value),
       sections: getSelectedSections(),
+      sectionOther: valueOf('p-section-other'),
       features: getSelectedFeatures(),
       delai: selectedDelai,
       delaiLabel: selectedDelai === 'urgent' ? 'Urgent · 3 semaines' : 'Normal · 4 semaines',
@@ -915,7 +952,6 @@
     document.getElementById('sum-activity').textContent    = data.activity || '—';
     document.getElementById('sum-location').textContent    = [data.city, data.district].filter(Boolean).join(' · ') || '—';
     document.getElementById('sum-style').textContent       = data.styleLabel || '—';
-    document.getElementById('sum-site-type').textContent   = data.siteTypeLabel || data.siteType || '—';
     document.getElementById('sum-delai').textContent       = data.delaiLabel;
     document.getElementById('sum-wa').textContent          = data.whatsapp || '—';
     document.getElementById('sum-description').textContent = data.activityDescription || '—';
@@ -940,7 +976,7 @@
 
   async function proceedPayment() {
     if (!document.getElementById('confirm-check').checked) {
-      alert('Veuillez cocher la case de confirmation avant de procéder au paiement.');
+      showPremiumToast('Confirmation requise', 'Veuillez cocher la case de confirmation avant de procéder au paiement.', 'warning');
       return;
     }
     const payBtn = document.getElementById('pay-btn');
@@ -964,7 +1000,7 @@
       });
       const data = await res.json();
       if (!res.ok || !data.success || !data.payment) {
-        alert(data.message || 'Impossible de créer la commande premium.');
+        showPremiumToast('Commande non envoyée', data.message || 'Impossible de créer la commande premium.', 'error');
         payBtn.disabled = false;
         payBtn.innerHTML = originalText;
         return;
@@ -972,9 +1008,13 @@
 
       const nextOrder = { ...stripHeavyMedia(formData), paymentId: data.payment.id, paymentReference: data.payment.reference };
       localStorage.setItem('shoplink_order', JSON.stringify(nextOrder));
-      window.location.href = '/payment.html?type=premium&step=acompte&amount=' + (totalPrice/2) + '&paymentId=' + encodeURIComponent(data.payment.id) + '&reference=' + encodeURIComponent(data.payment.reference);
+      const paymentUrl = '/payment.html?type=premium&step=acompte&amount=' + (totalPrice/2) + '&paymentId=' + encodeURIComponent(data.payment.id) + '&reference=' + encodeURIComponent(data.payment.reference);
+      showPremiumToast('Commande initiée', 'Veuillez à présent payer.', 'success');
+      setTimeout(() => {
+        window.location.assign(paymentUrl);
+      }, 1500);
     } catch (error) {
-      alert('Erreur de connexion lors de la création de la commande premium : ' + error.message);
+      showPremiumToast('Erreur de connexion', 'La commande n’a pas pu être envoyée : ' + error.message, 'error');
       payBtn.disabled = false;
       payBtn.innerHTML = originalText;
     }

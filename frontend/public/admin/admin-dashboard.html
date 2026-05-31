@@ -99,6 +99,7 @@
     .dot-red{background:#e24b4a;}
     .action-btns{display:flex;gap:6px;}
     .icon-btn{width:28px;height:28px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:background 0.15s;flex-shrink:0;}
+    .icon-btn svg{width:17px;height:17px;display:block;}
     .icon-btn:hover{background:var(--bg);}
 
     /* ── REVENUE ROWS ── */
@@ -162,6 +163,19 @@
     .premium-asset img{width:82px;height:82px;object-fit:cover;border-radius:10px;border:1px solid var(--border);background:#fff;display:block;}
     .premium-download{display:block;width:100%;margin-top:4px;text-align:center;font-size:10px;color:var(--brand);text-decoration:none;background:var(--brand-light);border-radius:8px;padding:4px 5px;}
     .premium-empty{font-size:12px;color:var(--muted);font-style:italic;}
+
+    /* ── ADMIN MODAL ── */
+    .admin-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,31,23,.52);backdrop-filter:blur(8px);}
+    .admin-modal.show{display:flex;}
+    .admin-modal-card{width:min(560px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.24);border:1px solid var(--border);}
+    .admin-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);}
+    .admin-modal-title{font-size:17px;font-weight:800;letter-spacing:-.03em;}
+    .admin-modal-body{padding:16px 18px;font-size:13px;line-height:1.55;}
+    .admin-modal-row{display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px dashed rgba(0,0,0,.08);}
+    .admin-modal-row:last-child{border-bottom:none;}
+    .admin-modal-label{color:var(--muted);}
+    .admin-modal-value{font-weight:600;text-align:right;overflow-wrap:anywhere;}
+    .admin-modal-close{width:34px;height:34px;border-radius:999px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:18px;line-height:1;}
 
     /* ── MOBILE ADMIN ── */
     @media (max-width: 900px) {
@@ -449,22 +463,211 @@
     @media (max-width: 900px) {
       .sidebar {
         display:flex !important;
-        flex-direction:column !important;
-        align-items:stretch !important;
-        gap:0 !important;
-        overflow:visible !important;
-        white-space:normal !important;
+        flex-direction:row !important;
+        align-items:center !important;
+        gap:8px !important;
+        overflow-x:auto !important;
+        overflow-y:hidden !important;
+        white-space:nowrap !important;
+        padding:9px 10px !important;
+        height:auto !important;
+        min-height:58px !important;
+        scrollbar-width:none;
       }
 
-      .sidebar-logo,
+      .sidebar::-webkit-scrollbar { display:none; }
+
+      .sidebar-logo {
+        position:sticky;
+        left:0;
+        z-index:2;
+        flex:0 0 auto !important;
+        padding:0 8px 0 0 !important;
+        margin:0 !important;
+        border-bottom:0 !important;
+        background:var(--sidebar-bg);
+      }
+
+      .logo-text {
+        font-size:14px !important;
+        padding:7px 10px !important;
+        box-shadow:0 8px 18px rgba(0,0,0,.18);
+      }
+
+      .admin-pill {
+        font-size:8px !important;
+        padding:2px 5px !important;
+      }
+
+      .nav-section {
+        display:none !important;
+      }
+
       .sidebar .nav-item {
         flex:0 0 auto !important;
+        width:auto !important;
+        min-height:38px !important;
+        padding:8px 11px !important;
+        border-left:0 !important;
+        border-radius:999px !important;
+        background:rgba(255,255,255,.055);
+        border:1px solid rgba(255,255,255,.08) !important;
+        font-size:11px !important;
+        gap:7px !important;
+      }
+
+      .sidebar .nav-item.active {
+        background:rgba(109,217,168,.18) !important;
+        border-color:rgba(109,217,168,.36) !important;
+        color:#fff !important;
+      }
+
+      .nav-icon {
+        width:15px !important;
+        height:15px !important;
+      }
+
+      .nav-badge {
+        margin-left:2px !important;
+        padding:1px 6px !important;
+        font-size:9px !important;
+      }
+
+      .sidebar-footer {
+        flex:0 0 auto !important;
+        margin:0 !important;
+        padding:0 0 0 2px !important;
+        border-top:0 !important;
+      }
+
+      .sidebar-footer .admin-name,
+      .sidebar-footer .admin-info {
+        display:none !important;
+      }
+
+      .sidebar-footer button {
+        min-height:38px;
+        width:auto !important;
+        padding:8px 12px !important;
+        border-radius:999px !important;
+        white-space:nowrap;
       }
 
       .sidebar-logo ~ .nav-item,
       .sidebar-logo ~ .nav-section + .nav-item {
-        width:100% !important;
+        width:auto !important;
       }
+    }
+
+    /* Final mobile polish */
+    @media (max-width: 900px) {
+      .main {
+        padding:14px 10px 28px !important;
+        background:linear-gradient(180deg,#f8f9fa 0%,#f1ede6 100%);
+      }
+
+      .topbar {
+        padding:2px 2px 0;
+      }
+
+      .topbar > div:first-child {
+        width:100%;
+      }
+
+      .page-title {
+        font-size:20px !important;
+        font-weight:700 !important;
+        letter-spacing:-.03em;
+      }
+
+      .page-sub {
+        max-width:34ch;
+        color:rgba(26,26,26,.55) !important;
+      }
+
+      .metrics {
+        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        gap:9px !important;
+      }
+
+      .metric-card {
+        background:#fff !important;
+        border:1px solid var(--border);
+        border-radius:16px !important;
+        padding:14px !important;
+        box-shadow:0 10px 28px rgba(15,31,23,.055);
+      }
+
+      .metric-label {
+        font-size:11px !important;
+        line-height:1.25;
+      }
+
+      .metric-value {
+        font-size:24px !important;
+        font-weight:800 !important;
+        letter-spacing:-.04em;
+      }
+
+      .section-card {
+        border-radius:16px !important;
+        box-shadow:0 12px 34px rgba(15,31,23,.06);
+      }
+
+      .card-header {
+        padding:14px !important;
+      }
+
+      .card-title {
+        font-size:14px !important;
+        font-weight:700 !important;
+      }
+
+      .table-wrap,
+      .section-card {
+        overflow-x:auto !important;
+        scrollbar-width:thin;
+      }
+
+      table {
+        min-width:700px !important;
+      }
+
+      th {
+        font-size:10px !important;
+      }
+
+      td {
+        font-size:12px !important;
+      }
+
+      .premium-detail {
+        border-radius:16px !important;
+        margin:12px !important;
+        padding:14px !important;
+        box-shadow:0 16px 40px rgba(15,31,23,.09);
+      }
+
+      .premium-detail-title {
+        font-size:18px !important;
+        letter-spacing:-.03em;
+      }
+
+      .premium-detail-card {
+        border-radius:14px !important;
+        background:#fff !important;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .main { padding:12px 9px 24px !important; }
+      .metrics { grid-template-columns:1fr !important; }
+      .sidebar { min-height:54px !important; padding:8px !important; }
+      .logo-text { font-size:13px !important; }
+      .sidebar .nav-item { font-size:10.5px !important; padding:7px 10px !important; }
+      .nav-icon { width:14px !important; height:14px !important; }
+      .premium-assets { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+      table { min-width:680px !important; }
     }
   </style>
 </head>
@@ -509,7 +712,7 @@
         <div><div class="page-title">Vue d'ensemble</div><div class="page-sub">Activité globale de la plateforme</div></div>
         <div style="display:flex;gap:10px;">
           <button class="btn" onclick="exportOverview()">📤 Exporter</button>
-          <button class="btn btn-green">+ Nouveau site premium</button>
+          <button class="btn btn-green" onclick="openPremiumCreation()">+ Nouveau site premium</button>
         </div>
       </div>
       <div class="metrics">
@@ -541,10 +744,9 @@
       <div class="topbar"><div><div class="page-title">Utilisateurs</div><div class="page-sub">18 comptes inscrits sur la plateforme</div></div><button class="btn" onclick="exportUsers()">📤 Exporter CSV</button></div>
       <div class="section-card">
         <div class="filter-bar">
-          <div class="filter-pill active" onclick="filterUsers('all',this)">Tous (18)</div>
-          <div class="filter-pill" onclick="filterUsers('active',this)">Actifs (12)</div>
-          <div class="filter-pill" onclick="filterUsers('premium',this)">Premium (4)</div>
-          <div class="filter-pill" onclick="filterUsers('pending',this)">En attente (2)</div>
+          <div class="filter-pill active" onclick="filterUsers('all',this)">Tous</div>
+          <div class="filter-pill" onclick="filterUsers('user',this)">Utilisateurs</div>
+          <div class="filter-pill" onclick="filterUsers('admin',this)">Admins</div>
         </div>
         <div class="table-wrap">
           <table>
@@ -575,25 +777,25 @@
         </div>
         <div id="pay-all" class="tab-panel active">
           <table><thead><tr><th>Client</th><th>Type</th><th>Montant</th><th>Transaction</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
-          <tbody>
+          <tbody id="payments-all-tbody">
             <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
           </tbody></table>
         </div>
         <div id="pay-auto" class="tab-panel">
           <table><thead><tr><th>Client</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead>
-          <tbody>
+          <tbody id="payments-auto-tbody">
             <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
           </tbody></table>
         </div>
         <div id="pay-prem" class="tab-panel">
           <table><thead><tr><th>Client</th><th>Total</th><th>Acompte</th><th>Solde restant</th><th>Statut</th></tr></thead>
-          <tbody>
+          <tbody id="payments-premium-tbody">
             <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
           </tbody></table>
         </div>
         <div id="pay-pending" class="tab-panel">
           <table><thead><tr><th>Client</th><th>Type</th><th>Montant attendu</th><th>Action</th></tr></thead>
-          <tbody>
+          <tbody id="payments-pending-tbody">
             <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
           </tbody></table>
         </div>
@@ -602,7 +804,7 @@
 
     <!-- PAGE PROJETS PREMIUM -->
     <div id="page-premium" class="page">
-      <div class="topbar"><div><div class="page-title">Projets Premium</div><div class="page-sub">Suivi des sites créés manuellement</div></div><button class="btn btn-green">+ Nouveau projet</button></div>
+      <div class="topbar"><div><div class="page-title">Projets Premium</div><div class="page-sub">Suivi des sites créés manuellement</div></div><button class="btn btn-green" onclick="openPremiumCreation()">+ Nouveau projet</button></div>
       <div class="section-card">
         <div class="filter-bar">
           <div class="filter-pill active" onclick="filterPremium('all',this)">Tous</div>
@@ -679,7 +881,7 @@
       <div class="topbar"><div><div class="page-title">Sites publiés</div><div class="page-sub">12 sites actifs sur la plateforme</div></div></div>
       <div class="section-card">
         <table><thead><tr><th>Site</th><th>Propriétaire</th><th>Lien</th><th>Produits</th><th>Vues</th><th>Statut</th><th>Actions</th></tr></thead>
-        <tbody>
+        <tbody id="sites-table">
           <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
         </tbody></table>
       </div>
@@ -720,6 +922,19 @@
   </main>
 </div>
 
+<div class="admin-modal" id="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
+  <div class="admin-modal-card">
+    <div class="admin-modal-head">
+      <div>
+        <div class="admin-modal-title" id="admin-modal-title">Détails</div>
+        <div class="page-sub" id="admin-modal-subtitle"></div>
+      </div>
+      <button class="admin-modal-close" onclick="closeAdminModal()" aria-label="Fermer">×</button>
+    </div>
+    <div class="admin-modal-body" id="admin-modal-body"></div>
+  </div>
+</div>
+
 <script>
   const API_BASE = window.__SHOPLINK_API_URL__ || (
     window.location.protocol === 'http:' && /^(localhost|127\.0\.0\.1|10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(window.location.hostname)
@@ -729,15 +944,30 @@
   const API_FALLBACK = '/api';
 
   async function apiFetch(path, options = {}) {
+    const headers = new Headers(options.headers || {});
+    const token = localStorage.getItem('shoplink_token');
+
+    if (token && !headers.has('Authorization')) {
+      headers.set('Authorization', 'Bearer ' + token);
+    }
+
+    const requestOptions = { ...options, headers };
+
     try {
-      return await fetch(`${API_BASE}${path}`, options);
+      return await fetch(`${API_BASE}${path}`, requestOptions);
     } catch (primaryError) {
       console.warn('API directe indisponible, tentative via proxy:', primaryError);
-      return fetch(`${API_FALLBACK}${path}`, options);
+      return fetch(`${API_FALLBACK}${path}`, requestOptions);
     }
   }
   let allTickets = [];
   let allPremiumProjects = [];
+  let allUsers = [];
+  let allSites = [];
+  let allPayments = [];
+
+  const ICON_VIEW = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" focusable="false"><path d="M0 0h256v256H0z" fill="none"/><path fill="#dbedd0" d="M213.45 63.86C203.65 45.89 190.35 36 176 36s-27.65 9.89-37.45 27.86A114 114 0 0 0 128 92.31a114 114 0 0 0-10.55-28.45C107.65 45.89 94.35 36 80 36s-27.65 9.89-37.45 27.86C33.17 81.06 28 103.84 28 128s5.17 46.94 14.55 64.14C52.35 210.11 65.65 220 80 220s27.65-9.89 37.45-27.86A114 114 0 0 0 128 163.69a114 114 0 0 0 10.55 28.45c9.8 18 23.1 27.86 37.45 27.86s27.65-9.89 37.45-27.86c9.38-17.2 14.55-40 14.55-64.14s-5.17-46.94-14.55-64.14m-103 124.45C102.1 203.59 91.29 212 80 212s-22.1-8.41-30.43-23.69c-6-11-10.17-24.59-12.18-39.42a28 28 0 1 0 0-41.78c2-14.83 6.17-28.39 12.18-39.42C57.9 52.41 68.71 44 80 44s22.1 8.41 30.43 23.69C119.18 83.73 124 105.15 124 128s-4.82 44.27-13.57 60.31ZM36 128a20 20 0 1 1 20 20a20 20 0 0 1-20-20m170.43 60.31C198.1 203.59 187.29 212 176 212s-22.1-8.41-30.43-23.69c-6-11-10.17-24.59-12.18-39.42a28 28 0 1 0 0-41.78c2-14.83 6.17-28.39 12.18-39.42C153.9 52.41 164.71 44 176 44s22.1 8.41 30.43 23.69C215.18 83.73 220 105.15 220 128s-4.82 44.27-13.57 60.31M132 128a20 20 0 1 1 20 20a20 20 0 0 1-20-20"/></svg>';
+  const ICON_EDIT = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M0 0h24v24H0z" fill="none"/><path fill="#dbedd0" d="M5 19h1.098L16.796 8.302l-1.098-1.098L5 17.902zm-1 1v-2.52L17.18 4.288q.155-.137.34-.212T17.907 4t.39.064q.19.063.35.228l1.067 1.074q.165.159.226.35q.06.19.06.38q0 .204-.068.39q-.069.185-.218.339L6.519 20zM19.02 6.092l-1.112-1.111zm-2.782 1.67l-.54-.558l1.098 1.098z"/></svg>';
 
   function escapeHtml(value) {
     return String(value ?? '')
@@ -750,6 +980,137 @@
 
   function fmtMoney(value) {
     return Number(value || 0).toLocaleString('fr-FR') + ' F';
+  }
+
+  function fmtDate(value) {
+    return value ? new Date(value).toLocaleDateString('fr-FR') : '—';
+  }
+
+  function openAdminModal(title, subtitle, bodyHtml) {
+    document.getElementById('admin-modal-title').textContent = title || 'Détails';
+    document.getElementById('admin-modal-subtitle').textContent = subtitle || '';
+    document.getElementById('admin-modal-body').innerHTML = bodyHtml || '';
+    document.getElementById('admin-modal').classList.add('show');
+  }
+
+  function closeAdminModal() {
+    document.getElementById('admin-modal').classList.remove('show');
+  }
+
+  function detailRows(rows) {
+    return rows.map(([label, value]) => `
+      <div class="admin-modal-row">
+        <span class="admin-modal-label">${escapeHtml(label)}</span>
+        <span class="admin-modal-value">${escapeHtml(value || '—')}</span>
+      </div>
+    `).join('');
+  }
+
+  function openPremiumCreation() {
+    window.open('/premium.html', '_blank');
+  }
+
+  function viewUser(index) {
+    const user = allUsers[index];
+    if (!user) return;
+    openAdminModal('Utilisateur', user.email || '', detailRows([
+      ['Nom', user.name],
+      ['Email', user.email],
+      ['Téléphone', user.phone],
+      ['Rôle', user.role],
+      ['Inscrit le', fmtDate(user.createdAt)],
+      ['ID', user.id],
+    ]));
+  }
+
+  function editUser(index) {
+    const user = allUsers[index];
+    if (!user) return;
+    openAdminModal('Édition utilisateur', user.email || '', `
+      ${detailRows([
+        ['Nom', user.name],
+        ['Email', user.email],
+        ['Téléphone', user.phone],
+        ['Rôle actuel', user.role],
+      ])}
+      <p style="margin-top:12px;color:var(--muted);font-size:12px;">Modification directe non activée pour éviter les changements accidentels. Utilisez Supabase ou une route dédiée après validation.</p>
+    `);
+  }
+
+  function viewSite(index) {
+    const site = allSites[index];
+    if (!site) return;
+    const publicUrl = site.slug ? `/${site.slug}` : '—';
+    openAdminModal('Site publié', site.name || '', `
+      ${detailRows([
+        ['Nom', site.name],
+        ['Slug', site.slug],
+        ['Statut', site.status],
+        ['Activité', site.activityType],
+        ['WhatsApp', site.whatsapp],
+        ['Adresse', site.address],
+        ['Créé le', fmtDate(site.createdAt)],
+      ])}
+      ${site.slug ? `<a class="btn btn-green" style="margin-top:14px;text-decoration:none;" href="${publicUrl}" target="_blank">Ouvrir le site public</a>` : ''}
+    `);
+  }
+
+  function editSite(index) {
+    const site = allSites[index];
+    if (!site) return;
+    openAdminModal('Gestion du site', site.name || '', `
+      ${detailRows([
+        ['Site', site.name],
+        ['Slug', site.slug],
+        ['Statut', site.status],
+      ])}
+      <p style="margin-top:12px;color:var(--muted);font-size:12px;">Édition avancée non destructive à brancher côté backend. Pour l’instant, utilisez le dashboard client ou Supabase.</p>
+    `);
+  }
+
+  function viewPayment(index) {
+    const payment = allPayments[index];
+    if (!payment) return;
+    openAdminModal('Paiement', payment.reference || payment.id || '', detailRows([
+      ['Client', payment.clientName || payment.userName],
+      ['Email', payment.email],
+      ['Type', payment.type],
+      ['Étape', payment.step],
+      ['Montant', fmtMoney(payment.amount)],
+      ['Statut', payment.status],
+      ['Transaction', payment.transactionId],
+      ['Méthode', payment.method || payment.mobileMoneyProvider],
+      ['Créé le', fmtDate(payment.createdAt)],
+      ['Validé le', fmtDate(payment.validatedAt)],
+    ]));
+  }
+
+  async function validatePaymentByIndex(index) {
+    const payment = allPayments[index];
+    if (!payment || !payment.reference) return;
+    if (!confirm('Valider ce paiement comme payé ?')) return;
+
+    try {
+      const res = await apiFetch('/payments/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reference: payment.reference,
+          status: 'paid',
+          transactionId: payment.transactionId || `ADMIN-${Date.now()}`,
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        alert(data.message || 'Impossible de valider ce paiement.');
+        return;
+      }
+      await fetchAdminData();
+      await fetchPremiumProjects();
+      alert('Paiement validé.');
+    } catch (error) {
+      alert('Erreur validation paiement : ' + error.message);
+    }
   }
 
   function fileExtFromDataUrl(src) {
@@ -826,7 +1187,7 @@
           <td><span class="badge ${project.urgent ? 'bg-red' : 'bg-amber'}">${project.deliveryDays || 28} jours · ${countdownText}</span></td>
           <td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-wrap" style="width:60px;height:6px;"><div class="progress-fill" style="width:${project.progress || 0}%;"></div></div><span style="font-size:11px;font-weight:500;">${project.progress || 0}%</span></div></td>
           <td><span class="status-dot ${status === 'completed' ? 'dot-green' : status === 'in_progress' ? 'dot-amber' : 'dot-red'}"></span>${status === 'completed' ? 'Livré' : status === 'in_progress' ? 'En cours' : 'Attente paiement'}</td>
-          <td><div class="action-btns"><button class="icon-btn" onclick="showPremiumDetail(${index})" title="Voir les détails">👁</button></div></td>
+          <td><div class="action-btns"><button class="icon-btn" onclick="showPremiumDetail(${index})" title="Voir les détails">${ICON_VIEW}</button></div></td>
         </tr>
       `;
     }).join('');
@@ -862,6 +1223,116 @@
           <div style="text-align:right;">
             <div class="cdown-days ${isUrgent ? 'urgent' : ''}">${countdown.expired ? 'En retard' : countdown.days + 'j ' + countdown.hours + 'h'}</div>
             <div class="cdown-label">restants</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function paymentStatusBadge(payment) {
+    const status = String(payment.status || 'pending').toLowerCase();
+    if (status === 'paid' || status === 'paye') return '<span class="badge bg-green">Payé</span>';
+    if (status === 'failed' || status === 'cancelled') return '<span class="badge bg-red">Échec</span>';
+    return '<span class="badge bg-amber">En attente</span>';
+  }
+
+  function renderPaymentsTables() {
+    const allBody = document.getElementById('payments-all-tbody');
+    const autoBody = document.getElementById('payments-auto-tbody');
+    const premiumBody = document.getElementById('payments-premium-tbody');
+    const pendingBody = document.getElementById('payments-pending-tbody');
+
+    const renderEmpty = (cols, label) => `<tr><td colspan="${cols}" style="text-align:center;color:var(--muted);padding:40px;">${label}</td></tr>`;
+
+    if (allBody) {
+      allBody.innerHTML = allPayments.length ? allPayments.map((payment, index) => `
+        <tr>
+          <td>${escapeHtml(payment.clientName || payment.userName || payment.email || 'N/A')}</td>
+          <td>${escapeHtml(payment.type || 'autonome')}</td>
+          <td>${fmtMoney(payment.amount)}</td>
+          <td>${escapeHtml(payment.transactionId || payment.reference || '—')}</td>
+          <td>${paymentStatusBadge(payment)}</td>
+          <td>${fmtDate(payment.createdAt || payment.validatedAt)}</td>
+          <td><div class="action-btns"><button class="icon-btn" onclick="viewPayment(${index})" title="Voir">${ICON_VIEW}</button>${String(payment.status || '').toLowerCase() === 'pending' ? `<button class="icon-btn" onclick="validatePaymentByIndex(${index})" title="Valider">✅</button>` : ''}</div></td>
+        </tr>
+      `).join('') : renderEmpty(7, 'Aucun paiement');
+    }
+
+    const autoPayments = allPayments.filter(payment => payment.type === 'autonome');
+    if (autoBody) {
+      autoBody.innerHTML = autoPayments.length ? autoPayments.map(payment => `
+        <tr>
+          <td>${escapeHtml(payment.clientName || payment.email || 'N/A')}</td>
+          <td>${fmtMoney(payment.amount)}</td>
+          <td>${paymentStatusBadge(payment)}</td>
+          <td>${fmtDate(payment.createdAt || payment.validatedAt)}</td>
+        </tr>
+      `).join('') : renderEmpty(4, 'Aucun paiement autonome');
+    }
+
+    const premiumPayments = allPayments.filter(payment => payment.type === 'premium');
+    if (premiumBody) {
+      premiumBody.innerHTML = premiumPayments.length ? premiumPayments.map(payment => {
+        const total = Number(payment.premiumOrder?.totalPrice || payment.totalPrice || payment.amount * 2 || 0);
+        const paid = String(payment.status || '').toLowerCase() === 'paid' || String(payment.status || '').toLowerCase() === 'paye';
+        const remaining = paid ? Math.max(0, total - Number(payment.amount || 0)) : total;
+        return `
+          <tr>
+            <td>${escapeHtml(payment.clientName || payment.email || 'N/A')}</td>
+            <td>${fmtMoney(total)}</td>
+            <td>${fmtMoney(payment.amount)}</td>
+            <td>${fmtMoney(remaining)}</td>
+            <td>${paymentStatusBadge(payment)}</td>
+          </tr>
+        `;
+      }).join('') : renderEmpty(5, 'Aucun paiement premium');
+    }
+
+    const pendingPayments = allPayments.filter(payment => String(payment.status || '').toLowerCase() === 'pending');
+    if (pendingBody) {
+      pendingBody.innerHTML = pendingPayments.length ? pendingPayments.map(payment => {
+        const index = allPayments.findIndex(item => item.id === payment.id);
+        return `
+          <tr>
+            <td>${escapeHtml(payment.clientName || payment.email || 'N/A')}</td>
+            <td>${escapeHtml(payment.type || 'autonome')}</td>
+            <td>${fmtMoney(payment.amount)}</td>
+            <td><button class="btn btn-green" onclick="validatePaymentByIndex(${index})">Valider</button></td>
+          </tr>
+        `;
+      }).join('') : renderEmpty(4, 'Aucun paiement en attente');
+    }
+
+    renderRecentPayments();
+  }
+
+  function renderRecentPayments() {
+    const target = document.getElementById('recent-payments');
+    if (!target) return;
+
+    const recent = [...allPayments]
+      .sort((a, b) => new Date(b.createdAt || b.validatedAt || 0) - new Date(a.createdAt || a.validatedAt || 0))
+      .slice(0, 5);
+
+    if (!recent.length) {
+      target.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px;">Aucun paiement récent</div>';
+      return;
+    }
+
+    target.innerHTML = recent.map(payment => {
+      const index = allPayments.findIndex(item => item.id === payment.id);
+      return `
+        <div class="revenue-row">
+          <div class="rev-left">
+            <div class="rev-icon" style="background:var(--brand-light);color:var(--brand);">💳</div>
+            <div>
+              <div style="font-size:13px;font-weight:600;">${escapeHtml(payment.clientName || payment.email || 'Client')}</div>
+              <div class="rev-date">${escapeHtml(payment.type || 'paiement')} · ${fmtDate(payment.createdAt || payment.validatedAt)}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="rev-amount">${fmtMoney(payment.amount)}</div>
+            <button class="icon-btn" onclick="viewPayment(${index})" title="Voir">${ICON_VIEW}</button>
           </div>
         </div>
       `;
@@ -938,6 +1409,40 @@
     `;
   }
 
+  function viewTicket(id) {
+    const ticket = allTickets.find(item => item.id === id);
+    if (!ticket) return;
+
+    const replies = ticket.replies && ticket.replies.length
+      ? ticket.replies.map(reply => `
+          <div style="border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:8px;background:#fff;">
+            <div style="font-weight:700;font-size:12px;">${escapeHtml(reply.userName || 'Réponse')}</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">${escapeHtml(reply.role || '')} · ${fmtDate(reply.createdAt)}</div>
+            <div style="font-size:12px;line-height:1.5;white-space:pre-wrap;">${escapeHtml(reply.message || '')}</div>
+          </div>
+        `).join('')
+      : '<div class="premium-empty">Aucune réponse pour ce ticket.</div>';
+
+    openAdminModal('Ticket support', ticket.subject || '', `
+      ${detailRows([
+        ['Client', ticket.userName],
+        ['Email', ticket.userEmail],
+        ['Priorité', ticket.priority],
+        ['Statut', ticket.status],
+        ['Créé le', fmtDate(ticket.createdAt)],
+      ])}
+      <div style="margin-top:14px;">
+        <div class="premium-detail-card-title">Message</div>
+        <div class="premium-detail-text">${escapeHtml(ticket.message || '—')}</div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="premium-detail-card-title">Réponses</div>
+        ${replies}
+      </div>
+      ${ticket.status !== 'closed' ? `<button class="btn btn-green" style="margin-top:14px;" onclick="closeTicket('${ticket.id}');closeAdminModal();">Fermer ce ticket</button>` : ''}
+    `);
+  }
+
   function showPage(id, el) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const pg = document.getElementById('page-' + id);
@@ -1009,7 +1514,9 @@
     document.querySelectorAll('#page-premium .filter-bar .filter-pill').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
     document.querySelectorAll('#premium-projects-tbody tr').forEach(r => {
-      r.style.display = (status === 'all' || r.dataset.status === status) ? '' : 'none';
+      const rowStatus = r.dataset.status || '';
+      const matchesPending = status === 'pending' && (rowStatus === 'pending' || rowStatus === 'pending_payment');
+      r.style.display = (status === 'all' || rowStatus === status || matchesPending) ? '' : 'none';
     });
   }
 
@@ -1132,14 +1639,9 @@
 
   function validatePayment(btn) {
     const row = btn.closest('tr');
-    const statusCell = row.querySelector('.badge');
-    if (statusCell && confirm('Valider ce paiement ?')) {
-      statusCell.className = 'badge bg-green';
-      statusCell.textContent = 'Payé ✓';
-      btn.closest('.action-btns').innerHTML = '<div class="icon-btn">👁</div>';
-      const pending = parseInt(document.getElementById('badge-pending').textContent);
-      if (pending > 0) document.getElementById('badge-pending').textContent = pending - 1;
-    }
+    const ref = row && row.dataset ? row.dataset.reference : '';
+    const index = allPayments.findIndex(payment => payment.reference === ref || payment.id === ref);
+    if (index >= 0) validatePaymentByIndex(index);
   }
 
   function updateTimers() {
@@ -1194,30 +1696,28 @@
       const usersRes = await apiFetch('/admin/users');
       const usersData = await usersRes.json();
       if (usersData.success) {
+        allUsers = usersData.users || [];
         const usersTable = document.getElementById('users-table');
-        if (usersTable && usersData.users.length > 0) {
+        if (usersTable && allUsers.length > 0) {
           const tbody = usersTable.querySelector('tbody') || usersTable;
-          // Clear existing rows (except header)
-          const existingRows = tbody.querySelectorAll('tr:not(:first-child)');
-          existingRows.forEach(row => row.remove());
-          // Add new rows
-          usersData.users.forEach(user => {
+          tbody.innerHTML = '';
+          allUsers.forEach((user, index) => {
             const row = document.createElement('tr');
             row.dataset.type = user.role || 'user';
             const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
             row.innerHTML = `
-              <td><div class="user-cell"><div class="avatar">${initials}</div><div><div class="user-name-cell">${user.name || 'N/A'}</div><div class="user-sub-cell">${user.email || ''}</div></div></div></td>
+              <td><div class="user-cell"><div class="avatar">${escapeHtml(initials)}</div><div><div class="user-name-cell">${escapeHtml(user.name || 'N/A')}</div><div class="user-sub-cell">${escapeHtml(user.email || '')}</div></div></div></td>
               <td><span class="badge bg-blue">Autonome</span></td>
               <td><span class="status-dot dot-green"></span>En ligne</td>
-              <td><span class="badge bg-green">Actif</span></td>
-              <td style="color:var(--muted);">${user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'N/A'}</td>
-              <td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div></div></td>
+              <td><span class="badge ${user.role === 'admin' ? 'bg-amber' : 'bg-green'}">${user.role === 'admin' ? 'Admin' : 'Actif'}</span></td>
+              <td style="color:var(--muted);">${fmtDate(user.createdAt)}</td>
+              <td><div class="action-btns"><button class="icon-btn" onclick="viewUser(${index})" title="Voir">${ICON_VIEW}</button><button class="icon-btn" onclick="editUser(${index})" title="Éditer">${ICON_EDIT}</button></div></td>
             `;
             tbody.appendChild(row);
           });
           // Update badge
           const badgeUsers = document.getElementById('badge-users');
-          if (badgeUsers) badgeUsers.textContent = usersData.users.length;
+          if (badgeUsers) badgeUsers.textContent = allUsers.length;
         }
       }
 
@@ -1225,37 +1725,55 @@
       const sitesRes = await apiFetch('/admin/sites');
       const sitesData = await sitesRes.json();
       if (sitesData.success) {
-        console.log('Sites loaded:', sitesData.sites.length);
+        allSites = sitesData.sites || [];
+        const sitesTable = document.getElementById('sites-table');
+        if (sitesTable) {
+          if (!allSites.length) {
+            sitesTable.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Aucun site publié</td></tr>';
+          } else {
+            sitesTable.innerHTML = allSites.map((site, index) => `
+              <tr>
+                <td>${escapeHtml(site.name || 'N/A')}</td>
+                <td>${escapeHtml(site.ownerName || site.userName || site.userId || 'N/A')}</td>
+                <td>${site.slug ? `<a href="/${escapeHtml(site.slug)}" target="_blank" style="color:var(--brand);font-weight:600;">/${escapeHtml(site.slug)}</a>` : '—'}</td>
+                <td>${site.productsCount || site.productCount || 0}</td>
+                <td>${site.views || 0}</td>
+                <td><span class="badge ${site.status === 'published' ? 'bg-green' : 'bg-gray'}">${escapeHtml(site.status || 'draft')}</span></td>
+                <td><div class="action-btns"><button class="icon-btn" onclick="viewSite(${index})" title="Voir">${ICON_VIEW}</button><button class="icon-btn" onclick="editSite(${index})" title="Gérer">${ICON_EDIT}</button></div></td>
+              </tr>
+            `).join('');
+          }
+        }
       }
 
       // Fetch tickets
       const ticketsRes = await apiFetch('/tickets');
       const ticketsData = await ticketsRes.json();
       if (ticketsData.success) {
-        allTickets = ticketsData.tickets;
+        allTickets = ticketsData.tickets || [];
         const ticketsTable = document.getElementById('tickets-tbody');
         if (ticketsTable) {
-          if (ticketsData.tickets.length === 0) {
+          if (allTickets.length === 0) {
             ticketsTable.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">Aucun ticket</td></tr>';
           } else {
             ticketsTable.innerHTML = '';
-            ticketsData.tickets.forEach(ticket => {
+            allTickets.forEach((ticket, index) => {
               const row = document.createElement('tr');
               row.dataset.status = ticket.status || 'open';
               const initials = ticket.userName ? ticket.userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
               row.innerHTML = `
-                <td><div class="user-cell"><div class="avatar">${initials}</div><div class="user-name-cell">${ticket.userName || 'N/A'}</div></div></td>
-                <td>${ticket.subject || 'N/A'}</td>
+                <td><div class="user-cell"><div class="avatar">${escapeHtml(initials)}</div><div class="user-name-cell">${escapeHtml(ticket.userName || 'N/A')}</div></div></td>
+                <td>${escapeHtml(ticket.subject || 'N/A')}</td>
                 <td><span class="badge ${ticket.priority === 'high' ? 'bg-red' : ticket.priority === 'medium' ? 'bg-amber' : 'bg-gray'}">${ticket.priority || 'low'}</span></td>
                 <td><span class="status-dot ${ticket.status === 'open' ? 'dot-green' : ticket.status === 'pending' ? 'dot-amber' : 'dot-gray'}"></span>${ticket.status || 'N/A'}</td>
                 <td style="color:var(--muted);">${ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString('fr-FR') : 'N/A'}</td>
-                <td><div class="action-btns"><div class="icon-btn">👁</div><div class="icon-btn">✏️</div></div></td>
+                <td><div class="action-btns"><button class="icon-btn" onclick="viewTicket('${ticket.id}')" title="Voir">${ICON_VIEW}</button>${ticket.status !== 'closed' ? `<button class="icon-btn" onclick="closeTicket('${ticket.id}')" title="Fermer">✅</button>` : ''}</div></td>
               `;
               ticketsTable.appendChild(row);
             });
           }
           const badgeTickets = document.getElementById('badge-tickets');
-          if (badgeTickets) badgeTickets.textContent = ticketsData.tickets.length;
+          if (badgeTickets) badgeTickets.textContent = allTickets.length;
         }
       }
 
@@ -1263,8 +1781,10 @@
       const paymentsRes = await apiFetch('/admin/payments');
       const paymentsData = await paymentsRes.json();
       if (paymentsData.success) {
+        allPayments = paymentsData.payments || [];
+        renderPaymentsTables();
         // Update pending badge
-        const pendingPayments = paymentsData.payments.filter(p => p.status === 'pending');
+        const pendingPayments = allPayments.filter(p => p.status === 'pending');
         const pendingBadge = document.getElementById('badge-pending');
         if (pendingBadge) pendingBadge.textContent = pendingPayments.length;
       }
@@ -1380,7 +1900,7 @@
                   <td style="color:var(--muted);">${new Date(ticket.createdAt).toLocaleDateString('fr-FR')}</td>
                   <td>
                     <div class="action-btns">
-                      <div class="icon-btn" onclick="viewTicket('${ticket.id}')">👁</div>
+                      <div class="icon-btn" onclick="viewTicket('${ticket.id}')">${ICON_VIEW}</div>
                       ${ticket.status !== 'closed' ? `<div class="icon-btn" onclick="closeTicket('${ticket.id}')">✅</div>` : ''}
                     </div>
                   </td>
@@ -1406,10 +1926,6 @@
   // Load demo mock tickets (disabled - using real data only)
   function loadDemoTickets() {
     console.log('Demo tickets disabled - using real backend data');
-  }
-
-  function viewTicket(id) {
-    alert('Voir le ticket ' + id + ' - Fonctionnalité à venir');
   }
 
   async function closeTicket(id) {

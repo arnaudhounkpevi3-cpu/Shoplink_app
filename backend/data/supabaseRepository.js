@@ -94,6 +94,12 @@ function mapPayment(p) {
     reference: p.reference,
     adminNote: p.admin_note || '',
     premiumOrder,
+    validationStatus: premiumOrder?.validationStatus,
+    transactionId: premiumOrder?.transactionId,
+    paymentStatus: premiumOrder?.paymentStatus,
+    projectStatus: premiumOrder?.projectStatus,
+    deliveryStartedAt: premiumOrder?.deliveryStartedAt,
+    deliveryTargetAt: premiumOrder?.deliveryTargetAt,
     paidAt: p.paid_at ? iso(p.paid_at) : undefined,
     createdAt: iso(p.created_at),
     updatedAt: p.updated_at ? iso(p.updated_at) : undefined,
@@ -456,36 +462,91 @@ module.exports = {
 
   async createPayment(data) {
     const id = data.id || newEntityId('payment')
+    const adminNote = data.premiumOrder
+      ? JSON.stringify({
+          premiumOrder: {
+            ...data.premiumOrder,
+            paymentStatus: data.paymentStatus,
+            projectStatus: data.projectStatus,
+          },
+        })
+      : (data.adminNote || '')
+
     const { data: result, error } = await supabase
       .from('payments')
       .insert({
         id,
-        user_id: data.userId,
-        site_id: data.siteId || '',
+        user_id: data.userId || null,
+        site_id: data.siteId || null,
         type: data.type,
         amount: data.amount,
         step: data.step || 'full',
         status: data.status || 'pending',
         method: data.method || 'fedapay',
         reference: data.reference || `PAY-${Date.now()}`,
-        admin_note: data.premiumOrder ? JSON.stringify({ premiumOrder: data.premiumOrder }) : (data.adminNote || ''),
+        admin_note: adminNote,
         paid_at: data.paidAt ? new Date(data.paidAt).toISOString() : null,
         created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
       })
       .select()
       .single()
-    return error || !result ? null : mapPayment(result)
+    if (error) {
+      console.error('❌ Erreur création paiement Supabase:', error.message)
+      return null
+    }
+
+    return !result ? null : mapPayment(result)
   },
 
   async patchPayment(id, patch) {
+    const existing = await this.findPaymentById(id)
+    let notePayload = {}
+
+    if (existing?.adminNote) {
+      try {
+        notePayload = JSON.parse(existing.adminNote)
+      } catch (_error) {
+        notePayload = { note: existing.adminNote }
+      }
+    }
+
+    if (existing?.premiumOrder || notePayload.premiumOrder) {
+      notePayload.premiumOrder = {
+        ...(notePayload.premiumOrder || existing.premiumOrder || {}),
+      }
+    }
+
     const updates = {
       updated_at: new Date().toISOString(),
     }
     
     if (patch.status !== undefined) updates.status = patch.status
-    if (patch.validationStatus !== undefined) updates.admin_note = patch.validationStatus
     if (patch.paidAt !== undefined) updates.paid_at = patch.paidAt ? new Date(patch.paidAt).toISOString() : null
-    if (patch.transactionId !== undefined) updates.admin_note = patch.transactionId
+    if (patch.validatedAt !== undefined) updates.paid_at = patch.validatedAt ? new Date(patch.validatedAt).toISOString() : null
+
+    for (const key of [
+      'validationStatus',
+      'transactionId',
+      'paymentStatus',
+      'projectStatus',
+      'deliveryStartedAt',
+      'deliveryTargetAt',
+      'mobileMoneyPhone',
+      'mobileMoneyProvider',
+      'smsCode',
+    ]) {
+      if (patch[key] !== undefined) {
+        if (notePayload.premiumOrder) {
+          notePayload.premiumOrder[key] = patch[key]
+        } else {
+          notePayload[key] = patch[key]
+        }
+      }
+    }
+
+    if (Object.keys(notePayload).length) {
+      updates.admin_note = JSON.stringify(notePayload)
+    }
 
     const { data, error } = await supabase
       .from('payments')
@@ -493,7 +554,12 @@ module.exports = {
       .eq('id', id)
       .select()
       .single()
-    return error || !data ? null : mapPayment(data)
+    if (error) {
+      console.error('❌ Erreur mise à jour paiement Supabase:', error.message)
+      return null
+    }
+
+    return !data ? null : mapPayment(data)
   },
 
   async countAutonomePaid() {
