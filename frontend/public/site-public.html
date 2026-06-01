@@ -126,7 +126,7 @@
       flex: 0 0 auto;
     }
 
-    .brand-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .brand-logo img { width: 100%; height: 100%; object-fit: contain; padding: 5px; background: #fff; }
     .brand-name { font-weight: 900; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .brand-mini { font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 2px; }
 
@@ -154,6 +154,11 @@
     .nav-menu a:hover {
       background: color-mix(in srgb, var(--primary) 10%, white);
       color: var(--primary);
+    }
+
+    .nav-menu a.active {
+      background: var(--primary);
+      color: #fff;
     }
 
     .header-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
@@ -349,6 +354,44 @@
     }
 
     .featured-img img { width: 100%; height: 100%; object-fit: cover; }
+    .featured-card.logo-feature {
+      width: min(300px, 100%);
+      padding: 14px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.92);
+    }
+    .featured-card.logo-feature::before {
+      display: none;
+    }
+    .featured-logo-frame {
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, #fff, color-mix(in srgb, var(--soft) 70%, #fff));
+      border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.72);
+    }
+    .featured-logo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 18px;
+      display: block;
+    }
+    .featured-logo-name {
+      margin-top: 14px;
+      color: var(--text);
+      font-size: clamp(18px, 2vw, 24px);
+      font-weight: 900;
+      line-height: 1.12;
+      letter-spacing: -.035em;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
     .featured-activity-icon {
       width: clamp(138px, 13vw, 174px) !important;
       height: clamp(138px, 13vw, 174px) !important;
@@ -1037,6 +1080,7 @@
     function renderSite(site, products) {
       const theme = window.shopTheme || THEMES.general
       const slug = site.slug || slugFromUrl()
+      const sectionIds = siteSectionIds(slug)
       const app = document.getElementById('app')
 
       app.innerHTML = `
@@ -1045,9 +1089,14 @@
             <div class="brand-logo">${site.logo ? `<img src="${site.logo}" alt="Logo">` : theme.icon}</div>
             <div><div class="brand-name">${safe(site.name)}</div></div>
           </div>
+          <nav class="nav-menu" aria-label="Navigation ${safe(site.name)}">
+            <a href="#${sectionIds.top}" onclick="scrollToSiteSection(event,'${sectionIds.top}')">Accueil</a>
+            <a href="#${sectionIds.products}" onclick="scrollToSiteSection(event,'${sectionIds.products}')">Produits</a>
+            ${site.description ? `<a href="#${sectionIds.about}" onclick="scrollToSiteSection(event,'${sectionIds.about}')">À propos</a>` : ''}
+          </nav>
         </header>
 
-        <section class="hero">
+        <section class="hero" id="${sectionIds.top}">
           <div>
             ${OWNER_MODE ? ownerActions(slug) : ''}
             <h1>${safe(site.name || 'Ma boutique')}</h1>
@@ -1055,13 +1104,14 @@
             ${renderHeroMeta(site, slug)}
           </div>
           <div class="hero-visual">
-            <div class="featured-card">
-              <div class="featured-img">${theme.welcome ? `<div class="featured-welcome">Bienvenue sur notre site<span>${safe(site.name || 'ShopLink')}</span></div>` : `<img class="featured-activity-icon" src="${theme.iconUrl}" alt="">`}</div>
-            </div>
+            ${site.logo
+              ? `<div class="featured-card logo-feature"><div class="featured-logo-frame"><img src="${site.logo}" alt="Logo ${safe(site.name || 'boutique')}"></div><div class="featured-logo-name">${safe(site.name || 'Ma boutique')}</div></div>`
+              : `<div class="featured-card"><div class="featured-img">${theme.welcome ? `<div class="featured-welcome">Bienvenue sur notre site<span>${safe(site.name || 'ShopLink')}</span></div>` : `<img class="featured-activity-icon" src="${theme.iconUrl}" alt="">`}</div></div>`
+            }
           </div>
         </section>
 
-        <section class="section" id="products">
+        <section class="section" id="${sectionIds.products}">
           <div class="section-head"><div class="section-kicker">${safe(theme.label)}</div><h2 class="section-title">${safe(productSectionTitle(theme, products))}</h2><p class="section-subtitle">${safe(theme.subtitle)}</p></div>
           ${displayProducts(products).length
             ? `<div class="products-grid">${displayProducts(products).map(productCard).join('')}</div>`
@@ -1073,6 +1123,23 @@
 
         <footer class="footer"><p><strong>${safe(site.name)}</strong></p><p>Propulsé par ShopLink · Digitalise ta boutique</p></footer>
       `
+    }
+
+    function siteSectionIds(slug) {
+      const safeSlug = String(slug || 'boutique').replace(/[^a-z0-9_-]+/gi, '-')
+      return {
+        top: `site-${safeSlug}-top`,
+        products: `site-${safeSlug}-products`,
+        about: `site-${safeSlug}-about`,
+      }
+    }
+
+    function scrollToSiteSection(event, id) {
+      event.preventDefault()
+      const target = document.getElementById(id)
+      if (!target) return
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      history.replaceState(null, '', `#${id}`)
     }
 
     function ownerActions() {
@@ -1096,7 +1163,7 @@
 
     function renderAbout(site) {
       return site.description
-        ? `<section class="section about"><div class="about-card highlight"><h2>À propos de la boutique</h2><p>${safe(site.description)}</p></div></section>`
+        ? `<section class="section about" id="${siteSectionIds(site.slug || slugFromUrl()).about}"><div class="about-card highlight"><h2>À propos de la boutique</h2><p>${safe(site.description)}</p></div></section>`
         : ''
     }
 
@@ -1243,9 +1310,9 @@
 
     function visitorId() { let id = localStorage.getItem('shoplink_visitor_id'); if (!id) { id = 'visitor-' + Date.now() + '-' + Math.random().toString(36).slice(2); localStorage.setItem('shoplink_visitor_id', id) } return id }
     function sessionId() { let id = sessionStorage.getItem('shoplink_session_id'); if (!id) { id = 'session-' + Date.now() + '-' + Math.random().toString(36).slice(2); sessionStorage.setItem('shoplink_session_id', id) } return id }
-    function clickedRecently(id) { const last = localStorage.getItem(`whatsapp_click_${id}`); return last && (Date.now() - Number(last)) / 36e5 < 24 }
+    function clickedRecently(id) { const last = localStorage.getItem(`whatsapp_click_${window.currentSiteId || 'site'}_${id}`); return last && (Date.now() - Number(last)) / 36e5 < 24 }
     async function trackVisit(siteId) { if (OWNER_MODE) return; try { await fetch(`${API_BASE}/tracking/visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, sessionId: sessionId(), visitorId: visitorId(), referrer: document.referrer, userAgent: navigator.userAgent, platform: visitSource() }) }) } catch (_) {} }
-    async function trackWhatsAppClick(siteId, productId = null) { if (OWNER_MODE) return; if (productId && clickedRecently(productId)) return; try { await fetch(`${API_BASE}/tracking/whatsapp-click`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }); if (productId) localStorage.setItem(`whatsapp_click_${productId}`, Date.now()) } catch (_) {} }
+    async function trackWhatsAppClick(siteId, productId = null) { if (OWNER_MODE) return; if (productId && clickedRecently(productId)) return; try { await fetch(`${API_BASE}/tracking/whatsapp-click`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }); if (productId) localStorage.setItem(`whatsapp_click_${siteId}_${productId}`, Date.now()) } catch (_) {} }
     async function trackProductView(siteId, productId) { if (OWNER_MODE) return; try { await fetch(`${API_BASE}/tracking/product-view`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }) } catch (_) {} }
 
     window.addEventListener('beforeunload', () => { if (OWNER_MODE || !window.currentSiteId) return; const timeSpent = Date.now() - startTime; if (timeSpent > 2000) { const body = JSON.stringify({ siteId: window.currentSiteId, timeSpent, sessionId: sessionId(), visitorId: visitorId() }); navigator.sendBeacon(`${API_BASE}/tracking/time-spent`, new Blob([body], { type: 'application/json' })) } })
