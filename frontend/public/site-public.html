@@ -67,6 +67,15 @@
       transition: transform .18s ease, background .18s ease;
     }
 
+    .owner-inline-btn img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      display: block;
+      flex: 0 0 auto;
+      filter: brightness(0) invert(1);
+    }
+
     .owner-inline-btn:hover {
       transform: translateY(-1px);
       background: #fff;
@@ -1048,7 +1057,7 @@
     }
 
     function ownerActions() {
-      return `<div class="owner-inline-actions"><a class="owner-inline-btn primary" href="/dashboard-client-shoplink.html">Retour dashboard</a></div>`
+      return `<div class="owner-inline-actions"><a class="owner-inline-btn primary" href="/dashboard-client-shoplink.html"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828765.png" alt="">Retour à ton dashboard</a></div>`
     }
 
     function renderHeroMeta(site, slug) {
