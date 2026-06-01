@@ -1022,22 +1022,20 @@
         <header class="shop-header">
           <div class="brand">
             <div class="brand-logo">${site.logo ? `<img src="${site.logo}" alt="Logo">` : theme.icon}</div>
-            <div><div class="brand-name">${safe(site.name)}</div><div class="brand-mini">${safe(theme.label)}</div></div>
+            <div><div class="brand-name">${safe(site.name)}</div></div>
           </div>
         </header>
 
         <section class="hero">
           <div>
             ${OWNER_MODE ? ownerActions(slug) : ''}
-            <div class="activity-badge">${theme.icon} ${safe(theme.label)}</div>
             <h1>${safe(site.name || 'Ma boutique')}</h1>
             ${site.slogan || site.description ? `<p class="hero-subtitle">${safe(site.slogan || site.description)}</p>` : ''}
             ${renderHeroMeta(site, slug)}
           </div>
           <div class="hero-visual">
             <div class="featured-card">
-              <div class="featured-img"><img class="featured-activity-icon" src="${theme.iconUrl}" alt="${safe(theme.label)}"></div>
-              <div class="featured-body"><div class="featured-title">${safe(theme.label)}</div><div class="featured-price">${safe(site.activityType || 'Boutique en ligne')}</div></div>
+              <div class="featured-img"><img class="featured-activity-icon" src="${theme.iconUrl}" alt=""></div>
             </div>
           </div>
         </section>
