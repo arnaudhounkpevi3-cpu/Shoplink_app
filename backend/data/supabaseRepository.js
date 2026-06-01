@@ -13,6 +13,57 @@ function newEntityId(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
+const PRODUCT_META_PREFIX = '\n<!--SHOPLINK_PRODUCT_META:'
+const PRODUCT_META_SUFFIX = '-->'
+
+function productMetaFromData(data = {}) {
+  return {
+    availability: data.availability || 'available',
+    stock: data.stock || '',
+    badge: data.badge || '',
+    oldPrice: data.oldPrice || '',
+    variantInfo: data.variantInfo || '',
+    extraInfo: data.extraInfo || '',
+  }
+}
+
+function hasProductMeta(meta) {
+  return Boolean(
+    meta &&
+      (meta.availability !== 'available' ||
+        meta.stock ||
+        meta.badge ||
+        meta.oldPrice ||
+        meta.variantInfo ||
+        meta.extraInfo),
+  )
+}
+
+function encodeProductDescription(description = '', meta = {}) {
+  const cleanDescription = String(description || '').replace(/\n<!--SHOPLINK_PRODUCT_META:[\s\S]*?-->/g, '')
+  if (!hasProductMeta(meta)) return cleanDescription
+  return `${cleanDescription}${PRODUCT_META_PREFIX}${JSON.stringify(meta)}${PRODUCT_META_SUFFIX}`
+}
+
+function decodeProductDescription(description = '') {
+  const raw = String(description || '')
+  const match = raw.match(/\n<!--SHOPLINK_PRODUCT_META:([\s\S]*?)-->/)
+  let meta = {}
+
+  if (match) {
+    try {
+      meta = JSON.parse(match[1]) || {}
+    } catch (_error) {
+      meta = {}
+    }
+  }
+
+  return {
+    description: raw.replace(/\n<!--SHOPLINK_PRODUCT_META:[\s\S]*?-->/g, ''),
+    meta,
+  }
+}
+
 function mapUser(u) {
   if (!u) {
     return null
@@ -57,6 +108,8 @@ function mapProduct(p) {
   if (!p) {
     return null
   }
+  const decoded = decodeProductDescription(p.description || '')
+  const meta = decoded.meta || {}
   return {
     id: p.id,
     siteId: p.site_id,
@@ -64,16 +117,16 @@ function mapProduct(p) {
     name: p.name,
     price: p.price,
     image: p.image_url || '',
-    description: p.description || '',
+    description: decoded.description || '',
     category: p.category || 'General',
     visible: p.is_visible !== false,
     status: p.is_visible === false ? 'hidden' : 'published',
-    availability: p.availability || 'available',
-    stock: p.stock || '',
-    badge: p.badge || '',
-    oldPrice: p.old_price || '',
-    variantInfo: p.variant_info || '',
-    extraInfo: p.extra_info || '',
+    availability: p.availability || meta.availability || 'available',
+    stock: p.stock || meta.stock || '',
+    badge: p.badge || meta.badge || '',
+    oldPrice: p.old_price || meta.oldPrice || '',
+    variantInfo: p.variant_info || meta.variantInfo || '',
+    extraInfo: p.extra_info || meta.extraInfo || '',
     createdAt: iso(p.created_at),
     updatedAt: p.updated_at ? iso(p.updated_at) : undefined,
   }
@@ -88,6 +141,7 @@ function isMissingOptionalProductColumn(error) {
 }
 
 function baseProductInsertPayload(id, data) {
+  const meta = productMetaFromData(data)
   return {
     id,
     site_id: data.siteId,
@@ -95,7 +149,7 @@ function baseProductInsertPayload(id, data) {
     name: data.name,
     price: data.price,
     image_url: data.image || '',
-    description: data.description || '',
+    description: encodeProductDescription(data.description || '', meta),
     category: data.category || 'General',
     is_visible: data.visible !== false && data.status !== 'hidden',
     created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
@@ -103,13 +157,14 @@ function baseProductInsertPayload(id, data) {
 }
 
 function advancedProductFields(data) {
+  const meta = productMetaFromData(data)
   return {
-    availability: data.availability || 'available',
-    stock: data.stock || '',
-    badge: data.badge || '',
-    old_price: data.oldPrice || null,
-    variant_info: data.variantInfo || '',
-    extra_info: data.extraInfo || '',
+    availability: meta.availability,
+    stock: meta.stock,
+    badge: meta.badge,
+    old_price: meta.oldPrice || null,
+    variant_info: meta.variantInfo,
+    extra_info: meta.extraInfo,
   }
 }
 

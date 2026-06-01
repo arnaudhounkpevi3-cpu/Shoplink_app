@@ -1195,7 +1195,6 @@
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) loadSite({ silent: true })
     })
-    window.setInterval(() => loadSite({ silent: true }), OWNER_MODE ? 5000 : 12000)
   </script>
 </body>
 </html>
