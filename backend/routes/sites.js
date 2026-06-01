@@ -66,6 +66,13 @@ router.post('/create', requireAuth, async (req, res) => {
     createdAt: new Date().toISOString(),
   })
 
+  if (!site) {
+    return res.status(500).json({
+      success: false,
+      message: 'Impossible de créer le site dans la base de données',
+    })
+  }
+
   return res.status(201).json({
     success: true,
     message: 'Site cree',
@@ -152,6 +159,13 @@ router.put('/:id', requireAuth, async (req, res) => {
   }
 
   const site = await repo().updateSite(req.params.id, patch)
+
+  if (!site) {
+    return res.status(500).json({
+      success: false,
+      message: 'Impossible de mettre à jour le site dans la base de données',
+    })
+  }
 
   return res.json({
     success: true,

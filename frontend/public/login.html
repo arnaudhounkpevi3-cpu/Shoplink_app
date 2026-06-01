@@ -346,7 +346,8 @@
         document.getElementById('success-box').classList.add('show');
 
         setTimeout(() => {
-          window.location.href = '/dashboard-client-shoplink.html';
+          const next = new URLSearchParams(window.location.search).get('next');
+          window.location.href = next || '/dashboard-client-shoplink.html';
         }, 1200);
       } else {
         document.getElementById('global-error').textContent = data.message || 'Email ou mot de passe incorrect';

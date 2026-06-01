@@ -19,6 +19,10 @@ function buildWhatsAppLink(whatsapp, productName) {
 }
 
 router.get('/:slug', async (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+  res.set('Pragma', 'no-cache')
+  res.set('Expires', '0')
+
   const site = await repo().findSiteBySlug(req.params.slug)
 
   if (!site) {
@@ -42,10 +46,12 @@ router.get('/:slug', async (req, res) => {
   }
 
   const rawProducts = await repo().listProductsBySiteId(site.id)
-  const products = rawProducts.map((product) => ({
-    ...product,
-    whatsappLink: buildWhatsAppLink(site.whatsapp, product.name),
-  }))
+  const products = rawProducts
+    .filter((product) => product.visible !== false && product.status !== 'hidden')
+    .map((product) => ({
+      ...product,
+      whatsappLink: buildWhatsAppLink(site.whatsapp, product.name),
+    }))
 
   return res.json({
     success: true,

@@ -3,564 +3,1199 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Site Public - ShopLink</title>
+  <title>Boutique ShopLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #176b5b;
+      --secondary: #0f493f;
+      --accent: #f59c1a;
+      --bg: #fbf7ef;
+      --soft: #eef7f1;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #667085;
+      --border: rgba(17, 24, 39, 0.10);
+      --shadow: 0 18px 48px rgba(17, 24, 39, 0.08);
+      --radius: 22px;
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-        'Ubuntu', 'Cantarell', sans-serif;
-      background: #f5f5f5;
-      color: #333;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% -4%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 30%),
+        radial-gradient(circle at 90% 8%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 28%),
+        linear-gradient(180deg, var(--bg), #fff 72%);
+      -webkit-font-smoothing: antialiased;
     }
 
-    .site-header {
-      padding: 2rem 1rem;
-      text-align: center;
-      border-bottom: 1px solid #e0e0e0;
-      background: white;
-    }
+    a { color: inherit; }
+    button { font-family: inherit; }
 
-    .site-header-logo {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 1rem;
-      border-radius: 8px;
-      background: #f0f0f0;
+    .owner-inline-actions {
       display: flex;
       align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .owner-inline-btn {
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      color: #999;
+      gap: 7px;
+      min-height: 36px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+      background: rgba(255,255,255,.78);
+      color: var(--primary);
+      box-shadow: 0 10px 26px rgba(17,24,39,.07);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
     }
 
-    .site-header-logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 8px;
+    .owner-inline-btn:hover {
+      transform: translateY(-1px);
+      background: #fff;
     }
 
-    .site-header h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
+    .owner-inline-btn.primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: transparent;
     }
 
-    .site-header .slogan {
-      font-size: 1.1rem;
-      color: #666;
-      margin-bottom: 0.5rem;
-    }
-
-    .site-header .description {
-      font-size: 0.95rem;
-      color: #888;
-      max-width: 600px;
-      margin: 1rem auto;
-    }
-
-    .site-contact {
+    .shop-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
       display: flex;
-      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: min(1180px, calc(100% - 28px));
+      margin: 14px auto 0;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.55);
+      border-radius: 999px;
+      background: rgba(255,255,255,.74);
+      backdrop-filter: blur(18px) saturate(1.2);
+      box-shadow: 0 18px 54px rgba(17,24,39,.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--soft);
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      font-weight: 900;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent);
+      flex: 0 0 auto;
+    }
+
+    .brand-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .brand-name { font-weight: 900; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .brand-mini { font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.45);
+      border: 1px solid rgba(255,255,255,.52);
+    }
+
+    .nav-menu a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      padding: 8px 11px;
+      border-radius: 999px;
+      transition: background .18s ease, color .18s ease;
+      white-space: nowrap;
+    }
+
+    .nav-menu a:hover {
+      background: color-mix(in srgb, var(--primary) 10%, white);
+      color: var(--primary);
+    }
+
+    .header-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+
+    .pill-btn {
+      min-height: 40px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      margin-top: 1rem;
+      gap: 8px;
+      color: #fff;
+      background: var(--primary);
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 12px 26px color-mix(in srgb, var(--primary) 24%, transparent);
+    }
+
+    .hero {
+      width: min(1180px, calc(100% - 28px));
+      margin: 34px auto 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+      gap: clamp(28px, 5vw, 70px);
+      align-items: center;
+      padding: clamp(32px, 6vw, 74px);
+      border-radius: 36px;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, white), rgba(255,255,255,.88)),
+        radial-gradient(circle at 88% 18%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 32%);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.7);
+      overflow: hidden;
+      position: relative;
+      max-width: calc(100vw - 28px);
+    }
+
+    .hero > div {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -80px;
+      bottom: -120px;
+      width: 300px;
+      height: 300px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--primary) 10%, transparent);
+      pointer-events: none;
+    }
+
+    .activity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+      color: var(--secondary);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      width: 100%;
+      max-width: 12ch;
+      font-size: clamp(32px, 4.8vw, 64px);
+      line-height: 1;
+      letter-spacing: -.052em;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      hyphens: auto;
+      text-wrap: balance;
+      white-space: normal;
+    }
+
+    .hero-subtitle {
+      max-width: 58ch;
+      margin: 20px 0 24px;
+      color: var(--muted);
+      font-size: clamp(15px, 1.4vw, 18px);
+      line-height: 1.65;
+      overflow-wrap: anywhere;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    .contact-btn {
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.95rem;
+    .pill-btn.secondary {
+      background: rgba(255,255,255,.74);
+      color: var(--primary);
+      border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+      box-shadow: none;
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .meta-card {
+      background: rgba(255,255,255,.72);
+      border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
+      border-radius: 18px;
+      padding: 13px;
+      min-width: 0;
+    }
+
+    .meta-card-link {
+      width: 100%;
+      text-align: left;
       cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-flex;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .meta-card-link:hover,
+    .meta-card-link:focus-visible {
+      transform: translateY(-1px);
+      background: #fff;
+      border-color: color-mix(in srgb, var(--primary) 26%, transparent);
+      outline: none;
+    }
+
+    .info-icon {
+      width: 15px;
+      height: 15px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: -2px;
+      margin-right: 6px;
+    }
+
+    .meta-label { color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+    .meta-value { margin-top: 5px; font-weight: 900; overflow-wrap: anywhere; }
+
+    .hero-visual {
+      position: relative;
+      min-height: 360px;
+      display: flex;
       align-items: center;
-      gap: 0.5rem;
+      justify-content: center;
+      z-index: 1;
     }
 
-    .contact-btn-whatsapp {
-      background: #25d366;
-      color: white;
+    .featured-card {
+      width: min(340px, 100%);
+      min-width: 0;
+      border-radius: 30px;
+      background: #fff;
+      border: 1px solid rgba(255,255,255,.8);
+      box-shadow: 0 26px 70px rgba(17,24,39,.16);
+      overflow: hidden;
+      transform: rotate(0deg);
+      position: relative;
     }
 
-    .contact-btn-whatsapp:hover {
-      background: #1fa851;
-      transform: translateY(-2px);
+    .featured-card::before {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.78);
+      pointer-events: none;
+      z-index: 2;
     }
 
-    .contact-btn-phone {
-      background: #0085cc;
-      color: white;
+    .featured-img {
+      height: 260px;
+      display: grid;
+      place-items: center;
+      font-size: 72px;
+      color: var(--primary);
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255,255,255,.92), rgba(255,255,255,.62) 30%, transparent 31%),
+        linear-gradient(135deg, var(--soft), color-mix(in srgb, var(--accent) 18%, #fff));
+      overflow: hidden;
     }
 
-    .contact-btn-phone:hover {
-      background: #0073b2;
-      transform: translateY(-2px);
+    .featured-img img { width: 100%; height: 100%; object-fit: cover; }
+    .featured-activity-icon {
+      width: clamp(138px, 13vw, 174px) !important;
+      height: clamp(138px, 13vw, 174px) !important;
+      object-fit: contain;
+      display: block;
+      margin: auto;
+      filter: drop-shadow(0 20px 28px color-mix(in srgb, var(--primary) 28%, transparent));
+    }
+    .featured-body { padding: 18px; }
+    .featured-title { font-weight: 900; font-size: 20px; }
+    .featured-price { margin-top: 8px; font-weight: 900; color: var(--accent); font-size: 22px; }
+
+    .trust-strip {
+      width: min(1180px, calc(100% - 28px));
+      margin: 18px auto 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
     }
 
-    .products-section {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1rem;
+    .trust-card {
+      background: rgba(255,255,255,.78);
+      border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
+      border-radius: 18px;
+      padding: 14px 16px;
+      box-shadow: 0 10px 28px rgba(17,24,39,.045);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .products-title {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      text-align: center;
+    .trust-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--soft);
+      color: var(--primary);
+      font-weight: 900;
+      flex: 0 0 auto;
     }
+
+    .trust-title { font-weight: 900; font-size: 13px; }
+    .trust-text { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+    .category-rail {
+      width: min(1180px, calc(100% - 28px));
+      margin: 28px auto 0;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 2px 8px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .category-rail::-webkit-scrollbar { display: none; }
+
+    .category-chip {
+      flex: 0 0 auto;
+      border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
+      background: rgba(255,255,255,.76);
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .section {
+      width: min(1180px, calc(100% - 28px));
+      margin: 42px auto 0;
+    }
+
+    .section-head { text-align: center; margin-bottom: 22px; }
+    .section-kicker { color: var(--primary); font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .section-title { margin-top: 7px; font-size: clamp(28px, 3vw, 44px); letter-spacing: -.045em; }
+    .section-subtitle { max-width: 620px; margin: 10px auto 0; color: var(--muted); line-height: 1.6; }
 
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+      gap: 18px;
+    }
+
+    .empty-products {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 32px 22px;
+      border: 1px dashed color-mix(in srgb, var(--primary) 22%, transparent);
+      border-radius: 24px;
+      background: rgba(255,255,255,.72);
+      text-align: center;
+      color: var(--muted);
+      box-shadow: 0 14px 34px rgba(17,24,39,.05);
+    }
+
+    .empty-products strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--primary);
+      font-size: 18px;
     }
 
     .product-card {
-      background: white;
-      border-radius: 8px;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
+      box-shadow: 0 14px 34px rgba(17,24,39,.07);
+      transition: transform .22s ease, box-shadow .22s ease;
+      cursor: pointer;
+      position: relative;
     }
 
-    .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    .product-card::after {
+      content: '';
+      position: absolute;
+      inset: auto 16px 0;
+      height: 3px;
+      border-radius: 999px 999px 0 0;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: .72;
     }
+
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 24px 54px rgba(17,24,39,.13); }
 
     .product-image {
-      width: 100%;
-      height: 250px;
-      background: #f0f0f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      color: #ddd;
+      height: 230px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--soft), color-mix(in srgb, var(--accent) 10%, #fff));
+      color: var(--primary);
+      font-size: 52px;
+      position: relative;
       overflow: hidden;
     }
 
-    .product-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .product-image img { width: 100%; height: 100%; object-fit: cover; }
+    .promo-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
     }
 
-    .product-content {
-      padding: 1.5rem;
+    .product-body { padding: 16px; }
+    .product-category { color: var(--primary); font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+    .product-name { margin-top: 7px; font-size: 18px; font-weight: 900; line-height: 1.2; }
+    .product-description { color: var(--muted); margin-top: 10px; line-height: 1.45; font-size: 13px; min-height: 38px; }
+    .product-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; }
+    .product-price { color: var(--accent); font-size: 20px; font-weight: 900; white-space: nowrap; }
+
+    .product-old-price {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: line-through;
+      opacity: .78;
     }
 
-    .product-category {
-      display: inline-block;
-      font-size: 0.75rem;
-      background: #f0f0f0;
-      padding: 0.25rem 0.75rem;
-      border-radius: 12px;
-      color: #666;
-      margin-bottom: 0.5rem;
-    }
-
-    .product-name {
-      font-size: 1.2rem;
-      margin: 0.5rem 0;
-      font-weight: 600;
-    }
-
-    .product-price {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0.5rem 0;
-      color: #d9643a;
-    }
-
-    .product-description {
-      font-size: 0.9rem;
-      color: #666;
-      margin: 1rem 0;
-      line-height: 1.4;
-    }
-
-    .product-action {
+    .product-extra-tags {
       display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
     }
 
-    .btn-order {
-      flex: 1;
-      padding: 0.75rem;
-      background: #25d366;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: flex;
+    .product-extra-tag {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
+      gap: 4px;
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: color-mix(in srgb, var(--primary) 8%, white);
+      border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
+      color: var(--secondary);
+      font-size: 11px;
+      font-weight: 850;
     }
 
-    .btn-order:hover {
-      background: #1fa851;
+    .product-actions { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin-top: 14px; }
+    .btn-details, .btn-add, .btn-order {
+      border: 0;
+      border-radius: 999px;
+      min-height: 40px;
+      padding: 0 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
     }
 
-    .loading {
+    .btn-details { background: color-mix(in srgb, var(--primary) 10%, #fff); color: var(--primary); }
+    .btn-add { background: var(--primary); color: #fff; }
+    .btn-order { background: var(--primary); color: #fff; }
+    .btn-details:hover, .btn-add:hover, .btn-order:hover { transform: translateY(-1px); }
+
+    .cart-fab {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 70;
+      min-height: 50px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 20px 50px color-mix(in srgb, var(--primary) 34%, transparent);
+      display: none;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .cart-fab.show { display: inline-flex; }
+
+    .cart-count {
+      display: inline-grid;
+      place-items: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--primary);
+      font-size: 12px;
+    }
+
+    .cart-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      background: rgba(17,24,39,.48);
+      backdrop-filter: blur(7px);
+    }
+
+    .cart-overlay.show { display: block; }
+
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 100;
+      width: min(420px, 100%);
+      height: 100vh;
+      background: #fff;
+      box-shadow: -28px 0 80px rgba(17,24,39,.22);
+      transform: translateX(105%);
+      transition: transform .28s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cart-drawer.show { transform: translateX(0); }
+
+    .cart-head {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .cart-title { font-size: 22px; font-weight: 900; letter-spacing: -.04em; }
+    .cart-subtitle { margin-top: 3px; color: var(--muted); font-size: 13px; }
+
+    .cart-close {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .cart-body {
+      flex: 1;
+      overflow: auto;
+      padding: 12px 20px;
+    }
+
+    .cart-empty {
+      height: 100%;
+      min-height: 260px;
+      display: grid;
+      place-items: center;
       text-align: center;
-      padding: 2rem;
-      font-size: 1.1rem;
-      color: #666;
+      color: var(--muted);
+      line-height: 1.5;
     }
 
-    .error {
-      background: #fee;
-      border: 1px solid #fcc;
-      color: #c33;
-      padding: 1rem;
-      border-radius: 6px;
-      margin: 2rem auto;
-      max-width: 600px;
+    .cart-item {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
     }
+
+    .cart-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: var(--soft);
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      font-size: 25px;
+      overflow: hidden;
+    }
+
+    .cart-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .cart-item-name { font-weight: 900; line-height: 1.2; }
+    .cart-item-price { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+    .cart-item-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .qty-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: color-mix(in srgb, var(--primary) 8%, #fff);
+      border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent);
+      border-radius: 999px;
+      padding: 4px;
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--primary);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .qty-value { min-width: 18px; text-align: center; font-weight: 900; }
+    .cart-remove { border: 0; background: transparent; color: #b42318; font-weight: 900; cursor: pointer; }
+
+    .cart-footer {
+      padding: 18px 20px 20px;
+      border-top: 1px solid var(--border);
+      background: linear-gradient(180deg,#fff, color-mix(in srgb, var(--soft) 50%, #fff));
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .cart-actions {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+    }
+
+    .about {
+      display: grid;
+      grid-template-columns: .92fr 1.08fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-top: 48px;
+    }
+
+    .about-card {
+      border-radius: 28px;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .about-card.highlight { background: var(--primary); color: #fff; }
+    .about-card.highlight p { color: rgba(255,255,255,.78); }
+    .about-card h2 { font-size: clamp(26px, 3vw, 42px); letter-spacing: -.045em; }
+    .about-card p { margin-top: 12px; color: var(--muted); line-height: 1.7; }
+    .about-card.highlight .about-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .info-list { margin-top: 18px; display: grid; gap: 10px; }
+    .info-row { display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,.18); }
+    .info-label { color: rgba(255,255,255,.62); font-size: 12px; font-weight: 900; text-transform: uppercase; }
+    .info-value { font-weight: 900; text-align: right; overflow-wrap: anywhere; }
 
     .footer {
-      margin-top: 3rem;
-      padding: 2rem;
-      background: white;
-      border-top: 1px solid #e0e0e0;
+      margin-top: 56px;
+      padding: 32px 18px;
+      background: #111827;
+      color: rgba(255,255,255,.74);
       text-align: center;
-      color: #999;
     }
 
-    .footer a {
-      color: #d9643a;
-      text-decoration: none;
+    .footer strong { color: #fff; }
+    .footer a { color: #fff; text-decoration: none; font-weight: 800; }
+
+    .site-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(17, 24, 39, .58);
+      backdrop-filter: blur(10px);
     }
 
-    @media (max-width: 768px) {
-      .site-header h1 {
-        font-size: 1.5rem;
-      }
+    .site-modal.show { display: flex; }
+    .site-modal-card { width: min(540px, 100%); max-height: 90vh; overflow: auto; border-radius: 28px; background: #fff; box-shadow: 0 30px 90px rgba(0,0,0,.28); }
+    .site-modal-image { min-height: 245px; max-height: 72vh; display: grid; place-items: center; background: var(--soft); color: var(--primary); font-size: 64px; overflow: hidden; }
+    .site-modal-image img { width: 100%; height: auto; max-height: 72vh; object-fit: contain; display: block; }
+    .site-modal-body { padding: 20px; }
+    .site-modal-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .site-modal-title { font-size: 24px; line-height: 1.1; font-weight: 900; letter-spacing: -.04em; }
+    .site-modal-close { width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--border); background: #fff; cursor: pointer; font-size: 20px; }
+    .site-modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
 
-      .products-grid {
-        grid-template-columns: 1fr;
-      }
+    .site-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 120;
+      width: min(380px, calc(100% - 28px));
+      transform: translate(-50%, 18px) scale(.98);
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+      box-shadow: 0 18px 54px rgba(17,24,39,.18);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      transition: opacity .22s ease, transform .22s ease;
+    }
 
-      .contact-btn {
-        flex: 1;
-        justify-content: center;
-      }
+    .site-toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(1);
+    }
+
+    .site-toast-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: var(--primary);
+      box-shadow: 0 0 0 5px color-mix(in srgb, var(--primary) 13%, transparent);
+      flex: 0 0 auto;
+      margin-top: 5px;
+    }
+
+    .site-toast-title {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .site-toast-message {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.38;
+      overflow-wrap: anywhere;
+    }
+
+    .site-toast.warning {
+      border-color: rgba(245,156,26,.26);
+    }
+
+    .site-toast.warning .site-toast-dot {
+      background: var(--accent);
+      box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 16%, transparent);
+    }
+
+    .site-toast.error {
+      border-color: rgba(180,35,24,.22);
+    }
+
+    .site-toast.error .site-toast-dot {
+      background: #b42318;
+      box-shadow: 0 0 0 5px rgba(180,35,24,.12);
+    }
+
+    .loading, .error { max-width: 620px; margin: 60px auto; padding: 18px; border-radius: 18px; background: #fff; box-shadow: var(--shadow); text-align: center; color: var(--muted); }
+    .error { color: #b42318; background: #fff4f2; }
+
+    body[data-activity="fastfood"] .btn-order { text-transform: uppercase; letter-spacing: .03em; }
+    body[data-activity="fastfood"] .hero { border-radius: 24px; }
+    body[data-activity="food"] .hero { border-radius: 28px 48px 28px 48px; }
+    body[data-activity="fashion"] .product-card { border-radius: 8px 30px 8px 30px; }
+    body[data-activity="fashion"] .product-image { height: 300px; }
+    body[data-activity="fashion"] .hero { border-radius: 8px 42px 8px 42px; }
+    body[data-activity="beauty"] .product-card { border-radius: 30px; }
+    body[data-activity="beauty"] .product-image { height: 220px; border-radius: 0 0 30px 30px; }
+    body[data-activity="beauty"] .hero { border-radius: 44px; }
+
+    @media (max-width: 820px) {
+      .shop-header { width: calc(100% - 20px); margin-top: 10px; }
+      .nav-menu { display: none; }
+      .header-actions { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 28px 18px; border-radius: 24px; }
+      .hero h1 { font-size: clamp(28px, 9vw, 38px); max-width: 100%; letter-spacing: -.04em; }
+      .hero-actions .pill-btn { width: 100%; }
+      .hero-meta { grid-template-columns: 1fr; }
+      .hero-visual { min-height: auto; }
+      .featured-card { transform: none; }
+      .trust-strip { grid-template-columns: 1fr; }
+      .products-grid { grid-template-columns: 1fr; }
+      .about { grid-template-columns: 1fr; }
+      .product-actions, .site-modal-actions { grid-template-columns: 1fr; }
+      .cart-fab { left: 14px; right: 14px; justify-content: center; }
+      .cart-drawer { width: 100%; }
+      .cart-actions { grid-template-columns: 1fr; }
+      .owner-inline-actions { display: grid; grid-template-columns: 1fr; }
+      .owner-inline-btn { width: 100%; }
     }
   </style>
   <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
 <body>
-  <div id="app">
-    <div class="loading">Chargement du site...</div>
+  <div id="app"><div class="loading">Chargement de la boutique...</div></div>
+  <button class="cart-fab" id="cart-fab" onclick="openCartDrawer()">Panier <span class="cart-count" id="cart-count">0</span></button>
+  <div class="cart-overlay" id="cart-overlay" onclick="closeCartDrawer()"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Panier">
+    <div class="cart-head">
+      <div>
+        <div class="cart-title">Votre panier</div>
+        <div class="cart-subtitle">Ajustez les quantités puis commandez via WhatsApp.</div>
+      </div>
+      <button class="cart-close" onclick="closeCartDrawer()" aria-label="Fermer le panier">×</button>
+    </div>
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-footer">
+      <div class="cart-total"><span>Total</span><span id="cart-total">0 FCFA</span></div>
+      <div class="cart-actions">
+        <button class="btn-details" onclick="clearCart()">Vider</button>
+        <button class="btn-order" onclick="orderCart()">Commander le panier</button>
+      </div>
+    </div>
+  </aside>
+  <div class="site-modal" id="site-modal" onclick="closeSiteModal(event)"><div class="site-modal-card" id="site-modal-card" onclick="event.stopPropagation()"></div></div>
+  <div class="site-toast" id="site-toast" role="status" aria-live="polite">
+    <span class="site-toast-dot"></span>
+    <div>
+      <div class="site-toast-title" id="site-toast-title">Notification</div>
+      <div class="site-toast-message" id="site-toast-message"></div>
+    </div>
   </div>
 
   <script src="/js/api-config.js"></script>
   <script>
     const API_BASE = window.SHOPLINK_API_BASE
+    const OWNER_MODE = new URLSearchParams(window.location.search).get('owner') === '1'
+    let currentSite = null
+    let currentProducts = []
+    let cart = []
+    const startTime = Date.now()
 
-    // Récupérer le slug depuis l'URL
-    function getSlug() {
-      const path = window.location.pathname
-      const slug = path.split('/').pop()
-      return slug || 'boutique-test'
+    const THEMES = {
+      food: { label: 'Restaurant', title: 'Notre menu', subtitle: 'Choisissez vos plats et commandez directement via WhatsApp.', primary: '#9a3f13', secondary: '#6f2c0d', accent: '#f59c1a', bg: '#fff7eb', soft: '#fff2df', text: '#24140a', icon: '🍽️', iconUrl: 'https://cdn-icons-png.flaticon.com/512/562/562678.png' },
+      fastfood: { label: 'Fast-food', title: 'À commander maintenant', subtitle: 'Des produits rapides à choisir et à commander directement via WhatsApp.', primary: '#d9480f', secondary: '#9a3412', accent: '#facc15', bg: '#fff8db', soft: '#fff3bf', text: '#271307', icon: '🍟', iconUrl: 'https://cdn-icons-png.flaticon.com/512/738/738079.png' },
+      fashion: { label: 'Boutique mode', title: 'Collection disponible', subtitle: 'Parcourez les articles, découvrez les prix et commandez vos pièces préférées.', primary: '#1f4f8f', secondary: '#14315d', accent: '#d7a247', bg: '#f1f6ff', soft: '#e1ecff', text: '#101a2f', icon: '👗', iconUrl: 'https://cdn-icons-png.flaticon.com/512/11746/11746073.png' },
+      beauty: { label: 'Beauté & soins', title: 'Sélection beauté', subtitle: 'Des soins, parfums et produits beauté dans une vitrine douce et élégante.', primary: '#8b3a62', secondary: '#5d2440', accent: '#eaa6c8', bg: '#fff2fa', soft: '#ffe8f4', text: '#28131e', icon: '💄', iconUrl: 'https://cdn-icons-png.flaticon.com/512/8023/8023928.png' },
+      commerce: { label: 'Commerce', title: 'Catalogue produits', subtitle: 'Découvrez les articles disponibles et contactez la boutique pour commander.', primary: '#176b5b', secondary: '#0f493f', accent: '#f59c1a', bg: '#f2fbf5', soft: '#e8f7ef', text: '#0f1f17', icon: '🛒', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3144/3144456.png' },
+      general: { label: 'Boutique', title: 'Nos produits', subtitle: 'Consultez les produits disponibles et commandez facilement via WhatsApp.', primary: '#176b5b', secondary: '#0f493f', accent: '#f59c1a', bg: '#fbf7ef', soft: '#eef7f1', text: '#111827', icon: '📦', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3388/3388695.png' },
     }
 
-    // Formater le prix
-    function formatPrice(price) {
-      if (!price) return 'Prix non défini'
-      return new Intl.NumberFormat('fr-FR').format(Number(price)) + ' FCFA'
+    function activityKey(value) {
+      const a = String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+      if (/fast\s*-?\s*food|fastfood|burger|snack|sandwich|pizza|frites|tacos|shawarma/.test(a)) return 'fastfood'
+      if (/restaurant|repas|plat|menu|boisson|grillade|poulet|riz|food/.test(a)) return 'food'
+      if (/boutique|mode|robe|pagne|sac|chaussure|vetement|vêtement/.test(a)) return 'fashion'
+      if (/cosm|beaut|maquillage|parfum|creme|crème|cheveux|soin/.test(a)) return 'beauty'
+      if (/commerce|commercant|commerçant|vente|shop|marche|marché/.test(a)) return 'commerce'
+      return 'general'
     }
 
-    // Lancer la commande WhatsApp
-    function orderOnWhatsApp(whatsappLink) {
-      if (whatsappLink && whatsappLink !== '#') {
-        window.open(whatsappLink, '_blank')
-      }
+    function applyTheme(site) {
+      const key = activityKey(site.activityType || site.activity || site.category)
+      const theme = THEMES[key] || THEMES.general
+      const legacyDefaults = new Set(['#d9643a', '#1a6b4a', '#1a5c38', '#667eea', '#176b5b', '#764ba2'])
+      const storedPrimary = String(site.primaryColor || '').toLowerCase()
+      const storedSecondary = String(site.secondaryColor || '').toLowerCase()
+      const primary = storedPrimary && !legacyDefaults.has(storedPrimary) ? site.primaryColor : theme.primary
+      const secondary = storedSecondary && !legacyDefaults.has(storedSecondary) ? site.secondaryColor : theme.secondary
+      document.documentElement.style.setProperty('--primary', primary)
+      document.documentElement.style.setProperty('--secondary', secondary)
+      document.documentElement.style.setProperty('--accent', theme.accent)
+      document.documentElement.style.setProperty('--bg', theme.bg)
+      document.documentElement.style.setProperty('--soft', theme.soft)
+      document.documentElement.style.setProperty('--text', theme.text)
+      document.body.dataset.activity = key
+      window.shopTheme = { ...theme, primary, secondary, key }
     }
 
-    // Appeler le téléphone
-    function callPhone(phone) {
-      if (phone) {
-        window.location.href = `tel:${phone}`
-      }
-    }
+    function slugFromUrl() { return window.location.pathname.split('/').filter(Boolean).pop() || 'boutique-test' }
+    function money(value) { return Number(value || 0).toLocaleString('fr-FR') + ' FCFA' }
+    function safe(value) { return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') }
+    function cleanUrl(slug) { return `${window.location.origin}/boutique/${slug}` }
+    function visitSource() { return new URLSearchParams(window.location.search).get('source') || '' }
 
-    // Charger et afficher le site
-    async function loadSite() {
+    async function loadSite(options = {}) {
+      const { silent = false } = options
       try {
-        const slug = getSlug()
-        const response = await fetch(`${API_BASE}/public/${slug}`)
+        const slug = slugFromUrl()
+        const response = await fetch(`${API_BASE}/public/${slug}?t=${Date.now()}`, { cache: 'no-store' })
         const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.message || 'Site non trouvé')
+        if (!response.ok) throw new Error(data.message || 'Site non trouvé')
+        currentSite = data.site
+        currentProducts = data.products || []
+        window.currentSiteId = currentSite.id
+        applyTheme(currentSite)
+        trackVisit(currentSite.id)
+        renderSite(currentSite, currentProducts)
+      } catch (error) {
+        if (!silent) {
+          document.getElementById('app').innerHTML = `<div class="error"><strong>Erreur :</strong> ${safe(error.message)}</div>`
         }
-
-        // Track site visit
-        await trackVisit(data.site.id)
-
-        // Store siteId for time tracking
-        window.currentSiteId = data.site.id
-
-        renderSite(data.site, data.products || [])
-      } catch (error) {
-        console.error('Erreur:', error)
-        document.getElementById('app').innerHTML = `
-          <div class="error">
-            <strong>Erreur :</strong> ${error.message}
-          </div>
-        `
       }
     }
 
-    // Get visitor ID (persistent across sessions)
-    function getVisitorId() {
-      let visitorId = localStorage.getItem('shoplink_visitor_id')
-      if (!visitorId) {
-        visitorId = 'visitor-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
-        localStorage.setItem('shoplink_visitor_id', visitorId)
-      }
-      return visitorId
+    function displayProducts(products) {
+      return (products || []).filter((product) => product && product.name)
     }
 
-    // Get session ID (resets on browser close)
-    function getSessionId() {
-      let sessionId = sessionStorage.getItem('shoplink_session_id')
-      if (!sessionId) {
-        sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
-        sessionStorage.setItem('shoplink_session_id', sessionId)
-      }
-      return sessionId
-    }
-
-    // Check if WhatsApp click was already counted recently (24h)
-    function hasClickedRecently(productId) {
-      const key = `whatsapp_click_${productId}`
-      const lastClick = localStorage.getItem(key)
-      if (!lastClick) return false
-      
-      const hoursSinceClick = (Date.now() - parseInt(lastClick)) / (1000 * 60 * 60)
-      return hoursSinceClick < 24
-    }
-
-    // Track site visit
-    async function trackVisit(siteId) {
-      try {
-        await fetch(`${API_BASE}/tracking/visit`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            siteId,
-            sessionId: getSessionId(),
-            visitorId: getVisitorId(),
-            referrer: document.referrer,
-            userAgent: navigator.userAgent
-          })
-        })
-      } catch (error) {
-        console.error('Error tracking visit:', error)
-      }
-    }
-
-    // Track WhatsApp click with deduplication
-    async function trackWhatsAppClick(siteId, productId = null) {
-      // Check if already clicked recently for this product
-      if (productId && hasClickedRecently(productId)) {
-        console.log('Clic déjà compté récemment pour ce produit')
-        return
-      }
-      
-      try {
-        await fetch(`${API_BASE}/tracking/whatsapp-click`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            siteId, 
-            productId,
-            sessionId: getSessionId(),
-            visitorId: getVisitorId()
-          })
-        })
-        
-        // Mark as clicked for deduplication
-        if (productId) {
-          localStorage.setItem(`whatsapp_click_${productId}`, Date.now())
-        }
-      } catch (error) {
-        console.error('Error tracking WhatsApp click:', error)
-      }
-    }
-
-    // Track product view
-    async function trackProductView(siteId, productId) {
-      try {
-        await fetch(`${API_BASE}/tracking/product-view`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            siteId, 
-            productId,
-            sessionId: getSessionId(),
-            visitorId: getVisitorId()
-          })
-        })
-      } catch (error) {
-        console.error('Error tracking product view:', error)
-      }
-    }
-
-    // Track link share
-    async function trackLinkShare(siteId, platform) {
-      try {
-        await fetch(`${API_BASE}/tracking/link-share`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            siteId,
-            platform,
-            sessionId: getSessionId(),
-            visitorId: getVisitorId()
-          })
-        })
-      } catch (error) {
-        console.error('Error tracking link share:', error)
-      }
-    }
-
-    // Track time spent on page
-    let startTime = Date.now()
-    window.addEventListener('beforeunload', () => {
-      const timeSpent = Date.now() - startTime
-      if (timeSpent > 2000) { // Only track if spent more than 2 seconds
-        navigator.sendBeacon(`${API_BASE}/tracking/time-spent`, JSON.stringify({
-          siteId: window.currentSiteId,
-          timeSpent,
-          sessionId: getSessionId(),
-          visitorId: getVisitorId()
-        }))
-      }
-    })
-
-    // Afficher le site
     function renderSite(site, products) {
+      const theme = window.shopTheme || THEMES.general
+      const slug = site.slug || slugFromUrl()
       const app = document.getElementById('app')
 
-      // En-tête du site
-      let headerHTML = `
-        <div class="site-header">
-      `
+      app.innerHTML = `
+        <header class="shop-header">
+          <div class="brand">
+            <div class="brand-logo">${site.logo ? `<img src="${site.logo}" alt="Logo">` : theme.icon}</div>
+            <div><div class="brand-name">${safe(site.name)}</div><div class="brand-mini">${safe(theme.label)}</div></div>
+          </div>
+        </header>
 
-      if (site.logo) {
-        headerHTML += `<div class="site-header-logo"><img src="${site.logo}" alt="Logo" /></div>`
-      } else {
-        headerHTML += `<div class="site-header-logo">🏪</div>`
-      }
-
-      headerHTML += `
-          <h1>${site.name}</h1>
-      `
-
-      if (site.slogan) {
-        headerHTML += `<div class="slogan">${site.slogan}</div>`
-      }
-
-      if (site.description) {
-        headerHTML += `<div class="description">${site.description}</div>`
-      }
-
-      headerHTML += `<div class="site-contact">`
-
-      // Bouton WhatsApp
-      if (site.whatsappLink) {
-        headerHTML += `
-          <a class="contact-btn contact-btn-whatsapp"
-             href="${site.whatsappLink}"
-             target="_blank"
-             rel="noopener noreferrer"
-             onclick="trackWhatsAppClick('${site.id}')">
-            💬 WhatsApp
-          </a>
-        `
-      }
-
-      // Bouton téléphone secondaire
-      if (site.secondaryPhone) {
-        headerHTML += `
-          <button class="contact-btn contact-btn-phone"
-                  onclick="callPhone('${site.secondaryPhone}')">
-            📞 Appeler
-          </button>
-        `
-      }
-
-      headerHTML += `</div></div>`
-
-      app.innerHTML = headerHTML
-
-      // Produits
-      if (products.length > 0) {
-        const productsHTML = `
-          <div class="products-section">
-            <h2 class="products-title">Nos Produits</h2>
-            <div class="products-grid">
-              ${products
-                .map(
-                  (product) => `
-                <div class="product-card" onclick="trackProductView('${site.id}', '${product.id}')">
-                  <div class="product-image">
-                    ${
-                      product.image
-                        ? `<img src="${product.image}" alt="${product.name}" />`
-                        : '📦'
-                    }
-                  </div>
-                  <div class="product-content">
-                    ${product.category ? `<span class="product-category">${product.category}</span>` : ''}
-                    <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">${formatPrice(product.price)}</div>
-                    <p class="product-description">${product.description || ''}</p>
-                    <div class="product-action">
-                      <button class="btn-order"
-                              onclick="event.stopPropagation(); trackWhatsAppClick('${site.id}', '${product.id}'); orderOnWhatsApp('${product.whatsappLink}')">
-                        🛒 Commander
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              `,
-                )
-                .join('')}
+        <section class="hero">
+          <div>
+            ${OWNER_MODE ? ownerActions(slug) : ''}
+            <div class="activity-badge">${theme.icon} ${safe(theme.label)}</div>
+            <h1>${safe(site.name || 'Ma boutique')}</h1>
+            <p class="hero-subtitle">${safe(site.slogan || site.description || 'Découvrez nos produits et commandez directement via WhatsApp.')}</p>
+            <div class="hero-meta">
+              <div class="meta-card"><span class="meta-label"><img class="info-icon" src="https://cdn-icons-png.flaticon.com/512/6320/6320900.png" alt="">Adresse</span><div class="meta-value">${safe(site.address || 'Non renseignée')}</div></div>
+              <div class="meta-card"><span class="meta-label"><img class="info-icon" src="https://cdn-icons-png.flaticon.com/512/3059/3059408.png" alt="">Contact</span><div class="meta-value">${safe(site.whatsapp || site.secondaryPhone || 'WhatsApp')}</div></div>
+              ${OWNER_MODE ? `<div class="meta-card meta-card-link" role="button" tabindex="0" onclick="copyClientLink('${slug}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();copyClientLink('${slug}')}"><span class="meta-label">Lien client</span><div class="meta-value">/boutique/${safe(slug)}</div></div>` : ''}
             </div>
           </div>
-        `
-        app.innerHTML += productsHTML
-      }
+          <div class="hero-visual">
+            <div class="featured-card">
+              <div class="featured-img"><img class="featured-activity-icon" src="${theme.iconUrl}" alt="${safe(theme.label)}"></div>
+              <div class="featured-body"><div class="featured-title">${safe(theme.label)}</div><div class="featured-price">${safe(site.activityType || 'Boutique en ligne')}</div></div>
+            </div>
+          </div>
+        </section>
 
-      // Footer
-      app.innerHTML += `
-        <div class="footer">
-          <p>Créé avec ShopLink - Plateforme de digitalisation</p>
-          <p><a href="/index.html">Retour à l'accueil</a></p>
-        </div>
+        <section class="section" id="products">
+          <div class="section-head"><div class="section-kicker">${safe(theme.label)}</div><h2 class="section-title">${safe(theme.title)}</h2><p class="section-subtitle">${safe(theme.subtitle)}</p></div>
+          ${displayProducts(products).length
+            ? `<div class="products-grid">${displayProducts(products).map(productCard).join('')}</div>`
+            : `<div class="empty-products"><strong>Aucun produit publié</strong>Les produits ajoutés depuis le dashboard apparaîtront ici dès leur publication.</div>`
+          }
+        </section>
+
+        <section class="section about">
+          <div class="about-card highlight"><h2>À propos de la boutique</h2><p>${safe(site.description || 'Cette boutique présente ses produits en ligne avec ShopLink pour recevoir des commandes plus facilement via WhatsApp.')}</p></div>
+        </section>
+
+        <footer class="footer"><p><strong>${safe(site.name)}</strong></p><p>Propulsé par ShopLink · Digitalise ta boutique</p></footer>
       `
     }
 
-    // Charger au démarrage
+    function ownerActions() {
+      return `<div class="owner-inline-actions"><a class="owner-inline-btn primary" href="/dashboard-client-shoplink.html">Retour dashboard</a></div>`
+    }
+
+    function infoRow(label, value, icon = '') { return `<div class="info-row"><span class="info-label">${icon ? `<img class="info-icon" src="${icon}" alt="">` : ''}${safe(label)}</span><span class="info-value">${safe(value || '—')}</span></div>` }
+
+    function productCard(product) {
+      const theme = window.shopTheme || THEMES.general
+      const badgeText = product.badge ? productBadgeLabel(product.badge) : 'Disponible'
+      return `<article class="product-card" onclick="openProductModal('${product.id}')"><div class="product-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}<span class="promo-badge">${safe(badgeText)}</span></div><div class="product-body"><div class="product-category">${safe(product.category || theme.label)}</div><h3 class="product-name">${safe(product.name)}</h3><p class="product-description">${safe(product.description || 'Description non renseignée.')}</p><div class="product-bottom"><div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}</div></div>${productMetaTags(product)}<div class="product-actions"><button class="btn-details" onclick="event.stopPropagation();openProductModal('${product.id}')">Voir</button><button class="btn-add" onclick="event.stopPropagation();addToCart('${product.id}')">Ajouter au panier</button></div></div></article>`
+    }
+
+    function productBadgeLabel(value) {
+      return ({ new: 'Nouveau', popular: 'Populaire', promo: 'Promo', recommended: 'Recommandé' }[value] || value || 'Disponible')
+    }
+
+    function productMetaTags(product) {
+      const tags = []
+      if (product.availability === 'out_of_stock') tags.push('Disponibilité : Rupture')
+      if (product.availability === 'available') tags.push('Disponibilité : Disponible')
+      if (product.stock !== undefined && product.stock !== '') tags.push(`Stock : ${product.stock}`)
+      if (product.variantInfo) tags.push(`Format : ${product.variantInfo}`)
+      if (product.extraInfo) tags.push(`Collection : ${product.extraInfo}`)
+      return tags.length ? `<div class="product-extra-tags">${tags.map(tag => `<span class="product-extra-tag">${safe(tag)}</span>`).join('')}</div>` : ''
+    }
+
+    function getProduct(id) { return currentProducts.find(p => String(p.id) === String(id)) }
+    let toastTimer = null
+    function toast(message, type = 'success', title = 'ShopLink') {
+      const el = document.getElementById('site-toast')
+      if (!el) return
+
+      document.getElementById('site-toast-title').textContent = title
+      document.getElementById('site-toast-message').textContent = message
+      el.classList.remove('warning', 'error')
+      if (type === 'warning' || type === 'error') el.classList.add(type)
+      el.classList.add('show')
+
+      clearTimeout(toastTimer)
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2600)
+    }
+    function closeSiteModal(event) { if (!event || event.target === document.getElementById('site-modal')) document.getElementById('site-modal').classList.remove('show') }
+    function modal(html) { document.getElementById('site-modal-card').innerHTML = html; document.getElementById('site-modal').classList.add('show') }
+
+    function openProductModal(id) { const product = getProduct(id); if (!product) return; if (!OWNER_MODE) trackProductView(currentSite.id, product.id); const theme = window.shopTheme || THEMES.general; modal(`<div class="site-modal-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}</div><div class="site-modal-body"><div class="site-modal-top"><div><div class="product-category">${safe(product.category || theme.label)}</div><div class="site-modal-title">${safe(product.name)}</div></div><button class="site-modal-close" onclick="closeSiteModal()">×</button></div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}${productMetaTags(product)}<p class="product-description">${safe(product.description || 'Description non renseignée.')}</p><div class="site-modal-actions"><button class="btn-details" onclick="closeSiteModal()">Fermer</button><button class="btn-add" onclick="addToCart('${product.id}');closeSiteModal();">Ajouter au panier</button></div></div>`) }
+    function addToCart(id) {
+      if (OWNER_MODE) {
+        toast('Partagez le lien client public pour effectuer une commande.', 'warning', 'Mode aperçu')
+        return
+      }
+
+      const product = getProduct(id)
+      if (!product) return
+      const existing = cart.find(item => String(item.id) === String(id))
+      if (existing) existing.quantity += 1
+      else cart.push({ ...product, quantity: 1 })
+      updateCartUI()
+      openCartDrawer()
+    }
+
+    function updateCartUI() {
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0)
+      const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0)
+      document.getElementById('cart-count').textContent = count
+      document.getElementById('cart-total').textContent = money(total)
+      document.getElementById('cart-fab').classList.toggle('show', count > 0)
+      renderCartItems()
+    }
+
+    function renderCartItems() {
+      const body = document.getElementById('cart-body')
+      const theme = window.shopTheme || THEMES.general
+      if (!cart.length) {
+        body.innerHTML = `<div class="cart-empty"><div><strong>Votre panier est vide</strong><br>Ajoutez des produits pour préparer votre commande.</div></div>`
+        return
+      }
+      body.innerHTML = cart.map(item => `<div class="cart-item"><div class="cart-thumb">${item.image ? `<img src="${item.image}" alt="${safe(item.name)}">` : theme.icon}</div><div><div class="cart-item-name">${safe(item.name)}</div><div class="cart-item-price">${money(item.price)} · Sous-total ${money(Number(item.price || 0) * item.quantity)}</div><div class="cart-item-bottom"><div class="qty-control"><button class="qty-btn" onclick="changeCartQty('${item.id}',-1)">−</button><span class="qty-value">${item.quantity}</span><button class="qty-btn" onclick="changeCartQty('${item.id}',1)">+</button></div><button class="cart-remove" onclick="removeFromCart('${item.id}')">Retirer</button></div></div></div>`).join('')
+    }
+
+    function changeCartQty(id, delta) {
+      const item = cart.find(product => String(product.id) === String(id))
+      if (!item) return
+      item.quantity += delta
+      if (item.quantity <= 0) cart = cart.filter(product => String(product.id) !== String(id))
+      updateCartUI()
+    }
+
+    function removeFromCart(id) {
+      cart = cart.filter(product => String(product.id) !== String(id))
+      updateCartUI()
+    }
+
+    function clearCart() {
+      cart = []
+      updateCartUI()
+      closeCartDrawer()
+    }
+
+    function openCartDrawer() {
+      updateCartUI()
+      document.getElementById('cart-overlay').classList.add('show')
+      document.getElementById('cart-drawer').classList.add('show')
+    }
+
+    function closeCartDrawer() {
+      document.getElementById('cart-overlay').classList.remove('show')
+      document.getElementById('cart-drawer').classList.remove('show')
+    }
+
+    function orderCart() {
+      if (!cart.length) { toast('Ajoutez au moins un produit avant de commander.', 'warning', 'Panier vide'); return }
+      if (OWNER_MODE) { toast('Passez par le lien client partagé pour tester une commande WhatsApp.', 'warning', 'Mode aperçu'); return }
+      const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0)
+      const lines = cart.map((item, index) => `${index + 1}. ${item.name} x${item.quantity} — ${money(Number(item.price || 0) * item.quantity)}`)
+      trackWhatsAppClick(currentSite.id)
+      openWhatsApp(`Bonjour, je veux commander :\n${lines.join('\n')}\n\nTotal : ${money(total)}\nBoutique : ${cleanUrl(currentSite.slug || slugFromUrl())}`)
+    }
+    function openWhatsApp(message) { const raw = String(currentSite?.whatsapp || '').replace(/\D/g, ''); const phone = raw.startsWith('229') ? raw : raw ? `229${raw}` : ''; window.open(phone ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`, '_blank') }
+    async function copyClientLink(slug) {
+      const link = cleanUrl(slug)
+      try {
+        await navigator.clipboard.writeText(link)
+        toast(link, 'success', 'Lien client copié')
+      } catch (_e) {
+        toast(link, 'warning', 'Copiez ce lien client')
+      }
+    }
+
+    function visitorId() { let id = localStorage.getItem('shoplink_visitor_id'); if (!id) { id = 'visitor-' + Date.now() + '-' + Math.random().toString(36).slice(2); localStorage.setItem('shoplink_visitor_id', id) } return id }
+    function sessionId() { let id = sessionStorage.getItem('shoplink_session_id'); if (!id) { id = 'session-' + Date.now() + '-' + Math.random().toString(36).slice(2); sessionStorage.setItem('shoplink_session_id', id) } return id }
+    function clickedRecently(id) { const last = localStorage.getItem(`whatsapp_click_${id}`); return last && (Date.now() - Number(last)) / 36e5 < 24 }
+    async function trackVisit(siteId) { if (OWNER_MODE) return; try { await fetch(`${API_BASE}/tracking/visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, sessionId: sessionId(), visitorId: visitorId(), referrer: document.referrer, userAgent: navigator.userAgent, platform: visitSource() }) }) } catch (_) {} }
+    async function trackWhatsAppClick(siteId, productId = null) { if (OWNER_MODE) return; if (productId && clickedRecently(productId)) return; try { await fetch(`${API_BASE}/tracking/whatsapp-click`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }); if (productId) localStorage.setItem(`whatsapp_click_${productId}`, Date.now()) } catch (_) {} }
+    async function trackProductView(siteId, productId) { if (OWNER_MODE) return; try { await fetch(`${API_BASE}/tracking/product-view`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }) } catch (_) {} }
+
+    window.addEventListener('beforeunload', () => { if (OWNER_MODE || !window.currentSiteId) return; const timeSpent = Date.now() - startTime; if (timeSpent > 2000) { const body = JSON.stringify({ siteId: window.currentSiteId, timeSpent, sessionId: sessionId(), visitorId: visitorId() }); navigator.sendBeacon(`${API_BASE}/tracking/time-spent`, new Blob([body], { type: 'application/json' })) } })
+
     loadSite()
+    window.addEventListener('focus', () => loadSite({ silent: true }))
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) loadSite({ silent: true })
+    })
+    window.setInterval(() => loadSite({ silent: true }), OWNER_MODE ? 5000 : 12000)
   </script>
-  <script src="/js/mobile-nav.js"></script>
 </body>
 </html>

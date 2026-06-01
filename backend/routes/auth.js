@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const { repo } = require('../data/repository')
 const { sanitizeUser } = require('../utils/sanitizeUser')
 const { uniqueSlug } = require('../utils/slug')
+const { getActivityTheme } = require('../utils/activityTheme')
 const { sendPasswordResetEmail } = require('../services/emailService')
 
 const router = express.Router()
@@ -84,6 +85,7 @@ async function getAutonomousPricing() {
 
 async function createDraftSiteForUser(userId, payload) {
   const shopName = String(payload.shopName || payload.siteName || '').trim()
+  const theme = getActivityTheme(payload.activityType || 'Boutique')
 
   if (!shopName) {
     return null
@@ -105,9 +107,9 @@ async function createDraftSiteForUser(userId, payload) {
     whatsapp: String(payload.whatsapp || payload.phone || '').trim(),
     secondaryPhone: String(payload.secondaryPhone || '').trim(),
     address: String(payload.address || payload.city || '').trim(),
-    activityType: String(payload.activityType || 'Boutique').trim() || 'Boutique',
-    primaryColor: payload.primaryColor || '#1a6b4a',
-    secondaryColor: payload.secondaryColor || '#f59c1a',
+    activityType: theme.activityType,
+    primaryColor: payload.primaryColor || theme.primaryColor,
+    secondaryColor: payload.secondaryColor || theme.secondaryColor,
     status: 'draft',
     createdAt: new Date().toISOString(),
   })

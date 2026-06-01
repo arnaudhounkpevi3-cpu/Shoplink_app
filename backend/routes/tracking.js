@@ -1,20 +1,48 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { repo } = require('../data/repository');
+
+function trackingId() {
+  return `track-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function eventTime(event) {
+  return event.timestamp || event.createdAt || new Date().toISOString();
+}
+
+function sourceFromEvent(event) {
+  if (event.platform) return event.platform;
+  if (event.referrer && String(event.referrer).includes('wa.me')) return 'whatsapp_shared_link';
+  if (event.referrer) return 'shared';
+  return 'direct';
+}
+
+function parseTrackingBody(req) {
+  if (!req.body) return {}
+  if (typeof req.body === 'string') {
+    try {
+      return JSON.parse(req.body)
+    } catch (_error) {
+      return {}
+    }
+  }
+  return req.body
+}
 
 // Track site visit
 router.post('/visit', async (req, res) => {
   try {
-    const { siteId, productId, sessionId, visitorId, referrer, userAgent } = req.body;
+    const { siteId, productId, sessionId, visitorId, referrer, userAgent, platform } = req.body;
     
     const trackingEvent = {
-      id: `track-${Date.now()}`,
+      id: trackingId(),
       siteId,
       productId: productId || null,
       sessionId: sessionId || null,
       visitorId: visitorId || null,
       referrer: referrer || null,
       userAgent: userAgent || null,
+      platform: platform || null,
       type: 'visit',
       timestamp: new Date().toISOString()
     };
@@ -31,14 +59,15 @@ router.post('/visit', async (req, res) => {
 // Track WhatsApp click
 router.post('/whatsapp-click', async (req, res) => {
   try {
-    const { siteId, productId, sessionId, visitorId } = req.body;
+    const { siteId, productId, sessionId, visitorId, platform } = req.body;
     
     const trackingEvent = {
-      id: `track-${Date.now()}`,
+      id: trackingId(),
       siteId,
       productId: productId || null,
       sessionId: sessionId || null,
       visitorId: visitorId || null,
+      platform: platform || null,
       type: 'whatsapp_click',
       timestamp: new Date().toISOString()
     };
@@ -57,18 +86,48 @@ router.get('/stats/:siteId', async (req, res) => {
   try {
     const { siteId } = req.params;
     const tracking = await repo().getTrackingBySite(siteId);
+    const products = await repo().listProductsBySiteId(siteId);
+    const productById = new Map(products.map(product => [String(product.id), product]));
     
     const visits = tracking.filter(t => t.type === 'visit').length;
     const whatsappClicks = tracking.filter(t => t.type === 'whatsapp_click').length;
     
     // Product views
     const productViews = {};
-    tracking.filter(t => t.type === 'visit' && t.productId).forEach(t => {
-      productViews[t.productId] = (productViews[t.productId] || 0) + 1;
+    tracking.filter(t => t.type === 'product_view' && t.productId).forEach(t => {
+      const key = String(t.productId);
+      productViews[key] = (productViews[key] || 0) + 1;
     });
+
+    const productOrders = {};
+    tracking.filter(t => t.type === 'whatsapp_click' && t.productId).forEach(t => {
+      const key = String(t.productId);
+      productOrders[key] = (productOrders[key] || 0) + 1;
+    });
+
+    const sourceClicks = {};
+    tracking.filter(t => t.type === 'visit').forEach(t => {
+      const source = sourceFromEvent(t);
+      sourceClicks[source] = (sourceClicks[source] || 0) + 1;
+    });
+    const shares = tracking.filter(t => t.type === 'link_share').length;
     
     // Unique visitors
     const uniqueVisitors = new Set(tracking.filter(t => t.visitorId).map(t => t.visitorId)).size;
+
+    const rankedProducts = products
+      .map(product => {
+        const id = String(product.id);
+        const views = Number(productViews[id] || 0);
+        const orders = Number(productOrders[id] || 0);
+        return { id, name: product.name, views, orders, score: views + orders * 2 };
+      })
+      .filter(product => product.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    const topProduct = rankedProducts[0]
+      ? { id: rankedProducts[0].id, name: rankedProducts[0].name, views: rankedProducts[0].views, orders: rankedProducts[0].orders }
+      : null;
     
     res.json({
       success: true,
@@ -76,6 +135,11 @@ router.get('/stats/:siteId', async (req, res) => {
         totalViews: visits,
         whatsappClicks,
         productViews,
+        productOrders,
+        topProduct,
+        shares,
+        sourceBreakdown: sourceClicks,
+        sourceClicks,
         uniqueVisitors
       }
     });
@@ -97,7 +161,7 @@ router.get('/activity/:siteId', async (req, res) => {
       .slice(0, 10)
       .map(t => ({
         type: t.type,
-        timestamp: t.timestamp,
+        timestamp: eventTime(t),
         productId: t.productId
       }));
     
@@ -114,14 +178,15 @@ router.get('/activity/:siteId', async (req, res) => {
 // Track product view
 router.post('/product-view', async (req, res) => {
   try {
-    const { siteId, productId, sessionId, visitorId } = req.body;
+    const { siteId, productId, sessionId, visitorId, platform } = req.body;
     
     const trackingEvent = {
-      id: `track-${Date.now()}`,
+      id: trackingId(),
       siteId,
       productId: productId || null,
       sessionId: sessionId || null,
       visitorId: visitorId || null,
+      platform: platform || null,
       type: 'product_view',
       timestamp: new Date().toISOString()
     };
@@ -141,7 +206,7 @@ router.post('/link-share', async (req, res) => {
     const { siteId, platform, sessionId, visitorId } = req.body;
     
     const trackingEvent = {
-      id: `track-${Date.now()}`,
+      id: trackingId(),
       siteId,
       platform: platform || null,
       sessionId: sessionId || null,
@@ -159,13 +224,41 @@ router.post('/link-share', async (req, res) => {
   }
 });
 
+// Redirect through a tracked shared link before opening the public boutique.
+router.get('/shared-link/:siteId', async (req, res) => {
+  try {
+    const { siteId } = req.params;
+    const { target = '/', platform = 'shared' } = req.query;
+
+    await repo().addTracking({
+      id: trackingId(),
+      siteId,
+      platform,
+      visitorId: req.query.visitorId || null,
+      sessionId: req.query.sessionId || null,
+      referrer: req.get('referer') || null,
+      userAgent: req.get('user-agent') || null,
+      type: 'link_share',
+      timestamp: new Date().toISOString(),
+    });
+
+    return res.redirect(String(target));
+  } catch (error) {
+    console.error('Error tracking shared link:', error);
+    return res.redirect(String(req.query.target || '/'));
+  }
+});
+
 // Track time spent
 router.post('/time-spent', async (req, res) => {
   try {
-    const { siteId, timeSpent, sessionId, visitorId } = req.body;
+    const { siteId, timeSpent, sessionId, visitorId } = parseTrackingBody(req);
+    if (!siteId) {
+      return res.json({ success: true, skipped: true });
+    }
     
     const trackingEvent = {
-      id: `track-${Date.now()}`,
+      id: trackingId(),
       siteId,
       timeSpent: timeSpent || null,
       sessionId: sessionId || null,

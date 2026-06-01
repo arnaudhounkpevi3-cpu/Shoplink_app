@@ -4,6 +4,7 @@ const Site = require('../models/Site')
 const Product = require('../models/Product')
 const Payment = require('../models/Payment')
 const Ticket = require('../models/Ticket')
+const { getActivityTheme } = require('../utils/activityTheme')
 
 function iso(d) {
   if (!d) {
@@ -71,6 +72,14 @@ function mapProduct(p) {
     image: o.image || '',
     description: o.description || '',
     category: o.category || 'General',
+    visible: o.visible !== false,
+    status: o.status || (o.visible === false ? 'hidden' : 'published'),
+    availability: o.availability || 'available',
+    stock: o.stock || '',
+    badge: o.badge || '',
+    oldPrice: o.oldPrice || '',
+    variantInfo: o.variantInfo || '',
+    extraInfo: o.extraInfo || '',
     createdAt: iso(o.createdAt),
     updatedAt: o.updatedAt ? iso(o.updatedAt) : undefined,
   }
@@ -293,6 +302,7 @@ module.exports = {
 
   async createSite(data) {
     const id = data.id || newEntityId('site')
+    const theme = getActivityTheme(data.activityType)
     const doc = await Site.create({
       _id: id,
       userId: data.userId,
@@ -304,9 +314,9 @@ module.exports = {
       whatsapp: data.whatsapp || '',
       secondaryPhone: data.secondaryPhone || '',
       address: data.address || '',
-      activityType: data.activityType || 'Boutique',
-      primaryColor: data.primaryColor || '#d9643a',
-      secondaryColor: data.secondaryColor || '#176b5b',
+      activityType: theme.activityType,
+      primaryColor: data.primaryColor || theme.primaryColor,
+      secondaryColor: data.secondaryColor || theme.secondaryColor,
       status: data.status || 'draft',
       createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
       publishedAt: data.publishedAt ? new Date(data.publishedAt) : undefined,
@@ -316,6 +326,12 @@ module.exports = {
 
   async updateSite(id, patch) {
     const next = { ...patch, updatedAt: new Date() }
+    if (patch.activityType !== undefined) {
+      const theme = getActivityTheme(patch.activityType)
+      next.activityType = theme.activityType
+      if (patch.primaryColor === undefined) next.primaryColor = theme.primaryColor
+      if (patch.secondaryColor === undefined) next.secondaryColor = theme.secondaryColor
+    }
     if (patch.publishedAt) {
       next.publishedAt = new Date(patch.publishedAt)
     }
@@ -349,6 +365,14 @@ module.exports = {
       image: data.image || '',
       description: data.description || '',
       category: data.category || 'General',
+      visible: data.visible !== false,
+      status: data.status || (data.visible === false ? 'hidden' : 'published'),
+      availability: data.availability || 'available',
+      stock: data.stock || '',
+      badge: data.badge || '',
+      oldPrice: data.oldPrice || '',
+      variantInfo: data.variantInfo || '',
+      extraInfo: data.extraInfo || '',
       createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
     })
     return mapProduct(doc)

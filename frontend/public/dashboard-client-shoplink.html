@@ -244,6 +244,19 @@
       return localStorage.getItem('shoplink_token') || '';
     }
 
+    function hasValidClientSession() {
+      const token = getAuthToken();
+      const user = getCurrentUser();
+      return Boolean(token && !token.startsWith('demo-token') && user && user.role !== 'admin');
+    }
+
+    function redirectToClientLogin() {
+      localStorage.removeItem('demo_mode');
+      localStorage.removeItem('shoplink_token');
+      const next = encodeURIComponent('/dashboard-client-shoplink.html');
+      window.location.href = `/login.html?next=${next}`;
+    }
+
     function slugify(value) {
       return String(value || 'boutique')
         .normalize('NFD')
@@ -255,6 +268,9 @@
 
     async function apiJson(path, options = {}) {
       const token = getAuthToken();
+      if (!token || token.startsWith('demo-token')) {
+        throw new Error('Connectez-vous pour effectuer cette action.');
+      }
       const response = await fetch(path, {
         ...options,
         headers: {
@@ -318,7 +334,8 @@
       };
     }
 
-    async function ensureBackendSite(overrides = {}) {
+    async function ensureBackendSite(overrides = {}, options = {}) {
+      const allowLocalFallback = options.allowLocalFallback !== false;
       const token = getAuthToken();
       const localSite = buildSitePayload(overrides);
       setAccountJson(CLIENT_SITE_KEY, localSite);
@@ -326,15 +343,51 @@
       if (!token) return localSite;
 
       try {
-        const data = localSite.id
-          ? await apiJson(`/api/sites/${localSite.id}`, {
+        let data = null;
+
+        if (localSite.id) {
+          try {
+            data = await apiJson(`/api/sites/${localSite.id}`, {
               method: 'PUT',
               body: JSON.stringify(localSite),
-            })
-          : await apiJson('/api/sites/create', {
-              method: 'POST',
-              body: JSON.stringify(localSite),
             });
+          } catch (updateError) {
+            console.warn('Site local introuvable ou non modifiable, recherche du vrai site:', updateError);
+          }
+        }
+
+        if (!data?.site) {
+          try {
+            const sitesData = await apiJson('/api/sites/user/my-sites');
+            const existingSite = selectCurrentAccountSite(sitesData.sites || [])
+              || (sitesData.sites || []).find((site) => site.slug === localSite.slug)
+              || (sitesData.sites || []).find((site) => String(site.name || '').toLowerCase() === String(localSite.name || '').toLowerCase());
+
+            if (existingSite?.id) {
+              data = await apiJson(`/api/sites/${existingSite.id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                  ...localSite,
+                  id: existingSite.id,
+                  slug: existingSite.slug || localSite.slug,
+                }),
+              });
+            }
+          } catch (lookupError) {
+            console.warn('Recherche du site existant indisponible:', lookupError);
+          }
+        }
+
+        if (!data?.site) {
+          data = await apiJson('/api/sites/create', {
+            method: 'POST',
+            body: JSON.stringify(localSite),
+          });
+        }
+
+        if (!data?.site?.id) {
+          throw new Error(data?.message || 'Le site backend n’a pas été créé ou récupéré.');
+        }
 
         const site = data.site || localSite;
         setAccountJson(CLIENT_SITE_KEY, site);
@@ -342,6 +395,9 @@
         applyAccountSiteToPreview();
         return site;
       } catch (error) {
+        if (!allowLocalFallback) {
+          throw error;
+        }
         notify(`Sauvegarde backend indisponible : ${error.message}`, 'warning');
         return localSite;
       }
@@ -501,6 +557,8 @@
         stats.sourceBreakdown = data.stats.sourceBreakdown || {};
         stats.sourceClicks = data.stats.sourceClicks || {};
         stats.productViews = data.stats.productViews || {};
+        stats.productOrders = data.stats.productOrders || {};
+        stats.shares = Number(data.stats.shares || stats.shares || 0);
         
         // New metrics from backend tracking
         if (data.stats.uniqueVisitors !== undefined) {
@@ -1143,13 +1201,21 @@
 
     function getShopLink() {
       const context = getClientContext();
-      return `${window.location.origin}/boutique/${context.slug}?source=shared`;
+      return `${getPublicSiteOrigin()}/boutique/${context.slug}?source=shared`;
     }
 
     function getTrackedShopLink() {
       const context = getClientContext();
       const target = `/boutique/${context.slug}?source=shared`;
       return `${window.location.origin}/api/tracking/shared-link/${encodeURIComponent(context.siteId)}?target=${encodeURIComponent(target)}`;
+    }
+
+    function getPublicSiteOrigin() {
+      const host = window.location.hostname;
+      const isLocalOrLan = /^(localhost|127\.0\.0\.1|10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(host);
+      return window.location.protocol === 'http:' && isLocalOrLan
+        ? `${window.location.protocol}//${host}:5000`
+        : window.location.origin;
     }
 
     function normalizeWhatsAppNumber(value) {
@@ -1867,6 +1933,12 @@
     }
 
     async function addOrUpdateProduct() {
+      if (!hasValidClientSession()) {
+        notify('Connectez-vous pour publier vos produits sur votre site.', 'warning');
+        setTimeout(redirectToClientLogin, 900);
+        return;
+      }
+
       const productForm = getProductForm();
       const name = productForm.name?.value.trim();
       const price = Number(productForm.price?.value || 0);
@@ -1904,13 +1976,14 @@
         editingProductRow.querySelector('.prod-meta')?.remove();
         editingProductRow.querySelector('.prod-desc')?.insertAdjacentHTML('afterend', renderProductMeta({ availability, stock, badge, oldPrice, variantInfo, extraInfo }));
         if (selectedProductImage) editingProductRow.querySelector('.prod-thumb').innerHTML = `<img src="${selectedProductImage}" alt="${name}">`;
-        saveAccountProducts();
         try {
-          await syncLocalProductsToBackend();
+          await syncLocalProductsToBackend({ strict: true });
+          notify('Produit modifié et publié sur votre site.');
         } catch (error) {
-          notify(`Produit modifié localement. Synchronisation indisponible : ${error.message}`, 'warning');
+          saveAccountProducts();
+          notify(`Produit modifié localement, mais non publié en ligne : ${error.message}`, 'warning');
+          return;
         }
-        notify('Produit modifié avec succès.');
         recordClientEvent('product_updated', `Produit modifié : ${name}`, { productName: name, category, price, description });
       } else {
         const list = getProductList();
@@ -1931,13 +2004,14 @@
         row.querySelector('.prod-desc').style.display = description ? 'block' : 'none';
         row.querySelector('.prod-price').textContent = priceLabel;
         list?.prepend(row);
-        saveAccountProducts();
         try {
-          await syncLocalProductsToBackend();
+          await syncLocalProductsToBackend({ strict: true });
+          notify('Produit publié sur votre site.');
         } catch (error) {
-          notify(`Produit publié localement. Synchronisation indisponible : ${error.message}`, 'warning');
+          saveAccountProducts();
+          notify(`Produit enregistré localement, mais non publié en ligne : ${error.message}`, 'warning');
+          return;
         }
-        notify('Produit publié dans le catalogue.');
         recordClientEvent('product_published', `Produit publié : ${name}`, { productName: name, category, price, description, availability, stock, badge });
       }
       syncCatalogFilterOptions();
@@ -1991,15 +2065,22 @@
     }
 
     async function deleteProduct(row) {
+      if (!hasValidClientSession()) {
+        notify('Connectez-vous pour supprimer un produit en ligne.', 'warning');
+        setTimeout(redirectToClientLogin, 900);
+        return;
+      }
+
       const name = row.querySelector('.prod-name')?.textContent || 'ce produit';
       if (!window.confirm(`Supprimer ${name} ?`)) return;
       row.remove();
       resetProductForm();
-      saveAccountProducts();
       try {
-        await syncLocalProductsToBackend();
+        await syncLocalProductsToBackend({ strict: true });
       } catch (error) {
-        notify(`Suppression locale effectuée. Synchronisation indisponible : ${error.message}`, 'warning');
+        saveAccountProducts();
+        notify(`Produit supprimé localement, mais pas encore retiré du site public : ${error.message}`, 'warning');
+        return;
       }
       syncCatalogFilterOptions();
       applyCatalogFilter(false);
@@ -2451,13 +2532,15 @@
       }
     }
 
-    async function syncLocalProductsToBackend() {
+    async function syncLocalProductsToBackend(options = {}) {
+      const { strict = false } = options;
       if (!getAuthToken()) {
+        if (strict) throw new Error('Connectez-vous pour publier les produits sur votre site public.');
         notify('Connectez-vous pour publier les produits sur votre site public.', 'warning');
         return getClientContext().site;
       }
 
-      const site = await ensureBackendSite();
+      const site = await ensureBackendSite({}, { allowLocalFallback: false });
       if (!site?.id) {
         throw new Error('Impossible de créer ou récupérer le site public');
       }
@@ -2504,6 +2587,10 @@
         body: JSON.stringify({ products: localProducts }),
       });
 
+      if (!data.success) {
+        throw new Error(data.message || 'Publication du catalogue impossible');
+      }
+
       const list = getProductList();
       if (list) {
         list.querySelectorAll('.prod-row').forEach((row) => row.remove());
@@ -2516,15 +2603,65 @@
       syncCatalogFilterOptions();
       applyCatalogFilter(false);
       renderClientStats();
+
+      if (strict) {
+        const publicData = await apiJson(`/api/public/${site.slug}`);
+        const expectedVisible = localProducts.filter((product) => product.visible !== false && product.status !== 'hidden').length;
+        const receivedVisible = (publicData.products || []).length;
+
+        if (receivedVisible !== expectedVisible) {
+          throw new Error(`Le site public n'a pas reçu tous les produits (${receivedVisible}/${expectedVisible}).`);
+        }
+      }
+
       return site;
     }
 
     async function openPublicSite() {
+      const previewWindow = window.open('about:blank', '_blank');
+
+      if (previewWindow) {
+        previewWindow.document.write('<!doctype html><title>ShopLink</title><body style="font-family:system-ui;padding:24px;color:#1a5c38;">Ouverture de votre site...</body>');
+      }
+
       try {
-        const site = await syncLocalProductsToBackend();
+        let site = null;
+
+        try {
+          site = await syncLocalProductsToBackend();
+        } catch (syncError) {
+          console.warn('Synchronisation produits indisponible, ouverture du site existant:', syncError);
+        }
+
+        if (!site?.slug && getAuthToken()) {
+          try {
+            const sitesData = await apiJson('/api/sites/user/my-sites');
+            site = selectCurrentAccountSite(sitesData.sites || []) || site;
+            if (site) {
+              setAccountJson(CLIENT_SITE_KEY, site);
+            }
+          } catch (siteError) {
+            console.warn('Impossible de récupérer les sites backend:', siteError);
+          }
+        }
+
         const slug = site?.slug || getClientContext().slug;
-        window.open(`/${slug}?owner=1`, '_blank');
+
+        if (!slug) {
+          throw new Error('Aucun slug de boutique disponible');
+        }
+
+        const publicUrl = `${getPublicSiteOrigin()}/boutique/${encodeURIComponent(slug)}?owner=1`;
+
+        if (previewWindow && !previewWindow.closed) {
+          previewWindow.location.href = publicUrl;
+        } else {
+          window.location.href = publicUrl;
+        }
       } catch (error) {
+        if (previewWindow && !previewWindow.closed) {
+          previewWindow.close();
+        }
         notify(`Impossible d’ouvrir le site public : ${error.message}`, 'danger');
       }
     }
@@ -2537,21 +2674,19 @@
         const site = selectCurrentAccountSite(sitesData.sites || []);
 
         if (!site) {
-          await ensureBackendSite();
+          await ensureBackendSite({}, { allowLocalFallback: false });
           return;
         }
 
         setAccountJson(CLIENT_SITE_KEY, site);
         applyAccountSiteToPreview();
 
-        if (!hasLocalProductCatalog()) {
-          const productsData = await apiJson(`/api/products/${site.id}`);
-          const products = (productsData.products || []).map((product) => ({
-            ...product,
-            backendId: product.id,
-          }));
-          setAccountJson(CLIENT_PRODUCTS_KEY, products);
-        }
+        const productsData = await apiJson(`/api/products/${site.id}`);
+        const products = (productsData.products || []).map((product) => ({
+          ...product,
+          backendId: product.id,
+        }));
+        setAccountJson(CLIENT_PRODUCTS_KEY, products);
         clearDefaultProductCatalog();
         renderClientStats();
       } catch (error) {

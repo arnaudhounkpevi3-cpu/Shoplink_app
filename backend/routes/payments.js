@@ -3,6 +3,7 @@ const express = require('express')
 const { repo } = require('../data/repository')
 const { requireAuth } = require('../middleware/auth')
 const { uniqueSlug } = require('../utils/slug')
+const { getActivityTheme } = require('../utils/activityTheme')
 
 const router = express.Router()
 
@@ -52,6 +53,7 @@ async function publishPremiumSite(userId, paymentData) {
 
 async function publishAutonomousSite(userId, paymentData) {
   const now = new Date().toISOString()
+  const theme = getActivityTheme(paymentData.activityType || 'Boutique')
 
   if (paymentData.siteId) {
     const existingSite = await repo().findSiteById(paymentData.siteId)
@@ -65,9 +67,9 @@ async function publishAutonomousSite(userId, paymentData) {
         whatsapp: paymentData.whatsappNumber || existingSite.whatsapp,
         secondaryPhone: paymentData.secondaryPhone || existingSite.secondaryPhone,
         address: paymentData.address || existingSite.address,
-        activityType: paymentData.activityType || existingSite.activityType,
-        primaryColor: paymentData.primaryColor || existingSite.primaryColor,
-        secondaryColor: paymentData.secondaryColor || existingSite.secondaryColor,
+        activityType: theme.activityType || existingSite.activityType,
+        primaryColor: paymentData.primaryColor || existingSite.primaryColor || theme.primaryColor,
+        secondaryColor: paymentData.secondaryColor || existingSite.secondaryColor || theme.secondaryColor,
         status: 'published',
         publishedAt: now,
       })
@@ -90,9 +92,9 @@ async function publishAutonomousSite(userId, paymentData) {
     whatsapp: paymentData.whatsappNumber || '',
     secondaryPhone: paymentData.secondaryPhone || '',
     address: paymentData.address || '',
-    activityType: paymentData.activityType || 'Boutique',
-    primaryColor: paymentData.primaryColor || '#667eea',
-    secondaryColor: paymentData.secondaryColor || '#764ba2',
+    activityType: theme.activityType,
+    primaryColor: paymentData.primaryColor || theme.primaryColor,
+    secondaryColor: paymentData.secondaryColor || theme.secondaryColor,
     status: 'published',
     createdAt: now,
     publishedAt: now,

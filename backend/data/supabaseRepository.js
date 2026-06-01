@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs')
 const supabase = require('../config/supabase')
+const { normalizeActivityType, getActivityTheme } = require('../utils/activityTheme')
 
 function iso(d) {
   if (!d) {
@@ -65,8 +66,50 @@ function mapProduct(p) {
     image: p.image_url || '',
     description: p.description || '',
     category: p.category || 'General',
+    visible: p.is_visible !== false,
+    status: p.is_visible === false ? 'hidden' : 'published',
+    availability: p.availability || 'available',
+    stock: p.stock || '',
+    badge: p.badge || '',
+    oldPrice: p.old_price || '',
+    variantInfo: p.variant_info || '',
+    extraInfo: p.extra_info || '',
     createdAt: iso(p.created_at),
     updatedAt: p.updated_at ? iso(p.updated_at) : undefined,
+  }
+}
+
+function isMissingOptionalProductColumn(error) {
+  return Boolean(
+    error &&
+      typeof error.message === 'string' &&
+      /Could not find the '(availability|stock|badge|old_price|variant_info|extra_info)' column/.test(error.message),
+  )
+}
+
+function baseProductInsertPayload(id, data) {
+  return {
+    id,
+    site_id: data.siteId,
+    user_id: data.userId,
+    name: data.name,
+    price: data.price,
+    image_url: data.image || '',
+    description: data.description || '',
+    category: data.category || 'General',
+    is_visible: data.visible !== false && data.status !== 'hidden',
+    created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
+  }
+}
+
+function advancedProductFields(data) {
+  return {
+    availability: data.availability || 'available',
+    stock: data.stock || '',
+    badge: data.badge || '',
+    old_price: data.oldPrice || null,
+    variant_info: data.variantInfo || '',
+    extra_info: data.extraInfo || '',
   }
 }
 
@@ -298,15 +341,16 @@ module.exports = {
   },
 
   async slugTaken(slug) {
-    const { data, error } = await supabase
+    const { count, error } = await supabase
       .from('sites')
       .select('id', { count: 'exact', head: true })
       .eq('slug', slug)
-    return error ? false : data > 0
+    return error ? false : Number(count || 0) > 0
   },
 
   async createSite(data) {
     const id = data.id || newEntityId('site')
+    const theme = getActivityTheme(data.activityType)
     const { data: result, error } = await supabase
       .from('sites')
       .insert({
@@ -320,15 +364,20 @@ module.exports = {
         whatsapp: data.whatsapp || '',
         phone2: data.secondaryPhone || '',
         address: data.address || '',
-        activity_type: (data.activityType || 'Boutique').toLowerCase(),
-        primary_color: data.primaryColor || '#d9643a',
+        activity_type: theme.activityType,
+        primary_color: data.primaryColor || theme.primaryColor,
         status: data.status || 'draft',
         published_at: data.publishedAt ? new Date(data.publishedAt).toISOString() : null,
         created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
       })
       .select()
       .single()
-    return error || !result ? null : mapSite(result)
+    if (error) {
+      console.error('❌ Erreur création site Supabase:', error.message)
+      return null
+    }
+
+    return !result ? null : mapSite(result)
   },
 
   async updateSite(id, patch) {
@@ -343,7 +392,11 @@ module.exports = {
     if (patch.whatsapp !== undefined) updates.whatsapp = patch.whatsapp
     if (patch.secondaryPhone !== undefined) updates.phone2 = patch.secondaryPhone
     if (patch.address !== undefined) updates.address = patch.address
-    if (patch.activityType !== undefined) updates.activity_type = patch.activityType.toLowerCase()
+    if (patch.activityType !== undefined) {
+      const theme = getActivityTheme(patch.activityType)
+      updates.activity_type = theme.activityType
+      if (patch.primaryColor === undefined) updates.primary_color = theme.primaryColor
+    }
     if (patch.primaryColor !== undefined) updates.primary_color = patch.primaryColor
     if (patch.status !== undefined) updates.status = patch.status
     if (patch.publishedAt !== undefined) updates.published_at = patch.publishedAt ? new Date(patch.publishedAt).toISOString() : null
@@ -354,7 +407,12 @@ module.exports = {
       .eq('id', id)
       .select()
       .single()
-    return error || !data ? null : mapSite(data)
+    if (error) {
+      console.error('❌ Erreur mise à jour site Supabase:', error.message)
+      return null
+    }
+
+    return !data ? null : mapSite(data)
   },
 
   async deleteSite(id) {
@@ -389,22 +447,32 @@ module.exports = {
 
   async createProduct(data) {
     const id = data.id || newEntityId('product')
-    const { data: result, error } = await supabase
+    const insertPayload = {
+      ...baseProductInsertPayload(id, data),
+      ...advancedProductFields(data),
+    }
+
+    let { data: result, error } = await supabase
       .from('products')
-      .insert({
-        id,
-        site_id: data.siteId,
-        user_id: data.userId,
-        name: data.name,
-        price: data.price,
-        image_url: data.image || '',
-        description: data.description || '',
-        category: data.category || 'General',
-        created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
-      })
+      .insert(insertPayload)
       .select()
       .single()
-    return error || !result ? null : mapProduct(result)
+
+    if (isMissingOptionalProductColumn(error)) {
+      console.warn('⚠️ Colonnes produits avancées absentes dans Supabase. Publication sans champs avancés. Exécutez backend/supabase-product-details.sql.')
+      ;({ data: result, error } = await supabase
+        .from('products')
+        .insert(baseProductInsertPayload(id, data))
+        .select()
+        .single())
+    }
+
+    if (error) {
+      console.error('❌ Erreur création produit Supabase:', error.message)
+      return null
+    }
+
+    return !result ? null : mapProduct(result)
   },
 
   async updateProduct(id, patch) {
@@ -417,14 +485,41 @@ module.exports = {
     if (patch.image !== undefined) updates.image_url = patch.image
     if (patch.description !== undefined) updates.description = patch.description
     if (patch.category !== undefined) updates.category = patch.category
+    if (patch.visible !== undefined) updates.is_visible = patch.visible !== false
+    if (patch.status !== undefined) updates.is_visible = patch.status !== 'hidden'
+    const advancedUpdates = {}
+    if (patch.availability !== undefined) advancedUpdates.availability = patch.availability || 'available'
+    if (patch.stock !== undefined) advancedUpdates.stock = patch.stock || ''
+    if (patch.badge !== undefined) advancedUpdates.badge = patch.badge || ''
+    if (patch.oldPrice !== undefined) advancedUpdates.old_price = patch.oldPrice || null
+    if (patch.variantInfo !== undefined) advancedUpdates.variant_info = patch.variantInfo || ''
+    if (patch.extraInfo !== undefined) advancedUpdates.extra_info = patch.extraInfo || ''
+    Object.assign(updates, advancedUpdates)
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('products')
       .update(updates)
       .eq('id', id)
       .select()
       .single()
-    return error || !data ? null : mapProduct(data)
+
+    if (isMissingOptionalProductColumn(error)) {
+      console.warn('⚠️ Colonnes produits avancées absentes dans Supabase. Mise à jour sans champs avancés. Exécutez backend/supabase-product-details.sql.')
+      Object.keys(advancedUpdates).forEach((key) => delete updates[key])
+      ;({ data, error } = await supabase
+        .from('products')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single())
+    }
+
+    if (error) {
+      console.error('❌ Erreur mise à jour produit Supabase:', error.message)
+      return null
+    }
+
+    return !data ? null : mapProduct(data)
   },
 
   async deleteProduct(id) {
@@ -764,10 +859,15 @@ module.exports = {
       .insert({
         id,
         site_id: data.siteId,
+        product_id: data.productId || null,
         type: data.type,
+        visitor_id: data.visitorId || null,
+        session_id: data.sessionId || null,
         ip_address: data.ipAddress || null,
         user_agent: data.userAgent || null,
         referrer: data.referrer || null,
+        platform: data.platform || null,
+        time_spent: data.timeSpent || null,
         created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
       })
       .select()
@@ -784,10 +884,16 @@ module.exports = {
     return error ? [] : data.map(t => ({
       id: t.id,
       siteId: t.site_id,
+      productId: t.product_id,
       type: t.type,
+      visitorId: t.visitor_id,
+      sessionId: t.session_id,
       ipAddress: t.ip_address,
       userAgent: t.user_agent,
       referrer: t.referrer,
+      platform: t.platform,
+      timeSpent: t.time_spent,
+      timestamp: iso(t.created_at),
       createdAt: iso(t.created_at),
     }))
   },

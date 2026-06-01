@@ -7,6 +7,7 @@ const {
   nextTicketId,
   saveState,
 } = require('./store')
+const { getActivityTheme } = require('../utils/activityTheme')
 
 function mapUser(u) {
   if (!u) {
@@ -83,6 +84,7 @@ module.exports = {
   },
 
   async createSite(data) {
+    const theme = getActivityTheme(data.activityType)
     const site = {
       id: data.id || nextSiteId(),
       userId: data.userId,
@@ -94,9 +96,9 @@ module.exports = {
       whatsapp: data.whatsapp || '',
       secondaryPhone: data.secondaryPhone || '',
       address: data.address || '',
-      activityType: data.activityType || 'Boutique',
-      primaryColor: data.primaryColor || '#d9643a',
-      secondaryColor: data.secondaryColor || '#176b5b',
+      activityType: theme.activityType,
+      primaryColor: data.primaryColor || theme.primaryColor,
+      secondaryColor: data.secondaryColor || theme.secondaryColor,
       status: data.status || 'draft',
       createdAt: data.createdAt || new Date().toISOString(),
       publishedAt: data.publishedAt,
@@ -111,7 +113,14 @@ module.exports = {
     if (!site) {
       return null
     }
-    Object.assign(site, patch, { updatedAt: new Date().toISOString() })
+    const nextPatch = { ...patch }
+    if (patch.activityType !== undefined) {
+      const theme = getActivityTheme(patch.activityType)
+      nextPatch.activityType = theme.activityType
+      if (patch.primaryColor === undefined) nextPatch.primaryColor = theme.primaryColor
+      if (patch.secondaryColor === undefined) nextPatch.secondaryColor = theme.secondaryColor
+    }
+    Object.assign(site, nextPatch, { updatedAt: new Date().toISOString() })
     saveState()
     return { ...site }
   },
@@ -145,6 +154,14 @@ module.exports = {
       image: data.image || '',
       description: data.description || '',
       category: data.category || 'General',
+      visible: data.visible !== false,
+      status: data.status || (data.visible === false ? 'hidden' : 'published'),
+      availability: data.availability || 'available',
+      stock: data.stock || '',
+      badge: data.badge || '',
+      oldPrice: data.oldPrice || '',
+      variantInfo: data.variantInfo || '',
+      extraInfo: data.extraInfo || '',
       createdAt: data.createdAt || new Date().toISOString(),
     }
     state.products.push(product)
@@ -314,5 +331,21 @@ module.exports = {
     const [deletedTicket] = state.tickets.splice(index, 1)
     saveState()
     return { ...deletedTicket }
+  },
+
+  async addTracking(data) {
+    const event = {
+      ...data,
+      id: data.id || `track-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
+      createdAt: data.createdAt || data.timestamp || new Date().toISOString(),
+    }
+    state.tracking.push(event)
+    saveState()
+    return { ...event }
+  },
+
+  async getTrackingBySite(siteId) {
+    return state.tracking.filter((entry) => entry.siteId === siteId).map((entry) => ({ ...entry }))
   },
 }

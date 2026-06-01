@@ -10,7 +10,7 @@ function canManageSite(user, site) {
 }
 
 router.post('/', requireAuth, async (req, res) => {
-  const { siteId, name, price, image, description, category } = req.body
+  const { siteId, name, price, image, description, category, visible, status, availability, stock, badge, oldPrice, variantInfo, extraInfo } = req.body
 
   if (!siteId || !name || price === undefined) {
     return res.status(400).json({
@@ -36,11 +36,20 @@ router.post('/', requireAuth, async (req, res) => {
 
   const product = await repo().createProduct({
     siteId,
+    userId: req.user.id,
     name,
     price,
     image,
     description,
     category,
+    visible,
+    status,
+    availability,
+    stock,
+    badge,
+    oldPrice,
+    variantInfo,
+    extraInfo,
     createdAt: new Date().toISOString(),
   })
 
@@ -48,6 +57,61 @@ router.post('/', requireAuth, async (req, res) => {
     success: true,
     message: 'Produit cree',
     product,
+  })
+})
+
+router.put('/site/:siteId/replace', requireAuth, async (req, res) => {
+  const { products = [] } = req.body
+  const site = await repo().findSiteById(req.params.siteId)
+
+  if (!site) {
+    return res.status(404).json({
+      success: false,
+      message: 'Site introuvable',
+    })
+  }
+
+  if (!canManageSite(req.user, site)) {
+    return res.status(403).json({
+      success: false,
+      message: 'Vous ne pouvez pas modifier les produits de ce site',
+    })
+  }
+
+  const existingProducts = await repo().listProductsBySiteId(site.id)
+  await Promise.all(existingProducts.map((product) => repo().deleteProduct(product.id)))
+
+  const cleanProducts = products
+    .filter((product) => product && product.name)
+    .map((product) => ({
+      siteId: site.id,
+      userId: req.user.id,
+      name: product.name,
+      price: Number(product.price || 0),
+      image: product.image || '',
+      description: product.description || '',
+      category: product.category || 'Produits',
+      visible: product.visible !== false && product.status !== 'hidden',
+      status: product.status || 'published',
+      availability: product.availability || 'available',
+      stock: product.stock || '',
+      badge: product.badge || '',
+      oldPrice: product.oldPrice || '',
+      variantInfo: product.variantInfo || '',
+      extraInfo: product.extraInfo || '',
+      createdAt: new Date().toISOString(),
+    }))
+
+  const savedProducts = []
+  for (const product of cleanProducts) {
+    const saved = await repo().createProduct(product)
+    if (saved) savedProducts.push(saved)
+  }
+
+  return res.json({
+    success: true,
+    message: 'Catalogue publié',
+    products: savedProducts,
   })
 })
 
