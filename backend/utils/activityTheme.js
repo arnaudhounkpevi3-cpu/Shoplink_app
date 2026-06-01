@@ -43,8 +43,8 @@ function getActivityTheme(value) {
       accentColor: '#f59c1a',
     },
     autre: {
-      primaryColor: '#176b5b',
-      secondaryColor: '#0f493f',
+      primaryColor: '#4c2f88',
+      secondaryColor: '#2f1d55',
       accentColor: '#f59c1a',
     },
   }

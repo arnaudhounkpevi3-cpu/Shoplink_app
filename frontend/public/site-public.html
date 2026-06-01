@@ -357,6 +357,27 @@
       margin: auto;
       filter: drop-shadow(0 20px 28px color-mix(in srgb, var(--primary) 28%, transparent));
     }
+    .featured-welcome {
+      width: min(260px, 86%);
+      margin: 0 auto;
+      color: var(--primary);
+      text-align: center;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -.055em;
+      font-size: clamp(28px, 4vw, 46px);
+      overflow-wrap: anywhere;
+    }
+    .featured-welcome span {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      letter-spacing: 0;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
     .featured-body { padding: 18px; }
     .featured-title { font-weight: 900; font-size: 20px; }
     .featured-price { margin-top: 8px; font-weight: 900; color: var(--accent); font-size: 22px; }
@@ -947,12 +968,12 @@
     const startTime = Date.now()
 
     const THEMES = {
-      food: { label: 'Restaurant', title: 'Notre menu', subtitle: 'Choisissez vos plats et commandez directement via WhatsApp.', primary: '#9a3f13', secondary: '#6f2c0d', accent: '#f59c1a', bg: '#fff7eb', soft: '#fff2df', text: '#24140a', icon: '🍽️', iconUrl: 'https://cdn-icons-png.flaticon.com/512/562/562678.png' },
+      food: { label: 'Restaurant', title: 'Nos menus', subtitle: 'Choisissez vos plats et commandez directement via WhatsApp.', primary: '#9a3f13', secondary: '#6f2c0d', accent: '#f59c1a', bg: '#fff7eb', soft: '#fff2df', text: '#24140a', icon: '🍽️', iconUrl: 'https://cdn-icons-png.flaticon.com/512/562/562678.png' },
       fastfood: { label: 'Fast-food', title: 'À commander maintenant', subtitle: 'Des produits rapides à choisir et à commander directement via WhatsApp.', primary: '#d9480f', secondary: '#9a3412', accent: '#facc15', bg: '#fff8db', soft: '#fff3bf', text: '#271307', icon: '🍟', iconUrl: 'https://cdn-icons-png.flaticon.com/512/738/738079.png' },
       fashion: { label: 'Boutique mode', title: 'Collection disponible', subtitle: 'Parcourez les articles, découvrez les prix et commandez vos pièces préférées.', primary: '#1f4f8f', secondary: '#14315d', accent: '#d7a247', bg: '#f1f6ff', soft: '#e1ecff', text: '#101a2f', icon: '👗', iconUrl: 'https://cdn-icons-png.flaticon.com/512/11746/11746073.png' },
       beauty: { label: 'Beauté & soins', title: 'Sélection beauté', subtitle: 'Des soins, parfums et produits beauté dans une vitrine douce et élégante.', primary: '#8b3a62', secondary: '#5d2440', accent: '#eaa6c8', bg: '#fff2fa', soft: '#ffe8f4', text: '#28131e', icon: '💄', iconUrl: 'https://cdn-icons-png.flaticon.com/512/8023/8023928.png' },
       commerce: { label: 'Commerce', title: 'Catalogue produits', subtitle: 'Découvrez les articles disponibles et contactez la boutique pour commander.', primary: '#176b5b', secondary: '#0f493f', accent: '#f59c1a', bg: '#f2fbf5', soft: '#e8f7ef', text: '#0f1f17', icon: '🛒', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3144/3144456.png' },
-      general: { label: 'Boutique', title: 'Nos produits', subtitle: 'Consultez les produits disponibles et commandez facilement via WhatsApp.', primary: '#176b5b', secondary: '#0f493f', accent: '#f59c1a', bg: '#fbf7ef', soft: '#eef7f1', text: '#111827', icon: '📦', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3388/3388695.png' },
+      general: { label: 'Bienvenue', title: 'Nos produits', subtitle: 'Consultez les produits disponibles et commandez facilement via WhatsApp.', primary: '#4c2f88', secondary: '#2f1d55', accent: '#f59c1a', bg: '#f7f2ff', soft: '#eee7ff', text: '#17112a', icon: '', iconUrl: '', welcome: true },
     }
 
     function activityKey(value) {
@@ -1035,13 +1056,13 @@
           </div>
           <div class="hero-visual">
             <div class="featured-card">
-              <div class="featured-img"><img class="featured-activity-icon" src="${theme.iconUrl}" alt=""></div>
+              <div class="featured-img">${theme.welcome ? `<div class="featured-welcome">Bienvenue sur notre site<span>${safe(site.name || 'ShopLink')}</span></div>` : `<img class="featured-activity-icon" src="${theme.iconUrl}" alt="">`}</div>
             </div>
           </div>
         </section>
 
         <section class="section" id="products">
-          <div class="section-head"><div class="section-kicker">${safe(theme.label)}</div><h2 class="section-title">${safe(theme.title)}</h2><p class="section-subtitle">${safe(theme.subtitle)}</p></div>
+          <div class="section-head"><div class="section-kicker">${safe(theme.label)}</div><h2 class="section-title">${safe(productSectionTitle(theme, products))}</h2><p class="section-subtitle">${safe(theme.subtitle)}</p></div>
           ${displayProducts(products).length
             ? `<div class="products-grid">${displayProducts(products).map(productCard).join('')}</div>`
             : `<div class="empty-products"><strong>Aucun produit publié</strong>Les produits ajoutés depuis le dashboard apparaîtront ici dès leur publication.</div>`
@@ -1080,6 +1101,23 @@
     }
 
     function infoRow(label, value, icon = '') { return `<div class="info-row"><span class="info-label">${icon ? `<img class="info-icon" src="${icon}" alt="">` : ''}${safe(label)}</span><span class="info-value">${safe(value || '—')}</span></div>` }
+
+    function productSectionTitle(theme, products = []) {
+      const visibleProducts = displayProducts(products)
+      if (theme.key !== 'food') return theme.title
+
+      if (visibleProducts.length === 1) {
+        const product = visibleProducts[0]
+        const label = `${product.name || ''} ${product.category || ''}`
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+
+        if (/plat|repas|assiette|portion/.test(label)) return 'Notre plat'
+      }
+
+      return 'Nos menus'
+    }
 
     function productCard(product) {
       const theme = window.shopTheme || THEMES.general
