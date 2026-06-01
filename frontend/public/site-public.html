@@ -245,6 +245,36 @@
       white-space: normal;
     }
 
+    .hero-title-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .hero-logo-frame {
+      width: clamp(76px, 8vw, 108px);
+      height: clamp(76px, 8vw, 108px);
+      flex: 0 0 auto;
+      border-radius: 24px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+      box-shadow: 0 18px 42px color-mix(in srgb, var(--primary) 14%, transparent);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .hero-logo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 10px;
+      background: #fff;
+      display: block;
+    }
+
     .hero-subtitle {
       max-width: 58ch;
       margin: 20px 0 24px;
@@ -953,6 +983,9 @@
       .nav-menu { display: none; }
       .header-actions { display: none; }
       .hero { grid-template-columns: 1fr; padding: 28px 18px; border-radius: 24px; }
+      .hero-title-row { align-items: flex-start; gap: 12px; }
+      .hero-logo-frame { width: 64px; height: 64px; border-radius: 18px; }
+      .hero-logo-frame img { padding: 7px; }
       .hero h1 { font-size: clamp(28px, 9vw, 38px); max-width: 100%; letter-spacing: -.04em; }
       .hero-actions .pill-btn { width: 100%; }
       .hero-meta { grid-template-columns: 1fr; }
@@ -1099,15 +1132,15 @@
         <section class="hero" id="${sectionIds.top}">
           <div>
             ${OWNER_MODE ? ownerActions(slug) : ''}
-            <h1>${safe(site.name || 'Ma boutique')}</h1>
+            <div class="hero-title-row">
+              ${site.logo ? `<div class="hero-logo-frame"><img src="${site.logo}" alt="Logo ${safe(site.name || 'boutique')}"></div>` : ''}
+              <h1>${safe(site.name || 'Ma boutique')}</h1>
+            </div>
             ${site.slogan || site.description ? `<p class="hero-subtitle">${safe(site.slogan || site.description)}</p>` : ''}
             ${renderHeroMeta(site, slug)}
           </div>
           <div class="hero-visual">
-            ${site.logo
-              ? `<div class="featured-card logo-feature"><div class="featured-logo-frame"><img src="${site.logo}" alt="Logo ${safe(site.name || 'boutique')}"></div><div class="featured-logo-name">${safe(site.name || 'Ma boutique')}</div></div>`
-              : `<div class="featured-card"><div class="featured-img">${theme.welcome ? `<div class="featured-welcome">Bienvenue sur notre site<span>${safe(site.name || 'ShopLink')}</span></div>` : `<img class="featured-activity-icon" src="${theme.iconUrl}" alt="">`}</div></div>`
-            }
+            <div class="featured-card"><div class="featured-img">${theme.welcome ? `<div class="featured-welcome">Bienvenue sur notre site<span>${safe(site.name || 'ShopLink')}</span></div>` : `<img class="featured-activity-icon" src="${theme.iconUrl}" alt="">`}</div></div>
           </div>
         </section>
 
