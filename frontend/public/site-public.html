@@ -1022,12 +1022,8 @@
             ${OWNER_MODE ? ownerActions(slug) : ''}
             <div class="activity-badge">${theme.icon} ${safe(theme.label)}</div>
             <h1>${safe(site.name || 'Ma boutique')}</h1>
-            <p class="hero-subtitle">${safe(site.slogan || site.description || 'Découvrez nos produits et commandez directement via WhatsApp.')}</p>
-            <div class="hero-meta">
-              <div class="meta-card"><span class="meta-label"><img class="info-icon" src="https://cdn-icons-png.flaticon.com/512/6320/6320900.png" alt="">Adresse</span><div class="meta-value">${safe(site.address || 'Non renseignée')}</div></div>
-              <div class="meta-card"><span class="meta-label"><img class="info-icon" src="https://cdn-icons-png.flaticon.com/512/3059/3059408.png" alt="">Contact</span><div class="meta-value">${safe(site.whatsapp || site.secondaryPhone || 'WhatsApp')}</div></div>
-              ${OWNER_MODE ? `<div class="meta-card meta-card-link" role="button" tabindex="0" onclick="copyClientLink('${slug}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();copyClientLink('${slug}')}"><span class="meta-label">Lien client</span><div class="meta-value">/boutique/${safe(slug)}</div></div>` : ''}
-            </div>
+            ${site.slogan || site.description ? `<p class="hero-subtitle">${safe(site.slogan || site.description)}</p>` : ''}
+            ${renderHeroMeta(site, slug)}
           </div>
           <div class="hero-visual">
             <div class="featured-card">
@@ -1045,9 +1041,7 @@
           }
         </section>
 
-        <section class="section about">
-          <div class="about-card highlight"><h2>À propos de la boutique</h2><p>${safe(site.description || 'Cette boutique présente ses produits en ligne avec ShopLink pour recevoir des commandes plus facilement via WhatsApp.')}</p></div>
-        </section>
+        ${renderAbout(site)}
 
         <footer class="footer"><p><strong>${safe(site.name)}</strong></p><p>Propulsé par ShopLink · Digitalise ta boutique</p></footer>
       `
@@ -1057,12 +1051,33 @@
       return `<div class="owner-inline-actions"><a class="owner-inline-btn primary" href="/dashboard-client-shoplink.html">Retour dashboard</a></div>`
     }
 
+    function renderHeroMeta(site, slug) {
+      const cards = []
+      if (site.address) {
+        cards.push(`<div class="meta-card"><span class="meta-label"><img class="info-icon" src="https://cdn-icons-png.flaticon.com/512/6320/6320900.png" alt="">Adresse</span><div class="meta-value">${safe(site.address)}</div></div>`)
+      }
+      if (site.whatsapp || site.secondaryPhone) {
+        cards.push(`<div class="meta-card"><span class="meta-label"><img class="info-icon" src="https://cdn-icons-png.flaticon.com/512/3059/3059408.png" alt="">Contact</span><div class="meta-value">${safe(site.whatsapp || site.secondaryPhone)}</div></div>`)
+      }
+      if (OWNER_MODE) {
+        cards.push(`<div class="meta-card meta-card-link" role="button" tabindex="0" onclick="copyClientLink('${slug}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();copyClientLink('${slug}')}"><span class="meta-label">Lien client</span><div class="meta-value">/boutique/${safe(slug)}</div></div>`)
+      }
+
+      return cards.length ? `<div class="hero-meta">${cards.join('')}</div>` : ''
+    }
+
+    function renderAbout(site) {
+      return site.description
+        ? `<section class="section about"><div class="about-card highlight"><h2>À propos de la boutique</h2><p>${safe(site.description)}</p></div></section>`
+        : ''
+    }
+
     function infoRow(label, value, icon = '') { return `<div class="info-row"><span class="info-label">${icon ? `<img class="info-icon" src="${icon}" alt="">` : ''}${safe(label)}</span><span class="info-value">${safe(value || '—')}</span></div>` }
 
     function productCard(product) {
       const theme = window.shopTheme || THEMES.general
       const badgeText = product.badge ? productBadgeLabel(product.badge) : 'Disponible'
-      return `<article class="product-card" onclick="openProductModal('${product.id}')"><div class="product-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}<span class="promo-badge">${safe(badgeText)}</span></div><div class="product-body"><div class="product-category">${safe(product.category || theme.label)}</div><h3 class="product-name">${safe(product.name)}</h3><p class="product-description">${safe(product.description || 'Description non renseignée.')}</p><div class="product-bottom"><div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}</div></div>${productMetaTags(product)}<div class="product-actions"><button class="btn-details" onclick="event.stopPropagation();openProductModal('${product.id}')">Voir</button><button class="btn-add" onclick="event.stopPropagation();addToCart('${product.id}')">Ajouter au panier</button></div></div></article>`
+      return `<article class="product-card" onclick="openProductModal('${product.id}')"><div class="product-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}<span class="promo-badge">${safe(badgeText)}</span></div><div class="product-body"><div class="product-category">${safe(product.category || theme.label)}</div><h3 class="product-name">${safe(product.name)}</h3>${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="product-bottom"><div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}</div></div>${productMetaTags(product)}<div class="product-actions"><button class="btn-details" onclick="event.stopPropagation();openProductModal('${product.id}')">Voir</button><button class="btn-add" onclick="event.stopPropagation();addToCart('${product.id}')">Ajouter au panier</button></div></div></article>`
     }
 
     function productBadgeLabel(value) {
@@ -1097,7 +1112,7 @@
     function closeSiteModal(event) { if (!event || event.target === document.getElementById('site-modal')) document.getElementById('site-modal').classList.remove('show') }
     function modal(html) { document.getElementById('site-modal-card').innerHTML = html; document.getElementById('site-modal').classList.add('show') }
 
-    function openProductModal(id) { const product = getProduct(id); if (!product) return; if (!OWNER_MODE) trackProductView(currentSite.id, product.id); const theme = window.shopTheme || THEMES.general; modal(`<div class="site-modal-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}</div><div class="site-modal-body"><div class="site-modal-top"><div><div class="product-category">${safe(product.category || theme.label)}</div><div class="site-modal-title">${safe(product.name)}</div></div><button class="site-modal-close" onclick="closeSiteModal()">×</button></div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}${productMetaTags(product)}<p class="product-description">${safe(product.description || 'Description non renseignée.')}</p><div class="site-modal-actions"><button class="btn-details" onclick="closeSiteModal()">Fermer</button><button class="btn-add" onclick="addToCart('${product.id}');closeSiteModal();">Ajouter au panier</button></div></div>`) }
+    function openProductModal(id) { const product = getProduct(id); if (!product) return; if (!OWNER_MODE) trackProductView(currentSite.id, product.id); const theme = window.shopTheme || THEMES.general; modal(`<div class="site-modal-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}</div><div class="site-modal-body"><div class="site-modal-top"><div><div class="product-category">${safe(product.category || theme.label)}</div><div class="site-modal-title">${safe(product.name)}</div></div><button class="site-modal-close" onclick="closeSiteModal()">×</button></div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}${productMetaTags(product)}${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="site-modal-actions"><button class="btn-details" onclick="closeSiteModal()">Fermer</button><button class="btn-add" onclick="addToCart('${product.id}');closeSiteModal();">Ajouter au panier</button></div></div>`) }
     function addToCart(id) {
       if (OWNER_MODE) {
         toast('Partagez le lien client public pour effectuer une commande.', 'warning', 'Mode aperçu')
