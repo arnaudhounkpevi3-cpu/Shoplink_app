@@ -159,6 +159,7 @@
     const CLIENT_PRODUCTS_KEY = 'shoplink_client_products';
     const CLIENT_PROFILE_KEY = 'shoplink_user';
     const CLIENT_SITE_KEY = 'shoplink_site';
+    const ACTIVITY_TTL_MS = 24 * 60 * 60 * 1000;
 
     function getStoredJson(key, fallback = null) {
       try { return JSON.parse(localStorage.getItem(key) || 'null') || fallback; }
@@ -414,12 +415,40 @@
       return { views: 0, whatsappClicks: 0, products: 0, shares: 0, activities: [] };
     }
 
+    function getScopedStatsKey() {
+      const context = getClientContext();
+      return `${CLIENT_STATS_KEY}:${context.siteId || context.slug || 'default-site'}`;
+    }
+
+    function pruneStatsForCurrentSite(stats = defaultStats()) {
+      const context = getClientContext();
+      const now = Date.now();
+      const siteId = context.siteId || '';
+      const slug = context.slug || '';
+      const activities = Array.isArray(stats.activities) ? stats.activities : [];
+
+      return {
+        ...defaultStats(),
+        ...stats,
+        activities: activities
+          .filter((activity) => {
+            const createdAt = new Date(activity.createdAt || 0).getTime();
+            if (!createdAt || now - createdAt >= ACTIVITY_TTL_MS) return false;
+            if (activity.siteId && siteId && activity.siteId !== siteId) return false;
+            if (activity.slug && slug && activity.slug !== slug) return false;
+            return true;
+          })
+          .slice(0, 30),
+      };
+    }
+
     function loadStats() {
-      return { ...defaultStats(), ...(getAccountJson(CLIENT_STATS_KEY, {}) || {}) };
+      const scopedStats = getAccountJson(getScopedStatsKey(), null);
+      return pruneStatsForCurrentSite(scopedStats || defaultStats());
     }
 
     function saveStats(stats) {
-      setAccountJson(CLIENT_STATS_KEY, stats);
+      setAccountJson(getScopedStatsKey(), pruneStatsForCurrentSite(stats));
     }
 
     function setMetric(labelText, value) {
@@ -460,38 +489,24 @@
     function renderActivities(stats) {
       const body = getActivityBody();
       if (!body) return;
-      const archiveLimit = 24 * 60 * 60 * 1000;
-      const now = Date.now();
-      const recent = stats.activities.filter(activity => now - new Date(activity.createdAt).getTime() < archiveLimit);
-      const archived = stats.activities.filter(activity => now - new Date(activity.createdAt).getTime() >= archiveLimit);
+      const currentStats = pruneStatsForCurrentSite(stats);
+      const recent = currentStats.activities;
 
       body.innerHTML = `
         <div class="activity-recent-panel open">
           <button class="activity-recent-toggle" type="button" onclick="toggleRecentActivity()">
-            <span>Activités de la journée</span>
+            <span>Activités de cette boutique</span>
             <span class="badge bg-green">${recent.length}</span>
             <span class="archive-chevron">⌄</span>
           </button>
           <div class="activity-recent-content">
             ${recent.length
               ? recent.slice(0, 8).map(renderActivityItem).join('')
-              : '<div style="text-align:center;color:var(--soft);padding:14px 6px;font-size:13px;">Aucune activité aujourd’hui.</div>'}
-          </div>
-        </div>
-        <div class="activity-archive-panel">
-          <button class="activity-archive-toggle" type="button" onclick="toggleActivityArchive()">
-            <span>Archives après 24h</span>
-            <span class="badge bg-gray">${archived.length}</span>
-            <span class="archive-chevron">⌄</span>
-          </button>
-          <div class="activity-archive-content">
-            ${archived.length
-              ? archived.map(renderActivityItem).join('')
-              : '<div style="text-align:center;color:var(--soft);padding:12px 6px;font-size:12px;">Aucune archive pour le moment.</div>'}
+              : '<div style="text-align:center;color:var(--soft);padding:14px 6px;font-size:13px;line-height:1.45;">Aucune activité récente pour cette boutique.<br>Les actions disparaissent automatiquement après 24h.</div>'}
           </div>
         </div>
       `;
-      renderArchivesPage(archived);
+      renderArchivesPage([]);
     }
 
     function renderArchivesPage(archived = []) {
@@ -1129,6 +1144,8 @@
         title: presentation.title,
         icon: presentation.icon,
         iconClass: presentation.iconClass,
+        siteId: context.siteId || '',
+        slug: context.slug || '',
         createdAt: new Date().toISOString(),
         metadata,
       };
@@ -2072,7 +2089,6 @@
       }
 
       const name = row.querySelector('.prod-name')?.textContent || 'ce produit';
-      if (!window.confirm(`Supprimer ${name} ?`)) return;
       row.remove();
       resetProductForm();
       try {

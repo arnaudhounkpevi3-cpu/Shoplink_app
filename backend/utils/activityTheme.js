@@ -8,22 +8,13 @@ function normalizeActivityType(value) {
   if (/restaurant|repas|plat|menu|boisson|grillade|poulet|riz|food/.test(activity)) return 'restaurant'
   if (/boutique|mode|robe|pagne|sac|chaussure|vetement|vêtement|fashion/.test(activity)) return 'boutique'
   if (/cosm|beaut|beaute|beauté|maquillage|parfum|creme|crème|cheveux|soin/.test(activity)) return 'cosmetique'
+  if (/commerce|commercant|commerçant|vente|shop|marche|marché/.test(activity)) return 'commerce'
 
   return 'autre'
 }
 
 function getActivityTheme(value) {
-  const raw = String(value || '').toLowerCase()
   const activityType = normalizeActivityType(value)
-
-  if (/commerce|commercant|commerçant|vente|shop|marche|marché/.test(raw)) {
-    return {
-      activityType: 'autre',
-      primaryColor: '#176b5b',
-      secondaryColor: '#0f493f',
-      accentColor: '#f59c1a',
-    }
-  }
 
   const themes = {
     restaurant: {
@@ -45,6 +36,11 @@ function getActivityTheme(value) {
       primaryColor: '#8b3a62',
       secondaryColor: '#5d2440',
       accentColor: '#eaa6c8',
+    },
+    commerce: {
+      primaryColor: '#176b5b',
+      secondaryColor: '#0f493f',
+      accentColor: '#f59c1a',
     },
     autre: {
       primaryColor: '#176b5b',

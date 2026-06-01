@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS sites (
   slug           TEXT UNIQUE NOT NULL,
   slogan         TEXT,
   description    TEXT,
-  activity_type  TEXT DEFAULT 'boutique' CHECK (activity_type IN ('restaurant','boutique','fast-food','cosmetique','autre')),
+  activity_type  TEXT DEFAULT 'boutique' CHECK (activity_type IN ('restaurant','boutique','fast-food','cosmetique','commerce','autre')),
   whatsapp       TEXT NOT NULL,
   phone2         TEXT,
   address        TEXT,

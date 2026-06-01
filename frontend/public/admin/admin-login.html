@@ -40,6 +40,9 @@
     
     .back-link{display:block;text-align:center;margin-top:24px;font-size:13px;color:var(--muted);text-decoration:none;}
     .back-link:hover{color:var(--brand);}
+    .admin-login-message{display:none;margin-bottom:16px;padding:12px 14px;border-radius:12px;border:1px solid rgba(180,35,24,.18);background:#fff4f2;color:#b42318;font-size:13px;font-weight:700;line-height:1.45;}
+    .admin-login-message.show{display:block;}
+    .admin-login-message.success{border-color:rgba(26,107,74,.18);background:var(--brand-light);color:var(--brand);}
   </style>
   <link rel="stylesheet" href="/css/responsive.css"/>
 </head>
@@ -51,6 +54,8 @@
       <span class="admin-badge">ADMIN</span>
     </div>
     <div class="subtitle">Accès réservé aux administrateurs</div>
+
+    <div class="admin-login-message" id="admin-login-message"></div>
 
     <!-- Notifications Section -->
     <div id="notifications-section" style="margin-bottom:24px;padding:16px;background:var(--brand-light);border-radius:var(--radius);border:1px solid var(--brand);display:none;">
@@ -90,6 +95,14 @@
       }
     }
 
+    function showAdminLoginMessage(message, type = 'error') {
+      const box = document.getElementById('admin-login-message');
+      if (!box) return;
+      box.textContent = message;
+      box.classList.toggle('success', type === 'success');
+      box.classList.add('show');
+    }
+
     // Check if already logged in (persistent session)
     const adminLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
     const adminToken = localStorage.getItem('shoplink_token');
@@ -127,7 +140,7 @@
         const data = await res.json();
 
         if (!res.ok || !data.success || !data.user || data.user.role !== 'admin') {
-          alert(data.message || 'Accès refusé. Compte administrateur requis.');
+          showAdminLoginMessage(data.message || 'Accès refusé. Compte administrateur requis.');
           submitBtn.disabled = false;
           submitBtn.textContent = 'Se connecter';
           return;
@@ -137,7 +150,7 @@
         localStorage.setItem('shoplink_user', JSON.stringify(data.user));
         localStorage.setItem('admin_logged_in', 'true');
       } catch (error) {
-        alert('Erreur de connexion au serveur admin: ' + error.message);
+        showAdminLoginMessage('Erreur de connexion au serveur admin : ' + error.message);
         submitBtn.disabled = false;
         submitBtn.textContent = 'Se connecter';
         return;

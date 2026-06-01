@@ -486,7 +486,10 @@
       b.textContent='✓ Copié !'; b.classList.add('copied');
       setTimeout(()=>{ b.innerHTML='<img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier'; b.classList.remove('copied'); },2500);
     } catch (err) {
-      alert('Numéro : '+OWNER_NUMBER);
+      const b = document.getElementById('copy-btn');
+      b.textContent = OWNER_NUMBER;
+      b.classList.add('copied');
+      setTimeout(()=>{ b.innerHTML='<img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier'; b.classList.remove('copied'); },3500);
     }
     
     document.body.removeChild(textArea);
