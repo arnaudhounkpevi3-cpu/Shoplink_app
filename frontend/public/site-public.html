@@ -284,6 +284,36 @@
       min-width: 0;
     }
 
+    @media (min-width: 821px) {
+      .hero-meta {
+        grid-template-columns: repeat(auto-fit, minmax(230px, max-content));
+        justify-content: start;
+        align-items: center;
+      }
+
+      .meta-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        width: max-content;
+        max-width: 100%;
+        padding: 10px 14px;
+        white-space: nowrap;
+      }
+
+      .meta-label {
+        display: inline-flex;
+        align-items: center;
+        margin: 0;
+        flex: 0 0 auto;
+      }
+
+      .meta-value {
+        margin-top: 0 !important;
+        min-width: 0;
+      }
+    }
+
     .meta-card-link {
       width: 100%;
       text-align: left;
