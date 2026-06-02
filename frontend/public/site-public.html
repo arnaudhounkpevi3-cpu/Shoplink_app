@@ -601,13 +601,14 @@
       padding: 0 14px;
       font-weight: 900;
       cursor: pointer;
-      transition: transform .18s ease, background .18s ease;
+      transition: transform .22s ease, background .22s ease, box-shadow .22s ease, opacity .22s ease;
     }
 
     .btn-details { background: color-mix(in srgb, var(--primary) 10%, #fff); color: var(--primary); }
-    .btn-add { background: var(--primary); color: #fff; }
+    .btn-add { background: var(--primary); color: #fff; box-shadow: 0 10px 24px color-mix(in srgb, var(--primary) 20%, transparent); }
     .btn-order { background: var(--primary); color: #fff; }
     .btn-details:hover, .btn-add:hover, .btn-order:hover { transform: translateY(-1px); }
+    .btn-details:active, .btn-add:active, .btn-order:active { transform: scale(.98); }
 
     .cart-fab {
       position: fixed;
@@ -646,12 +647,15 @@
       position: fixed;
       inset: 0;
       z-index: 90;
-      display: none;
+      display: block;
       background: rgba(17,24,39,.48);
       backdrop-filter: blur(7px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .28s ease;
     }
 
-    .cart-overlay.show { display: block; }
+    .cart-overlay.show { opacity: 1; pointer-events: auto; }
 
     .cart-drawer {
       position: fixed;
@@ -664,7 +668,7 @@
       background: #fff;
       box-shadow: -28px 0 80px rgba(17,24,39,.22);
       transform: translateX(105%);
-      transition: transform .28s ease;
+      transition: transform .38s cubic-bezier(.22, 1, .36, 1);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
@@ -882,16 +886,20 @@
       position: fixed;
       inset: 0;
       z-index: 80;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       padding: 18px;
       background: rgba(17, 24, 39, .58);
       backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .28s ease;
     }
 
-    .site-modal.show { display: flex; }
-    .site-modal-card { width: min(540px, 100%); max-height: 90vh; overflow: auto; border-radius: 28px; background: #fff; box-shadow: 0 30px 90px rgba(0,0,0,.28); }
+    .site-modal.show { opacity: 1; pointer-events: auto; }
+    .site-modal-card { width: min(540px, 100%); max-height: 90vh; overflow: auto; border-radius: 28px; background: #fff; box-shadow: 0 30px 90px rgba(0,0,0,.28); transform: translateY(18px) scale(.97); opacity: 0; transition: transform .34s cubic-bezier(.22, 1, .36, 1), opacity .28s ease; }
+    .site-modal.show .site-modal-card { transform: translateY(0) scale(1); opacity: 1; }
     .site-modal-image { min-height: 245px; max-height: 72vh; display: grid; place-items: center; background: var(--soft); color: var(--primary); font-size: 64px; overflow: hidden; }
     .site-modal-image img { width: 100%; height: auto; max-height: 72vh; object-fit: contain; display: block; }
     .site-modal-body { padding: 20px; }
@@ -1061,7 +1069,7 @@
     const THEMES = {
       food: { label: 'Restaurant', title: 'Nos menus', subtitle: 'Choisissez vos plats et commandez directement via WhatsApp.', primary: '#9a3f13', secondary: '#6f2c0d', accent: '#f59c1a', bg: '#fff7eb', soft: '#fff2df', text: '#24140a', icon: '🍽️', iconUrl: 'https://cdn-icons-png.flaticon.com/512/562/562678.png' },
       fastfood: { label: 'Fast-food', title: 'À commander maintenant', subtitle: 'Des produits rapides à choisir et à commander directement via WhatsApp.', primary: '#d9480f', secondary: '#9a3412', accent: '#facc15', bg: '#fff8db', soft: '#fff3bf', text: '#271307', icon: '🍟', iconUrl: 'https://cdn-icons-png.flaticon.com/512/738/738079.png' },
-      fashion: { label: 'Boutique mode', title: 'Collection disponible', subtitle: 'Parcourez les articles, découvrez les prix et commandez vos pièces préférées.', primary: '#1f4f8f', secondary: '#14315d', accent: '#d7a247', bg: '#f1f6ff', soft: '#e1ecff', text: '#101a2f', icon: '👗', iconUrl: 'https://cdn-icons-png.flaticon.com/512/7845/7845586.png' },
+      fashion: { label: 'Boutique mode', title: 'Collection disponible', subtitle: 'Parcourez les articles, découvrez les prix et commandez vos pièces préférées.', primary: '#6d3f8f', secondary: '#43265f', accent: '#d7a247', bg: '#f8f3ff', soft: '#efe6ff', text: '#1f152e', icon: '👗', iconUrl: 'https://cdn-icons-png.flaticon.com/512/7845/7845586.png' },
       beauty: { label: 'Beauté & soins', title: 'Sélection beauté', subtitle: 'Des soins, parfums et produits beauté dans une vitrine douce et élégante.', primary: '#8b3a62', secondary: '#5d2440', accent: '#eaa6c8', bg: '#fff2fa', soft: '#ffe8f4', text: '#28131e', icon: '💄', iconUrl: 'https://cdn-icons-png.flaticon.com/512/8023/8023928.png' },
       commerce: { label: 'Commerce', title: 'Catalogue produits', subtitle: 'Découvrez les articles disponibles et contactez la boutique pour commander.', primary: '#176b5b', secondary: '#0f493f', accent: '#f59c1a', bg: '#f2fbf5', soft: '#e8f7ef', text: '#0f1f17', icon: '🛒', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3144/3144456.png' },
       general: { label: 'Bienvenue', title: 'Nos produits', subtitle: 'Consultez les produits disponibles et commandez facilement via WhatsApp.', primary: '#4c2f88', secondary: '#2f1d55', accent: '#f59c1a', bg: '#f7f2ff', soft: '#eee7ff', text: '#17112a', icon: '', iconUrl: '', welcome: true },
@@ -1313,7 +1321,7 @@
       else cart.push({ ...product, quantity: 1 })
       trackProductEvent(currentSite.id, product.id, 'add_to_cart')
       updateCartUI()
-      openCartDrawer()
+      window.setTimeout(openCartDrawer, 120)
     }
 
     function updateCartUI() {
