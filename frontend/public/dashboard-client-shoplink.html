@@ -648,11 +648,11 @@
 
       body.dataset.trafficSources = 'true';
       const sourceMeta = {
-        whatsapp: ['📱', 'WhatsApp'],
-        facebook: ['📘', 'Facebook'],
-        instagram: ['📸', 'Instagram'],
+        whatsapp: ['<img src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'WhatsApp'],
+        facebook: ['<img src="https://cdn-icons-png.flaticon.com/512/3670/3670032.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'Facebook'],
+        instagram: ['<img src="https://cdn-icons-png.flaticon.com/512/4138/4138124.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'Instagram'],
         sms: ['✉️', 'SMS'],
-        direct: ['🔗', 'Direct'],
+        direct: ['<img src="https://cdn-icons-png.flaticon.com/512/3462/3462381.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'Direct'],
       };
       const rows = weeklyData?.sources || [];
       const total = Number(weeklyData?.total || 0);
