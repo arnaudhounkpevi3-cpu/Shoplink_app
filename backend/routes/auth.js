@@ -308,23 +308,11 @@ router.post('/forgot-password', async (req, res) => {
   const emailResult = await sendPasswordResetEmail(user.email, resetLink)
 
   if (!emailResult.success) {
-    if (
-      emailResult.provider === 'resend' &&
-      emailResult.statusCode === 403 &&
-      String(emailResult.error || '').includes('verify a domain')
-    ) {
-      return res.status(403).json({
-        success: false,
-        message:
-          'Resend est en mode test : vous pouvez seulement envoyer vers l’email propriétaire du compte Resend. Pour envoyer à tous les utilisateurs, vérifiez un domaine sur resend.com/domains puis utilisez une adresse RESEND_FROM de ce domaine.',
-      })
-    }
-
     return res.status(500).json({
       success: false,
       message:
         emailResult.error ||
-        'Impossible d’envoyer l’email de réinitialisation. Vérifiez la configuration email du serveur.',
+        'Impossible d’envoyer l’email de réinitialisation. Vérifiez la configuration SMTP du serveur.',
     })
   }
   

@@ -3,7 +3,7 @@
 ShopLink est actuellement un MVP avancé avec :
 
 - pages publiques responsive ;
-- inscription, connexion et réinitialisation par email via Resend ;
+- inscription, connexion et réinitialisation par email via SMTP ;
 - dashboard client ;
 - parcours Premium avec résumé complet ;
 - paiement d'acompte Premium ;
@@ -37,7 +37,7 @@ npm run dev -- --host 0.0.0.0
 
 ## Ordre De Test Recommandé
 
-1. `forgot-password.html` vers email Resend, puis `reset-password.html`.
+1. `forgot-password.html` vers email de réinitialisation, puis `reset-password.html`.
 2. `login.html` avec le nouveau mot de passe.
 3. `premium.html` jusqu'au résumé.
 4. `payment.html` pour payer l'acompte.
@@ -46,20 +46,21 @@ npm run dev -- --host 0.0.0.0
 
 ## Configuration Email
 
-Le backend utilise Resend si `RESEND_API_KEY` est présent dans `backend/.env`.
-
-En local, Resend peut limiter les envois à l'adresse propriétaire du compte tant qu'aucun domaine n'est vérifié.
+Le backend utilise une configuration SMTP pour envoyer les emails de réinitialisation.
 
 Variables utiles :
 
 ```env
 FRONTEND_URL=http://10.158.8.156:5173
-RESEND_API_KEY=re_xxx
-RESEND_FROM="ShopLink" <onboarding@resend.dev>
+EMAIL_HOST=smtp-relay.brevo.com
+EMAIL_PORT=587
+EMAIL_USER=votre_login_smtp_brevo
+EMAIL_PASS=votre_cle_smtp_brevo
+EMAIL_FROM="ShopLink" <supportshoplink@gmail.com>
 ```
 
-En production, utiliser un domaine vérifié :
+En production, utiliser une adresse expéditrice vérifiée :
 
 ```env
-RESEND_FROM="ShopLink" <support@ton-domaine.com>
+EMAIL_FROM="ShopLink" <support@ton-domaine.com>
 ```

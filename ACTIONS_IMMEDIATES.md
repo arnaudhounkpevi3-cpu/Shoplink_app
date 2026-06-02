@@ -31,7 +31,7 @@ npm run dev -- --host 0.0.0.0
 
 1. Aller sur `forgot-password.html`.
 2. Saisir l'email d'un compte existant.
-3. Ouvrir le mail Resend.
+3. Ouvrir l'email de réinitialisation.
 4. Cliquer sur le lien.
 5. Définir un nouveau mot de passe.
 6. Vérifier la redirection vers `login.html`.
@@ -50,6 +50,6 @@ npm run dev -- --host 0.0.0.0
 
 ## 5. Points À Surveiller
 
-- Resend en mode test n'envoie qu'à l'email propriétaire du compte.
+- Les emails de réinitialisation utilisent la configuration SMTP du backend.
 - `backend/.env` ne doit jamais être envoyé sur GitHub.
 - Les anciennes pages admin racine ont été supprimées : utiliser `frontend/public/admin/admin-dashboard.html`.
