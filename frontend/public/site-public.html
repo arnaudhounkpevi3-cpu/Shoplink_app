@@ -354,44 +354,6 @@
     }
 
     .featured-img img { width: 100%; height: 100%; object-fit: cover; }
-    .featured-card.logo-feature {
-      width: min(300px, 100%);
-      padding: 14px;
-      border-radius: 28px;
-      background: rgba(255,255,255,.92);
-    }
-    .featured-card.logo-feature::before {
-      display: none;
-    }
-    .featured-logo-frame {
-      aspect-ratio: 1 / 1;
-      width: 100%;
-      border-radius: 22px;
-      background:
-        linear-gradient(135deg, #fff, color-mix(in srgb, var(--soft) 70%, #fff));
-      border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent);
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.72);
-    }
-    .featured-logo-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      padding: 18px;
-      display: block;
-    }
-    .featured-logo-name {
-      margin-top: 14px;
-      color: var(--text);
-      font-size: clamp(18px, 2vw, 24px);
-      font-weight: 900;
-      line-height: 1.12;
-      letter-spacing: -.035em;
-      text-align: center;
-      overflow-wrap: anywhere;
-    }
     .featured-activity-icon {
       width: clamp(138px, 13vw, 174px) !important;
       height: clamp(138px, 13vw, 174px) !important;
@@ -1086,7 +1048,7 @@
       app.innerHTML = `
         <header class="shop-header">
           <div class="brand">
-            <div class="brand-logo">${site.logo ? `<img src="${site.logo}" alt="Logo">` : theme.icon}</div>
+            <div class="brand-logo">${theme.icon || 'S'}</div>
             <div><div class="brand-name">${safe(site.name)}</div></div>
           </div>
           <nav class="nav-menu" aria-label="Navigation ${safe(site.name)}">
