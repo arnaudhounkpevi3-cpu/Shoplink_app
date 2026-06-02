@@ -1096,6 +1096,7 @@
     }
 
     function slugFromUrl() { return window.location.pathname.split('/').filter(Boolean).pop() || 'boutique-test' }
+    function siteCacheKey(slug) { return `shoplink_public_site_cache:${slug}` }
     function money(value) { return Number(value || 0).toLocaleString('fr-FR') + ' FCFA' }
     function safe(value) { return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') }
     function cleanUrl(slug) { return `${window.location.origin}/boutique/${slug}` }
@@ -1103,8 +1104,27 @@
 
     async function loadSite(options = {}) {
       const { silent = false } = options
+      const slug = slugFromUrl()
+
+      if (!silent) {
+        const cached = sessionStorage.getItem(siteCacheKey(slug))
+        if (cached) {
+          try {
+            const cachedData = JSON.parse(cached)
+            if (cachedData.site) {
+              currentSite = cachedData.site
+              currentProducts = cachedData.products || []
+              window.currentSiteId = currentSite.id
+              applyTheme(currentSite)
+              renderSite(currentSite, currentProducts)
+            }
+          } catch (_error) {
+            sessionStorage.removeItem(siteCacheKey(slug))
+          }
+        }
+      }
+
       try {
-        const slug = slugFromUrl()
         const response = await fetch(`${API_BASE}/public/${slug}?t=${Date.now()}`, { cache: 'no-store' })
         const data = await response.json()
         if (!response.ok) throw new Error(data.message || 'Site non trouvé')
@@ -1112,6 +1132,11 @@
         currentProducts = data.products || []
         window.currentSiteId = currentSite.id
         applyTheme(currentSite)
+        sessionStorage.setItem(siteCacheKey(slug), JSON.stringify({
+          site: currentSite,
+          products: currentProducts,
+          cachedAt: Date.now(),
+        }))
         trackVisit(currentSite.id)
         renderSite(currentSite, currentProducts)
       } catch (error) {

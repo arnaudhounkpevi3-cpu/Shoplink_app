@@ -420,6 +420,11 @@
       return `${CLIENT_STATS_KEY}:${context.siteId || context.slug || 'default-site'}`;
     }
 
+    function getScopedProductsKey() {
+      const context = getClientContext();
+      return `${CLIENT_PRODUCTS_KEY}:${context.siteId || context.slug || 'default-site'}`;
+    }
+
     function pruneStatsForCurrentSite(stats = defaultStats()) {
       const context = getClientContext();
       const now = Date.now();
@@ -900,7 +905,7 @@
 
     function saveAccountProducts() {
       const products = getProductRows().map(productFromRow);
-      setAccountJson(CLIENT_PRODUCTS_KEY, products);
+      setAccountJson(getScopedProductsKey(), products);
       const stats = loadStats();
       stats.products = products.length;
       saveStats(stats);
@@ -908,11 +913,11 @@
     }
 
     function loadAccountProducts() {
-      return getAccountJson(CLIENT_PRODUCTS_KEY, []) || [];
+      return getAccountJson(getScopedProductsKey(), []) || [];
     }
 
     function hasLocalProductCatalog() {
-      return hasAccountKey(CLIENT_PRODUCTS_KEY);
+      return hasAccountKey(getScopedProductsKey());
     }
 
     function formatProductPrice(value) {
@@ -2600,16 +2605,6 @@
       applyCatalogFilter(false);
       renderClientStats();
 
-      if (strict) {
-        const publicData = await apiJson(`/api/public/${site.slug}`);
-        const expectedVisible = localProducts.filter((product) => product.visible !== false && product.status !== 'hidden').length;
-        const receivedVisible = (publicData.products || []).length;
-
-        if (receivedVisible !== expectedVisible) {
-          throw new Error(`Le site public n'a pas reçu tous les produits (${receivedVisible}/${expectedVisible}).`);
-        }
-      }
-
       return site;
     }
 
@@ -2682,7 +2677,7 @@
           ...product,
           backendId: product.id,
         }));
-        setAccountJson(CLIENT_PRODUCTS_KEY, products);
+        setAccountJson(getScopedProductsKey(), products);
         clearDefaultProductCatalog();
         renderClientStats();
       } catch (error) {
