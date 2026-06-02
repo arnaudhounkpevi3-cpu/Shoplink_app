@@ -79,6 +79,7 @@ async function sendPasswordResetEmail(email, resetLink) {
   try {
     const info = await transporter.sendMail({
       from: getSenderEmail(),
+      replyTo: process.env.EMAIL_REPLY_TO || 'supportshoplink@gmail.com',
       to: email,
       subject: 'Réinitialisation de votre mot de passe ShopLink',
       html: buildPasswordResetEmailHtml(resetLink),
