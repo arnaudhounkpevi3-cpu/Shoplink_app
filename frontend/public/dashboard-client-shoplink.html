@@ -65,7 +65,7 @@
 
   <main class="main">
     <section id="p-accueil" class="page active">
-      <div class="metrics"><div class="mcard mcard-green"><div class="mcard-icon">👁</div><div class="mcard-label">Vues du site</div><div class="mcard-val">247</div><div class="mcard-sub">7 derniers jours</div></div><div class="mcard mcard-amber"><div class="mcard-icon"><i class="fi fi-brands-whatsapp"></i></div><div class="mcard-label">Commandes reçues</div><div class="mcard-val">0</div><div class="mcard-sub">7 derniers jours</div></div><div class="mcard mcard-ocre"><div class="mcard-icon">📦</div><div class="mcard-label">Produits publiés</div><div class="mcard-val">12</div><div class="mcard-sub">Catalogue actif</div></div><div class="mcard mcard-cream"><div class="mcard-icon">🔗</div><div class="mcard-label">Partages du lien</div><div class="mcard-val" style="color:#1a5c38;">8</div><div class="mcard-sub" style="color:#9a7d5a;">WhatsApp & réseaux</div></div></div>
+      <div class="metrics"><div class="mcard mcard-green"><div class="mcard-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><g fill="none" stroke="#dbedd0" stroke-width="1.5"><path d="M21.544 11.045c.304.426.456.64.456.955c0 .316-.152.529-.456.955C20.178 14.871 16.689 19 12 19c-4.69 0-8.178-4.13-9.544-6.045C2.152 12.529 2 12.315 2 12c0-.316.152-.529.456-.955C3.822 9.129 7.311 5 12 5c4.69 0 8.178 4.13 9.544 6.045Z"/><path d="M15 12a3 3 0 1 0-6 0a3 3 0 0 0 6 0Z"/></g></svg></div><div class="mcard-label">Vues du site</div><div class="mcard-val">247</div><div class="mcard-sub">7 derniers jours</div></div><div class="mcard mcard-amber"><div class="mcard-icon"><i class="fi fi-brands-whatsapp"></i></div><div class="mcard-label">Commandes reçues</div><div class="mcard-val">0</div><div class="mcard-sub">7 derniers jours</div></div><div class="mcard mcard-ocre"><div class="mcard-icon">📦</div><div class="mcard-label">Produits publiés</div><div class="mcard-val">12</div><div class="mcard-sub">Catalogue actif</div></div><div class="mcard mcard-cream"><div class="mcard-icon">🔗</div><div class="mcard-label">Partages du lien</div><div class="mcard-val" style="color:#1a5c38;">8</div><div class="mcard-sub" style="color:#9a7d5a;">WhatsApp & réseaux</div></div></div>
       <div class="two-col"><div style="display:flex;flex-direction:column;gap:16px;"><div class="pub-banner"><div class="pub-banner-text"><div class="pub-banner-title">Votre site est en ligne ✓</div><div class="pub-banner-sub">Partagez votre lien pour recevoir des commandes via WhatsApp</div></div><button class="pub-btn" onclick="copyShopLink()"><i class="fi fi-rr-screen-share"></i> Partager mon lien</button></div><div class="card"><div class="card-head"><span class="card-title">Activité récente</span><span class="badge bg-green">En direct</span></div><div class="card-body"><div class="act-item"><div class="act-ico v">👁</div><div><div class="act-text">Visite — page produit "Robe pagne imprimé"</div><div class="act-time">Il y a 4 min</div></div></div><div class="act-item"><div class="act-ico o">📲</div><div><div class="act-text">Clic WhatsApp — "Sac wax · 5 000 F"</div><div class="act-time">Il y a 22 min</div></div></div><div class="act-item"><div class="act-ico s">🔗</div><div><div class="act-text">Lien partagé sur Instagram</div><div class="act-time">Hier, 11h15</div></div></div></div></div></div><div style="display:flex;flex-direction:column;gap:16px;"><div class="card"><div class="card-head"><span class="card-title">Statut de la boutique</span></div><div class="card-body" style="display:flex;flex-direction:column;gap:11px;"><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:#6b5744;">Statut</span><span style="font-weight:700;color:#1a5c38;">● En ligne</span></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:#6b5744;">Type</span><span style="font-weight:700;">Boutique vêtements</span></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:#6b5744;">WhatsApp</span><span style="font-weight:700;">+229 97 XX XX XX</span></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;"><span style="color:#6b5744;">Plan</span><span class="badge bg-green">Starter · Payé</span></div><div style="border-top:1px solid #f5f0ea;padding-top:11px;"><div style="font-size:12px;color:#6b5744;margin-bottom:6px;">Lien public</div><div style="font-size:12px;color:#1a5c38;background:#eef7f1;border-radius:8px;padding:7px 10px;font-family:var(--font-mono);overflow:hidden;text-overflow:ellipsis;">/boutique/gracemode</div></div><button class="wa-btn"><i class="fi fi-brands-whatsapp"></i> Tester sur WhatsApp</button></div></div><div class="card"><div class="card-head"><span class="card-title">Passer au Premium</span></div><div class="card-body"><div style="font-size:13px;color:#6b5744;line-height:1.6;margin-bottom:14px;">Confiez la création d'un site professionnel à notre équipe. Design avancé, Google Maps, sections personnalisées.</div><button class="btn-primary" onclick="sendPrompt('Je veux commander un site Premium ShopLink')">⭐ Commander mon site Pro →</button></div></div></div></div>
     </section>
 
@@ -656,6 +656,8 @@
         sms: ['✉️', 'SMS'],
         direct: ['<img src="https://cdn-icons-png.flaticon.com/512/3462/3462381.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'Direct'],
       };
+      const statsEyeIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" style="width:15px;height:15px;vertical-align:-3px;margin-right:4px;"><path d="M0 0h24v24H0z" fill="none"/><g fill="none" stroke="#dbedd0" stroke-width="1.5"><path d="M21.544 11.045c.304.426.456.64.456.955c0 .316-.152.529-.456.955C20.178 14.871 16.689 19 12 19c-4.69 0-8.178-4.13-9.544-6.045C2.152 12.529 2 12.315 2 12c0-.316.152-.529.456-.955C3.822 9.129 7.311 5 12 5c4.69 0 8.178 4.13 9.544 6.045Z"/><path d="M15 12a3 3 0 1 0-6 0a3 3 0 0 0 6 0Z"/></g></svg>';
+      const statsUsersIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" style="width:15px;height:15px;vertical-align:-3px;margin-right:4px;"><path d="M0 0h24v24H0z" fill="none"/><path fill="none" stroke="#dbedd0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 20c0-1.742-1.67-3.223-4-3.773M15 20c0-2.21-2.686-4-6-4s-6 1.79-6 4m12-7a4 4 0 0 0 0-8m-6 8a4 4 0 1 1 0-8a4 4 0 0 1 0 8"/></svg>';
       const rows = weeklyData?.sources || [];
       const metrics = weeklyData?.metrics || {};
       const topProducts = weeklyData?.topProducts || [];
@@ -694,8 +696,8 @@
           </div>
 
           <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
-            <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;"><div style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">👁️ Vues site</div><div style="font-size:18px;font-weight:900;color:var(--green);margin-top:4px;">${Number(metrics.siteViews || 0)}</div></div>
-            <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;"><div style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">👤 Visiteurs</div><div style="font-size:18px;font-weight:900;color:var(--green);margin-top:4px;">${Number(metrics.uniqueVisitors || 0)}</div></div>
+            <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;"><div style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">${statsEyeIcon}Vues site</div><div style="font-size:18px;font-weight:900;color:var(--green);margin-top:4px;">${Number(metrics.siteViews || 0)}</div></div>
+            <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;"><div style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">${statsUsersIcon}Visiteurs</div><div style="font-size:18px;font-weight:900;color:var(--green);margin-top:4px;">${Number(metrics.uniqueVisitors || 0)}</div></div>
             <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;"><div style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">📦 Vues produits</div><div style="font-size:18px;font-weight:900;color:var(--green);margin-top:4px;">${Number(metrics.productViewsTotal || 0)}</div></div>
           </div>
 
@@ -2306,6 +2308,7 @@
       const galleryIcon = iconImg('https://cdn-icons-png.flaticon.com/512/833/833281.png', 'Galerie');
       const messageIcon = iconImg('https://cdn-icons-png.flaticon.com/512/134/134707.png', 'Message');
       const commissionIcon = '<img src="https://cdn-icons-png.flaticon.com/512/11131/11131878.png" alt="Commander" style="width:18px;height:18px;object-fit:contain;display:inline-block;vertical-align:-3px;margin-right:6px;">';
+      const eyeIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><g fill="none" stroke="#dbedd0" stroke-width="1.5"><path d="M21.544 11.045c.304.426.456.64.456.955c0 .316-.152.529-.456.955C20.178 14.871 16.689 19 12 19c-4.69 0-8.178-4.13-9.544-6.045C2.152 12.529 2 12.315 2 12c0-.316.152-.529.456-.955C3.822 9.129 7.311 5 12 5c4.69 0 8.178 4.13 9.544 6.045Z"/><path d="M15 12a3 3 0 1 0-6 0a3 3 0 0 0 6 0Z"/></g></svg>';
 
       document.querySelectorAll('.mcard').forEach((card) => {
         const label = card.querySelector('.mcard-label')?.textContent || '';
@@ -2315,7 +2318,7 @@
         if (/produit/i.test(label)) icon.innerHTML = productIcon;
         else if (/partage/i.test(label)) icon.innerHTML = '<i class="fi fi-rr-screen-share"></i>';
         else if (/whatsapp/i.test(label)) icon.innerHTML = '<i class="fi fi-brands-whatsapp"></i>';
-        else if (/vue/i.test(label)) icon.innerHTML = '<i class="fi fi-rr-eyes"></i>';
+        else if (/vue/i.test(label)) icon.innerHTML = eyeIcon;
         else if (/taux/i.test(label)) icon.innerHTML = '<i class="fi fi-rr-stats"></i>';
       });
 
@@ -2342,7 +2345,7 @@
         else if (text === '🔔') icon.innerHTML = messageIcon;
         else if (text === '📲') icon.innerHTML = '<i class="fi fi-brands-whatsapp"></i>';
         else if (text === '🔗') icon.innerHTML = '<i class="fi fi-rr-screen-share"></i>';
-        else if (text === '👁') icon.innerHTML = '<i class="fi fi-rr-eyes"></i>';
+        else if (text === '👁') icon.innerHTML = eyeIcon;
       });
 
       document.querySelectorAll('#p-support .support-card').forEach((card) => {
