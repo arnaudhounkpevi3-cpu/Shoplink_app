@@ -1971,61 +1971,38 @@
       if (!price || price <= 0) return notify('Entrez un prix valide.', 'warning');
       if (!category) return notify('Renseignez votre catégorie personnalisée.', 'warning');
       const priceLabel = `${price.toLocaleString('fr-FR')} F`;
+      const nextProduct = {
+        id: editingProductRow?.dataset.productId || `product-${Date.now()}`,
+        backendId: editingProductRow?.dataset.backendId || '',
+        name,
+        category,
+        description,
+        price,
+        image: selectedProductImage || editingProductRow?.querySelector('.prod-thumb img')?.src || '',
+        availability,
+        stock,
+        badge,
+        oldPrice,
+        variantInfo,
+        extraInfo,
+      };
+
       if (editingProductRow) {
-        editingProductRow.querySelector('.prod-name').textContent = name;
-        editingProductRow.querySelector('.prod-cat').textContent = category;
-        let descNode = editingProductRow.querySelector('.prod-desc');
-        if (!descNode) {
-          descNode = document.createElement('div');
-          descNode.className = 'prod-desc';
-          editingProductRow.querySelector('.prod-cat')?.insertAdjacentElement('afterend', descNode);
-        }
-        descNode.textContent = description;
-        descNode.style.display = description ? 'block' : 'none';
-        editingProductRow.querySelector('.prod-price').textContent = priceLabel;
-        editingProductRow.dataset.category = category;
-        editingProductRow.dataset.availability = availability;
-        editingProductRow.dataset.stock = stock;
-        editingProductRow.dataset.badge = badge;
-        editingProductRow.dataset.oldPrice = oldPrice;
-        editingProductRow.dataset.variantInfo = variantInfo;
-        editingProductRow.dataset.extraInfo = extraInfo;
-        editingProductRow.querySelector('.prod-meta')?.remove();
-        editingProductRow.querySelector('.prod-desc')?.insertAdjacentHTML('afterend', renderProductMeta({ availability, stock, badge, oldPrice, variantInfo, extraInfo }));
-        if (selectedProductImage) editingProductRow.querySelector('.prod-thumb').innerHTML = `<img src="${selectedProductImage}" alt="${name}">`;
+        const nextProducts = getProductRows().map((row) => row === editingProductRow ? nextProduct : productFromRow(row));
         try {
-          await syncLocalProductsToBackend({ strict: true });
+          await syncLocalProductsToBackend({ strict: true, productsOverride: nextProducts });
           notify('Produit modifié et publié sur votre site.');
         } catch (error) {
-          saveAccountProducts();
           notify(`Produit modifié localement, mais non publié en ligne : ${error.message}`, 'warning');
           return;
         }
         recordClientEvent('product_updated', `Produit modifié : ${name}`, { productName: name, category, price, description });
       } else {
-        const list = getProductList();
-        list?.querySelector('.empty-products')?.remove();
-        const row = document.createElement('div');
-        row.className = 'prod-row';
-        row.dataset.category = category;
-        row.dataset.availability = availability;
-        row.dataset.stock = stock;
-        row.dataset.badge = badge;
-        row.dataset.oldPrice = oldPrice;
-        row.dataset.variantInfo = variantInfo;
-        row.dataset.extraInfo = extraInfo;
-        row.innerHTML = `<div class="prod-thumb">${selectedProductImage ? `<img src="${selectedProductImage}" alt="${name}">` : '📦'}</div><div><div class="prod-name"></div><div class="prod-cat"></div><div class="prod-desc"></div>${renderProductMeta({ availability, stock, badge, oldPrice, variantInfo, extraInfo })}</div><div class="prod-price"></div><div class="prod-views"><i class="fi fi-rr-eyes"></i> 0</div><div style="display:flex;gap:6px;"><button class="iBtn" type="button" data-action="edit"><i class="fi fi-rr-pencil"></i></button><button class="iBtn" type="button" data-action="delete"><i class="fi fi-rr-trash"></i></button></div>`;
-        row.querySelector('.prod-name').textContent = name;
-        row.querySelector('.prod-cat').textContent = category;
-        row.querySelector('.prod-desc').textContent = description;
-        row.querySelector('.prod-desc').style.display = description ? 'block' : 'none';
-        row.querySelector('.prod-price').textContent = priceLabel;
-        list?.prepend(row);
+        const nextProducts = [nextProduct, ...getProductRows().map(productFromRow)];
         try {
-          await syncLocalProductsToBackend({ strict: true });
+          await syncLocalProductsToBackend({ strict: true, productsOverride: nextProducts });
           notify('Produit publié sur votre site.');
         } catch (error) {
-          saveAccountProducts();
           notify(`Produit enregistré localement, mais non publié en ligne : ${error.message}`, 'warning');
           return;
         }
@@ -2549,7 +2526,7 @@
     }
 
     async function syncLocalProductsToBackend(options = {}) {
-      const { strict = false } = options;
+      const { strict = false, productsOverride = null } = options;
       if (!getAuthToken()) {
         if (strict) throw new Error('Connectez-vous pour publier les produits sur votre site public.');
         notify('Connectez-vous pour publier les produits sur votre site public.', 'warning');
@@ -2561,9 +2538,12 @@
         throw new Error('Impossible de créer ou récupérer le site public');
       }
 
+      const sourceProducts = Array.isArray(productsOverride)
+        ? productsOverride
+        : getProductRows().map(productFromRow);
+
       const rawLocalProducts = await Promise.all(
-        getProductRows().map(async (row) => {
-          const product = productFromRow(row);
+        sourceProducts.map(async (product) => {
           return {
             name: product.name,
             id: product.backendId || product.id || '',
