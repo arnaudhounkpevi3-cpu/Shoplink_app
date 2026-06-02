@@ -535,20 +535,28 @@
 
     function renderClientStats() {
       const stats = loadStats();
-      setMetric('Vues du site', stats.views);
-      setMetric('Vues totales', stats.views);
+      const officialMetrics = stats.weeklyTraffic?.metrics || {};
+      const officialSiteViews = Number(officialMetrics.siteViews ?? stats.views ?? 0);
+      const officialUniqueVisitors = Number(officialMetrics.uniqueVisitors ?? stats.uniqueVisitors ?? 0);
+      const officialProductViewsTotal = Number(officialMetrics.productViewsTotal ?? stats.productViewsTotal ?? 0);
+      const officialAddToCartTotal = Number(officialMetrics.addToCartTotal ?? stats.whatsappClicks ?? 0);
+
+      setMetric('Vues du site', officialSiteViews);
+      setMetric('Vues totales', officialSiteViews);
       setMetric('Commandes reçues', stats.whatsappClicks);
       setMetric('Top produit', stats.topProduct?.name || 'Aucun');
       
       // New metrics from backend tracking
-      if (stats.uniqueVisitors !== undefined) {
-        setMetric('Visiteurs uniques', stats.uniqueVisitors);
+      if (officialUniqueVisitors !== undefined) {
+        setMetric('Visiteurs uniques', officialUniqueVisitors);
       }
       if (stats.conversionRate !== undefined) {
         setMetric('Taux de conversion', stats.conversionRate + '%');
       }
       setMetric('Produits publiés', stats.products);
       setMetric('Partages du lien', stats.shares);
+      setMetric('Vues produits totales', officialProductViewsTotal);
+      setMetric('Ajouts panier', officialAddToCartTotal);
       renderTrafficSources(stats.weeklyTraffic || null);
       document.querySelectorAll('.stat-bar-val').forEach(el => {
         if (!el.closest('[data-traffic-sources="true"]')) {
@@ -570,7 +578,9 @@
         if (!data.success) return;
 
         const stats = loadStats();
-        stats.views = Number(data.stats.totalViews || 0);
+        if (!stats.weeklyTraffic?.metrics) {
+          stats.views = Number(data.stats.totalViews || 0);
+        }
         stats.whatsappClicks = Number(data.stats.whatsappClicks || 0);
         stats.topProduct = data.stats.topProduct || null;
         stats.productOrders = data.stats.productOrders || {};
@@ -1277,6 +1287,25 @@
       return window.location.protocol === 'http:' && isLocalOrLan
         ? `${window.location.protocol}//${host}:5000`
         : window.location.origin;
+    }
+
+    function getPublicPreviewUrl(slug) {
+      const host = window.location.hostname;
+      const isLocalOrLan = /^(localhost|127\.0\.0\.1|10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(host);
+      return window.location.protocol === 'http:' && isLocalOrLan
+        ? `${window.location.origin}/site-public.html?slug=${encodeURIComponent(slug)}&owner=1`
+        : `${window.location.origin}/boutique/${encodeURIComponent(slug)}?owner=1`;
+    }
+
+    function preloadPublicSiteCache(site, products) {
+      if (!site?.slug) return;
+      const cacheKey = `shoplink_public_site_cache:${site.slug}`;
+      const publicProducts = (products || []).filter((product) => product && product.name && product.visible !== false && product.status !== 'hidden');
+      localStorage.setItem(cacheKey, JSON.stringify({
+        site,
+        products: publicProducts,
+        cachedAt: Date.now(),
+      }));
     }
 
     function normalizeWhatsAppNumber(value) {
@@ -2648,20 +2677,32 @@
     }
 
     async function openPublicSite() {
-      const previewWindow = window.open('about:blank', '_blank');
+      const context = getClientContext();
+      const immediateSlug = context.site?.slug || context.slug;
 
+      if (immediateSlug) {
+        const siteSnapshot = buildSitePayload({ slug: immediateSlug });
+        const productsSnapshot = getProductRows().map(productFromRow);
+        preloadPublicSiteCache(siteSnapshot, productsSnapshot);
+        const immediateUrl = getPublicPreviewUrl(immediateSlug);
+        const previewWindow = window.open(immediateUrl, '_blank');
+        if (!previewWindow) window.location.href = immediateUrl;
+
+        syncLocalProductsToBackend().then((site) => {
+          preloadPublicSiteCache(site, getProductRows().map(productFromRow));
+        }).catch((syncError) => {
+          console.warn('Synchronisation arrière-plan indisponible:', syncError);
+        });
+        return;
+      }
+
+      const previewWindow = window.open('about:blank', '_blank');
       if (previewWindow) {
-        previewWindow.document.write('<!doctype html><title>ShopLink</title><body style="font-family:system-ui;padding:24px;color:#1a5c38;">Ouverture de votre site...</body>');
+        previewWindow.document.write('<!doctype html><title>ShopLink</title><body style="font-family:system-ui;padding:24px;color:#1a5c38;">Recherche de votre site...</body>');
       }
 
       try {
         let site = null;
-
-        try {
-          site = await syncLocalProductsToBackend();
-        } catch (syncError) {
-          console.warn('Synchronisation produits indisponible, ouverture du site existant:', syncError);
-        }
 
         if (!site?.slug && getAuthToken()) {
           try {

@@ -1103,7 +1103,10 @@
       window.shopTheme = { ...theme, primary, secondary, key }
     }
 
-    function slugFromUrl() { return window.location.pathname.split('/').filter(Boolean).pop() || 'boutique-test' }
+    function slugFromUrl() {
+      const params = new URLSearchParams(window.location.search)
+      return params.get('slug') || window.location.pathname.split('/').filter(Boolean).pop() || 'boutique-test'
+    }
     function siteCacheKey(slug) { return `shoplink_public_site_cache:${slug}` }
     function money(value) { return Number(value || 0).toLocaleString('fr-FR') + ' FCFA' }
     function safe(value) { return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') }
@@ -1118,7 +1121,7 @@
       const slug = slugFromUrl()
 
       if (!silent) {
-        const cached = sessionStorage.getItem(siteCacheKey(slug))
+        const cached = localStorage.getItem(siteCacheKey(slug))
         if (cached) {
           try {
             const cachedData = JSON.parse(cached)
@@ -1130,7 +1133,7 @@
               renderSite(currentSite, currentProducts)
             }
           } catch (_error) {
-            sessionStorage.removeItem(siteCacheKey(slug))
+            localStorage.removeItem(siteCacheKey(slug))
           }
         }
       }
@@ -1143,7 +1146,7 @@
         currentProducts = data.products || []
         window.currentSiteId = currentSite.id
         applyTheme(currentSite)
-        sessionStorage.setItem(siteCacheKey(slug), JSON.stringify({
+        localStorage.setItem(siteCacheKey(slug), JSON.stringify({
           site: currentSite,
           products: currentProducts,
           cachedAt: Date.now(),
@@ -1459,6 +1462,18 @@
     window.addEventListener('beforeunload', () => { if (OWNER_MODE || !window.currentSiteId) return; const timeSpent = Date.now() - startTime; if (timeSpent > 2000) { const body = JSON.stringify({ siteId: window.currentSiteId, timeSpent, sessionId: sessionId(), visitorId: visitorId() }); navigator.sendBeacon(`${API_BASE}/tracking/time-spent`, new Blob([body], { type: 'application/json' })) } })
 
     loadSite()
+    window.addEventListener('storage', (event) => {
+      if (event.key !== siteCacheKey(slugFromUrl()) || !event.newValue) return
+      try {
+        const cachedData = JSON.parse(event.newValue)
+        if (!cachedData.site) return
+        currentSite = cachedData.site
+        currentProducts = cachedData.products || []
+        window.currentSiteId = currentSite.id
+        applyTheme(currentSite)
+        renderSite(currentSite, currentProducts)
+      } catch (_error) {}
+    })
     window.addEventListener('focus', () => loadSite({ silent: true }))
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) loadSite({ silent: true })
