@@ -649,13 +649,6 @@
       if (!body) return;
 
       body.dataset.trafficSources = 'true';
-      const sourceMeta = {
-        whatsapp: ['<img src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'WhatsApp'],
-        facebook: ['<img src="https://cdn-icons-png.flaticon.com/512/3670/3670032.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'Facebook'],
-        instagram: ['<img src="https://cdn-icons-png.flaticon.com/512/4138/4138124.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'Instagram'],
-        sms: ['✉️', 'SMS'],
-        direct: ['<img src="https://cdn-icons-png.flaticon.com/512/3462/3462381.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'Direct'],
-      };
       const statsEyeIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" style="width:15px;height:15px;vertical-align:-3px;margin-right:4px;"><path d="M0 0h24v24H0z" fill="none"/><g fill="none" stroke="#dbedd0" stroke-width="1.5"><path d="M21.544 11.045c.304.426.456.64.456.955c0 .316-.152.529-.456.955C20.178 14.871 16.689 19 12 19c-4.69 0-8.178-4.13-9.544-6.045C2.152 12.529 2 12.315 2 12c0-.316.152-.529.456-.955C3.822 9.129 7.311 5 12 5c4.69 0 8.178 4.13 9.544 6.045Z"/><path d="M15 12a3 3 0 1 0-6 0a3 3 0 0 0 6 0Z"/></g></svg>';
       const statsUsersIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" style="width:15px;height:15px;vertical-align:-3px;margin-right:4px;"><path d="M0 0h24v24H0z" fill="none"/><path fill="none" stroke="#dbedd0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 20c0-1.742-1.67-3.223-4-3.773M15 20c0-2.21-2.686-4-6-4s-6 1.79-6 4m12-7a4 4 0 0 0 0-8m-6 8a4 4 0 1 1 0-8a4 4 0 0 1 0 8"/></svg>';
       const rows = weeklyData?.sources || [];
@@ -691,7 +684,7 @@
               <div style="font-size:11px;color:var(--soft);font-weight:700;margin-top:3px;">visites · ${period}</div>
             </div>
             <div style="font-size:11px;color:var(--muted);text-align:right;line-height:1.35;max-width:170px;">
-              Répartition hebdomadaire par source. Total 100%.
+              Résumé hebdomadaire des visites et interactions.
             </div>
           </div>
 
@@ -706,15 +699,8 @@
             ${topProducts.length ? topProducts.map((product, index) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:${index === topProducts.length - 1 ? '0' : '1px solid #f3eadf'};"><span style="font-size:12px;font-weight:800;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${index + 1}. ${product.name}</span><span style="font-size:11px;color:var(--soft);font-weight:900;white-space:nowrap;">${product.views} vues · ${product.adds} ajouts</span></div>`).join('') : '<div style="padding:12px;color:var(--soft);font-size:12px;text-align:center;">Aucun produit consulté cette semaine.</div>'}
           </div>
 
-          <div style="display:grid;gap:10px;">
-            ${rows.map(({ source, count, percent }) => {
-              const [icon, label] = sourceMeta[source] || ['🔗', source];
-              return `<div style="display:grid;grid-template-columns:112px 1fr 44px;gap:10px;align-items:center;font-size:12px;"><span style="font-weight:900;color:var(--text);">${icon} ${label}</span><div class="bar-bg"><div class="bar-fill fill-green" style="width:${percent}%;"></div></div><span style="text-align:right;font-weight:900;color:var(--green);">${percent}%</span><span style="grid-column:2 / 4;color:var(--soft);font-size:10.5px;margin-top:-6px;">${count} visite${count > 1 ? 's' : ''}</span></div>`;
-            }).join('')}
-          </div>
-
           <div style="padding:9px 10px;border-radius:11px;background:#f8f3ec;color:var(--muted);font-size:11.5px;line-height:1.4;">
-            Les stats affichent la semaine sélectionnée. Elles repartent à zéro chaque lundi.
+            Les stats affichent la semaine sélectionnée. Les sources détaillées ne sont plus affichées.
           </div>
         </div>
       `;
