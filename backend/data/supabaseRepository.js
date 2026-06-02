@@ -15,6 +15,9 @@ const PAYMENT_COLUMNS = 'id,user_id,site_id,type,amount,step,status,method,refer
 const TICKET_COLUMNS = 'id,user_id,user_name,user_email,subject,message,priority,status,replies,created_at,updated_at'
 const TRACKING_COLUMNS = 'id,site_id,product_id,type,visitor_id,session_id,ip_address,user_agent,referrer,platform,time_spent,created_at'
 const PREMIUM_ORDER_COLUMNS = 'id,user_id,site_id,manager_name,email,whatsapp,site_type,activity_type,delai,acompte_paid_at,status,created_at'
+const LINK_VISIT_COLUMNS = 'id,user_id,site_id,source,visited_at,week_number,year,created_at'
+const SITE_VISIT_COLUMNS = 'id,shop_id,site_id,ip_address,visitor_id,source,visited_at,visit_date,week_number,year,created_at'
+const PRODUCT_EVENT_COLUMNS = 'id,shop_id,site_id,product_id,event_type,ip_address,visitor_id,created_at,event_date,week_number,year'
 
 const memoryCache = new Map()
 
@@ -242,7 +245,10 @@ function mapPayment(p) {
 
 async function seedIfEmpty() {
   try {
-    const { count, error: countError } = await supabase.from('users').select('*', { count: 'exact', head: true })
+    const { count, error: countError } = await supabase
+      .from('users')
+      .select('id', { count: 'exact', head: true })
+      .limit(1)
     if (countError) {
       console.warn('⚠️ Erreur lors du comptage des users:', countError.message)
       return
@@ -1063,19 +1069,225 @@ module.exports = {
     }))
   },
 
+  async addLinkVisit(data) {
+    const id = data.id || newEntityId('link-visit')
+    const payload = {
+      id,
+      user_id: data.userId,
+      site_id: data.siteId,
+      source: data.source || 'direct',
+      visited_at: data.visitedAt ? new Date(data.visitedAt).toISOString() : new Date().toISOString(),
+      week_number: data.weekNumber,
+      year: data.year,
+      created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
+    }
+
+    const { data: result, error } = await supabase
+      .from('link_visits')
+      .insert(payload)
+      .select(LINK_VISIT_COLUMNS)
+      .limit(1)
+      .single()
+
+    if (error) {
+      console.error('❌ Erreur création link_visit Supabase:', error.message)
+      return { ...data, id }
+    }
+
+    invalidateCache(`link_visits:${data.siteId}:`)
+    return {
+      id: result.id,
+      userId: result.user_id,
+      siteId: result.site_id,
+      source: result.source,
+      visitedAt: iso(result.visited_at),
+      weekNumber: result.week_number,
+      year: result.year,
+      createdAt: iso(result.created_at),
+    }
+  },
+
+  async getLinkVisitsBySiteWeek(siteId, weekNumber, year) {
+    const cacheKey = `link_visits:${siteId}:${year}:${weekNumber}`
+    return cached(cacheKey, CACHE_TTL_MS, async () => {
+      const { data, error } = await supabase
+        .from('link_visits')
+        .select(LINK_VISIT_COLUMNS)
+        .eq('site_id', siteId)
+        .eq('week_number', weekNumber)
+        .eq('year', year)
+        .order('visited_at', { ascending: false })
+        .limit(TRACKING_LIMIT)
+
+      return error ? [] : data.map((row) => ({
+        id: row.id,
+        userId: row.user_id,
+        siteId: row.site_id,
+        source: row.source,
+        visitedAt: iso(row.visited_at),
+        weekNumber: row.week_number,
+        year: row.year,
+        createdAt: iso(row.created_at),
+      }))
+    })
+  },
+
+  async addSiteVisit(data) {
+    const id = data.id || newEntityId('site-visit')
+    const visitedAt = data.visitedAt ? new Date(data.visitedAt) : new Date()
+    const payload = {
+      id,
+      shop_id: data.userId,
+      site_id: data.siteId,
+      ip_address: data.ipAddress || null,
+      visitor_id: data.visitorId || null,
+      source: data.source || 'direct',
+      visited_at: visitedAt.toISOString(),
+      visit_date: visitedAt.toISOString().slice(0, 10),
+      week_number: data.weekNumber,
+      year: data.year,
+      created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
+    }
+
+    const { data: result, error } = await supabase
+      .from('site_visits')
+      .insert(payload)
+      .select(SITE_VISIT_COLUMNS)
+      .limit(1)
+      .single()
+
+    if (error) {
+      if (error.code !== '23505') console.error('❌ Erreur création site_visit Supabase:', error.message)
+      return { ...data, id, duplicate: error.code === '23505' }
+    }
+
+    invalidateCache(`site_visits:${data.siteId}:`)
+    return {
+      id: result.id,
+      userId: result.shop_id,
+      siteId: result.site_id,
+      source: result.source,
+      visitorId: result.visitor_id,
+      ipAddress: result.ip_address,
+      visitedAt: iso(result.visited_at),
+      weekNumber: result.week_number,
+      year: result.year,
+      createdAt: iso(result.created_at),
+    }
+  },
+
+  async addProductEvent(data) {
+    const id = data.id || newEntityId('product-event')
+    const createdAt = data.createdAt ? new Date(data.createdAt) : new Date()
+    const payload = {
+      id,
+      shop_id: data.userId,
+      site_id: data.siteId,
+      product_id: data.productId,
+      event_type: data.eventType,
+      ip_address: data.ipAddress || null,
+      visitor_id: data.visitorId || null,
+      created_at: createdAt.toISOString(),
+      event_date: createdAt.toISOString().slice(0, 10),
+      week_number: data.weekNumber,
+      year: data.year,
+    }
+
+    const { data: result, error } = await supabase
+      .from('product_events')
+      .insert(payload)
+      .select(PRODUCT_EVENT_COLUMNS)
+      .limit(1)
+      .single()
+
+    if (error) {
+      if (error.code !== '23505') console.error('❌ Erreur création product_event Supabase:', error.message)
+      return { ...data, id, duplicate: error.code === '23505' }
+    }
+
+    invalidateCache(`product_events:${data.siteId}:`)
+    return {
+      id: result.id,
+      userId: result.shop_id,
+      siteId: result.site_id,
+      productId: result.product_id,
+      eventType: result.event_type,
+      visitorId: result.visitor_id,
+      ipAddress: result.ip_address,
+      createdAt: iso(result.created_at),
+      weekNumber: result.week_number,
+      year: result.year,
+    }
+  },
+
+  async getSiteVisitsBySiteWeek(siteId, weekNumber, year) {
+    const cacheKey = `site_visits:${siteId}:${year}:${weekNumber}`
+    return cached(cacheKey, CACHE_TTL_MS, async () => {
+      const { data, error } = await supabase
+        .from('site_visits')
+        .select(SITE_VISIT_COLUMNS)
+        .eq('site_id', siteId)
+        .eq('week_number', weekNumber)
+        .eq('year', year)
+        .order('visited_at', { ascending: false })
+        .limit(TRACKING_LIMIT)
+
+      return error ? [] : data.map((row) => ({
+        id: row.id,
+        userId: row.shop_id,
+        siteId: row.site_id,
+        source: row.source,
+        visitorId: row.visitor_id,
+        ipAddress: row.ip_address,
+        visitedAt: iso(row.visited_at),
+        weekNumber: row.week_number,
+        year: row.year,
+        createdAt: iso(row.created_at),
+      }))
+    })
+  },
+
+  async getProductEventsBySiteWeek(siteId, weekNumber, year) {
+    const cacheKey = `product_events:${siteId}:${year}:${weekNumber}`
+    return cached(cacheKey, CACHE_TTL_MS, async () => {
+      const { data, error } = await supabase
+        .from('product_events')
+        .select(PRODUCT_EVENT_COLUMNS)
+        .eq('site_id', siteId)
+        .eq('week_number', weekNumber)
+        .eq('year', year)
+        .order('created_at', { ascending: false })
+        .limit(TRACKING_LIMIT)
+
+      return error ? [] : data.map((row) => ({
+        id: row.id,
+        userId: row.shop_id,
+        siteId: row.site_id,
+        productId: row.product_id,
+        eventType: row.event_type,
+        visitorId: row.visitor_id,
+        ipAddress: row.ip_address,
+        createdAt: iso(row.created_at),
+        weekNumber: row.week_number,
+        year: row.year,
+      }))
+    })
+  },
+
   // Admin-specific functions
   async getSummary() {
     const [usersResult, sitesResult, productsResult, paymentsResult] = await Promise.all([
-      supabase.from('users').select('*', { count: 'exact', head: true }),
-      supabase.from('sites').select('*', { count: 'exact', head: true }),
-      supabase.from('products').select('*', { count: 'exact', head: true }),
-      supabase.from('payments').select('*', { count: 'exact', head: true }),
+      supabase.from('users').select('id', { count: 'exact', head: true }).limit(1),
+      supabase.from('sites').select('id', { count: 'exact', head: true }).limit(1),
+      supabase.from('products').select('id', { count: 'exact', head: true }).limit(1),
+      supabase.from('payments').select('id', { count: 'exact', head: true }).limit(1),
     ])
 
     const paidPaymentsResult = await supabase
       .from('payments')
-      .select('amount', { count: 'exact', head: true })
+      .select('amount')
       .eq('status', 'paid')
+      .limit(ADMIN_LIMIT)
 
     const totalRevenue = paidPaymentsResult.data ? 
       paidPaymentsResult.data.reduce((sum, p) => sum + (p.amount || 0), 0) : 0
@@ -1095,7 +1307,9 @@ module.exports = {
   async listPremiumProjects() {
     const { data, error } = await supabase
       .from('premium_orders')
-      .select('*, users(name, email), sites(name, slug)')
+      .select('id,user_id,site_id,manager_name,email,whatsapp,site_type,activity_type,delai,acompte_paid_at,status,created_at')
+      .order('created_at', { ascending: false })
+      .limit(ADMIN_LIMIT)
     
     if (error || !data) return { success: false, projects: [] }
 

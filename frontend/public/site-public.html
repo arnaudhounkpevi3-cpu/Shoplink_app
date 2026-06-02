@@ -1061,7 +1061,7 @@
     const THEMES = {
       food: { label: 'Restaurant', title: 'Nos menus', subtitle: 'Choisissez vos plats et commandez directement via WhatsApp.', primary: '#9a3f13', secondary: '#6f2c0d', accent: '#f59c1a', bg: '#fff7eb', soft: '#fff2df', text: '#24140a', icon: '🍽️', iconUrl: 'https://cdn-icons-png.flaticon.com/512/562/562678.png' },
       fastfood: { label: 'Fast-food', title: 'À commander maintenant', subtitle: 'Des produits rapides à choisir et à commander directement via WhatsApp.', primary: '#d9480f', secondary: '#9a3412', accent: '#facc15', bg: '#fff8db', soft: '#fff3bf', text: '#271307', icon: '🍟', iconUrl: 'https://cdn-icons-png.flaticon.com/512/738/738079.png' },
-      fashion: { label: 'Boutique mode', title: 'Collection disponible', subtitle: 'Parcourez les articles, découvrez les prix et commandez vos pièces préférées.', primary: '#1f4f8f', secondary: '#14315d', accent: '#d7a247', bg: '#f1f6ff', soft: '#e1ecff', text: '#101a2f', icon: '👗', iconUrl: 'https://cdn-icons-png.flaticon.com/512/11746/11746073.png' },
+      fashion: { label: 'Boutique mode', title: 'Collection disponible', subtitle: 'Parcourez les articles, découvrez les prix et commandez vos pièces préférées.', primary: '#1f4f8f', secondary: '#14315d', accent: '#d7a247', bg: '#f1f6ff', soft: '#e1ecff', text: '#101a2f', icon: '👗', iconUrl: 'https://cdn-icons-png.flaticon.com/512/7845/7845586.png' },
       beauty: { label: 'Beauté & soins', title: 'Sélection beauté', subtitle: 'Des soins, parfums et produits beauté dans une vitrine douce et élégante.', primary: '#8b3a62', secondary: '#5d2440', accent: '#eaa6c8', bg: '#fff2fa', soft: '#ffe8f4', text: '#28131e', icon: '💄', iconUrl: 'https://cdn-icons-png.flaticon.com/512/8023/8023928.png' },
       commerce: { label: 'Commerce', title: 'Catalogue produits', subtitle: 'Découvrez les articles disponibles et contactez la boutique pour commander.', primary: '#176b5b', secondary: '#0f493f', accent: '#f59c1a', bg: '#f2fbf5', soft: '#e8f7ef', text: '#0f1f17', icon: '🛒', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3144/3144456.png' },
       general: { label: 'Bienvenue', title: 'Nos produits', subtitle: 'Consultez les produits disponibles et commandez facilement via WhatsApp.', primary: '#4c2f88', secondary: '#2f1d55', accent: '#f59c1a', bg: '#f7f2ff', soft: '#eee7ff', text: '#17112a', icon: '', iconUrl: '', welcome: true },
@@ -1100,7 +1100,10 @@
     function money(value) { return Number(value || 0).toLocaleString('fr-FR') + ' FCFA' }
     function safe(value) { return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') }
     function cleanUrl(slug) { return `${window.location.origin}/boutique/${slug}` }
-    function visitSource() { return new URLSearchParams(window.location.search).get('source') || '' }
+    function visitSource() {
+      const params = new URLSearchParams(window.location.search)
+      return params.get('utm_source') || params.get('source') || 'direct'
+    }
 
     async function loadSite(options = {}) {
       const { silent = false } = options
@@ -1137,6 +1140,8 @@
           products: currentProducts,
           cachedAt: Date.now(),
         }))
+        trackOfficialSiteVisit(currentSite.id, visitSource())
+        trackWeeklyLinkVisit(currentSite.id, visitSource())
         trackVisit(currentSite.id)
         renderSite(currentSite, currentProducts)
       } catch (error) {
@@ -1306,6 +1311,7 @@
       const existing = cart.find(item => String(item.id) === String(id))
       if (existing) existing.quantity += 1
       else cart.push({ ...product, quantity: 1 })
+      trackProductEvent(currentSite.id, product.id, 'add_to_cart')
       updateCartUI()
       openCartDrawer()
     }
@@ -1433,10 +1439,14 @@
 
     function visitorId() { let id = localStorage.getItem('shoplink_visitor_id'); if (!id) { id = 'visitor-' + Date.now() + '-' + Math.random().toString(36).slice(2); localStorage.setItem('shoplink_visitor_id', id) } return id }
     function sessionId() { let id = sessionStorage.getItem('shoplink_session_id'); if (!id) { id = 'session-' + Date.now() + '-' + Math.random().toString(36).slice(2); sessionStorage.setItem('shoplink_session_id', id) } return id }
+    function todayKey() { return new Date().toISOString().slice(0, 10) }
     function clickedRecently(id) { const last = localStorage.getItem(`whatsapp_click_${window.currentSiteId || 'site'}_${id}`); return last && (Date.now() - Number(last)) / 36e5 < 24 }
+    async function trackOfficialSiteVisit(siteId, source) { if (OWNER_MODE) return; const key = `site_visit_${siteId}_${visitorId()}_${todayKey()}`; if (localStorage.getItem(key)) return; try { await fetch(`${API_BASE}/tracking/site-visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, visitorId: visitorId(), source: source || 'direct' }) }); localStorage.setItem(key, '1') } catch (_) {} }
+    async function trackProductEvent(siteId, productId, eventType) { if (OWNER_MODE) return; if (eventType === 'view') { const key = `product_view_${siteId}_${productId}_${visitorId()}_${todayKey()}`; if (localStorage.getItem(key)) return; try { await fetch(`${API_BASE}/tracking/product-event`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, visitorId: visitorId(), eventType }) }); localStorage.setItem(key, '1') } catch (_) {} ; return } try { await fetch(`${API_BASE}/tracking/product-event`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, visitorId: visitorId(), eventType }) }) } catch (_) {} }
+    async function trackWeeklyLinkVisit(siteId, source) { if (OWNER_MODE) return; const key = `weekly_visit_${siteId}_${sessionId()}_${source || 'direct'}`; if (sessionStorage.getItem(key)) return; try { await fetch(`${API_BASE}/tracking/link-visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, source: source || 'direct' }) }); sessionStorage.setItem(key, '1') } catch (_) {} }
     async function trackVisit(siteId) { if (OWNER_MODE) return; try { await fetch(`${API_BASE}/tracking/visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, sessionId: sessionId(), visitorId: visitorId(), referrer: document.referrer, userAgent: navigator.userAgent, platform: visitSource() }) }) } catch (_) {} }
     async function trackWhatsAppClick(siteId, productId = null) { if (OWNER_MODE) return; if (productId && clickedRecently(productId)) return; try { await fetch(`${API_BASE}/tracking/whatsapp-click`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }); if (productId) localStorage.setItem(`whatsapp_click_${siteId}_${productId}`, Date.now()) } catch (_) {} }
-    async function trackProductView(siteId, productId) { if (OWNER_MODE) return; try { await fetch(`${API_BASE}/tracking/product-view`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }) } catch (_) {} }
+    async function trackProductView(siteId, productId) { if (OWNER_MODE) return; trackProductEvent(siteId, productId, 'view'); try { await fetch(`${API_BASE}/tracking/product-view`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }) } catch (_) {} }
 
     window.addEventListener('beforeunload', () => { if (OWNER_MODE || !window.currentSiteId) return; const timeSpent = Date.now() - startTime; if (timeSpent > 2000) { const body = JSON.stringify({ siteId: window.currentSiteId, timeSpent, sessionId: sessionId(), visitorId: visitorId() }); navigator.sendBeacon(`${API_BASE}/tracking/time-spent`, new Blob([body], { type: 'application/json' })) } })
 

@@ -348,4 +348,73 @@ module.exports = {
   async getTrackingBySite(siteId) {
     return state.tracking.filter((entry) => entry.siteId === siteId).map((entry) => ({ ...entry }))
   },
+
+  async addLinkVisit(data) {
+    if (!state.linkVisits) state.linkVisits = []
+    const event = {
+      ...data,
+      id: data.id || `link-visit-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      visitedAt: data.visitedAt || new Date().toISOString(),
+      createdAt: data.createdAt || new Date().toISOString(),
+    }
+    state.linkVisits.push(event)
+    saveState()
+    return { ...event }
+  },
+
+  async getLinkVisitsBySiteWeek(siteId, weekNumber, year) {
+    if (!state.linkVisits) state.linkVisits = []
+    return state.linkVisits
+      .filter((entry) => entry.siteId === siteId && Number(entry.weekNumber) === Number(weekNumber) && Number(entry.year) === Number(year))
+      .map((entry) => ({ ...entry }))
+  },
+
+  async addSiteVisit(data) {
+    if (!state.siteVisits) state.siteVisits = []
+    const date = (data.visitedAt || new Date().toISOString()).slice(0, 10)
+    const exists = state.siteVisits.some((entry) => entry.siteId === data.siteId && entry.visitorId === data.visitorId && entry.visitDate === date)
+    if (exists) return { ...data, duplicate: true }
+    const event = {
+      ...data,
+      id: data.id || `site-visit-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      visitDate: date,
+      visitedAt: data.visitedAt || new Date().toISOString(),
+      createdAt: data.createdAt || new Date().toISOString(),
+    }
+    state.siteVisits.push(event)
+    saveState()
+    return { ...event }
+  },
+
+  async addProductEvent(data) {
+    if (!state.productEvents) state.productEvents = []
+    const date = (data.createdAt || new Date().toISOString()).slice(0, 10)
+    if (data.eventType === 'view') {
+      const exists = state.productEvents.some((entry) => entry.siteId === data.siteId && entry.productId === data.productId && entry.visitorId === data.visitorId && entry.eventDate === date && entry.eventType === 'view')
+      if (exists) return { ...data, duplicate: true }
+    }
+    const event = {
+      ...data,
+      id: data.id || `product-event-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      eventDate: date,
+      createdAt: data.createdAt || new Date().toISOString(),
+    }
+    state.productEvents.push(event)
+    saveState()
+    return { ...event }
+  },
+
+  async getSiteVisitsBySiteWeek(siteId, weekNumber, year) {
+    if (!state.siteVisits) state.siteVisits = []
+    return state.siteVisits
+      .filter((entry) => entry.siteId === siteId && Number(entry.weekNumber) === Number(weekNumber) && Number(entry.year) === Number(year))
+      .map((entry) => ({ ...entry }))
+  },
+
+  async getProductEventsBySiteWeek(siteId, weekNumber, year) {
+    if (!state.productEvents) state.productEvents = []
+    return state.productEvents
+      .filter((entry) => entry.siteId === siteId && Number(entry.weekNumber) === Number(weekNumber) && Number(entry.year) === Number(year))
+      .map((entry) => ({ ...entry }))
+  },
 }
