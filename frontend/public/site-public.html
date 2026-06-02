@@ -286,31 +286,30 @@
 
     @media (min-width: 821px) {
       .hero-meta {
-        grid-template-columns: repeat(auto-fit, minmax(230px, max-content));
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
         justify-content: start;
-        align-items: center;
+        align-items: stretch;
       }
 
       .meta-card {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        width: max-content;
+        display: block;
+        width: 100%;
         max-width: 100%;
-        padding: 10px 14px;
-        white-space: nowrap;
+        padding: 13px 14px;
+        white-space: normal;
       }
 
       .meta-label {
         display: inline-flex;
         align-items: center;
-        margin: 0;
-        flex: 0 0 auto;
+        margin: 0 0 6px;
       }
 
       .meta-value {
-        margin-top: 0 !important;
+        margin-top: 0;
         min-width: 0;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
     }
 
@@ -661,12 +660,15 @@
       z-index: 100;
       width: min(420px, 100%);
       height: 100vh;
+      height: 100dvh;
       background: #fff;
       box-shadow: -28px 0 80px rgba(17,24,39,.22);
       transform: translateX(105%);
       transition: transform .28s ease;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .cart-drawer.show { transform: translateX(0); }
@@ -678,6 +680,10 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #fff;
     }
 
     .cart-title { font-size: 22px; font-weight: 900; letter-spacing: -.04em; }
@@ -694,8 +700,8 @@
     }
 
     .cart-body {
-      flex: 1;
-      overflow: auto;
+      flex: 1 0 auto;
+      overflow: visible;
       padding: 12px 20px;
     }
 
@@ -769,6 +775,7 @@
       padding: 18px 20px 20px;
       border-top: 1px solid var(--border);
       background: linear-gradient(180deg,#fff, color-mix(in srgb, var(--soft) 50%, #fff));
+      flex: 0 0 auto;
     }
 
     .checkout-form {
@@ -994,7 +1001,10 @@
       .about { grid-template-columns: 1fr; }
       .product-actions, .site-modal-actions { grid-template-columns: 1fr; }
       .cart-fab { left: 14px; right: 14px; justify-content: center; }
-      .cart-drawer { width: 100%; }
+      .cart-drawer { width: 100%; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+      .cart-head { padding: 16px; }
+      .cart-body { padding: 10px 16px; }
+      .cart-footer { padding: 14px 16px max(18px, env(safe-area-inset-bottom)); }
       .cart-actions { grid-template-columns: 1fr; }
       .owner-inline-actions { display: grid; grid-template-columns: 1fr; }
       .owner-inline-btn { width: 100%; }
@@ -1310,7 +1320,15 @@
     function clearCart() {
       cart = []
       updateCartUI()
+      clearCheckoutForm()
       closeCartDrawer()
+    }
+
+    function clearCheckoutForm() {
+      ['checkout-name', 'checkout-whatsapp', 'checkout-address', 'checkout-note'].forEach((id) => {
+        const field = document.getElementById(id)
+        if (field) field.value = ''
+      })
     }
 
     function openCartDrawer() {
@@ -1333,6 +1351,11 @@
       const lines = cart.map((item, index) => `${index + 1}. ${item.name} x${item.quantity} — ${money(Number(item.price || 0) * item.quantity)}`)
       trackWhatsAppClick(currentSite.id)
       openWhatsApp(buildOrderMessage(customer, lines, total))
+      cart = []
+      updateCartUI()
+      clearCheckoutForm()
+      closeCartDrawer()
+      toast('Commande initiée. Votre panier a été vidé.', 'success', 'Commande envoyée')
     }
 
     function getGreeting() {
