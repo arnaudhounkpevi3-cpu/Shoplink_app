@@ -771,6 +771,42 @@
       background: linear-gradient(180deg,#fff, color-mix(in srgb, var(--soft) 50%, #fff));
     }
 
+    .checkout-form {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--border);
+    }
+
+    .checkout-form-title {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 2px;
+    }
+
+    .checkout-field {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .checkout-field:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
+    }
+
     .cart-total {
       display: flex;
       justify-content: space-between;
@@ -980,6 +1016,13 @@
     </div>
     <div class="cart-body" id="cart-body"></div>
     <div class="cart-footer">
+      <div class="checkout-form">
+        <div class="checkout-form-title">Informations client</div>
+        <input class="checkout-field" id="checkout-name" placeholder="Nom complet" autocomplete="name">
+        <input class="checkout-field" id="checkout-whatsapp" placeholder="WhatsApp ex : +22947000674" autocomplete="tel">
+        <input class="checkout-field" id="checkout-address" placeholder="Adresse de livraison" autocomplete="street-address">
+        <textarea class="checkout-field" id="checkout-note" rows="2" placeholder="Note (optionnel) ex : Urgent"></textarea>
+      </div>
       <div class="cart-total"><span>Total</span><span id="cart-total">0 FCFA</span></div>
       <div class="cart-actions">
         <button class="btn-details" onclick="clearCart()">Vider</button>
@@ -1284,10 +1327,50 @@
     function orderCart() {
       if (!cart.length) { toast('Ajoutez au moins un produit avant de commander.', 'warning', 'Panier vide'); return }
       if (OWNER_MODE) { toast('Passez par le lien client partagé pour tester une commande WhatsApp.', 'warning', 'Mode aperçu'); return }
+      const customer = getCheckoutInfo()
+      if (!customer) return
       const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0)
       const lines = cart.map((item, index) => `${index + 1}. ${item.name} x${item.quantity} — ${money(Number(item.price || 0) * item.quantity)}`)
       trackWhatsAppClick(currentSite.id)
-      openWhatsApp(`Bonjour, je veux commander :\n${lines.join('\n')}\n\nTotal : ${money(total)}\nBoutique : ${cleanUrl(currentSite.slug || slugFromUrl())}`)
+      openWhatsApp(buildOrderMessage(customer, lines, total))
+    }
+
+    function getGreeting() {
+      const hour = new Date().getHours()
+      if (hour < 12) return 'Bonjour'
+      if (hour < 18) return 'Bon après-midi'
+      return 'Bonsoir'
+    }
+
+    function orderReference() {
+      const name = String(currentSite?.name || 'ShopLink')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase()
+        .replace(/[^A-Z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 28) || 'SHOPLINK'
+      const next = Number(localStorage.getItem(`shoplink_order_seq_${currentSite?.id || slugFromUrl()}`) || '0') + 1
+      localStorage.setItem(`shoplink_order_seq_${currentSite?.id || slugFromUrl()}`, String(next))
+      return `${name}-${String(next).padStart(4, '0')}`
+    }
+
+    function getCheckoutInfo() {
+      const name = document.getElementById('checkout-name')?.value.trim() || ''
+      const whatsapp = document.getElementById('checkout-whatsapp')?.value.trim() || ''
+      const address = document.getElementById('checkout-address')?.value.trim() || ''
+      const note = document.getElementById('checkout-note')?.value.trim() || ''
+
+      if (!name) { toast('Renseignez votre nom avant de commander.', 'warning', 'Nom requis'); return null }
+      if (!whatsapp) { toast('Renseignez votre numéro WhatsApp avant de commander.', 'warning', 'WhatsApp requis'); return null }
+      if (!address) { toast('Renseignez votre adresse avant de commander.', 'warning', 'Adresse requise'); return null }
+
+      return { name, whatsapp, address, note }
+    }
+
+    function buildOrderMessage(customer, lines, total) {
+      const noteLine = customer.note ? `\nNote : ${customer.note}` : ''
+      return `${getGreeting()}, je veux passer une commande sur ${currentSite?.name || 'votre boutique'}.\n\nRéférence commande : ${orderReference()}\n\nInformations client :\nNom : ${customer.name}\nWhatsApp : ${customer.whatsapp}\nAdresse : ${customer.address}${noteLine}\n\nPanier :\n${lines.join('\n')}\n\nTotal : ${money(total)}\n\nMerci de confirmer la disponibilité et les modalités de paiement/livraison.`
     }
     function openWhatsApp(message) { const raw = String(currentSite?.whatsapp || '').replace(/\D/g, ''); const phone = raw.startsWith('229') ? raw : raw ? `229${raw}` : ''; window.open(phone ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`, '_blank') }
     async function copyClientLink(slug) {
