@@ -622,6 +622,8 @@
         stats.productOrders = data.productAdds || {};
         stats.whatsappClicks = Number(metrics.addToCartTotal || 0);
         stats.topProduct = data.topProduct || null;
+        stats.weeklyTopProducts = data.topProducts || [];
+        stats.productViewsTotal = Number(metrics.productViewsTotal || 0);
         saveStats(stats);
         updateProductViewCounters(stats.productViews);
         renderClientStats();
@@ -655,6 +657,8 @@
         direct: ['<img src="https://cdn-icons-png.flaticon.com/512/3462/3462381.png" alt="" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:-2px;">', 'Direct'],
       };
       const rows = weeklyData?.sources || [];
+      const metrics = weeklyData?.metrics || {};
+      const topProducts = weeklyData?.topProducts || [];
       const total = Number(weeklyData?.total || 0);
       const period = weeklyData?.week?.period || 'Semaine en cours';
       const isCurrent = weeklyData?.week?.isCurrent !== false;
@@ -687,6 +691,17 @@
             <div style="font-size:11px;color:var(--muted);text-align:right;line-height:1.35;max-width:170px;">
               Répartition hebdomadaire par source. Total 100%.
             </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+            <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;"><div style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">👁️ Vues site</div><div style="font-size:18px;font-weight:900;color:var(--green);margin-top:4px;">${Number(metrics.siteViews || 0)}</div></div>
+            <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;"><div style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">👤 Visiteurs</div><div style="font-size:18px;font-weight:900;color:var(--green);margin-top:4px;">${Number(metrics.uniqueVisitors || 0)}</div></div>
+            <div style="padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff;"><div style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">📦 Vues produits</div><div style="font-size:18px;font-weight:900;color:var(--green);margin-top:4px;">${Number(metrics.productViewsTotal || 0)}</div></div>
+          </div>
+
+          <div style="border:1px solid var(--border);border-radius:14px;background:#fff;overflow:hidden;">
+            <div style="padding:10px 12px;background:#fbf7f1;border-bottom:1px solid var(--border);font-size:12px;font-weight:900;color:var(--text);">🏆 Top produits cette semaine</div>
+            ${topProducts.length ? topProducts.map((product, index) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:${index === topProducts.length - 1 ? '0' : '1px solid #f3eadf'};"><span style="font-size:12px;font-weight:800;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${index + 1}. ${product.name}</span><span style="font-size:11px;color:var(--soft);font-weight:900;white-space:nowrap;">${product.views} vues · ${product.adds} ajouts</span></div>`).join('') : '<div style="padding:12px;color:var(--soft);font-size:12px;text-align:center;">Aucun produit consulté cette semaine.</div>'}
           </div>
 
           <div style="display:grid;gap:10px;">
