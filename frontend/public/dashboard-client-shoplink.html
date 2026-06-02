@@ -392,7 +392,6 @@
 
         const site = data.site || localSite;
         setAccountJson(CLIENT_SITE_KEY, site);
-        localStorage.setItem(CLIENT_SITE_KEY, JSON.stringify(site));
         applyAccountSiteToPreview();
         return site;
       } catch (error) {
@@ -2508,7 +2507,6 @@
 
         localStorage.setItem(CLIENT_PROFILE_KEY, JSON.stringify(updatedUser));
         setAccountJson(CLIENT_SITE_KEY, nextSite);
-        localStorage.setItem(CLIENT_SITE_KEY, JSON.stringify(nextSite));
 
         if (localStorage.getItem('shoplink_remember_me') === 'true') {
           localStorage.setItem('shoplink_remember_email', updatedUser.email || email);

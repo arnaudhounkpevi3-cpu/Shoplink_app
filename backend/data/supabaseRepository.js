@@ -2,6 +2,42 @@ const bcrypt = require('bcryptjs')
 const supabase = require('../config/supabase')
 const { normalizeActivityType, getActivityTheme } = require('../utils/activityTheme')
 
+const DEFAULT_LIMIT = Number(process.env.SUPABASE_DEFAULT_LIMIT || 100)
+const ADMIN_LIMIT = Number(process.env.SUPABASE_ADMIN_LIMIT || 500)
+const TRACKING_LIMIT = Number(process.env.SUPABASE_TRACKING_LIMIT || 1000)
+const CACHE_TTL_MS = Number(process.env.SUPABASE_CACHE_TTL_MS || 30000)
+
+const USER_COLUMNS = 'id,name,email,phone,role,password,created_at,updated_at'
+const PUBLIC_USER_COLUMNS = 'id,name,email,phone,role,created_at,updated_at'
+const SITE_COLUMNS = 'id,user_id,name,slug,slogan,logo_url,description,whatsapp,phone2,address,activity_type,primary_color,status,created_at,published_at,updated_at'
+const PRODUCT_COLUMNS = 'id,site_id,user_id,name,price,image_url,description,category,is_visible,availability,stock,badge,old_price,variant_info,extra_info,created_at,updated_at'
+const PAYMENT_COLUMNS = 'id,user_id,site_id,type,amount,step,status,method,reference,admin_note,paid_at,created_at,updated_at'
+const TICKET_COLUMNS = 'id,user_id,user_name,user_email,subject,message,priority,status,replies,created_at,updated_at'
+const TRACKING_COLUMNS = 'id,site_id,product_id,type,visitor_id,session_id,ip_address,user_agent,referrer,platform,time_spent,created_at'
+const PREMIUM_ORDER_COLUMNS = 'id,user_id,site_id,manager_name,email,whatsapp,site_type,activity_type,delai,acompte_paid_at,status,created_at'
+
+const memoryCache = new Map()
+
+function cached(key, ttlMs, producer) {
+  const entry = memoryCache.get(key)
+  if (entry && Date.now() - entry.createdAt < ttlMs) return Promise.resolve(entry.value)
+  return Promise.resolve(producer()).then((value) => {
+    memoryCache.set(key, { value, createdAt: Date.now() })
+    return value
+  })
+}
+
+function invalidateCache(prefix = '') {
+  if (!prefix) {
+    memoryCache.clear()
+    return
+  }
+
+  for (const key of memoryCache.keys()) {
+    if (key.startsWith(prefix)) memoryCache.delete(key)
+  }
+}
+
 function iso(d) {
   if (!d) {
     return undefined
@@ -306,8 +342,9 @@ module.exports = {
   async findUserByEmail(email) {
     const { data, error } = await supabase
       .from('users')
-      .select('*')
+      .select(USER_COLUMNS)
       .eq('email', String(email).toLowerCase())
+      .limit(1)
       .single()
     return error || !data ? null : mapUser(data)
   },
@@ -315,8 +352,9 @@ module.exports = {
   async findUserById(id) {
     const { data, error } = await supabase
       .from('users')
-      .select('*')
+      .select(USER_COLUMNS)
       .eq('id', id)
+      .limit(1)
       .single()
     return error || !data ? null : mapUser(data)
   },
@@ -334,8 +372,9 @@ module.exports = {
         password: data.passwordHash,
         created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
       })
-      .select()
+      .select(USER_COLUMNS)
       .single()
+    invalidateCache('users:')
     return error || !result ? null : mapUser(result)
   },
 
@@ -353,27 +392,41 @@ module.exports = {
       .from('users')
       .update(update)
       .eq('id', id)
-      .select()
+      .select(USER_COLUMNS)
       .single()
 
+    invalidateCache('users:')
     return error || !result ? null : mapUser(result)
   },
 
   async listUsers() {
-    const { data, error } = await supabase.from('users').select('*')
-    return error ? [] : data.map(mapUser)
+    return cached('users:list', CACHE_TTL_MS, async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select(PUBLIC_USER_COLUMNS)
+        .order('created_at', { ascending: false })
+        .limit(ADMIN_LIMIT)
+      return error ? [] : data.map(mapUser)
+    })
   },
 
   async listSites() {
-    const { data, error } = await supabase.from('sites').select('*')
-    return error ? [] : data.map(mapSite)
+    return cached('sites:list', CACHE_TTL_MS, async () => {
+      const { data, error } = await supabase
+        .from('sites')
+        .select(SITE_COLUMNS)
+        .order('created_at', { ascending: false })
+        .limit(ADMIN_LIMIT)
+      return error ? [] : data.map(mapSite)
+    })
   },
 
   async findSiteById(id) {
     const { data, error } = await supabase
       .from('sites')
-      .select('*')
+      .select(SITE_COLUMNS)
       .eq('id', id)
+      .limit(1)
       .single()
     return error || !data ? null : mapSite(data)
   },
@@ -381,8 +434,9 @@ module.exports = {
   async findSiteBySlug(slug) {
     const { data, error } = await supabase
       .from('sites')
-      .select('*')
+      .select(SITE_COLUMNS)
       .eq('slug', slug)
+      .limit(1)
       .single()
     return error || !data ? null : mapSite(data)
   },
@@ -390,8 +444,10 @@ module.exports = {
   async findSitesByUserId(userId) {
     const { data, error } = await supabase
       .from('sites')
-      .select('*')
+      .select(SITE_COLUMNS)
       .eq('user_id', userId)
+      .order('updated_at', { ascending: false })
+      .limit(DEFAULT_LIMIT)
     return error ? [] : data.map(mapSite)
   },
 
@@ -425,13 +481,15 @@ module.exports = {
         published_at: data.publishedAt ? new Date(data.publishedAt).toISOString() : null,
         created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
       })
-      .select()
+      .select(SITE_COLUMNS)
+      .limit(1)
       .single()
     if (error) {
       console.error('❌ Erreur création site Supabase:', error.message)
       return null
     }
 
+    invalidateCache('sites:')
     return !result ? null : mapSite(result)
   },
 
@@ -439,7 +497,7 @@ module.exports = {
     const updates = {
       updated_at: new Date().toISOString(),
     }
-    
+
     if (patch.name) updates.name = patch.name
     if (patch.slogan !== undefined) updates.slogan = patch.slogan
     if (patch.logo !== undefined) updates.logo_url = patch.logo
@@ -460,42 +518,52 @@ module.exports = {
       .from('sites')
       .update(updates)
       .eq('id', id)
-      .select()
+      .select(SITE_COLUMNS)
+      .limit(1)
       .single()
     if (error) {
       console.error('❌ Erreur mise à jour site Supabase:', error.message)
       return null
     }
 
+    invalidateCache('sites:')
     return !data ? null : mapSite(data)
   },
 
   async deleteSite(id) {
     // Delete products first
     await supabase.from('products').delete().eq('site_id', id)
-    
+
     const { data, error } = await supabase
       .from('sites')
       .delete()
       .eq('id', id)
-      .select()
+      .select(SITE_COLUMNS)
+      .limit(1)
       .single()
+    invalidateCache('sites:')
+    invalidateCache('products:')
     return error || !data ? null : mapSite(data)
   },
 
   async listProductsBySiteId(siteId) {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('site_id', siteId)
-    return error ? [] : data.map(mapProduct)
+    return cached(`products:site:${siteId}`, CACHE_TTL_MS, async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select(PRODUCT_COLUMNS)
+        .eq('site_id', siteId)
+        .order('created_at', { ascending: false })
+        .limit(DEFAULT_LIMIT)
+      return error ? [] : data.map(mapProduct)
+    })
   },
 
   async findProductById(id) {
     const { data, error } = await supabase
       .from('products')
-      .select('*')
+      .select(PRODUCT_COLUMNS)
       .eq('id', id)
+      .limit(1)
       .single()
     return error || !data ? null : mapProduct(data)
   },
@@ -510,7 +578,8 @@ module.exports = {
     let { data: result, error } = await supabase
       .from('products')
       .insert(insertPayload)
-      .select()
+      .select(PRODUCT_COLUMNS)
+      .limit(1)
       .single()
 
     if (isMissingOptionalProductColumn(error)) {
@@ -518,7 +587,8 @@ module.exports = {
       ;({ data: result, error } = await supabase
         .from('products')
         .insert(baseProductInsertPayload(id, data))
-        .select()
+        .select(PRODUCT_COLUMNS)
+        .limit(1)
         .single())
     }
 
@@ -527,6 +597,7 @@ module.exports = {
       return null
     }
 
+    invalidateCache('products:')
     return !result ? null : mapProduct(result)
   },
 
@@ -555,7 +626,8 @@ module.exports = {
       .from('products')
       .update(updates)
       .eq('id', id)
-      .select()
+      .select(PRODUCT_COLUMNS)
+      .limit(1)
       .single()
 
     if (isMissingOptionalProductColumn(error)) {
@@ -565,7 +637,8 @@ module.exports = {
         .from('products')
         .update(updates)
         .eq('id', id)
-        .select()
+        .select(PRODUCT_COLUMNS)
+        .limit(1)
         .single())
     }
 
@@ -574,6 +647,7 @@ module.exports = {
       return null
     }
 
+    invalidateCache('products:')
     return !data ? null : mapProduct(data)
   },
 
@@ -582,21 +656,30 @@ module.exports = {
       .from('products')
       .delete()
       .eq('id', id)
-      .select()
+      .select(PRODUCT_COLUMNS)
+      .limit(1)
       .single()
+    invalidateCache('products:')
     return error || !data ? null : mapProduct(data)
   },
 
   async listPayments() {
-    const { data, error } = await supabase.from('payments').select('*')
-    return error ? [] : data.map(mapPayment)
+    return cached('payments:list', CACHE_TTL_MS, async () => {
+      const { data, error } = await supabase
+        .from('payments')
+        .select(PAYMENT_COLUMNS)
+        .order('created_at', { ascending: false })
+        .limit(ADMIN_LIMIT)
+      return error ? [] : data.map(mapPayment)
+    })
   },
 
   async findPaymentById(id) {
     const { data, error } = await supabase
       .from('payments')
-      .select('*')
+      .select(PAYMENT_COLUMNS)
       .eq('id', id)
+      .limit(1)
       .single()
     return error || !data ? null : mapPayment(data)
   },
@@ -604,8 +687,9 @@ module.exports = {
   async findPaymentByReference(reference) {
     const { data, error } = await supabase
       .from('payments')
-      .select('*')
+      .select(PAYMENT_COLUMNS)
       .eq('reference', reference)
+      .limit(1)
       .single()
     return error || !data ? null : mapPayment(data)
   },
@@ -638,13 +722,15 @@ module.exports = {
         paid_at: data.paidAt ? new Date(data.paidAt).toISOString() : null,
         created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
       })
-      .select()
+      .select(PAYMENT_COLUMNS)
+      .limit(1)
       .single()
     if (error) {
       console.error('❌ Erreur création paiement Supabase:', error.message)
       return null
     }
 
+    invalidateCache('payments:')
     return !result ? null : mapPayment(result)
   },
 
@@ -702,40 +788,49 @@ module.exports = {
       .from('payments')
       .update(updates)
       .eq('id', id)
-      .select()
+      .select(PAYMENT_COLUMNS)
+      .limit(1)
       .single()
     if (error) {
       console.error('❌ Erreur mise à jour paiement Supabase:', error.message)
       return null
     }
 
+    invalidateCache('payments:')
     return !data ? null : mapPayment(data)
   },
 
   async countAutonomePaid() {
     const { count, error } = await supabase
       .from('payments')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('type', 'autonome')
       .in('status', ['paid', 'paye'])
+      .limit(1)
     return error ? 0 : count
   },
 
   async countPremiumAcomptePaid() {
     const { count, error } = await supabase
       .from('payments')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('type', 'premium')
       .eq('step', 'acompte')
       .in('status', ['paid', 'paye'])
+      .limit(1)
     return error ? 0 : count
   },
 
   // Tickets from Supabase
   async listTickets() {
-    const { data, error } = await supabase.from('tickets').select('*')
-    if (error) return []
-    return data.map(t => ({
+    return cached('tickets:list', CACHE_TTL_MS, async () => {
+      const { data, error } = await supabase
+        .from('tickets')
+        .select(TICKET_COLUMNS)
+        .order('created_at', { ascending: false })
+        .limit(ADMIN_LIMIT)
+      if (error) return []
+      return data.map(t => ({
       id: t.id,
       userId: t.user_id,
       userName: t.user_name,
@@ -747,14 +842,16 @@ module.exports = {
       replies: t.replies || [],
       createdAt: iso(t.created_at),
       updatedAt: t.updated_at ? iso(t.updated_at) : undefined,
-    }))
+      }))
+    })
   },
 
   async findTicketById(id) {
     const { data, error } = await supabase
       .from('tickets')
-      .select('*')
+      .select(TICKET_COLUMNS)
       .eq('id', id)
+      .limit(1)
       .single()
     if (error || !data) return null
     return {
@@ -775,8 +872,10 @@ module.exports = {
   async findTicketsByUserId(userId) {
     const { data, error } = await supabase
       .from('tickets')
-      .select('*')
+      .select(TICKET_COLUMNS)
       .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(DEFAULT_LIMIT)
     if (error) return []
     return data.map(t => ({
       id: t.id,
@@ -809,9 +908,11 @@ module.exports = {
         replies: data.replies || [],
         created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
       })
-      .select()
+      .select(TICKET_COLUMNS)
+      .limit(1)
       .single()
     if (error || !result) return null
+    invalidateCache('tickets:')
     return {
       id: result.id,
       userId: result.user_id,
@@ -832,6 +933,7 @@ module.exports = {
       .from('tickets')
       .select('replies')
       .eq('id', id)
+      .limit(1)
       .single()
     
     if (!ticket) return null
@@ -841,10 +943,12 @@ module.exports = {
       .from('tickets')
       .update({ replies: updatedReplies })
       .eq('id', id)
-      .select()
+      .select(TICKET_COLUMNS)
+      .limit(1)
       .single()
     
     if (error || !result) return null
+    invalidateCache('tickets:')
     return {
       id: result.id,
       userId: result.user_id,
@@ -865,9 +969,11 @@ module.exports = {
       .from('tickets')
       .update({ status })
       .eq('id', id)
-      .select()
+      .select(TICKET_COLUMNS)
+      .limit(1)
       .single()
     if (error || !data) return null
+    invalidateCache('tickets:')
     return {
       id: data.id,
       userId: data.user_id,
@@ -888,9 +994,11 @@ module.exports = {
       .from('tickets')
       .delete()
       .eq('id', id)
-      .select()
+      .select(TICKET_COLUMNS)
+      .limit(1)
       .single()
     if (error || !data) return null
+    invalidateCache('tickets:')
     return {
       id: data.id,
       userId: data.user_id,
@@ -925,7 +1033,8 @@ module.exports = {
         time_spent: data.timeSpent || null,
         created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
       })
-      .select()
+      .select(TRACKING_COLUMNS)
+      .limit(1)
       .single()
     return error || !result ? data : { ...data, id: result.id }
   },
@@ -933,9 +1042,10 @@ module.exports = {
   async getTrackingBySite(siteId) {
     const { data, error } = await supabase
       .from('tracking')
-      .select('*')
+      .select(TRACKING_COLUMNS)
       .eq('site_id', siteId)
       .order('created_at', { ascending: false })
+      .limit(TRACKING_LIMIT)
     return error ? [] : data.map(t => ({
       id: t.id,
       siteId: t.site_id,
@@ -1015,7 +1125,7 @@ module.exports = {
   async getMyPremiumProject(userId) {
     const { data, error } = await supabase
       .from('premium_orders')
-      .select('*')
+      .select(PREMIUM_ORDER_COLUMNS)
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1)
