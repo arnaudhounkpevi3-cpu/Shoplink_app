@@ -732,20 +732,30 @@
       const body = topCard?.querySelector('.card-body');
       if (!body) return;
 
-      const products = getProductRows().map((row) => {
-        const product = productFromRow(row);
-        const views = Number(productViews[product.backendId] || productViews[product.id] || 0);
-        const orders = Number((loadStats().productOrders || {})[product.backendId] || (loadStats().productOrders || {})[product.id] || 0);
-        return {
-          id: product.backendId || product.id,
-          name: product.name || 'Produit',
-          category: product.category || 'Catalogue',
-          views,
-          orders,
-        };
-      }).filter((product) => product.views > 0 || product.orders > 0)
-        .sort((a, b) => (b.orders * 2 + b.views) - (a.orders * 2 + a.views))
-        .slice(0, 3);
+      const stats = loadStats();
+      const weeklyProducts = Array.isArray(stats.weeklyTopProducts) ? stats.weeklyTopProducts : [];
+      const products = weeklyProducts.length
+        ? weeklyProducts.map((product) => ({
+            id: product.id,
+            name: product.name || 'Produit',
+            category: product.category || 'Semaine sélectionnée',
+            views: Number(product.views || 0),
+            orders: Number(product.adds || product.orders || 0),
+          }))
+        : getProductRows().map((row) => {
+            const product = productFromRow(row);
+            const views = Number(productViews[product.backendId] || productViews[product.id] || 0);
+            const orders = Number((stats.productOrders || {})[product.backendId] || (stats.productOrders || {})[product.id] || 0);
+            return {
+              id: product.backendId || product.id,
+              name: product.name || 'Produit',
+              category: product.category || 'Catalogue',
+              views,
+              orders,
+            };
+          }).filter((product) => product.views > 0 || product.orders > 0)
+            .sort((a, b) => (b.orders * 2 + b.views) - (a.orders * 2 + a.views))
+            .slice(0, 3);
 
       if (!products.length) {
         body.innerHTML = '<div style="text-align:center;color:var(--soft);padding:18px 6px;font-size:13px;line-height:1.55;">Aucune vue produit pour le moment.<br>Partagez votre lien puis les clics sur les produits apparaîtront ici.</div>';
@@ -787,7 +797,7 @@
                 </div>
                 <div style="text-align:right;">
                   <span style="font-size:13px;font-weight:900;color:var(--text);">${product.views}</span>
-                  ${product.orders ? `<div style="font-size:9px;color:var(--green);font-weight:900;">${product.orders} cmd</div>` : ''}
+                  ${product.orders ? `<div style="font-size:9px;color:var(--green);font-weight:900;">${product.orders} ajout${product.orders > 1 ? 's' : ''}</div>` : ''}
                 </div>
                 <div style="display:grid;gap:4px;justify-items:end;">
                   <div style="display:flex;align-items:center;gap:6px;width:100%;justify-content:flex-end;">
