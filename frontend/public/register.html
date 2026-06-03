@@ -417,6 +417,22 @@
     lbl.style.color = l.bg;
   }
 
+  async function sendWelcomeEmail(token, name) {
+    if (!token) return;
+    try {
+      await fetch(window.SHOPLINK_API_BASE + '/send-welcome-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify({ name }),
+      });
+    } catch (error) {
+      console.warn('Email de bienvenue non envoyé:', error);
+    }
+  }
+
   // Aperçu du slug
   document.addEventListener('input', function(e) {
     if (e.target.id === 'shop-name') {
@@ -460,6 +476,7 @@
         localStorage.setItem('shoplink_user', JSON.stringify(data.user));
         if (data.site) localStorage.setItem('shoplink_site', JSON.stringify(data.site));
         if (data.pricing) localStorage.setItem('shoplink_pricing', JSON.stringify(data.pricing));
+        sendWelcomeEmail(data.token, data.user && data.user.name ? data.user.name : body.name);
         console.log('Token stored, redirecting to dashboard...');
         document.getElementById('success-box').classList.add('show');
         setTimeout(() => window.location.href = 'dashboard-client-shoplink.html', 1500);
