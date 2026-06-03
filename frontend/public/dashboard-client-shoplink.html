@@ -2211,10 +2211,13 @@
       if (phoneName) phoneName.textContent = shopName;
       if (phoneSub) phoneSub.textContent = slogan;
       const context = getClientContext();
+      const previousName = context.site.name || context.site.siteName || context.order.company || context.shopName || '';
+      const nameChanged = shopName.trim().toLowerCase() !== String(previousName || '').trim().toLowerCase();
       const nextSite = {
         ...(context.site || {}),
         name: shopName,
         siteName: shopName,
+        ...(nameChanged ? { slug: slugify(shopName) } : {}),
         slogan,
         whatsapp: normalizedWhatsapp,
         secondaryPhone: normalizedCallPhone,
