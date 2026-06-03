@@ -1037,7 +1037,7 @@
       <div class="checkout-form">
         <div class="checkout-form-title">Informations client</div>
         <input class="checkout-field" id="checkout-name" placeholder="Nom complet" autocomplete="name">
-        <input class="checkout-field" id="checkout-whatsapp" placeholder="WhatsApp ex : +22947000674" autocomplete="tel">
+        <input class="checkout-field" id="checkout-whatsapp" placeholder="WhatsApp ex : +229 0102030405" autocomplete="tel">
         <input class="checkout-field" id="checkout-address" placeholder="Adresse de livraison" autocomplete="street-address">
         <textarea class="checkout-field" id="checkout-note" rows="2" placeholder="Note (optionnel)"></textarea>
       </div>
@@ -1107,7 +1107,7 @@
     function updateCheckoutPlaceholders(activityKey) {
       const note = document.getElementById('checkout-note')
       const whatsapp = document.getElementById('checkout-whatsapp')
-      if (whatsapp) whatsapp.placeholder = 'WhatsApp ex : +22947000674'
+      if (whatsapp) whatsapp.placeholder = 'WhatsApp ex : +229 0102030405'
       if (!note) return
 
       const placeholders = {
@@ -1277,7 +1277,7 @@
         </section>
 
         <section class="section" id="${sectionIds.products}">
-          <div class="section-head"><div class="section-kicker">${safe(theme.label)}</div><h2 class="section-title">${safe(productSectionTitle(theme, products))}</h2><p class="section-subtitle">${safe(theme.subtitle)}</p></div>
+          <div class="section-head"><h2 class="section-title">${safe(productSectionTitle(theme, products))}</h2></div>
           ${displayProducts(products).length
             ? `<div class="products-grid">${displayProducts(products).map(productCard).join('')}</div>`
             : `<div class="empty-products"><strong>Aucun produit publié</strong>Les produits ajoutés depuis le dashboard apparaîtront ici dès leur publication.</div>`
@@ -1500,13 +1500,14 @@
         return
       }
 
+      const whatsappMessage = buildOrderMessage(customer, lines, total, order.reference)
       trackWhatsAppClick(currentSite.id)
-      openWhatsApp(buildOrderMessage(customer, lines, total, order.reference))
       cart = []
       updateCartUI()
       clearCheckoutForm()
       closeCartDrawer()
-      toast('Commande initiée. Votre panier a été vidé.', 'success', 'Commande envoyée')
+      toast('Ouverture de WhatsApp...', 'success', 'Commande prête')
+      openWhatsApp(whatsappMessage)
     }
 
     function getGreeting() {
@@ -1537,7 +1538,7 @@
       const note = document.getElementById('checkout-note')?.value.trim() || ''
 
       if (!name) { toast('Renseignez votre nom avant de commander.', 'warning', 'Nom requis'); return null }
-      if (!whatsapp) { toast('Format requis : +22947000674.', 'warning', 'WhatsApp invalide'); return null }
+      if (!whatsapp) { toast('Format requis : +229 0102030405.', 'warning', 'WhatsApp invalide'); return null }
       if (!address) { toast('Renseignez votre adresse avant de commander.', 'warning', 'Adresse requise'); return null }
 
       return { name, whatsapp, address, note }
@@ -1556,7 +1557,18 @@
       const noteLine = customer.note ? `\nNote : ${customer.note}` : ''
       return `${getGreeting()}, je veux passer une commande sur ${currentSite?.name || 'votre boutique'}.\n\nRéférence commande : ${reference}\n\nInformations client :\nNom : ${customer.name}\nWhatsApp : ${customer.whatsapp}\nAdresse : ${customer.address}${noteLine}\n\nPanier :\n${lines.join('\n')}\n\nTotal : ${money(total)}\n\nMerci de confirmer la disponibilité et les modalités de paiement/livraison.`
     }
-    function openWhatsApp(message) { const raw = String(currentSite?.whatsapp || '').replace(/\D/g, ''); const phone = raw.startsWith('229') ? raw : raw ? `229${raw}` : ''; window.open(phone ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`, '_blank') }
+    function openWhatsApp(message) {
+      const raw = String(currentSite?.whatsapp || '').replace(/\D/g, '')
+      const phone = raw.startsWith('229') ? raw : raw ? `229${raw}` : ''
+      const encodedMessage = encodeURIComponent(message)
+      const url = phone
+        ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodedMessage}`
+        : `https://api.whatsapp.com/send?text=${encodedMessage}`
+
+      window.setTimeout(() => {
+        window.location.href = url
+      }, 120)
+    }
     async function copyClientLink(slug) {
       const link = cleanUrl(slug)
       try {

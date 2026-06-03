@@ -198,8 +198,66 @@
       return getStoredJson(accountKey(baseKey), fallback);
     }
 
+    function clearLocalStorageByPrefixes(prefixes = []) {
+      for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+        const key = localStorage.key(index);
+        if (key && prefixes.some((prefix) => key.startsWith(prefix))) {
+          localStorage.removeItem(key);
+        }
+      }
+    }
+
+    function removeInlineImages(value) {
+      if (Array.isArray(value)) return value.map(removeInlineImages);
+      if (!value || typeof value !== 'object') return value;
+
+      const next = { ...value };
+      if (isInlineImage(next.image)) next.image = '';
+      if (isInlineImage(next.logo)) next.logo = '';
+      return next;
+    }
+
+    function sanitizeForLocalStorage(baseKey, value) {
+      if (
+        String(baseKey || '').startsWith(CLIENT_PRODUCTS_KEY) ||
+        String(baseKey || '') === CLIENT_SITE_KEY ||
+        String(baseKey || '').startsWith(CLIENT_SITE_KEY)
+      ) {
+        return removeInlineImages(value);
+      }
+      return value;
+    }
+
+    function safeSetLocalStorage(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (error) {
+        if (!(error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED'))) {
+          console.warn('Stockage local indisponible:', error);
+          return false;
+        }
+
+        localStorage.removeItem(key);
+        clearLocalStorageByPrefixes([
+          'shoplink_public_site_cache:',
+          `${CLIENT_PRODUCTS_KEY}:`,
+          `${CLIENT_STATS_KEY}:`,
+        ]);
+
+        try {
+          localStorage.setItem(key, value);
+          return true;
+        } catch (retryError) {
+          console.warn('Stockage local plein, cache non sauvegardé:', retryError);
+          return false;
+        }
+      }
+    }
+
     function setAccountJson(baseKey, value) {
-      localStorage.setItem(accountKey(baseKey), JSON.stringify(value));
+      const safeValue = sanitizeForLocalStorage(baseKey, value);
+      safeSetLocalStorage(accountKey(baseKey), JSON.stringify(safeValue));
     }
 
     function setActiveSite(site) {
@@ -1515,6 +1573,28 @@
       savePublicSiteCache(cacheKey, site, publicProducts);
     }
 
+    function preparePublicSiteSnapshot() {
+      const context = getClientContext();
+      const slug = context.site?.slug || context.slug;
+      if (!slug) return { slug: '', products: [] };
+
+      const siteSnapshot = buildSitePayload({ slug });
+      const productsSnapshot = getProductRows().map(productFromRow);
+      preloadPublicSiteCache(siteSnapshot, productsSnapshot);
+      return { slug, site: siteSnapshot, products: productsSnapshot };
+    }
+
+    function syncPublicSiteInBackground() {
+      if (!getAuthToken()) return;
+      syncLocalProductsToBackend()
+        .then((site) => {
+          if (site?.slug) preloadPublicSiteCache(site, getProductRows().map(productFromRow));
+        })
+        .catch((error) => {
+          console.warn('Synchronisation arrière-plan du site indisponible:', error);
+        });
+    }
+
     function normalizeWhatsAppNumber(value) {
       const raw = String(value || '').replace(/\D/g, '');
       if (!raw || raw.includes('X')) return '';
@@ -1525,10 +1605,10 @@
 
     function normalizeBeninPhoneDisplay(value) {
       const raw = String(value || '').replace(/\D/g, '');
-      if (/^22901\d{8}$/.test(raw)) return `+${raw}`;
-      if (/^01\d{8}$/.test(raw)) return `+229${raw}`;
-      if (/^229\d{8}$/.test(raw)) return `+22901${raw.slice(3)}`;
-      if (/^\d{8}$/.test(raw)) return `+22901${raw}`;
+      if (/^22901\d{8}$/.test(raw)) return `+229 01${raw.slice(5)}`;
+      if (/^01\d{8}$/.test(raw)) return `+229 01${raw.slice(2)}`;
+      if (/^229\d{8}$/.test(raw)) return `+229 01${raw.slice(3)}`;
+      if (/^\d{8}$/.test(raw)) return `+229 01${raw}`;
       return value || '';
     }
 
@@ -1539,7 +1619,7 @@
       if (/^22901\d{8}$/.test(digits)) return `+${digits}`;
       if (/^01\d{8}$/.test(digits)) return `+229${digits}`;
 
-      notify(`${label} invalide. Format requis : +22901XXXXXXXX. Ajoutez 01 après +229.`, 'warning');
+      notify(`${label} invalide. Format requis : +229 01XXXXXXXX. Ajoutez 01 après +229.`, 'warning');
       throw new Error(`${label} invalide`);
     }
 
@@ -1551,6 +1631,8 @@
 
     function shareShopLinkToClientWhatsapp() {
       const phone = getClientWhatsAppNumber();
+      preparePublicSiteSnapshot();
+      syncPublicSiteInBackground();
       const link = getShopLink();
       if (!phone || phone.includes('X')) {
         notify('Renseignez un vrai numéro WhatsApp dans Mon site avant de tester.', 'warning');
@@ -1566,6 +1648,8 @@
     async function copyShopLink(){
       if (isCopyingShopLink) return;
       isCopyingShopLink = true;
+      preparePublicSiteSnapshot();
+      syncPublicSiteInBackground();
       const link = getShopLink();
       try {
         if (navigator.clipboard?.writeText) {
@@ -2388,7 +2472,7 @@
         callGroup.className = 'form-group';
         callGroup.innerHTML = `
           <label class="form-label" for="site-call-phone">Numéro d'appel (optionnel)</label>
-          <input class="form-input" id="site-call-phone" type="tel" placeholder="Ex : +22901XXXXXXXX">
+          <input class="form-input" id="site-call-phone" type="tel" placeholder="Ex : +229 01XXXXXXXX">
         `;
         addressGroup?.insertAdjacentElement('afterend', callGroup);
       }
@@ -2900,34 +2984,33 @@
     }
 
     async function openPublicSite() {
+      const snapshot = preparePublicSiteSnapshot();
+      if (snapshot.slug) {
+        const immediateUrl = getPublicPreviewUrl(snapshot.slug);
+        const previewWindow = window.open(immediateUrl, '_blank');
+        if (!previewWindow) window.location.href = immediateUrl;
+        syncPublicSiteInBackground();
+        return;
+      }
+
       const previewWindow = window.open('about:blank', '_blank');
       if (previewWindow) {
-        previewWindow.document.write('<!doctype html><title>ShopLink</title><body style="font-family:system-ui;padding:24px;color:#1a5c38;">Synchronisation de votre site...</body>');
+        previewWindow.document.write('<!doctype html><title>ShopLink</title><body style="font-family:system-ui;padding:24px;color:#1a5c38;">Préparation de votre site...</body>');
       }
 
-      try {
-        const site = await syncLocalProductsToBackend({ strict: true });
-        const slug = site?.slug || getClientContext().slug;
-
-        if (!slug) {
-          throw new Error('Aucun slug de boutique disponible');
-        }
-
-        preloadPublicSiteCache(site, getProductRows().map(productFromRow));
-
-        const publicUrl = getPublicPreviewUrl(slug);
-
-        if (previewWindow && !previewWindow.closed) {
-          previewWindow.location.href = publicUrl;
-        } else {
-          window.location.href = publicUrl;
-        }
-      } catch (error) {
-        if (previewWindow && !previewWindow.closed) {
-          previewWindow.close();
-        }
-        notify(`Impossible d’ouvrir le site public : ${error.message}`, 'danger');
-      }
+      syncLocalProductsToBackend({ strict: true })
+        .then((site) => {
+          const slug = site?.slug || getClientContext().slug;
+          if (!slug) throw new Error('Aucun slug de boutique disponible');
+          preloadPublicSiteCache(site, getProductRows().map(productFromRow));
+          const publicUrl = getPublicPreviewUrl(slug);
+          if (previewWindow && !previewWindow.closed) previewWindow.location.href = publicUrl;
+          else window.location.href = publicUrl;
+        })
+        .catch((error) => {
+          if (previewWindow && !previewWindow.closed) previewWindow.close();
+          notify(`Impossible d’ouvrir le site public : ${error.message}`, 'danger');
+        });
     }
 
     async function loadBackendClientData() {
@@ -2957,7 +3040,8 @@
         clearDefaultProductCatalog();
         renderClientStats();
       } catch (error) {
-        notify(`Données locales utilisées. Sync backend indisponible : ${error.message}`, 'warning');
+        console.warn('Données backend indisponibles, fallback local:', error);
+        notify('Données locales utilisées. La synchronisation sera retentée automatiquement.', 'warning');
       }
     }
 
