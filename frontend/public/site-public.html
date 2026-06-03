@@ -519,6 +519,13 @@
       transition: transform .22s ease, box-shadow .22s ease;
       cursor: pointer;
       position: relative;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .product-card:focus,
+    .product-card:focus-visible {
+      outline: none;
     }
 
     .product-card::after {
@@ -602,6 +609,21 @@
       font-weight: 900;
       cursor: pointer;
       transition: transform .22s ease, background .22s ease, box-shadow .22s ease, opacity .22s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    .btn-details:focus,
+    .btn-add:focus,
+    .btn-order:focus {
+      outline: none;
+    }
+
+    .btn-details:focus-visible,
+    .btn-add:focus-visible,
+    .btn-order:focus-visible {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
     }
 
     .btn-details { background: color-mix(in srgb, var(--primary) 10%, #fff); color: var(--primary); }
@@ -1277,7 +1299,7 @@
         </section>
 
         <section class="section" id="${sectionIds.products}">
-          <div class="section-head"><h2 class="section-title">${safe(productSectionTitle(theme, products))}</h2></div>
+          <div class="section-head"><h2 class="section-title">${safe(productSectionTitle(theme, products))}</h2><p class="section-subtitle">${safe(productSectionSubtitle(theme))}</p></div>
           ${displayProducts(products).length
             ? `<div class="products-grid">${displayProducts(products).map(productCard).join('')}</div>`
             : `<div class="empty-products"><strong>Aucun produit publié</strong>Les produits ajoutés depuis le dashboard apparaîtront ici dès leur publication.</div>`
@@ -1350,6 +1372,19 @@
       }
 
       return 'Nos menus'
+    }
+
+    function productSectionSubtitle(theme) {
+      const subtitles = {
+        food: 'Choisissez votre plat, ajoutez-le au panier et commandez directement via WhatsApp.',
+        fastfood: 'Choisissez votre menu, validez le panier et faites-vous livrer simplement.',
+        fashion: 'Parcourez les articles disponibles, choisissez vos pièces et commandez en quelques clics.',
+        beauty: 'Sélectionnez vos soins, parfums ou produits beauté et envoyez votre commande facilement.',
+        commerce: 'Découvrez les produits disponibles, ajoutez vos choix au panier et contactez la boutique.',
+        general: 'Choisissez vos produits, validez le panier et envoyez votre commande simplement.',
+      }
+
+      return subtitles[theme.key] || subtitles.general
     }
 
     function productCard(product) {

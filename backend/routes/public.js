@@ -1,6 +1,7 @@
 const express = require('express')
 
 const { repo } = require('../data/repository')
+const { isInlineImage, storeInlineImageIfNeeded } = require('../services/imageStorage')
 const { buildBoutiqueUrl } = require('../utils/publicUrl')
 
 const router = express.Router()
@@ -18,8 +19,15 @@ function buildWhatsAppLink(whatsapp, productName) {
   return `https://wa.me/${cleaned}?text=${message}`
 }
 
-function isInlineImage(value) {
-  return /^data:image\//i.test(String(value || ''))
+async function normalizePublicImage(value, options = {}) {
+  if (!isInlineImage(value)) return value || ''
+
+  try {
+    return await storeInlineImageIfNeeded(value, options)
+  } catch (error) {
+    console.warn('Image inline conservee pour affichage public:', error.message)
+    return value
+  }
 }
 
 router.get('/:slug', async (req, res) => {
@@ -49,20 +57,32 @@ router.get('/:slug', async (req, res) => {
     })
   }
 
+  const publicLogo = await normalizePublicImage(site.logo, { siteId: site.id })
+  if (publicLogo && publicLogo !== site.logo && !isInlineImage(publicLogo)) {
+    await repo().updateSite(site.id, { logo: publicLogo })
+  }
+
   const rawProducts = await repo().listProductsBySiteId(site.id)
-  const products = rawProducts
+  const products = await Promise.all(rawProducts
     .filter((product) => product.visible !== false && product.status !== 'hidden')
-    .map((product) => ({
-      ...product,
-      image: isInlineImage(product.image) ? '' : product.image,
-      whatsappLink: buildWhatsAppLink(site.whatsapp, product.name),
+    .map(async (product) => {
+      const publicImage = await normalizePublicImage(product.image, { siteId: site.id })
+      if (publicImage && publicImage !== product.image && !isInlineImage(publicImage)) {
+        await repo().updateProduct(product.id, { image: publicImage })
+      }
+
+      return {
+        ...product,
+        image: publicImage,
+        whatsappLink: buildWhatsAppLink(site.whatsapp, product.name),
+      }
     }))
 
   return res.json({
     success: true,
     site: {
       ...site,
-      logo: isInlineImage(site.logo) ? '' : site.logo,
+      logo: publicLogo,
       publicUrl: buildBoutiqueUrl(site.slug, req),
       whatsappLink: buildWhatsAppLink(site.whatsapp),
     },
