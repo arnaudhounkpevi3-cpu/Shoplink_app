@@ -1039,7 +1039,7 @@
         <input class="checkout-field" id="checkout-name" placeholder="Nom complet" autocomplete="name">
         <input class="checkout-field" id="checkout-whatsapp" placeholder="WhatsApp ex : +22947000674" autocomplete="tel">
         <input class="checkout-field" id="checkout-address" placeholder="Adresse de livraison" autocomplete="street-address">
-        <textarea class="checkout-field" id="checkout-note" rows="2" placeholder="Note (optionnel) ex : Urgent"></textarea>
+        <textarea class="checkout-field" id="checkout-note" rows="2" placeholder="Note (optionnel)"></textarea>
       </div>
       <div class="cart-total"><span>Total</span><span id="cart-total">0 FCFA</span></div>
       <div class="cart-actions">
@@ -1101,6 +1101,25 @@
       document.documentElement.style.setProperty('--text', theme.text)
       document.body.dataset.activity = key
       window.shopTheme = { ...theme, primary, secondary, key }
+      updateCheckoutPlaceholders(key)
+    }
+
+    function updateCheckoutPlaceholders(activityKey) {
+      const note = document.getElementById('checkout-note')
+      const whatsapp = document.getElementById('checkout-whatsapp')
+      if (whatsapp) whatsapp.placeholder = 'WhatsApp ex : +22947000674'
+      if (!note) return
+
+      const placeholders = {
+        food: 'Note (optionnel) ex : Pas trop de piment, livraison rapide',
+        fastfood: 'Note (optionnel) ex : Sans oignon, pas trop de piment',
+        fashion: 'Note (optionnel) ex : Taille M, couleur noire',
+        beauty: 'Note (optionnel) ex : Peau sensible, parfum léger',
+        commerce: 'Note (optionnel) ex : Appeler avant livraison',
+        general: 'Note (optionnel) ex : Urgent',
+      }
+
+      note.placeholder = placeholders[activityKey] || placeholders.general
     }
 
     function slugFromUrl() {
@@ -1322,6 +1341,7 @@
       const existing = cart.find(item => String(item.id) === String(id))
       if (existing) existing.quantity += 1
       else cart.push({ ...product, quantity: 1 })
+      trackProductEvent(currentSite.id, product.id, 'view')
       trackProductEvent(currentSite.id, product.id, 'add_to_cart')
       updateCartUI()
       window.setTimeout(openCartDrawer, 120)
@@ -1422,15 +1442,25 @@
 
     function getCheckoutInfo() {
       const name = document.getElementById('checkout-name')?.value.trim() || ''
-      const whatsapp = document.getElementById('checkout-whatsapp')?.value.trim() || ''
+      const whatsappInput = document.getElementById('checkout-whatsapp')?.value.trim() || ''
+      const whatsapp = normalizeCustomerWhatsApp(whatsappInput)
       const address = document.getElementById('checkout-address')?.value.trim() || ''
       const note = document.getElementById('checkout-note')?.value.trim() || ''
 
       if (!name) { toast('Renseignez votre nom avant de commander.', 'warning', 'Nom requis'); return null }
-      if (!whatsapp) { toast('Renseignez votre numéro WhatsApp avant de commander.', 'warning', 'WhatsApp requis'); return null }
+      if (!whatsapp) { toast('Format requis : +22947000674.', 'warning', 'WhatsApp invalide'); return null }
       if (!address) { toast('Renseignez votre adresse avant de commander.', 'warning', 'Adresse requise'); return null }
 
       return { name, whatsapp, address, note }
+    }
+
+    function normalizeCustomerWhatsApp(value) {
+      const digits = String(value || '').replace(/\D/g, '')
+      if (/^229\d{8}$/.test(digits)) return `+${digits}`
+      if (/^\d{8}$/.test(digits)) return `+229${digits}`
+      if (/^01\d{8}$/.test(digits)) return `+229${digits.slice(2)}`
+      if (/^22901\d{8}$/.test(digits)) return `+229${digits.slice(5)}`
+      return ''
     }
 
     function buildOrderMessage(customer, lines, total) {
