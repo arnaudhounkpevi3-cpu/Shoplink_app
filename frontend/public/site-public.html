@@ -1082,7 +1082,9 @@
   <script src="/js/api-config.js"></script>
   <script>
     const API_BASE = window.SHOPLINK_API_BASE
-    const OWNER_MODE = new URLSearchParams(window.location.search).get('owner') === '1'
+    const siteParams = new URLSearchParams(window.location.search)
+    const OWNER_MODE = siteParams.get('owner') === '1'
+    const PREVIEW_MODE = OWNER_MODE || siteParams.get('preview') === '1'
     let currentSite = null
     let currentProducts = []
     let cart = []
@@ -1426,20 +1428,17 @@
     function closeSiteModal(event) { if (!event || event.target === document.getElementById('site-modal')) document.getElementById('site-modal').classList.remove('show') }
     function modal(html) { document.getElementById('site-modal-card').innerHTML = html; document.getElementById('site-modal').classList.add('show') }
 
-    function openProductModal(id) { const product = getProduct(id); if (!product) return; if (!OWNER_MODE) trackProductView(currentSite.id, product.id); const theme = window.shopTheme || THEMES.general; const category = displayCategory(product); modal(`<div class="site-modal-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}</div><div class="site-modal-body"><div class="site-modal-top"><div>${category ? `<div class="product-category">${safe(category)}</div>` : ''}<div class="site-modal-title">${safe(product.name)}</div></div><button class="site-modal-close" onclick="closeSiteModal()">×</button></div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}${productMetaTags(product)}${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="site-modal-actions"><button class="btn-details" onclick="closeSiteModal()">Fermer</button><button class="btn-add" onclick="addToCart('${product.id}');closeSiteModal();">Ajouter au panier</button></div></div>`) }
+    function openProductModal(id) { const product = getProduct(id); if (!product) return; if (!PREVIEW_MODE) trackProductView(currentSite.id, product.id); const theme = window.shopTheme || THEMES.general; const category = displayCategory(product); modal(`<div class="site-modal-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}</div><div class="site-modal-body"><div class="site-modal-top"><div>${category ? `<div class="product-category">${safe(category)}</div>` : ''}<div class="site-modal-title">${safe(product.name)}</div></div><button class="site-modal-close" onclick="closeSiteModal()">×</button></div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}${productMetaTags(product)}${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="site-modal-actions"><button class="btn-details" onclick="closeSiteModal()">Fermer</button><button class="btn-add" onclick="addToCart('${product.id}');closeSiteModal();">Ajouter au panier</button></div></div>`) }
     function addToCart(id) {
-      if (OWNER_MODE) {
-        toast('Partagez le lien client public pour effectuer une commande.', 'warning', 'Mode aperçu')
-        return
-      }
-
       const product = getProduct(id)
       if (!product) return
       const existing = cart.find(item => String(item.id) === String(id))
       if (existing) existing.quantity += 1
       else cart.push({ ...product, quantity: 1 })
-      trackProductEvent(currentSite.id, product.id, 'view')
-      trackProductEvent(currentSite.id, product.id, 'add_to_cart')
+      if (!PREVIEW_MODE) {
+        trackProductEvent(currentSite.id, product.id, 'view')
+        trackProductEvent(currentSite.id, product.id, 'add_to_cart')
+      }
       updateCartUI()
       window.setTimeout(openCartDrawer, 120)
     }
@@ -1503,7 +1502,7 @@
 
     async function orderCart() {
       if (!cart.length) { toast('Ajoutez au moins un produit avant de commander.', 'warning', 'Panier vide'); return }
-      if (OWNER_MODE) { toast('Passez par le lien client partagé pour tester une commande WhatsApp.', 'warning', 'Mode aperçu'); return }
+      if (PREVIEW_MODE) { toast('Prévisualisation uniquement : cette commande n’est pas comptée.', 'warning', 'Mode aperçu'); return }
       const customer = getCheckoutInfo()
       if (!customer) return
       const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0)
@@ -1618,14 +1617,14 @@
     function sessionId() { let id = sessionStorage.getItem('shoplink_session_id'); if (!id) { id = 'session-' + Date.now() + '-' + Math.random().toString(36).slice(2); sessionStorage.setItem('shoplink_session_id', id) } return id }
     function todayKey() { return new Date().toISOString().slice(0, 10) }
     function clickedRecently(id) { const last = localStorage.getItem(`whatsapp_click_${window.currentSiteId || 'site'}_${id}`); return last && (Date.now() - Number(last)) / 36e5 < 24 }
-    async function trackOfficialSiteVisit(siteId, source) { if (OWNER_MODE) return; const key = `site_visit_${siteId}_${visitorId()}_${todayKey()}`; if (localStorage.getItem(key)) return; try { await fetch(`${API_BASE}/tracking/site-visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, visitorId: visitorId(), source: source || 'direct' }) }); localStorage.setItem(key, '1') } catch (_) {} }
-    async function trackProductEvent(siteId, productId, eventType) { if (OWNER_MODE) return; if (eventType === 'view') { const key = `product_view_${siteId}_${productId}_${visitorId()}_${todayKey()}`; if (localStorage.getItem(key)) return; try { await fetch(`${API_BASE}/tracking/product-event`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, visitorId: visitorId(), eventType }) }); localStorage.setItem(key, '1') } catch (_) {} ; return } try { await fetch(`${API_BASE}/tracking/product-event`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, visitorId: visitorId(), eventType }) }) } catch (_) {} }
-    async function trackWeeklyLinkVisit(siteId, source) { if (OWNER_MODE) return; const key = `weekly_visit_${siteId}_${sessionId()}_${source || 'direct'}`; if (sessionStorage.getItem(key)) return; try { await fetch(`${API_BASE}/tracking/link-visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, source: source || 'direct' }) }); sessionStorage.setItem(key, '1') } catch (_) {} }
-    async function trackVisit(siteId) { if (OWNER_MODE) return; try { await fetch(`${API_BASE}/tracking/visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, sessionId: sessionId(), visitorId: visitorId(), referrer: document.referrer, userAgent: navigator.userAgent, platform: visitSource() }) }) } catch (_) {} }
-    async function trackWhatsAppClick(siteId, productId = null) { if (OWNER_MODE) return; if (productId && clickedRecently(productId)) return; try { await fetch(`${API_BASE}/tracking/whatsapp-click`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }); if (productId) localStorage.setItem(`whatsapp_click_${siteId}_${productId}`, Date.now()) } catch (_) {} }
-    async function trackProductView(siteId, productId) { if (OWNER_MODE) return; trackProductEvent(siteId, productId, 'view'); try { await fetch(`${API_BASE}/tracking/product-view`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }) } catch (_) {} }
+    async function trackOfficialSiteVisit(siteId, source) { if (PREVIEW_MODE) return; const key = `site_visit_${siteId}_${visitorId()}_${todayKey()}`; if (localStorage.getItem(key)) return; try { await fetch(`${API_BASE}/tracking/site-visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, visitorId: visitorId(), source: source || 'direct' }) }); localStorage.setItem(key, '1') } catch (_) {} }
+    async function trackProductEvent(siteId, productId, eventType) { if (PREVIEW_MODE) return; if (eventType === 'view') { const key = `product_view_${siteId}_${productId}_${visitorId()}_${todayKey()}`; if (localStorage.getItem(key)) return; try { await fetch(`${API_BASE}/tracking/product-event`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, visitorId: visitorId(), eventType }) }); localStorage.setItem(key, '1') } catch (_) {} ; return } try { await fetch(`${API_BASE}/tracking/product-event`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, visitorId: visitorId(), eventType }) }) } catch (_) {} }
+    async function trackWeeklyLinkVisit(siteId, source) { if (PREVIEW_MODE) return; const key = `weekly_visit_${siteId}_${sessionId()}_${source || 'direct'}`; if (sessionStorage.getItem(key)) return; try { await fetch(`${API_BASE}/tracking/link-visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, source: source || 'direct' }) }); sessionStorage.setItem(key, '1') } catch (_) {} }
+    async function trackVisit(siteId) { if (PREVIEW_MODE) return; try { await fetch(`${API_BASE}/tracking/visit`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, sessionId: sessionId(), visitorId: visitorId(), referrer: document.referrer, userAgent: navigator.userAgent, platform: visitSource() }) }) } catch (_) {} }
+    async function trackWhatsAppClick(siteId, productId = null) { if (PREVIEW_MODE) return; if (productId && clickedRecently(productId)) return; try { await fetch(`${API_BASE}/tracking/whatsapp-click`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }); if (productId) localStorage.setItem(`whatsapp_click_${siteId}_${productId}`, Date.now()) } catch (_) {} }
+    async function trackProductView(siteId, productId) { if (PREVIEW_MODE) return; trackProductEvent(siteId, productId, 'view'); try { await fetch(`${API_BASE}/tracking/product-view`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ siteId, productId, sessionId: sessionId(), visitorId: visitorId(), platform: visitSource() }) }) } catch (_) {} }
 
-    window.addEventListener('beforeunload', () => { if (OWNER_MODE || !window.currentSiteId) return; const timeSpent = Date.now() - startTime; if (timeSpent > 2000) { const body = JSON.stringify({ siteId: window.currentSiteId, timeSpent, sessionId: sessionId(), visitorId: visitorId() }); navigator.sendBeacon(`${API_BASE}/tracking/time-spent`, new Blob([body], { type: 'application/json' })) } })
+    window.addEventListener('beforeunload', () => { if (PREVIEW_MODE || !window.currentSiteId) return; const timeSpent = Date.now() - startTime; if (timeSpent > 2000) { const body = JSON.stringify({ siteId: window.currentSiteId, timeSpent, sessionId: sessionId(), visitorId: visitorId() }); navigator.sendBeacon(`${API_BASE}/tracking/time-spent`, new Blob([body], { type: 'application/json' })) } })
 
     loadSite()
     window.addEventListener('storage', (event) => {
