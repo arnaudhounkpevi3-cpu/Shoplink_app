@@ -1185,6 +1185,15 @@
       return (products || []).filter((product) => product && product.name)
     }
 
+    function shopInitial(name) {
+      return String(name || 'S').trim().charAt(0).toUpperCase() || 'S'
+    }
+
+    function displayCategory(product) {
+      const category = String(product?.category || '').trim()
+      return /^(general|général)$/i.test(category) ? '' : category
+    }
+
     function renderSite(site, products) {
       const theme = window.shopTheme || THEMES.general
       const slug = site.slug || slugFromUrl()
@@ -1194,7 +1203,7 @@
       app.innerHTML = `
         <header class="shop-header">
           <div class="brand">
-            <div class="brand-logo">${site.logo ? `<img src="${site.logo}" alt="Logo ${safe(site.name || 'boutique')}">` : (theme.icon || 'S')}</div>
+            <div class="brand-logo">${site.logo ? `<img src="${site.logo}" alt="Logo ${safe(site.name || 'boutique')}">` : safe(shopInitial(site.name || 'ShopLink'))}</div>
             <div><div class="brand-name">${safe(site.name)}</div></div>
           </div>
           <nav class="nav-menu" aria-label="Navigation ${safe(site.name)}">
@@ -1295,7 +1304,8 @@
     function productCard(product) {
       const theme = window.shopTheme || THEMES.general
       const badgeText = product.badge ? productBadgeLabel(product.badge) : 'Disponible'
-      return `<article class="product-card" onclick="openProductModal('${product.id}')"><div class="product-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}<span class="promo-badge">${safe(badgeText)}</span></div><div class="product-body">${product.category ? `<div class="product-category">${safe(product.category)}</div>` : ''}<h3 class="product-name">${safe(product.name)}</h3>${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="product-bottom"><div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}</div></div>${productMetaTags(product)}<div class="product-actions"><button class="btn-details" onclick="event.stopPropagation();openProductModal('${product.id}')">Voir</button><button class="btn-add" onclick="event.stopPropagation();addToCart('${product.id}')">Ajouter au panier</button></div></div></article>`
+      const category = displayCategory(product)
+      return `<article class="product-card" onclick="openProductModal('${product.id}')"><div class="product-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}<span class="promo-badge">${safe(badgeText)}</span></div><div class="product-body">${category ? `<div class="product-category">${safe(category)}</div>` : ''}<h3 class="product-name">${safe(product.name)}</h3>${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="product-bottom"><div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}</div></div>${productMetaTags(product)}<div class="product-actions"><button class="btn-details" onclick="event.stopPropagation();openProductModal('${product.id}')">Voir</button><button class="btn-add" onclick="event.stopPropagation();addToCart('${product.id}')">Ajouter au panier</button></div></div></article>`
     }
 
     function productBadgeLabel(value) {
@@ -1330,7 +1340,7 @@
     function closeSiteModal(event) { if (!event || event.target === document.getElementById('site-modal')) document.getElementById('site-modal').classList.remove('show') }
     function modal(html) { document.getElementById('site-modal-card').innerHTML = html; document.getElementById('site-modal').classList.add('show') }
 
-    function openProductModal(id) { const product = getProduct(id); if (!product) return; if (!OWNER_MODE) trackProductView(currentSite.id, product.id); const theme = window.shopTheme || THEMES.general; modal(`<div class="site-modal-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}</div><div class="site-modal-body"><div class="site-modal-top"><div>${product.category ? `<div class="product-category">${safe(product.category)}</div>` : ''}<div class="site-modal-title">${safe(product.name)}</div></div><button class="site-modal-close" onclick="closeSiteModal()">×</button></div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}${productMetaTags(product)}${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="site-modal-actions"><button class="btn-details" onclick="closeSiteModal()">Fermer</button><button class="btn-add" onclick="addToCart('${product.id}');closeSiteModal();">Ajouter au panier</button></div></div>`) }
+    function openProductModal(id) { const product = getProduct(id); if (!product) return; if (!OWNER_MODE) trackProductView(currentSite.id, product.id); const theme = window.shopTheme || THEMES.general; const category = displayCategory(product); modal(`<div class="site-modal-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}</div><div class="site-modal-body"><div class="site-modal-top"><div>${category ? `<div class="product-category">${safe(category)}</div>` : ''}<div class="site-modal-title">${safe(product.name)}</div></div><button class="site-modal-close" onclick="closeSiteModal()">×</button></div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}${productMetaTags(product)}${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="site-modal-actions"><button class="btn-details" onclick="closeSiteModal()">Fermer</button><button class="btn-add" onclick="addToCart('${product.id}');closeSiteModal();">Ajouter au panier</button></div></div>`) }
     function addToCart(id) {
       if (OWNER_MODE) {
         toast('Partagez le lien client public pour effectuer une commande.', 'warning', 'Mode aperçu')
