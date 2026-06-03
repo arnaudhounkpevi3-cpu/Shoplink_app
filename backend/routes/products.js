@@ -90,7 +90,7 @@ router.put('/site/:siteId/replace', requireAuth, async (req, res) => {
       price: Number(product.price || 0),
       image: product.image || '',
       description: product.description || '',
-      category: product.category || 'Produits',
+      category: product.category || '',
       visible: product.visible !== false && product.status !== 'hidden',
       status: product.status || 'published',
       availability: product.availability || 'available',

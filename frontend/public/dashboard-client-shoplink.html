@@ -372,7 +372,7 @@
                 body: JSON.stringify({
                   ...localSite,
                   id: existingSite.id,
-                  slug: existingSite.slug || localSite.slug,
+                  slug: localSite.slug || existingSite.slug,
                 }),
               });
             }
@@ -875,7 +875,7 @@
       row.className = 'prod-row';
       row.dataset.productId = product.id || `product-${Date.now()}`;
       row.dataset.backendId = product.backendId || product.id || '';
-      row.dataset.category = product.category || 'Produits';
+      row.dataset.category = product.category || '';
       row.dataset.availability = product.availability || 'available';
       row.dataset.stock = product.stock || '';
       row.dataset.badge = product.badge || '';
@@ -884,7 +884,8 @@
       row.dataset.extraInfo = product.extraInfo || '';
       row.innerHTML = `<div class="prod-thumb">${product.image ? `<img src="${product.image}" alt="${product.name || 'Produit'}">` : '📦'}</div><div><div class="prod-name"></div><div class="prod-cat"></div><div class="prod-desc"></div>${renderProductMeta(product)}</div><div class="prod-price"></div><div class="prod-views"><i class="fi fi-rr-eyes"></i> 0</div><div style="display:flex;gap:6px;"><button class="iBtn" type="button" data-action="edit"><i class="fi fi-rr-pencil"></i></button><button class="iBtn" type="button" data-action="delete"><i class="fi fi-rr-trash"></i></button></div>`;
       row.querySelector('.prod-name').textContent = product.name || '';
-      row.querySelector('.prod-cat').textContent = product.category || 'Produits';
+      row.querySelector('.prod-cat').textContent = product.category || '';
+      row.querySelector('.prod-cat').style.display = product.category ? 'block' : 'none';
       row.querySelector('.prod-desc').textContent = product.description || '';
       row.querySelector('.prod-desc').style.display = product.description ? 'block' : 'none';
       row.querySelector('.prod-price').textContent = `${Number(product.price || 0).toLocaleString('fr-FR')} F`;
@@ -898,7 +899,7 @@
         price: Number(product.price || 0),
         image: await optimizeDataUrlIfNeeded(product.image || ''),
         description: product.description || '',
-        category: product.category || 'Produits',
+        category: product.category || '',
         availability: product.availability || 'available',
         stock: product.stock || '',
         badge: product.badge || '',
@@ -1742,6 +1743,14 @@
       const descriptionLabel = productForm.description?.closest('.form-group')?.querySelector('.form-label');
       if (descriptionLabel) descriptionLabel.textContent = 'Description courte (optionnel)';
 
+      if (!Array.from(productForm.category.options).some(option => option.value === '')) {
+        const emptyOption = document.createElement('option');
+        emptyOption.value = '';
+        emptyOption.textContent = 'Aucune catégorie (optionnel)';
+        productForm.category.insertBefore(emptyOption, productForm.category.firstChild);
+        productForm.category.value = '';
+      }
+
       if (!Array.from(productForm.category.options).some(option => option.value === '__custom__')) {
         const option = document.createElement('option');
         option.value = '__custom__';
@@ -1904,7 +1913,7 @@
       if (productForm.category?.value === '__custom__') {
         return productForm.customCategory?.value.trim() || '';
       }
-      return productForm.category?.value || 'Produits';
+      return productForm.category?.value || '';
     }
 
     function resetProductForm() {
@@ -2053,7 +2062,6 @@
       const extraInfo = productForm.extraInfo?.value.trim() || '';
       if (!name) return notify('Entrez le nom du produit.', 'warning');
       if (!price || price <= 0) return notify('Entrez un prix valide.', 'warning');
-      if (!category) return notify('Renseignez votre catégorie personnalisée.', 'warning');
       const priceLabel = `${price.toLocaleString('fr-FR')} F`;
       const nextProduct = {
         id: editingProductRow?.dataset.productId || `product-${Date.now()}`,
@@ -2637,7 +2645,7 @@
             price: Number(product.price || 0),
             image: await optimizeDataUrlIfNeeded(product.image || ''),
             description: product.description || '',
-            category: product.category || 'Produits',
+            category: product.category || '',
             availability: product.availability || 'available',
             stock: product.stock || '',
             badge: product.badge || '',
