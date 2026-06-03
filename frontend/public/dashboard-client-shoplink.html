@@ -542,10 +542,11 @@
       const officialUniqueVisitors = Number(officialMetrics.uniqueVisitors || 0);
       const officialProductViewsTotal = Number(officialMetrics.productViewsTotal || 0);
       const officialAddToCartTotal = Number(officialMetrics.addToCartTotal || 0);
+      const officialOrdersTotal = Number(officialMetrics.ordersTotal || 0);
 
       setMetric('Vues du site', officialSiteViews);
       setMetric('Vues totales', officialSiteViews);
-      setMetric('Commandes reçues', officialAddToCartTotal);
+      setMetric('Commandes reçues', officialOrdersTotal);
       setMetric('Top produit', weeklyTraffic?.topProduct?.name || 'Aucun');
       
       // New metrics from backend tracking
@@ -633,11 +634,12 @@
         stats.views = Number(metrics.siteViews || 0);
         stats.uniqueVisitors = Number(metrics.uniqueVisitors || 0);
         stats.productViews = data.productViews || {};
-        stats.productOrders = data.productAdds || {};
-        stats.whatsappClicks = Number(metrics.addToCartTotal || 0);
+        stats.productOrders = data.productOrders || {};
+        stats.whatsappClicks = Number(metrics.ordersTotal || 0);
         stats.topProduct = data.topProduct || null;
         stats.weeklyTopProducts = data.topProducts || [];
         stats.productViewsTotal = Number(metrics.productViewsTotal || 0);
+        stats.addToCartTotal = Number(metrics.addToCartTotal || 0);
         saveStats(stats);
         updateProductViewCounters(stats.productViews);
         renderClientStats();
@@ -752,7 +754,7 @@
 
           <div style="border:1px solid var(--border);border-radius:14px;background:#fff;overflow:hidden;">
             <div style="padding:10px 12px;background:#fbf7f1;border-bottom:1px solid var(--border);font-size:12px;font-weight:900;color:var(--text);">🏆 Top produits cette semaine</div>
-            ${topProducts.length ? topProducts.map((product, index) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:${index === topProducts.length - 1 ? '0' : '1px solid #f3eadf'};"><span style="font-size:12px;font-weight:800;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${index + 1}. ${product.name}</span><span style="font-size:11px;color:var(--soft);font-weight:900;white-space:nowrap;">${product.views} vues · ${product.adds} ajouts</span></div>`).join('') : '<div style="padding:12px;color:var(--soft);font-size:12px;text-align:center;">Aucun produit consulté cette semaine.</div>'}
+            ${topProducts.length ? topProducts.map((product, index) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:${index === topProducts.length - 1 ? '0' : '1px solid #f3eadf'};"><span style="font-size:12px;font-weight:800;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${index + 1}. ${product.name}</span><span style="font-size:11px;color:var(--soft);font-weight:900;white-space:nowrap;">${product.views} vues · ${product.orders || product.adds || 0} commandes</span></div>`).join('') : '<div style="padding:12px;color:var(--soft);font-size:12px;text-align:center;">Aucun produit consulté cette semaine.</div>'}
           </div>
 
           <div style="padding:9px 10px;border-radius:11px;background:#f8f3ec;color:var(--muted);font-size:11.5px;line-height:1.4;">
@@ -786,7 +788,7 @@
             name: product.name || 'Produit',
             category: product.category || 'Semaine sélectionnée',
             views: Number(product.views || 0),
-            orders: Number(product.adds || product.orders || 0),
+            orders: Number(product.orders || product.adds || 0),
           }))
         : getProductRows().map((row) => {
             const product = productFromRow(row);

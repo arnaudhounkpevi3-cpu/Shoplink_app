@@ -377,11 +377,12 @@ router.get('/weekly/:siteId', requireAuth, async (req, res) => {
     if (!site) return;
 
     const week = getWeekInfo(new Date(), Number.isFinite(weekOffset) ? weekOffset : 0);
-    const [linkVisits, siteVisits, productEvents, products] = await Promise.all([
+    const [linkVisits, siteVisits, productEvents, products, ordersForWeek] = await Promise.all([
       repo().getLinkVisitsBySiteWeek(siteId, week.weekNumber, week.year),
       repo().getSiteVisitsBySiteWeek ? repo().getSiteVisitsBySiteWeek(siteId, week.weekNumber, week.year) : Promise.resolve([]),
       repo().getProductEventsBySiteWeek ? repo().getProductEventsBySiteWeek(siteId, week.weekNumber, week.year) : Promise.resolve([]),
       repo().listProductsBySiteId(siteId),
+      repo().listOrdersBySiteId ? repo().listOrdersBySiteId(siteId) : Promise.resolve([]),
     ]);
     const counts = { whatsapp: 0, facebook: 0, instagram: 0, sms: 0, direct: 0 };
 
@@ -405,6 +406,7 @@ router.get('/weekly/:siteId', requireAuth, async (req, res) => {
     const productById = new Map(products.map((product) => [String(product.id), product]));
     const productViewsMap = {};
     const productAddsMap = {};
+    const productOrdersMap = {};
 
     productEvents.forEach((event) => {
       const key = String(event.productId || '');
@@ -413,12 +415,27 @@ router.get('/weekly/:siteId', requireAuth, async (req, res) => {
       if (event.eventType === 'add_to_cart') productAddsMap[key] = (productAddsMap[key] || 0) + 1;
     });
 
+    const startMs = week.start.getTime();
+    const endMs = new Date(week.end).setUTCHours(23, 59, 59, 999);
+    const weeklyOrders = (ordersForWeek || []).filter((order) => {
+      const createdAt = new Date(order.createdAt || 0).getTime();
+      return createdAt >= startMs && createdAt <= endMs;
+    });
+
+    weeklyOrders.forEach((order) => {
+      (order.items || []).forEach((item) => {
+        const key = String(item.productId || '');
+        if (!key) return;
+        productOrdersMap[key] = (productOrdersMap[key] || 0) + Number(item.quantity || 1);
+      });
+    });
+
     const topProducts = Array.from(productById.values())
       .map((product) => {
         const id = String(product.id);
         const views = Number(productViewsMap[id] || 0);
-        const adds = Number(productAddsMap[id] || 0);
-        return { id, name: product.name, views, adds, score: views + adds * 2 };
+        const orders = Number(productOrdersMap[id] || 0);
+        return { id, name: product.name, views, adds: orders, orders, score: views + orders * 2 };
       })
       .filter((product) => product.score > 0)
       .sort((a, b) => b.score - a.score)
@@ -426,6 +443,7 @@ router.get('/weekly/:siteId', requireAuth, async (req, res) => {
 
     const uniqueVisitors = new Set(siteVisits.map((visit) => visit.visitorId || visit.ipAddress).filter(Boolean)).size;
     const addToCartTotal = Object.values(productAddsMap).reduce((sum, value) => sum + Number(value || 0), 0);
+    const ordersTotal = weeklyOrders.length;
 
     return res.json({
       success: true,
@@ -443,11 +461,13 @@ router.get('/weekly/:siteId', requireAuth, async (req, res) => {
         uniqueVisitors,
         productViewsTotal: Object.values(productViewsMap).reduce((sum, value) => sum + Number(value || 0), 0),
         addToCartTotal,
+        ordersTotal,
       },
       topProducts,
       topProduct: topProducts[0] || null,
       productViews: productViewsMap,
       productAdds: productAddsMap,
+      productOrders: productOrdersMap,
     });
   } catch (error) {
     console.error('Error getting weekly traffic stats:', error);

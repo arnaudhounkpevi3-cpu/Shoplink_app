@@ -34,6 +34,18 @@ function publicOrder(order) {
   }
 }
 
+function orderReference(siteName, orderNumber) {
+  const prefix = String(siteName || 'SHOPLINK')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 28) || 'SHOPLINK'
+
+  return `${prefix}-${String(orderNumber).padStart(4, '0')}`
+}
+
 router.post('/public', async (req, res) => {
   const { siteSlug, siteId, buyerName, buyerPhone, buyerAddress, buyerNote, items, source } = req.body || {}
 
@@ -70,11 +82,15 @@ router.post('/public', async (req, res) => {
   }
 
   const totalAmount = itemsWithPrices.reduce((sum, item) => sum + item.total, 0)
+  const existingOrders = repo().listOrdersBySiteId ? await repo().listOrdersBySiteId(site.id) : []
+  const siteOrderNumber = existingOrders.length + 1
   const order = await repo().createOrder({
     siteId: site.id,
     siteSlug: site.slug,
     siteName: site.name,
     sellerUserId: site.userId,
+    reference: orderReference(site.name, siteOrderNumber),
+    siteOrderNumber,
     buyerName,
     buyerPhone: normalizePhone(buyerPhone),
     buyerAddress,
@@ -85,6 +101,13 @@ router.post('/public', async (req, res) => {
     status: 'pending_payment',
     paymentStatus: 'pending',
   })
+
+  if (!order) {
+    return res.status(500).json({
+      success: false,
+      message: 'Impossible de créer la commande',
+    })
+  }
 
   if (repo().createClientEvent) {
     await repo().createClientEvent({

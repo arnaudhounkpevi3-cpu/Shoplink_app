@@ -15,6 +15,7 @@ const ticketsRoutes = require('./routes/tickets')
 const usersRoutes = require('./routes/users')
 const trackingRoutes = require('./routes/tracking')
 const emailRoutes = require('./routes/emails')
+const ordersRoutes = require('./routes/orders')
 const { requireAuth, requireAdmin } = require('./middleware/auth')
 
 let appPromise = null
@@ -126,6 +127,7 @@ async function createApp() {
   app.use('/api/users', usersRoutes)
   app.use('/api/tracking', trackingRoutes)
   app.use('/api', emailRoutes)
+  app.use('/api/orders', ordersRoutes)
 
   app.get('/boutique/:slug', async (req, res, next) => {
     const { slug } = req.params

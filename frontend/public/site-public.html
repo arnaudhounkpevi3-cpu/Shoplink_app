@@ -1404,15 +1404,42 @@
       document.getElementById('cart-drawer').classList.remove('show')
     }
 
-    function orderCart() {
+    async function orderCart() {
       if (!cart.length) { toast('Ajoutez au moins un produit avant de commander.', 'warning', 'Panier vide'); return }
       if (OWNER_MODE) { toast('Passez par le lien client partagé pour tester une commande WhatsApp.', 'warning', 'Mode aperçu'); return }
       const customer = getCheckoutInfo()
       if (!customer) return
       const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0)
       const lines = cart.map((item, index) => `${index + 1}. ${item.name} x${item.quantity} — ${money(Number(item.price || 0) * item.quantity)}`)
+      let order = null
+
+      try {
+        const response = await fetch(`${API_BASE}/orders/public`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            siteId: currentSite.id,
+            siteSlug: currentSite.slug || slugFromUrl(),
+            buyerName: customer.name,
+            buyerPhone: customer.whatsapp,
+            buyerAddress: customer.address,
+            buyerNote: customer.note,
+            source: visitSource(),
+            items: cart.map((item) => ({ productId: item.id, quantity: item.quantity })),
+          }),
+        })
+        const data = await response.json()
+        if (!response.ok || !data.success || !data.order) {
+          throw new Error(data.message || 'Commande non enregistrée')
+        }
+        order = data.order
+      } catch (error) {
+        toast('Impossible d’enregistrer la commande : ' + error.message, 'error', 'Commande non envoyée')
+        return
+      }
+
       trackWhatsAppClick(currentSite.id)
-      openWhatsApp(buildOrderMessage(customer, lines, total))
+      openWhatsApp(buildOrderMessage(customer, lines, total, order.reference))
       cart = []
       updateCartUI()
       clearCheckoutForm()
@@ -1463,9 +1490,9 @@
       return ''
     }
 
-    function buildOrderMessage(customer, lines, total) {
+    function buildOrderMessage(customer, lines, total, reference = orderReference()) {
       const noteLine = customer.note ? `\nNote : ${customer.note}` : ''
-      return `${getGreeting()}, je veux passer une commande sur ${currentSite?.name || 'votre boutique'}.\n\nRéférence commande : ${orderReference()}\n\nInformations client :\nNom : ${customer.name}\nWhatsApp : ${customer.whatsapp}\nAdresse : ${customer.address}${noteLine}\n\nPanier :\n${lines.join('\n')}\n\nTotal : ${money(total)}\n\nMerci de confirmer la disponibilité et les modalités de paiement/livraison.`
+      return `${getGreeting()}, je veux passer une commande sur ${currentSite?.name || 'votre boutique'}.\n\nRéférence commande : ${reference}\n\nInformations client :\nNom : ${customer.name}\nWhatsApp : ${customer.whatsapp}\nAdresse : ${customer.address}${noteLine}\n\nPanier :\n${lines.join('\n')}\n\nTotal : ${money(total)}\n\nMerci de confirmer la disponibilité et les modalités de paiement/livraison.`
     }
     function openWhatsApp(message) { const raw = String(currentSite?.whatsapp || '').replace(/\D/g, ''); const phone = raw.startsWith('229') ? raw : raw ? `229${raw}` : ''; window.open(phone ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`, '_blank') }
     async function copyClientLink(slug) {

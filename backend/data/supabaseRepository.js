@@ -18,6 +18,8 @@ const PREMIUM_ORDER_COLUMNS = 'id,user_id,site_id,manager_name,email,whatsapp,si
 const LINK_VISIT_COLUMNS = 'id,user_id,site_id,source,visited_at,week_number,year,created_at'
 const SITE_VISIT_COLUMNS = 'id,shop_id,site_id,ip_address,visitor_id,source,visited_at,visit_date,week_number,year,created_at'
 const PRODUCT_EVENT_COLUMNS = 'id,shop_id,site_id,product_id,event_type,ip_address,visitor_id,created_at,event_date,week_number,year'
+const ORDER_COLUMNS = 'id,reference,site_order_number,site_id,site_slug,site_name,seller_user_id,buyer_name,buyer_phone,buyer_address,buyer_note,total_amount,currency,source,status,payment_status,payment_method,payer_name,payer_phone,transaction_reference,payment_submitted_at,cancelled_at,cancellation_source,created_at,updated_at'
+const ORDER_ITEM_COLUMNS = 'id,order_id,product_id,name,category,quantity,unit_price,total,created_at'
 
 const memoryCache = new Map()
 
@@ -240,6 +242,53 @@ function mapPayment(p) {
     paidAt: p.paid_at ? iso(p.paid_at) : undefined,
     createdAt: iso(p.created_at),
     updatedAt: p.updated_at ? iso(p.updated_at) : undefined,
+  }
+}
+
+function mapOrder(row, items = []) {
+  if (!row) return null
+  return {
+    id: row.id,
+    reference: row.reference,
+    siteOrderNumber: row.site_order_number,
+    siteId: row.site_id,
+    siteSlug: row.site_slug,
+    siteName: row.site_name,
+    sellerUserId: row.seller_user_id,
+    buyerName: row.buyer_name,
+    buyerPhone: row.buyer_phone,
+    buyerAddress: row.buyer_address || '',
+    buyerNote: row.buyer_note || '',
+    items,
+    totalAmount: Number(row.total_amount || 0),
+    currency: row.currency || 'FCFA',
+    source: row.source || 'direct',
+    status: row.status,
+    paymentStatus: row.payment_status,
+    paymentMethod: row.payment_method || '',
+    payerName: row.payer_name || '',
+    payerPhone: row.payer_phone || '',
+    transactionReference: row.transaction_reference || '',
+    paymentSubmittedAt: row.payment_submitted_at ? iso(row.payment_submitted_at) : undefined,
+    cancelledAt: row.cancelled_at ? iso(row.cancelled_at) : undefined,
+    cancellationSource: row.cancellation_source || '',
+    createdAt: iso(row.created_at),
+    updatedAt: row.updated_at ? iso(row.updated_at) : undefined,
+  }
+}
+
+function mapOrderItem(row) {
+  if (!row) return null
+  return {
+    id: row.id,
+    orderId: row.order_id,
+    productId: row.product_id,
+    name: row.name,
+    category: row.category || '',
+    quantity: Number(row.quantity || 1),
+    unitPrice: Number(row.unit_price || 0),
+    total: Number(row.total || 0),
+    createdAt: iso(row.created_at),
   }
 }
 
@@ -1273,6 +1322,150 @@ module.exports = {
         year: row.year,
       }))
     })
+  },
+
+  async createOrder(data) {
+    const siteOrderNumber = Number(data.siteOrderNumber || Date.now())
+    const id = data.id || newEntityId('order')
+    const reference = data.reference || `${String(data.siteName || 'SHOPLINK')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 28) || 'SHOPLINK'}-${String(siteOrderNumber).padStart(4, '0')}`
+
+    const { data: orderRow, error } = await supabase
+      .from('orders')
+      .insert({
+        id,
+        reference,
+        site_order_number: siteOrderNumber,
+        site_id: data.siteId,
+        site_slug: data.siteSlug || '',
+        site_name: data.siteName || '',
+        seller_user_id: data.sellerUserId,
+        buyer_name: data.buyerName,
+        buyer_phone: data.buyerPhone,
+        buyer_address: data.buyerAddress || '',
+        buyer_note: data.buyerNote || '',
+        total_amount: data.totalAmount || 0,
+        currency: data.currency || 'FCFA',
+        source: data.source || 'direct',
+        status: data.status || 'pending_payment',
+        payment_status: data.paymentStatus || 'pending',
+        created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select(ORDER_COLUMNS)
+      .limit(1)
+      .single()
+
+    if (error || !orderRow) {
+      console.error('❌ Erreur création commande Supabase:', error && error.message)
+      return null
+    }
+
+    const items = (data.items || []).map((item) => ({
+      id: item.id || newEntityId('order-item'),
+      order_id: orderRow.id,
+      product_id: item.productId || null,
+      name: item.name,
+      category: item.category || '',
+      quantity: Number(item.quantity || 1),
+      unit_price: Number(item.unitPrice || 0),
+      total: Number(item.total || 0),
+      created_at: new Date().toISOString(),
+    }))
+
+    let savedItems = []
+    if (items.length) {
+      const { data: itemRows, error: itemError } = await supabase
+        .from('order_items')
+        .insert(items)
+        .select(ORDER_ITEM_COLUMNS)
+        .limit(DEFAULT_LIMIT)
+
+      if (itemError) {
+        console.error('❌ Erreur création lignes commande Supabase:', itemError.message)
+      } else {
+        savedItems = (itemRows || []).map(mapOrderItem)
+      }
+    }
+
+    invalidateCache(`orders:site:${orderRow.site_id}`)
+    return mapOrder(orderRow, savedItems)
+  },
+
+  async findOrderById(id) {
+    const { data: orderRow, error } = await supabase
+      .from('orders')
+      .select(ORDER_COLUMNS)
+      .eq('id', id)
+      .limit(1)
+      .single()
+    if (error || !orderRow) return null
+
+    const { data: itemRows } = await supabase
+      .from('order_items')
+      .select(ORDER_ITEM_COLUMNS)
+      .eq('order_id', id)
+      .limit(DEFAULT_LIMIT)
+
+    return mapOrder(orderRow, (itemRows || []).map(mapOrderItem))
+  },
+
+  async listOrdersBySiteId(siteId) {
+    return cached(`orders:site:${siteId}`, CACHE_TTL_MS, async () => {
+      const { data: rows, error } = await supabase
+        .from('orders')
+        .select(ORDER_COLUMNS)
+        .eq('site_id', siteId)
+        .order('created_at', { ascending: false })
+        .limit(ADMIN_LIMIT)
+      if (error || !rows) return []
+
+      const orderIds = rows.map((row) => row.id)
+      let itemsByOrder = new Map()
+      if (orderIds.length) {
+        const { data: itemRows } = await supabase
+          .from('order_items')
+          .select(ORDER_ITEM_COLUMNS)
+          .in('order_id', orderIds)
+          .limit(ADMIN_LIMIT * 10)
+        ;(itemRows || []).forEach((row) => {
+          if (!itemsByOrder.has(row.order_id)) itemsByOrder.set(row.order_id, [])
+          itemsByOrder.get(row.order_id).push(mapOrderItem(row))
+        })
+      }
+
+      return rows.map((row) => mapOrder(row, itemsByOrder.get(row.id) || []))
+    })
+  },
+
+  async updateOrder(id, patch) {
+    const updates = { updated_at: new Date().toISOString() }
+    if (patch.status !== undefined) updates.status = patch.status
+    if (patch.paymentStatus !== undefined) updates.payment_status = patch.paymentStatus
+    if (patch.paymentMethod !== undefined) updates.payment_method = patch.paymentMethod
+    if (patch.payerName !== undefined) updates.payer_name = patch.payerName
+    if (patch.payerPhone !== undefined) updates.payer_phone = patch.payerPhone
+    if (patch.transactionReference !== undefined) updates.transaction_reference = patch.transactionReference
+    if (patch.paymentSubmittedAt !== undefined) updates.payment_submitted_at = patch.paymentSubmittedAt ? new Date(patch.paymentSubmittedAt).toISOString() : null
+    if (patch.cancelledAt !== undefined) updates.cancelled_at = patch.cancelledAt ? new Date(patch.cancelledAt).toISOString() : null
+    if (patch.cancellationSource !== undefined) updates.cancellation_source = patch.cancellationSource
+
+    const { data: row, error } = await supabase
+      .from('orders')
+      .update(updates)
+      .eq('id', id)
+      .select(ORDER_COLUMNS)
+      .limit(1)
+      .single()
+    if (error || !row) return null
+
+    invalidateCache(`orders:site:${row.site_id}`)
+    return this.findOrderById(id)
   },
 
   // Admin-specific functions

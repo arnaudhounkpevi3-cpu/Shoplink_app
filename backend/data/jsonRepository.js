@@ -417,4 +417,56 @@ module.exports = {
       .filter((entry) => entry.siteId === siteId && Number(entry.weekNumber) === Number(weekNumber) && Number(entry.year) === Number(year))
       .map((entry) => ({ ...entry }))
   },
+
+  async createOrder(data) {
+    if (!state.orders) state.orders = []
+    const siteOrderNumber = Number(data.siteOrderNumber || state.orders.filter((order) => order.siteId === data.siteId).length + 1)
+    const order = {
+      id: data.id || `order-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      reference: data.reference || `${String(data.siteName || 'SHOPLINK').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28) || 'SHOPLINK'}-${String(siteOrderNumber).padStart(4, '0')}`,
+      siteOrderNumber,
+      siteId: data.siteId,
+      siteSlug: data.siteSlug || '',
+      siteName: data.siteName || '',
+      sellerUserId: data.sellerUserId,
+      buyerName: data.buyerName,
+      buyerPhone: data.buyerPhone,
+      buyerAddress: data.buyerAddress || '',
+      buyerNote: data.buyerNote || '',
+      items: data.items || [],
+      totalAmount: Number(data.totalAmount || 0),
+      currency: data.currency || 'FCFA',
+      source: data.source || 'direct',
+      status: data.status || 'pending_payment',
+      paymentStatus: data.paymentStatus || 'pending',
+      createdAt: data.createdAt || new Date().toISOString(),
+      updatedAt: data.updatedAt,
+    }
+    state.orders.push(order)
+    saveState()
+    return { ...order }
+  },
+
+  async findOrderById(id) {
+    if (!state.orders) state.orders = []
+    const order = state.orders.find((entry) => entry.id === id)
+    return order ? { ...order } : null
+  },
+
+  async listOrdersBySiteId(siteId) {
+    if (!state.orders) state.orders = []
+    return state.orders
+      .filter((entry) => entry.siteId === siteId)
+      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+      .map((entry) => ({ ...entry }))
+  },
+
+  async updateOrder(id, patch) {
+    if (!state.orders) state.orders = []
+    const order = state.orders.find((entry) => entry.id === id)
+    if (!order) return null
+    Object.assign(order, patch, { updatedAt: new Date().toISOString() })
+    saveState()
+    return { ...order }
+  },
 }

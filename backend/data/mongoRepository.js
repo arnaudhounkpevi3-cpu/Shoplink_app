@@ -4,6 +4,7 @@ const Site = require('../models/Site')
 const Product = require('../models/Product')
 const Payment = require('../models/Payment')
 const Ticket = require('../models/Ticket')
+const Order = require('../models/Order')
 const { getActivityTheme } = require('../utils/activityTheme')
 
 function iso(d) {
@@ -127,6 +128,39 @@ function mapPayment(p) {
     fedapayTransactionId: o.fedapayTransactionId,
     createdAt: iso(o.createdAt),
     updatedAt: o.updatedAt ? iso(o.updatedAt) : undefined,
+  }
+}
+
+function mapOrder(o) {
+  if (!o) return null
+  const doc = o.toObject ? o.toObject() : o
+  return {
+    id: doc._id,
+    reference: doc.reference,
+    siteOrderNumber: doc.siteOrderNumber,
+    siteId: doc.siteId,
+    siteSlug: doc.siteSlug || '',
+    siteName: doc.siteName || '',
+    sellerUserId: doc.sellerUserId,
+    buyerName: doc.buyerName,
+    buyerPhone: doc.buyerPhone,
+    buyerAddress: doc.buyerAddress || '',
+    buyerNote: doc.buyerNote || '',
+    items: doc.items || [],
+    totalAmount: Number(doc.totalAmount || 0),
+    currency: doc.currency || 'FCFA',
+    source: doc.source || 'direct',
+    status: doc.status,
+    paymentStatus: doc.paymentStatus,
+    paymentMethod: doc.paymentMethod || '',
+    payerName: doc.payerName || '',
+    payerPhone: doc.payerPhone || '',
+    transactionReference: doc.transactionReference || '',
+    paymentSubmittedAt: doc.paymentSubmittedAt ? iso(doc.paymentSubmittedAt) : undefined,
+    cancelledAt: doc.cancelledAt ? iso(doc.cancelledAt) : undefined,
+    cancellationSource: doc.cancellationSource || '',
+    createdAt: iso(doc.createdAt),
+    updatedAt: doc.updatedAt ? iso(doc.updatedAt) : undefined,
   }
 }
 
@@ -532,5 +566,51 @@ module.exports = {
   async getTrackingBySite(siteId) {
     const state = require('./state.json')
     return state.tracking.filter(t => t.siteId === siteId)
+  },
+
+  async createOrder(data) {
+    const count = await Order.countDocuments({ siteId: data.siteId })
+    const siteOrderNumber = Number(data.siteOrderNumber || count + 1)
+    const reference = data.reference || `${String(data.siteName || 'SHOPLINK').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28) || 'SHOPLINK'}-${String(siteOrderNumber).padStart(4, '0')}`
+    const doc = await Order.create({
+      _id: data.id || newEntityId('order'),
+      reference,
+      siteOrderNumber,
+      siteId: data.siteId,
+      siteSlug: data.siteSlug || '',
+      siteName: data.siteName || '',
+      sellerUserId: data.sellerUserId,
+      buyerName: data.buyerName,
+      buyerPhone: data.buyerPhone,
+      buyerAddress: data.buyerAddress || '',
+      buyerNote: data.buyerNote || '',
+      items: data.items || [],
+      totalAmount: Number(data.totalAmount || 0),
+      currency: data.currency || 'FCFA',
+      source: data.source || 'direct',
+      status: data.status || 'pending_payment',
+      paymentStatus: data.paymentStatus || 'pending',
+      createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+    })
+    return mapOrder(doc)
+  },
+
+  async findOrderById(id) {
+    const doc = await Order.findById(id).lean()
+    return mapOrder(doc)
+  },
+
+  async listOrdersBySiteId(siteId) {
+    const rows = await Order.find({ siteId }).sort({ createdAt: -1 }).limit(500).lean()
+    return rows.map(mapOrder)
+  },
+
+  async updateOrder(id, patch) {
+    const update = { ...patch, updatedAt: new Date() }
+    for (const key of ['paymentSubmittedAt', 'cancelledAt']) {
+      if (update[key]) update[key] = new Date(update[key])
+    }
+    const doc = await Order.findByIdAndUpdate(id, update, { new: true }).lean()
+    return mapOrder(doc)
   },
 }
