@@ -1,7 +1,7 @@
 /**
  * Base URL API ShopLink.
- * - En local/LAN : http://IP_DU_PC:5000/api
- * - Sur Vercel : /api, servi par les fonctions serverless Vercel
+ * - Par défaut : /api (proxy Vite en dev, même origine en prod)
+ * - Override possible via window.__SHOPLINK_API_URL__
  */
 ;(function () {
   var custom = window.__SHOPLINK_API_URL__
@@ -10,16 +10,15 @@
     return
   }
 
-  var p = window.location.protocol
-  var h = window.location.hostname
-  var isLocalOrLan =
-    h === 'localhost' ||
-    h === '127.0.0.1' ||
-    /^10\./.test(h) ||
-    /^192\.168\./.test(h) ||
-    /^172\.(1[6-9]|2\d|3[0-1])\./.test(h)
+  // Choix robuste: utiliser la même origine.
+  // - En Vite dev: /api est proxifié vers le backend (vite.config.js)
+  // - En backend Express: /api est servi directement
+  // - En prod (Vercel): /api pointe vers les fonctions serverless
+  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+    window.SHOPLINK_API_BASE = '/api'
+    return
+  }
 
-  window.SHOPLINK_API_BASE = p === 'http:' && isLocalOrLan
-    ? p + '//' + h + ':5000/api'
-    : '/api'
+  // Fallback pour ouverture locale en file://
+  window.SHOPLINK_API_BASE = 'http://localhost:5000/api'
 })()

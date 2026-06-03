@@ -72,6 +72,16 @@ function welcomeEmailHtml({ name, dashboardUrl }) {
 </html>`
 }
 
+function buildAccountDashboardUrl(req) {
+  const baseUrl = getFrontendBaseUrl(req)
+  const email = String(req.user.email || '').trim().toLowerCase()
+  const dashboardPath = `/dashboard-client-shoplink.html?account=${encodeURIComponent(email)}`
+  const url = new URL('/login.html', baseUrl)
+  url.searchParams.set('account', email)
+  url.searchParams.set('next', dashboardPath)
+  return url.toString()
+}
+
 router.post('/send-welcome-email', requireAuth, async (req, res) => {
   const apiKey = process.env.BREVO_API_KEY
   if (!apiKey) {
@@ -84,7 +94,7 @@ router.post('/send-welcome-email', requireAuth, async (req, res) => {
   const from = parseEmailFrom(process.env.EMAIL_FROM || '"ShopLink" <supportshoplink@gmail.com>')
   const replyTo = parseEmailFrom(process.env.EMAIL_REPLY_TO || 'supportshoplink@gmail.com')
   const name = req.body.name || req.user.name || 'Utilisateur ShopLink'
-  const dashboardUrl = `${getFrontendBaseUrl(req)}/dashboard-client-shoplink.html`
+  const dashboardUrl = buildAccountDashboardUrl(req)
 
   try {
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {

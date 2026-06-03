@@ -251,6 +251,23 @@
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
   const submitBtn = document.getElementById('submit-btn');
+  const rememberInput = document.getElementById('remember');
+  const loginParams = new URLSearchParams(window.location.search);
+  const expectedAccountEmail = String(loginParams.get('account') || '').trim().toLowerCase();
+
+  if (expectedAccountEmail) {
+    emailInput.value = expectedAccountEmail;
+    emailInput.readOnly = true;
+    emailInput.setAttribute('aria-readonly', 'true');
+  } else if (localStorage.getItem('shoplink_remember_me') === 'true') {
+    emailInput.value = localStorage.getItem('shoplink_remember_email') || '';
+    rememberInput.checked = Boolean(emailInput.value);
+  }
+
+  function showGlobalError(message) {
+    document.getElementById('global-error').textContent = message;
+    document.getElementById('global-error').classList.add('show');
+  }
 
   function togglePasswordVisibility(inputId, button) {
     const input = document.getElementById(inputId);
@@ -292,8 +309,12 @@
 
     // Validation avant envoi
     if (!email || !password) {
-      document.getElementById('global-error').textContent = 'Veuillez remplir tous les champs';
-      document.getElementById('global-error').classList.add('show');
+      showGlobalError('Veuillez remplir tous les champs');
+      return;
+    }
+
+    if (expectedAccountEmail && email.toLowerCase() !== expectedAccountEmail) {
+      showGlobalError('Ce lien est réservé au compte ' + expectedAccountEmail + '. Connectez-vous avec cet email.');
       return;
     }
 
@@ -333,8 +354,16 @@
         if (data.user.role === 'admin') {
           localStorage.removeItem('shoplink_token');
           localStorage.removeItem('shoplink_user');
-          document.getElementById('global-error').textContent = 'Le compte administrateur doit se connecter depuis la page admin dédiée.';
-          document.getElementById('global-error').classList.add('show');
+          showGlobalError('Le compte administrateur doit se connecter depuis la page admin dédiée.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Se connecter →';
+          return;
+        }
+
+        if (expectedAccountEmail && String(data.user.email || '').toLowerCase() !== expectedAccountEmail) {
+          localStorage.removeItem('shoplink_token');
+          localStorage.removeItem('shoplink_user');
+          showGlobalError('Connexion refusée : ce bouton est réservé au compte ' + expectedAccountEmail + '.');
           submitBtn.disabled = false;
           submitBtn.textContent = 'Se connecter →';
           return;
@@ -342,6 +371,13 @@
 
         localStorage.setItem('shoplink_token', data.token);
         localStorage.setItem('shoplink_user', JSON.stringify(data.user));
+        if (rememberInput.checked) {
+          localStorage.setItem('shoplink_remember_me', 'true');
+          localStorage.setItem('shoplink_remember_email', data.user.email || email);
+        } else {
+          localStorage.removeItem('shoplink_remember_me');
+          localStorage.removeItem('shoplink_remember_email');
+        }
 
         document.getElementById('success-box').classList.add('show');
 
@@ -350,14 +386,12 @@
           window.location.href = next || '/dashboard-client-shoplink.html';
         }, 1200);
       } else {
-        document.getElementById('global-error').textContent = data.message || 'Email ou mot de passe incorrect';
-        document.getElementById('global-error').classList.add('show');
+        showGlobalError(data.message || 'Email ou mot de passe incorrect');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Se connecter →';
       }
     } catch(err) {
-      document.getElementById('global-error').textContent = 'Erreur de connexion au serveur. Vérifiez votre connexion internet.';
-      document.getElementById('global-error').classList.add('show');
+      showGlobalError('Erreur de connexion au serveur. Vérifiez votre connexion internet.');
       submitBtn.disabled = false;
       submitBtn.textContent = 'Se connecter →';
     }

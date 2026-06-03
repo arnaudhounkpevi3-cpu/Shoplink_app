@@ -125,6 +125,7 @@ router.post('/register', async (req, res) => {
     slogan,
     city,
     activityType,
+    activityLabel,
     description,
     address,
     secondaryPhone,
@@ -137,6 +138,13 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({
       success: false,
       message: 'name, email et password sont obligatoires',
+    })
+  }
+
+  if (String(activityType || '').toLowerCase() === 'autre' && !String(activityLabel || '').trim()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Veuillez préciser votre activité',
     })
   }
 
@@ -171,6 +179,7 @@ router.post('/register', async (req, res) => {
     slogan,
     city,
     activityType,
+    activityLabel,
     description,
     address,
     secondaryPhone,

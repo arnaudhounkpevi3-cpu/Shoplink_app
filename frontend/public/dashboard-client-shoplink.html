@@ -253,17 +253,37 @@
       return localStorage.getItem('shoplink_token') || '';
     }
 
+    const dashboardParams = new URLSearchParams(window.location.search);
+    const expectedAccountEmail = String(dashboardParams.get('account') || '').trim().toLowerCase();
+
+    function currentUserMatchesExpectedAccount() {
+      if (!expectedAccountEmail) return true;
+      const user = getCurrentUser();
+      return String(user.email || '').trim().toLowerCase() === expectedAccountEmail;
+    }
+
     function hasValidClientSession() {
       const token = getAuthToken();
       const user = getCurrentUser();
-      return Boolean(token && !token.startsWith('demo-token') && user && user.role !== 'admin');
+      return Boolean(token && !token.startsWith('demo-token') && user && user.role !== 'admin' && currentUserMatchesExpectedAccount());
     }
 
     function redirectToClientLogin() {
       localStorage.removeItem('demo_mode');
       localStorage.removeItem('shoplink_token');
-      const next = encodeURIComponent('/dashboard-client-shoplink.html');
-      window.location.href = `/login.html?next=${next}`;
+      localStorage.removeItem('shoplink_user');
+      const nextPath = expectedAccountEmail
+        ? `/dashboard-client-shoplink.html?account=${encodeURIComponent(expectedAccountEmail)}`
+        : '/dashboard-client-shoplink.html';
+      const loginUrl = expectedAccountEmail
+        ? `/login.html?account=${encodeURIComponent(expectedAccountEmail)}&next=${encodeURIComponent(nextPath)}`
+        : `/login.html?next=${encodeURIComponent(nextPath)}`;
+      window.location.href = loginUrl;
+    }
+
+    function enforceExpectedDashboardAccount() {
+      if (!expectedAccountEmail || currentUserMatchesExpectedAccount()) return;
+      redirectToClientLogin();
     }
 
     function slugify(value) {
@@ -325,6 +345,7 @@
       const secondaryPhone = overrides.secondaryPhone ?? document.getElementById('site-call-phone')?.value?.trim() ?? context.site.secondaryPhone ?? context.order.secondaryPhone ?? '';
       const description = overrides.description ?? document.getElementById('site-description')?.value?.trim() ?? context.site.description ?? context.order.description ?? '';
       const activityType = overrides.activityType || context.site.activityType || context.order.activityType || 'Boutique';
+      const activityLabel = overrides.activityLabel ?? context.site.activityLabel ?? context.order.activityLabel ?? '';
       const slug = overrides.slug || context.site.slug || context.order.slug || slugify(name);
 
       return {
@@ -338,6 +359,7 @@
         address,
         description,
         activityType,
+        activityLabel,
         logo: overrides.logo ?? selectedSiteLogo ?? context.site.logo ?? '',
         status: overrides.status || context.site.status || 'published',
       };
@@ -398,7 +420,10 @@
           throw new Error(data?.message || 'Le site backend n’a pas été créé ou récupéré.');
         }
 
-        const site = data.site || localSite;
+        const site = {
+          ...(data.site || localSite),
+          activityLabel: localSite.activityLabel || data.site?.activityLabel || '',
+        };
         setAccountJson(CLIENT_SITE_KEY, site);
         applyAccountSiteToPreview();
         return site;
@@ -2350,7 +2375,13 @@
           phoneContact.innerHTML = '';
         }
       }
-      if (statusActivity) statusActivity.textContent = site.activityType || context.order.activityType || 'Activité non renseignée';
+      if (statusActivity) {
+        const activityType = String(site.activityType || context.order.activityType || '').toLowerCase();
+        const activityLabel = String(site.activityLabel || context.order.activityLabel || '').trim();
+        statusActivity.textContent = activityType === 'autre'
+          ? (activityLabel || 'Autre')
+          : (site.activityType || context.order.activityType || 'Activité non renseignée');
+      }
       if (statusWhatsapp && whatsapp) statusWhatsapp.textContent = normalizeBeninPhoneDisplay(whatsapp);
       linkEls.forEach((el) => {
         if (el.classList?.contains('subbar-link')) {
@@ -2784,7 +2815,10 @@
             const sitesData = await apiJson('/api/sites/user/my-sites');
             site = selectCurrentAccountSite(sitesData.sites || []) || site;
             if (site) {
-              setAccountJson(CLIENT_SITE_KEY, site);
+              setAccountJson(CLIENT_SITE_KEY, {
+                ...site,
+                activityLabel: getAccountJson('shoplink_order', {})?.activityLabel || getAccountJson(CLIENT_SITE_KEY, {})?.activityLabel || '',
+              });
             }
           } catch (siteError) {
             console.warn('Impossible de récupérer les sites backend:', siteError);
@@ -2824,7 +2858,10 @@
           return;
         }
 
-        setAccountJson(CLIENT_SITE_KEY, site);
+        setAccountJson(CLIENT_SITE_KEY, {
+          ...site,
+          activityLabel: getAccountJson('shoplink_order', {})?.activityLabel || getAccountJson(CLIENT_SITE_KEY, {})?.activityLabel || '',
+        });
         applyAccountSiteToPreview();
 
         const productsData = await apiJson(`/api/products/${site.id}`);
@@ -2909,6 +2946,7 @@
       if (productTitle) productTitle.textContent = '· 0 publié';
     }
 
+    enforceExpectedDashboardAccount();
     resetVisibleNumbersAndContacts();
     applyAccountSiteToPreview();
     applyAccountProfileToSettings();
