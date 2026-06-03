@@ -505,6 +505,7 @@ module.exports = {
     }
 
     if (patch.name) updates.name = patch.name
+    if (patch.slug !== undefined) updates.slug = patch.slug
     if (patch.slogan !== undefined) updates.slogan = patch.slogan
     if (patch.logo !== undefined) updates.logo_url = patch.logo
     if (patch.description !== undefined) updates.description = patch.description
