@@ -84,7 +84,7 @@ async function migrateProducts() {
         price: parseFloat(product.price),
         description: product.description || '',
         image_url: product.image || '',
-        category: product.category || 'Général',
+        category: product.category || '',
         is_visible: true,
         views: product.views || 0,
         whatsapp_clicks: product.whatsappClicks || 0,

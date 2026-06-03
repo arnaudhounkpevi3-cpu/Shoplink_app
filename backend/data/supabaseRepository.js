@@ -159,7 +159,7 @@ function mapProduct(p) {
     price: p.price,
     image: p.image_url || '',
     description: decoded.description || '',
-    category: p.category || 'General',
+    category: p.category || '',
     visible: p.is_visible !== false,
     status: p.is_visible === false ? 'hidden' : 'published',
     availability: p.availability || meta.availability || 'available',
@@ -191,7 +191,7 @@ function baseProductInsertPayload(id, data) {
     price: data.price,
     image_url: data.image || '',
     description: encodeProductDescription(data.description || '', meta),
-    category: data.category || 'General',
+    category: data.category || '',
     is_visible: data.visible !== false && data.status !== 'hidden',
     created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
   }

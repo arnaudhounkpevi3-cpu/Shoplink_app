@@ -153,7 +153,7 @@ module.exports = {
       price: data.price,
       image: data.image || '',
       description: data.description || '',
-      category: data.category || 'General',
+      category: data.category || '',
       visible: data.visible !== false,
       status: data.status || (data.visible === false ? 'hidden' : 'published'),
       availability: data.availability || 'available',

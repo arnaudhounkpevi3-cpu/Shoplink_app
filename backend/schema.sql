@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS products (
   price         DECIMAL(10,2) NOT NULL CHECK (price >= 0),
   description   TEXT,
   image_url     TEXT DEFAULT '',
-  category      TEXT DEFAULT 'Général',
+  category      TEXT DEFAULT '',
   is_visible    BOOLEAN DEFAULT true,
   views         INTEGER DEFAULT 0,
   whatsapp_clicks INTEGER DEFAULT 0,
