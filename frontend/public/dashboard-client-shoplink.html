@@ -536,16 +536,17 @@
 
     function renderClientStats() {
       const stats = loadStats();
-      const officialMetrics = stats.weeklyTraffic?.metrics || {};
-      const officialSiteViews = Number(officialMetrics.siteViews ?? stats.views ?? 0);
-      const officialUniqueVisitors = Number(officialMetrics.uniqueVisitors ?? stats.uniqueVisitors ?? 0);
-      const officialProductViewsTotal = Number(officialMetrics.productViewsTotal ?? stats.productViewsTotal ?? 0);
-      const officialAddToCartTotal = Number(officialMetrics.addToCartTotal ?? stats.whatsappClicks ?? 0);
+      const weeklyTraffic = getSelectedWeeklyTraffic(stats);
+      const officialMetrics = weeklyTraffic?.metrics || {};
+      const officialSiteViews = Number(officialMetrics.siteViews || 0);
+      const officialUniqueVisitors = Number(officialMetrics.uniqueVisitors || 0);
+      const officialProductViewsTotal = Number(officialMetrics.productViewsTotal || 0);
+      const officialAddToCartTotal = Number(officialMetrics.addToCartTotal || 0);
 
       setMetric('Vues du site', officialSiteViews);
       setMetric('Vues totales', officialSiteViews);
-      setMetric('Commandes reçues', stats.whatsappClicks);
-      setMetric('Top produit', stats.topProduct?.name || 'Aucun');
+      setMetric('Commandes reçues', officialAddToCartTotal);
+      setMetric('Top produit', weeklyTraffic?.topProduct?.name || 'Aucun');
       
       // New metrics from backend tracking
       if (officialUniqueVisitors !== undefined) {
@@ -558,14 +559,14 @@
       setMetric('Partages du lien', stats.shares);
       setMetric('Vues produits totales', officialProductViewsTotal);
       setMetric('Ajouts panier', officialAddToCartTotal);
-      renderTrafficSources(stats.weeklyTraffic || null);
+      renderTrafficSources(weeklyTraffic);
       document.querySelectorAll('.stat-bar-val').forEach(el => {
         if (!el.closest('[data-traffic-sources="true"]')) {
           el.textContent = el.textContent.includes('%') ? '0%' : '0 vue';
         }
       });
       document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = '0%'; });
-      renderTopViewedProducts(stats.productViews || {});
+      renderTopViewedProducts(weeklyTraffic?.productViews || {});
       applyCatalogFilter(false);
       renderActivities(stats);
     }
@@ -598,7 +599,6 @@
         
         saveStats(stats);
         updateProductViewCounters(stats.productViews);
-        renderClientStats();
         await syncWeeklyTrafficStats(currentTrafficWeekOffset);
         
         // Also fetch conversion stats
@@ -608,7 +608,7 @@
           if (convData.success) {
             stats.conversionRate = convData.stats.conversionRate;
             saveStats(stats);
-            renderClientStats();
+            if (getSelectedWeeklyTraffic(stats)) renderClientStats();
           }
         } catch (_error) {
           // Ignore conversion stats error
@@ -622,8 +622,11 @@
       const context = getClientContext();
       if (!context.siteId || !hasValidClientSession()) return;
 
+      renderWeeklyTrafficLoading(weekOffset);
+
       try {
         const data = await apiJson(`/api/tracking/weekly/${encodeURIComponent(context.siteId)}?weekOffset=${encodeURIComponent(weekOffset)}`);
+        if (Number(data.week?.weekOffset || 0) !== currentTrafficWeekOffset) return;
         const stats = loadStats();
         const metrics = data.metrics || {};
         stats.weeklyTraffic = data;
@@ -640,8 +643,50 @@
         renderClientStats();
         renderTrafficSources(data);
       } catch (_error) {
-        renderTrafficSources(loadStats().weeklyTraffic || null);
+        renderTrafficSources({
+          success: false,
+          total: 0,
+          sources: [],
+          topProducts: [],
+          metrics: {},
+          week: {
+            weekOffset,
+            isCurrent: weekOffset === 0,
+            period: 'Semaine sélectionnée',
+          },
+          error: true,
+        });
       }
+    }
+
+    function getSelectedWeeklyTraffic(stats = loadStats()) {
+      const weeklyTraffic = stats.weeklyTraffic;
+      if (!weeklyTraffic || !weeklyTraffic.week) return null;
+      return Number(weeklyTraffic.week.weekOffset || 0) === Number(currentTrafficWeekOffset || 0)
+        ? weeklyTraffic
+        : null;
+    }
+
+    function renderWeeklyTrafficLoading(weekOffset) {
+      setMetric('Vues du site', '...');
+      setMetric('Vues totales', '...');
+      setMetric('Commandes reçues', '...');
+      setMetric('Top produit', 'Chargement...');
+      setMetric('Visiteurs uniques', '...');
+      setMetric('Vues produits totales', '...');
+      setMetric('Ajouts panier', '...');
+      renderTrafficSources({
+        loading: true,
+        total: 0,
+        sources: [],
+        topProducts: [],
+        metrics: {},
+        week: {
+          weekOffset,
+          isCurrent: weekOffset === 0,
+          period: 'Chargement...',
+        },
+      });
     }
 
     function changeTrafficWeek(delta) {
