@@ -163,6 +163,7 @@
     let isCopyingShopLink = false;
     let isCatalogExpanded = false;
     let currentTrafficWeekOffset = 0;
+    let activeDashboardSite = null;
     const CLIENT_STATS_KEY = 'shoplink_client_dashboard_stats';
     const CLIENT_PRODUCTS_KEY = 'shoplink_client_products';
     const CLIENT_PROFILE_KEY = 'shoplink_user';
@@ -201,17 +202,35 @@
       localStorage.setItem(accountKey(baseKey), JSON.stringify(value));
     }
 
+    function setActiveSite(site) {
+      activeDashboardSite = site || null;
+      if (site) setAccountJson(CLIENT_SITE_KEY, site);
+    }
+
     function getGlobalSiteForCurrentUser(user) {
       return {};
     }
 
     function getAccountSite(user = getCurrentUser()) {
+      const params = new URLSearchParams(window.location.search);
+      const requestedSiteId = params.get('siteId') || params.get('site') || '';
+      const requestedSlug = params.get('slug') || '';
+      if (activeDashboardSite) {
+        const matchesActiveSite = !requestedSiteId || activeDashboardSite.id === requestedSiteId;
+        const matchesActiveSlug = !requestedSlug || activeDashboardSite.slug === requestedSlug;
+        if (matchesActiveSite && matchesActiveSlug) return activeDashboardSite;
+      }
+
       const storedSite = getAccountJson(CLIENT_SITE_KEY, null);
-      if (storedSite) return storedSite;
+      if (storedSite) {
+        const matchesRequestedSite = !requestedSiteId || storedSite.id === requestedSiteId;
+        const matchesRequestedSlug = !requestedSlug || storedSite.slug === requestedSlug;
+        if (matchesRequestedSite && matchesRequestedSlug) return storedSite;
+      }
 
       const globalSite = getGlobalSiteForCurrentUser(user);
       if (Object.keys(globalSite).length) {
-        setAccountJson(CLIENT_SITE_KEY, globalSite);
+        setActiveSite(globalSite);
         return globalSite;
       }
 
@@ -222,12 +241,35 @@
       const user = getCurrentUser();
       const storedSite = getAccountJson(CLIENT_SITE_KEY, null);
       const order = getAccountJson('shoplink_order', {}) || {};
+      const params = new URLSearchParams(window.location.search);
+      const requestedSiteId = params.get('siteId') || params.get('site') || '';
+      const requestedSlug = params.get('slug') || '';
 
       const ownedSites = sites.filter((site) => {
         if (!site) return false;
         if (user.id && site.userId && site.userId !== user.id) return false;
         return true;
       });
+
+      if (requestedSiteId) {
+        const match = ownedSites.find((site) => site.id === requestedSiteId);
+        if (match) return match;
+      }
+
+      if (requestedSlug) {
+        const match = ownedSites.find((site) => site.slug === requestedSlug);
+        if (match) return match;
+      }
+
+      if (activeDashboardSite?.id) {
+        const match = ownedSites.find((site) => site.id === activeDashboardSite.id);
+        if (match) return match;
+      }
+
+      if (activeDashboardSite?.slug) {
+        const match = ownedSites.find((site) => site.slug === activeDashboardSite.slug);
+        if (match) return match;
+      }
 
       if (storedSite?.id) {
         const match = ownedSites.find((site) => site.id === storedSite.id);
@@ -369,7 +411,7 @@
       const allowLocalFallback = options.allowLocalFallback !== false;
       const token = getAuthToken();
       const localSite = buildSitePayload(overrides);
-      setAccountJson(CLIENT_SITE_KEY, localSite);
+      setActiveSite(localSite);
 
       if (!token) return localSite;
 
@@ -424,7 +466,7 @@
           ...(data.site || localSite),
           activityLabel: localSite.activityLabel || data.site?.activityLabel || '',
         };
-        setAccountJson(CLIENT_SITE_KEY, site);
+        setActiveSite(site);
         applyAccountSiteToPreview();
         return site;
       } catch (error) {
@@ -447,14 +489,45 @@
       return { views: 0, whatsappClicks: 0, products: 0, shares: 0, activities: [] };
     }
 
-    function getScopedStatsKey() {
+    function getScopedSiteBaseKeys(baseKey) {
       const context = getClientContext();
-      return `${CLIENT_STATS_KEY}:${context.siteId || context.slug || 'default-site'}`;
+      const keys = [context.siteId, context.slug]
+        .filter(Boolean)
+        .map((value) => `${baseKey}:${value}`);
+      return [...new Set(keys.length ? keys : [`${baseKey}:default-site`])];
+    }
+
+    function getPrimaryScopedSiteBaseKey(baseKey) {
+      return getScopedSiteBaseKeys(baseKey)[0];
+    }
+
+    function getScopedSiteJson(baseKey, fallback = null) {
+      const keys = getScopedSiteBaseKeys(baseKey);
+      const primaryKey = keys[0];
+      for (const key of keys) {
+        const value = getAccountJson(key, null);
+        if (value !== null) {
+          if (key !== primaryKey) setAccountJson(primaryKey, value);
+          return value;
+        }
+      }
+      return fallback;
+    }
+
+    function setScopedSiteJson(baseKey, value) {
+      setAccountJson(getPrimaryScopedSiteBaseKey(baseKey), value);
+    }
+
+    function hasScopedSiteJson(baseKey) {
+      return getScopedSiteBaseKeys(baseKey).some((key) => hasAccountKey(key));
+    }
+
+    function getScopedStatsKey() {
+      return getPrimaryScopedSiteBaseKey(CLIENT_STATS_KEY);
     }
 
     function getScopedProductsKey() {
-      const context = getClientContext();
-      return `${CLIENT_PRODUCTS_KEY}:${context.siteId || context.slug || 'default-site'}`;
+      return getPrimaryScopedSiteBaseKey(CLIENT_PRODUCTS_KEY);
     }
 
     function pruneStatsForCurrentSite(stats = defaultStats()) {
@@ -480,12 +553,12 @@
     }
 
     function loadStats() {
-      const scopedStats = getAccountJson(getScopedStatsKey(), null);
+      const scopedStats = getScopedSiteJson(CLIENT_STATS_KEY, null);
       return pruneStatsForCurrentSite(scopedStats || defaultStats());
     }
 
     function saveStats(stats) {
-      setAccountJson(getScopedStatsKey(), pruneStatsForCurrentSite(stats));
+      setScopedSiteJson(CLIENT_STATS_KEY, pruneStatsForCurrentSite(stats));
     }
 
     function setMetric(labelText, value) {
@@ -1044,7 +1117,7 @@
 
     function saveAccountProducts() {
       const products = getProductRows().map(productFromRow);
-      setAccountJson(getScopedProductsKey(), products);
+      setScopedSiteJson(CLIENT_PRODUCTS_KEY, products);
       const stats = loadStats();
       stats.products = products.length;
       saveStats(stats);
@@ -1052,11 +1125,11 @@
     }
 
     function loadAccountProducts() {
-      return getAccountJson(getScopedProductsKey(), []) || [];
+      return getScopedSiteJson(CLIENT_PRODUCTS_KEY, []) || [];
     }
 
     function hasLocalProductCatalog() {
-      return hasAccountKey(getScopedProductsKey());
+      return hasScopedSiteJson(CLIENT_PRODUCTS_KEY);
     }
 
     function formatProductPrice(value) {
@@ -1387,15 +1460,59 @@
         : `${window.location.origin}/boutique/${encodeURIComponent(slug)}?owner=1`;
     }
 
+    function isInlineImage(value) {
+      return /^data:image\//i.test(String(value || ''));
+    }
+
+    function stripInlineImagesForPublicCache(site, products) {
+      return {
+        site: {
+          ...(site || {}),
+          logo: isInlineImage(site?.logo) ? '' : (site?.logo || ''),
+        },
+        products: (products || []).map((product) => ({
+          ...product,
+          image: isInlineImage(product?.image) ? '' : (product?.image || ''),
+        })),
+      };
+    }
+
+    function clearPublicSiteCaches(exceptKey = '') {
+      for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+        const key = localStorage.key(index);
+        if (key && key.startsWith('shoplink_public_site_cache:') && key !== exceptKey) {
+          localStorage.removeItem(key);
+        }
+      }
+    }
+
+    function savePublicSiteCache(cacheKey, site, products) {
+      const cacheData = stripInlineImagesForPublicCache(site, products);
+      const payload = JSON.stringify({
+        ...cacheData,
+        cachedAt: Date.now(),
+      });
+
+      try {
+        localStorage.setItem(cacheKey, payload);
+      } catch (error) {
+        if (error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+          localStorage.removeItem(cacheKey);
+          clearPublicSiteCaches(cacheKey);
+          try {
+            localStorage.setItem(cacheKey, payload);
+          } catch (_retryError) {
+            localStorage.removeItem(cacheKey);
+          }
+        }
+      }
+    }
+
     function preloadPublicSiteCache(site, products) {
       if (!site?.slug) return;
       const cacheKey = `shoplink_public_site_cache:${site.slug}`;
       const publicProducts = (products || []).filter((product) => product && product.name && product.visible !== false && product.status !== 'hidden');
-      localStorage.setItem(cacheKey, JSON.stringify({
-        site,
-        products: publicProducts,
-        cachedAt: Date.now(),
-      }));
+      savePublicSiteCache(cacheKey, site, publicProducts);
     }
 
     function normalizeWhatsAppNumber(value) {
@@ -1939,7 +2056,7 @@
       selectedSiteLogo = '';
       const context = getClientContext();
       const nextSite = { ...(context.site || {}), logo: '' };
-      setAccountJson(CLIENT_SITE_KEY, nextSite);
+      setActiveSite(nextSite);
 
       const upload = document.querySelector('.site-logo-upload');
       const preview = document.querySelector('.site-logo-preview');
@@ -1972,7 +2089,7 @@
 
         const context = getClientContext();
         const nextSite = { ...(context.site || {}), logo: optimized.dataUrl };
-        setAccountJson(CLIENT_SITE_KEY, nextSite);
+        setActiveSite(nextSite);
 
         try {
           await ensureBackendSite({ ...nextSite, logo: optimized.dataUrl });
@@ -2311,7 +2428,7 @@
         description: document.getElementById('site-description')?.value || context.site.description || '',
         logo: selectedSiteLogo || context.site.logo || '',
       };
-      setAccountJson(CLIENT_SITE_KEY, nextSite);
+      setActiveSite(nextSite);
       await ensureBackendSite(nextSite);
       updateClientGreeting();
       applyAccountSiteToPreview();
@@ -2682,7 +2799,7 @@
         };
 
         localStorage.setItem(CLIENT_PROFILE_KEY, JSON.stringify(updatedUser));
-        setAccountJson(CLIENT_SITE_KEY, nextSite);
+        setActiveSite(nextSite);
 
         if (localStorage.getItem('shoplink_remember_me') === 'true') {
           localStorage.setItem('shoplink_remember_email', updatedUser.email || email);
@@ -2783,55 +2900,22 @@
     }
 
     async function openPublicSite() {
-      const context = getClientContext();
-      const immediateSlug = context.site?.slug || context.slug;
-
-      if (immediateSlug) {
-        const siteSnapshot = buildSitePayload({ slug: immediateSlug });
-        const productsSnapshot = getProductRows().map(productFromRow);
-        preloadPublicSiteCache(siteSnapshot, productsSnapshot);
-        const immediateUrl = getPublicPreviewUrl(immediateSlug);
-        const previewWindow = window.open(immediateUrl, '_blank');
-        if (!previewWindow) window.location.href = immediateUrl;
-
-        syncLocalProductsToBackend().then((site) => {
-          preloadPublicSiteCache(site, getProductRows().map(productFromRow));
-        }).catch((syncError) => {
-          console.warn('Synchronisation arrière-plan indisponible:', syncError);
-        });
-        return;
-      }
-
       const previewWindow = window.open('about:blank', '_blank');
       if (previewWindow) {
-        previewWindow.document.write('<!doctype html><title>ShopLink</title><body style="font-family:system-ui;padding:24px;color:#1a5c38;">Recherche de votre site...</body>');
+        previewWindow.document.write('<!doctype html><title>ShopLink</title><body style="font-family:system-ui;padding:24px;color:#1a5c38;">Synchronisation de votre site...</body>');
       }
 
       try {
-        let site = null;
-
-        if (!site?.slug && getAuthToken()) {
-          try {
-            const sitesData = await apiJson('/api/sites/user/my-sites');
-            site = selectCurrentAccountSite(sitesData.sites || []) || site;
-            if (site) {
-              setAccountJson(CLIENT_SITE_KEY, {
-                ...site,
-                activityLabel: getAccountJson('shoplink_order', {})?.activityLabel || getAccountJson(CLIENT_SITE_KEY, {})?.activityLabel || '',
-              });
-            }
-          } catch (siteError) {
-            console.warn('Impossible de récupérer les sites backend:', siteError);
-          }
-        }
-
+        const site = await syncLocalProductsToBackend({ strict: true });
         const slug = site?.slug || getClientContext().slug;
 
         if (!slug) {
           throw new Error('Aucun slug de boutique disponible');
         }
 
-        const publicUrl = `${getPublicSiteOrigin()}/boutique/${encodeURIComponent(slug)}?owner=1`;
+        preloadPublicSiteCache(site, getProductRows().map(productFromRow));
+
+        const publicUrl = getPublicPreviewUrl(slug);
 
         if (previewWindow && !previewWindow.closed) {
           previewWindow.location.href = publicUrl;
@@ -2858,7 +2942,7 @@
           return;
         }
 
-        setAccountJson(CLIENT_SITE_KEY, {
+        setActiveSite({
           ...site,
           activityLabel: getAccountJson('shoplink_order', {})?.activityLabel || getAccountJson(CLIENT_SITE_KEY, {})?.activityLabel || '',
         });
@@ -2869,7 +2953,7 @@
           ...product,
           backendId: product.id,
         }));
-        setAccountJson(getScopedProductsKey(), products);
+        setScopedSiteJson(CLIENT_PRODUCTS_KEY, products);
         clearDefaultProductCatalog();
         renderClientStats();
       } catch (error) {

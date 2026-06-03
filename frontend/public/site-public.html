@@ -1127,6 +1127,59 @@
       return params.get('slug') || window.location.pathname.split('/').filter(Boolean).pop() || 'boutique-test'
     }
     function siteCacheKey(slug) { return `shoplink_public_site_cache:${slug}` }
+    function isInlineImage(value) { return /^data:image\//i.test(String(value || '')) }
+    function stripInlineImagesForCache(site, products) {
+      return {
+        site: {
+          ...(site || {}),
+          logo: isInlineImage(site?.logo) ? '' : (site?.logo || ''),
+        },
+        products: (products || []).map((product) => ({
+          ...product,
+          image: isInlineImage(product?.image) ? '' : (product?.image || ''),
+        })),
+      }
+    }
+    function cacheHasInlineImages(cacheData) {
+      return Boolean(
+        isInlineImage(cacheData?.site?.logo) ||
+          (cacheData?.products || []).some((product) => isInlineImage(product?.image)),
+      )
+    }
+    function clearPublicSiteCaches(exceptKey = '') {
+      for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+        const key = localStorage.key(index)
+        if (key && key.startsWith('shoplink_public_site_cache:') && key !== exceptKey) {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+    function savePublicSiteCache(slug, site, products) {
+      const key = siteCacheKey(slug)
+      const cacheData = stripInlineImagesForCache(site, products)
+      const payload = JSON.stringify({
+        ...cacheData,
+        cachedAt: Date.now(),
+      })
+
+      try {
+        localStorage.setItem(key, payload)
+      } catch (error) {
+        if (error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+          localStorage.removeItem(key)
+          clearPublicSiteCaches(key)
+          try {
+            localStorage.setItem(key, payload)
+          } catch (_retryError) {
+            localStorage.removeItem(key)
+          }
+        }
+      }
+    }
+    function cacheMatchesSlug(cacheData, slug) {
+      const cachedSlug = String(cacheData?.site?.slug || '').trim()
+      return !cachedSlug || cachedSlug === slug
+    }
     function money(value) { return Number(value || 0).toLocaleString('fr-FR') + ' FCFA' }
     function safe(value) { return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') }
     function cleanUrl(slug) { return `${window.location.origin}/boutique/${slug}` }
@@ -1144,7 +1197,9 @@
         if (cached) {
           try {
             const cachedData = JSON.parse(cached)
-            if (cachedData.site) {
+            if (!cacheMatchesSlug(cachedData, slug) || cacheHasInlineImages(cachedData)) {
+              localStorage.removeItem(siteCacheKey(slug))
+            } else if (cachedData.site) {
               currentSite = cachedData.site
               currentProducts = cachedData.products || []
               window.currentSiteId = currentSite.id
@@ -1165,11 +1220,7 @@
         currentProducts = data.products || []
         window.currentSiteId = currentSite.id
         applyTheme(currentSite)
-        localStorage.setItem(siteCacheKey(slug), JSON.stringify({
-          site: currentSite,
-          products: currentProducts,
-          cachedAt: Date.now(),
-        }))
+        savePublicSiteCache(slug, currentSite, currentProducts)
         trackOfficialSiteVisit(currentSite.id, visitSource())
         trackWeeklyLinkVisit(currentSite.id, visitSource())
         trackVisit(currentSite.id)

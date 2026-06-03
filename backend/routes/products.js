@@ -2,6 +2,7 @@ const express = require('express')
 
 const { repo } = require('../data/repository')
 const { attachUser, requireAuth } = require('../middleware/auth')
+const { storeInlineImageIfNeeded } = require('../services/imageStorage')
 
 const router = express.Router()
 
@@ -34,12 +35,22 @@ router.post('/', requireAuth, async (req, res) => {
     })
   }
 
+  let storedImage = ''
+  try {
+    storedImage = await storeInlineImageIfNeeded(image, { siteId })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: `Impossible d'enregistrer l'image du produit : ${error.message}`,
+    })
+  }
+
   const product = await repo().createProduct({
     siteId,
     userId: req.user.id,
     name,
     price,
-    image,
+    image: storedImage,
     description,
     category,
     visible,
@@ -78,29 +89,37 @@ router.put('/site/:siteId/replace', requireAuth, async (req, res) => {
     })
   }
 
+  let cleanProducts = []
+  try {
+    cleanProducts = await Promise.all(products
+      .filter((product) => product && product.name)
+      .map(async (product) => ({
+        siteId: site.id,
+        userId: req.user.id,
+        name: product.name,
+        price: Number(product.price || 0),
+        image: await storeInlineImageIfNeeded(product.image || '', { siteId: site.id }),
+        description: product.description || '',
+        category: product.category || '',
+        visible: product.visible !== false && product.status !== 'hidden',
+        status: product.status || 'published',
+        availability: product.availability || 'available',
+        stock: product.stock || '',
+        badge: product.badge || '',
+        oldPrice: product.oldPrice || '',
+        variantInfo: product.variantInfo || '',
+        extraInfo: product.extraInfo || '',
+        createdAt: new Date().toISOString(),
+      })))
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: `Impossible d'enregistrer une image produit : ${error.message}`,
+    })
+  }
+
   const existingProducts = await repo().listProductsBySiteId(site.id)
   await Promise.all(existingProducts.map((product) => repo().deleteProduct(product.id)))
-
-  const cleanProducts = products
-    .filter((product) => product && product.name)
-    .map((product) => ({
-      siteId: site.id,
-      userId: req.user.id,
-      name: product.name,
-      price: Number(product.price || 0),
-      image: product.image || '',
-      description: product.description || '',
-      category: product.category || '',
-      visible: product.visible !== false && product.status !== 'hidden',
-      status: product.status || 'published',
-      availability: product.availability || 'available',
-      stock: product.stock || '',
-      badge: product.badge || '',
-      oldPrice: product.oldPrice || '',
-      variantInfo: product.variantInfo || '',
-      extraInfo: product.extraInfo || '',
-      createdAt: new Date().toISOString(),
-    }))
 
   const savedProducts = []
   for (const product of cleanProducts) {
@@ -161,6 +180,17 @@ router.put('/:id', requireAuth, async (req, res) => {
 
   const patch = { ...req.body }
   delete patch.siteId
+
+  if (patch.image !== undefined) {
+    try {
+      patch.image = await storeInlineImageIfNeeded(patch.image, { siteId: existingProduct.siteId })
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: `Impossible d'enregistrer l'image du produit : ${error.message}`,
+      })
+    }
+  }
 
   const product = await repo().updateProduct(req.params.id, patch)
 

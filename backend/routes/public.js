@@ -18,6 +18,10 @@ function buildWhatsAppLink(whatsapp, productName) {
   return `https://wa.me/${cleaned}?text=${message}`
 }
 
+function isInlineImage(value) {
+  return /^data:image\//i.test(String(value || ''))
+}
+
 router.get('/:slug', async (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
   res.set('Pragma', 'no-cache')
@@ -50,6 +54,7 @@ router.get('/:slug', async (req, res) => {
     .filter((product) => product.visible !== false && product.status !== 'hidden')
     .map((product) => ({
       ...product,
+      image: isInlineImage(product.image) ? '' : product.image,
       whatsappLink: buildWhatsAppLink(site.whatsapp, product.name),
     }))
 
@@ -57,6 +62,7 @@ router.get('/:slug', async (req, res) => {
     success: true,
     site: {
       ...site,
+      logo: isInlineImage(site.logo) ? '' : site.logo,
       publicUrl: buildBoutiqueUrl(site.slug, req),
       whatsappLink: buildWhatsAppLink(site.whatsapp),
     },
