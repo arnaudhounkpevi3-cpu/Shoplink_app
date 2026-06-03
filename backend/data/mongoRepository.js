@@ -569,9 +569,9 @@ module.exports = {
   },
 
   async createOrder(data) {
-    const count = await Order.countDocuments({ siteId: data.siteId })
-    const siteOrderNumber = Number(data.siteOrderNumber || count + 1)
-    const reference = data.reference || `${String(data.siteName || 'SHOPLINK').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28) || 'SHOPLINK'}-${String(siteOrderNumber).padStart(4, '0')}`
+    const latestOrder = await Order.findOne({ siteId: data.siteId }).sort({ siteOrderNumber: -1 }).lean()
+    const siteOrderNumber = Number(data.siteOrderNumber || Number(latestOrder?.siteOrderNumber || 0) + 1)
+    const reference = data.reference || `${String(data.siteName || 'SHOPLINK').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28) || 'SHOPLINK'}-${String(siteOrderNumber).padStart(3, '0')}`
     const doc = await Order.create({
       _id: data.id || newEntityId('order'),
       reference,

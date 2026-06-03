@@ -420,10 +420,17 @@ module.exports = {
 
   async createOrder(data) {
     if (!state.orders) state.orders = []
-    const siteOrderNumber = Number(data.siteOrderNumber || state.orders.filter((order) => order.siteId === data.siteId).length + 1)
+    const latestSiteOrderNumber = Math.max(
+      0,
+      ...state.orders
+        .filter((order) => order.siteId === data.siteId)
+        .map((order) => Number(order.siteOrderNumber || 0))
+        .filter(Number.isFinite),
+    )
+    const siteOrderNumber = Number(data.siteOrderNumber || latestSiteOrderNumber + 1)
     const order = {
       id: data.id || `order-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      reference: data.reference || `${String(data.siteName || 'SHOPLINK').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28) || 'SHOPLINK'}-${String(siteOrderNumber).padStart(4, '0')}`,
+      reference: data.reference || `${String(data.siteName || 'SHOPLINK').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28) || 'SHOPLINK'}-${String(siteOrderNumber).padStart(3, '0')}`,
       siteOrderNumber,
       siteId: data.siteId,
       siteSlug: data.siteSlug || '',

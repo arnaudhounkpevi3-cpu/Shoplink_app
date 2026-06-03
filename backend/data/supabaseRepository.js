@@ -1325,7 +1325,16 @@ module.exports = {
   },
 
   async createOrder(data) {
-    const siteOrderNumber = Number(data.siteOrderNumber || Date.now())
+    let siteOrderNumber = Number(data.siteOrderNumber || 0)
+    if (!siteOrderNumber) {
+      const { data: latestRows } = await supabase
+        .from('orders')
+        .select('site_order_number')
+        .eq('site_id', data.siteId)
+        .order('site_order_number', { ascending: false })
+        .limit(1)
+      siteOrderNumber = Number(latestRows?.[0]?.site_order_number || 0) + 1
+    }
     const id = data.id || newEntityId('order')
     const reference = data.reference || `${String(data.siteName || 'SHOPLINK')
       .normalize('NFD')
@@ -1333,7 +1342,7 @@ module.exports = {
       .toUpperCase()
       .replace(/[^A-Z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
-      .slice(0, 28) || 'SHOPLINK'}-${String(siteOrderNumber).padStart(4, '0')}`
+      .slice(0, 28) || 'SHOPLINK'}-${String(siteOrderNumber).padStart(3, '0')}`
 
     const { data: orderRow, error } = await supabase
       .from('orders')

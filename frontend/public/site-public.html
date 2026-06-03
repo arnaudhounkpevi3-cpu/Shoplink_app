@@ -1253,11 +1253,12 @@
 
     function renderHeroMeta(site, slug) {
       const cards = []
+      const displayPhone = site.secondaryPhone || site.whatsapp || ''
       if (site.address) {
         cards.push(`<div class="meta-card"><span class="meta-label"><img class="info-icon" src="https://cdn-icons-png.flaticon.com/512/6320/6320900.png" alt="">Adresse</span><div class="meta-value">${safe(site.address)}</div></div>`)
       }
-      if (site.whatsapp || site.secondaryPhone) {
-        cards.push(`<div class="meta-card"><span class="meta-label"><img class="info-icon" src="https://cdn-icons-png.flaticon.com/512/3059/3059408.png" alt="">Contact</span><div class="meta-value">${safe(site.whatsapp || site.secondaryPhone)}</div></div>`)
+      if (displayPhone) {
+        cards.push(`<div class="meta-card"><span class="meta-label"><img class="info-icon" src="https://cdn-icons-png.flaticon.com/512/3059/3059408.png" alt="">Contact</span><div class="meta-value">${safe(displayPhone)}</div></div>`)
       }
       if (OWNER_MODE) {
         cards.push(`<div class="meta-card meta-card-link" role="button" tabindex="0" onclick="copyClientLink('${slug}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();copyClientLink('${slug}')}"><span class="meta-label">Lien client</span><div class="meta-value">/boutique/${safe(slug)}</div></div>`)
@@ -1464,7 +1465,7 @@
         .slice(0, 28) || 'SHOPLINK'
       const next = Number(localStorage.getItem(`shoplink_order_seq_${currentSite?.id || slugFromUrl()}`) || '0') + 1
       localStorage.setItem(`shoplink_order_seq_${currentSite?.id || slugFromUrl()}`, String(next))
-      return `${name}-${String(next).padStart(4, '0')}`
+      return `${name}-${String(next).padStart(3, '0')}`
     }
 
     function getCheckoutInfo() {
