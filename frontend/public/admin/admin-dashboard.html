@@ -1038,6 +1038,7 @@
   let allUsers = [];
   let allSites = [];
   let allPayments = [];
+  let adminUpdatesCursor = new Date().toISOString();
   const adminNotificationState = {
     users: null,
     sites: null,
@@ -1246,6 +1247,52 @@
       : `${newItems.length} nouveaux éléments à traiter.`;
 
     notifyAdmin(title, message, 'success');
+  }
+
+  function mergeById(existingItems, newItems, idGetter) {
+    const map = new Map((existingItems || []).map((item) => [idGetter(item), item]));
+    (newItems || []).forEach((item) => {
+      const id = idGetter(item);
+      if (id) map.set(id, { ...(map.get(id) || {}), ...item });
+    });
+    return [...map.values()].sort((a, b) => new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0));
+  }
+
+  async function fetchAdminUpdates() {
+    try {
+      const updatesRes = await apiFetch(`/admin/updates?since=${encodeURIComponent(adminUpdatesCursor)}&limit=25`);
+      const updatesData = await updatesRes.json().catch(() => ({}));
+      if (!updatesRes.ok || !updatesData.success) return;
+
+      const updates = updatesData.updates || {};
+      const newUsers = updates.users || [];
+      const newSites = updates.sites || [];
+      const newPayments = updates.payments || [];
+      const newTickets = updates.tickets || [];
+      const newPremiumProjects = updates.premiumProjects || [];
+
+      trackNewAdminItems('users', newUsers, (user) => user.id || user.email, 'Nouvel utilisateur', (user) => `${user.name || 'Utilisateur'} vient de rejoindre ShopLink (${user.email || 'email non renseigné'}).`);
+      trackNewAdminItems('sites', newSites, (site) => site.id || site.slug, 'Nouveau site public', (site) => `${site.name || 'Un site'} vient d’être créé${site.slug ? ` : /boutique/${site.slug}` : '.'}`);
+      trackNewAdminItems('payments', newPayments, (payment) => payment.id || payment.reference, 'Nouveau paiement', (payment) => `${payment.clientName || payment.email || 'Un client'} · ${payment.type || 'paiement'} · ${fmtMoney(payment.amount)}`);
+      trackNewAdminItems('tickets', newTickets, (ticket) => ticket.id || `${ticket.userEmail || ''}-${ticket.subject || ''}-${ticket.createdAt || ''}`, 'Nouveau ticket support', (ticket) => `${ticket.userName || ticket.userEmail || 'Un client'} a ouvert : ${ticket.subject || 'Ticket support'}`);
+      trackNewAdminItems('premiumProjects', newPremiumProjects, (project) => project.id || project.paymentId || project.reference, 'Nouveau projet premium', (project) => `${project.clientName || project.clientEmail || 'Un client'} a lancé un projet ${project.siteType || 'premium'}.`);
+
+      allUsers = mergeById(allUsers, newUsers, (user) => user.id || user.email);
+      allSites = mergeById(allSites, newSites, (site) => site.id || site.slug);
+      allPayments = mergeById(allPayments, newPayments, (payment) => payment.id || payment.reference);
+      allTickets = mergeById(allTickets, newTickets, (ticket) => ticket.id || `${ticket.userEmail || ''}-${ticket.subject || ''}-${ticket.createdAt || ''}`);
+      allPremiumProjects = mergeById(allPremiumProjects, newPremiumProjects, (project) => project.id || project.paymentId || project.reference);
+
+      if (newPayments.length) renderPaymentsTables();
+      if (newPremiumProjects.length) {
+        renderPremiumProjects();
+        renderPremiumCountdown();
+      }
+
+      adminUpdatesCursor = updatesData.serverTime || new Date().toISOString();
+    } catch (error) {
+      console.warn('Delta admin indisponible:', error);
+    }
   }
 
   function detailRows(rows) {
@@ -2119,8 +2166,8 @@
     fetchPremiumProjects();
     updateTimers();
     setInterval(updateTimers, 60000); // Update timers every minute
-    setInterval(fetchAdminData, 30000); // Watch new users/sites/payments/tickets
-    setInterval(fetchPremiumProjects, 60000); // Update countdown every minute
+    setInterval(fetchAdminUpdates, 120000); // Delta polling only fetches new items.
+    setInterval(fetchPremiumProjects, 180000); // Reduce Supabase/API egress while keeping admin data fresh.
   });
 
   // Load admin demo mock data (disabled - using real data only)

@@ -2,10 +2,10 @@ const bcrypt = require('bcryptjs')
 const supabase = require('../config/supabase')
 const { normalizeActivityType, getActivityTheme } = require('../utils/activityTheme')
 
-const DEFAULT_LIMIT = Number(process.env.SUPABASE_DEFAULT_LIMIT || 100)
-const ADMIN_LIMIT = Number(process.env.SUPABASE_ADMIN_LIMIT || 500)
-const TRACKING_LIMIT = Number(process.env.SUPABASE_TRACKING_LIMIT || 1000)
-const CACHE_TTL_MS = Number(process.env.SUPABASE_CACHE_TTL_MS || 30000)
+const DEFAULT_LIMIT = Number(process.env.SUPABASE_DEFAULT_LIMIT || 80)
+const ADMIN_LIMIT = Number(process.env.SUPABASE_ADMIN_LIMIT || 200)
+const TRACKING_LIMIT = Number(process.env.SUPABASE_TRACKING_LIMIT || 500)
+const CACHE_TTL_MS = Number(process.env.SUPABASE_CACHE_TTL_MS || 120000)
 
 const USER_COLUMNS = 'id,name,email,phone,role,password,created_at,updated_at'
 const PUBLIC_USER_COLUMNS = 'id,name,email,phone,role,created_at,updated_at'
@@ -1537,6 +1537,89 @@ module.exports = {
     }))
 
     return { success: true, projects }
+  },
+
+  async listAdminUpdates(sinceValue, limitValue = 25) {
+    const since = new Date(sinceValue || Date.now() - 5 * 60 * 1000)
+    const sinceIso = Number.isNaN(since.getTime())
+      ? new Date(Date.now() - 5 * 60 * 1000).toISOString()
+      : since.toISOString()
+    const limit = Math.min(Math.max(Number(limitValue || 25), 1), 50)
+
+    const [usersResult, sitesResult, paymentsResult, ticketsResult, premiumResult] = await Promise.all([
+      supabase
+        .from('users')
+        .select(PUBLIC_USER_COLUMNS)
+        .or(`created_at.gt.${sinceIso},updated_at.gt.${sinceIso}`)
+        .order('created_at', { ascending: false })
+        .limit(limit),
+      supabase
+        .from('sites')
+        .select(SITE_COLUMNS)
+        .or(`created_at.gt.${sinceIso},updated_at.gt.${sinceIso},published_at.gt.${sinceIso}`)
+        .order('created_at', { ascending: false })
+        .limit(limit),
+      supabase
+        .from('payments')
+        .select(PAYMENT_COLUMNS)
+        .or(`created_at.gt.${sinceIso},updated_at.gt.${sinceIso},paid_at.gt.${sinceIso}`)
+        .order('created_at', { ascending: false })
+        .limit(limit),
+      supabase
+        .from('tickets')
+        .select(TICKET_COLUMNS)
+        .or(`created_at.gt.${sinceIso},updated_at.gt.${sinceIso}`)
+        .order('created_at', { ascending: false })
+        .limit(limit),
+      supabase
+        .from('premium_orders')
+        .select('id,user_id,site_id,manager_name,email,whatsapp,site_type,activity_type,delai,acompte_paid_at,status,created_at')
+        .gt('created_at', sinceIso)
+        .order('created_at', { ascending: false })
+        .limit(limit),
+    ])
+
+    const tickets = (ticketsResult.data || []).map((t) => ({
+      id: t.id,
+      userId: t.user_id,
+      userName: t.user_name,
+      userEmail: t.user_email,
+      subject: t.subject,
+      message: t.message,
+      priority: t.priority,
+      status: t.status,
+      replies: t.replies || [],
+      createdAt: iso(t.created_at),
+      updatedAt: t.updated_at ? iso(t.updated_at) : undefined,
+    }))
+
+    const premiumProjects = (premiumResult.data || []).map((p) => ({
+      id: p.id,
+      userId: p.user_id,
+      siteId: p.site_id,
+      clientName: p.manager_name,
+      clientEmail: p.email,
+      whatsapp: p.whatsapp,
+      siteType: p.site_type,
+      activityType: p.activity_type,
+      deliveryDays: p.delai === 'urgent' ? 14 : 21,
+      depositAmount: 5000,
+      totalAmount: 10000,
+      depositPaid: !!p.acompte_paid_at,
+      depositDate: p.acompte_paid_at,
+      status: p.status,
+      progress: p.status === 'pending' ? 0 : p.status === 'in_progress' ? 50 : p.status === 'delivered' ? 100 : 0,
+      currentStage: p.status === 'pending' ? 'En attente' : p.status === 'in_progress' ? 'Design en cours' : 'Livré',
+      createdAt: p.created_at,
+    }))
+
+    return {
+      users: usersResult.error ? [] : (usersResult.data || []).map(mapUser),
+      sites: sitesResult.error ? [] : (sitesResult.data || []).map(mapSite),
+      payments: paymentsResult.error ? [] : (paymentsResult.data || []).map(mapPayment),
+      tickets: ticketsResult.error ? [] : tickets,
+      premiumProjects: premiumResult.error ? [] : premiumProjects,
+    }
   },
 
   async getMyPremiumProject(userId) {

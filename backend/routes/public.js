@@ -6,6 +6,72 @@ const { buildBoutiqueUrl } = require('../utils/publicUrl')
 
 const router = express.Router()
 
+function publicSitePayload(site, logo) {
+  return {
+    id: site.id,
+    userId: site.userId,
+    name: site.name,
+    slug: site.slug,
+    slogan: site.slogan || '',
+    logo: logo || '',
+    description: site.description || '',
+    whatsapp: site.whatsapp || '',
+    secondaryPhone: site.secondaryPhone || '',
+    address: site.address || '',
+    activityType: site.activityType || 'Boutique',
+    primaryColor: site.primaryColor || '',
+    status: site.status,
+    publicUrl: '',
+    whatsappLink: '',
+  }
+}
+
+function supabaseThumbnailUrl(imageUrl, width = 640, quality = 72) {
+  const raw = String(imageUrl || '')
+  if (!raw || isInlineImage(raw) || !raw.includes('/storage/v1/object/public/')) return raw
+
+  try {
+    const url = new URL(raw)
+    url.pathname = url.pathname.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')
+    url.searchParams.set('width', String(width))
+    url.searchParams.set('quality', String(quality))
+    url.searchParams.set('resize', 'contain')
+    return url.toString()
+  } catch (_error) {
+    return raw
+  }
+}
+
+function publicProductPayload(product, image, whatsapp) {
+  const thumbnail = supabaseThumbnailUrl(image)
+  return {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: thumbnail || image || '',
+    fullImage: image || thumbnail || '',
+    description: product.description || '',
+    category: product.category || '',
+    availability: product.availability || 'available',
+    stock: product.stock || '',
+    badge: product.badge || '',
+    oldPrice: product.oldPrice || '',
+    variantInfo: product.variantInfo || '',
+    extraInfo: product.extraInfo || '',
+    whatsappLink: buildWhatsAppLink(whatsapp, product.name),
+  }
+}
+
+function weakEtag(site, products = []) {
+  const seed = [
+    site.id,
+    site.updatedAt || site.publishedAt || site.createdAt || '',
+    products.length,
+    ...products.map((product) => `${product.id}:${product.updatedAt || product.createdAt || ''}:${product.image || ''}`),
+  ].join('|')
+  return `W/"${Buffer.from(seed).toString('base64url').slice(0, 48)}"`
+}
+
 function buildWhatsAppLink(whatsapp, productName) {
   if (!whatsapp) {
     return ''
@@ -31,9 +97,7 @@ async function normalizePublicImage(value, options = {}) {
 }
 
 router.get('/:slug', async (req, res) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
-  res.set('Pragma', 'no-cache')
-  res.set('Expires', '0')
+  res.set('Cache-Control', 'public, max-age=60, s-maxage=600, stale-while-revalidate=86400')
 
   const site = await repo().findSiteBySlug(req.params.slug)
 
@@ -63,29 +127,32 @@ router.get('/:slug', async (req, res) => {
   }
 
   const rawProducts = await repo().listProductsBySiteId(site.id)
-  const products = await Promise.all(rawProducts
+  const visibleRawProducts = rawProducts
     .filter((product) => product.visible !== false && product.status !== 'hidden')
+  const etag = weakEtag(site, visibleRawProducts)
+  res.set('ETag', etag)
+
+  if (req.headers['if-none-match'] === etag) {
+    return res.status(304).end()
+  }
+
+  const products = await Promise.all(visibleRawProducts
     .map(async (product) => {
       const publicImage = await normalizePublicImage(product.image, { siteId: site.id })
       if (publicImage && publicImage !== product.image && !isInlineImage(publicImage)) {
         await repo().updateProduct(product.id, { image: publicImage })
       }
 
-      return {
-        ...product,
-        image: publicImage,
-        whatsappLink: buildWhatsAppLink(site.whatsapp, product.name),
-      }
+      return publicProductPayload(product, publicImage, site.whatsapp)
     }))
+
+  const publicSite = publicSitePayload(site, publicLogo)
+  publicSite.publicUrl = buildBoutiqueUrl(site.slug, req)
+  publicSite.whatsappLink = buildWhatsAppLink(site.whatsapp)
 
   return res.json({
     success: true,
-    site: {
-      ...site,
-      logo: publicLogo,
-      publicUrl: buildBoutiqueUrl(site.slug, req),
-      whatsappLink: buildWhatsAppLink(site.whatsapp),
-    },
+    site: publicSite,
     products,
   })
 })

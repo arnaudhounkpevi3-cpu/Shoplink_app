@@ -282,4 +282,121 @@ router.get('/premium-projects', async (_req, res) => {
   }
 })
 
+router.get('/updates', async (req, res) => {
+  try {
+    const since = req.query.since ? new Date(req.query.since) : new Date(Date.now() - 5 * 60 * 1000)
+    const isValidSince = !Number.isNaN(since.getTime())
+    const sinceTime = isValidSince ? since.getTime() : Date.now() - 5 * 60 * 1000
+    const limit = Math.min(Number(req.query.limit || 25), 50)
+    const newerThan = (value) => value && new Date(value).getTime() > sinceTime
+
+    if (repo().listAdminUpdates) {
+      const updates = await repo().listAdminUpdates(new Date(sinceTime).toISOString(), limit)
+      return res.json({
+        success: true,
+        since: new Date(sinceTime).toISOString(),
+        serverTime: new Date().toISOString(),
+        updates: {
+          users: (updates.users || []).map(sanitizeUser),
+          sites: updates.sites || [],
+          payments: updates.payments || [],
+          tickets: updates.tickets || [],
+          premiumProjects: updates.premiumProjects || [],
+        },
+        counts: {
+          users: (updates.users || []).length,
+          sites: (updates.sites || []).length,
+          payments: (updates.payments || []).length,
+          tickets: (updates.tickets || []).length,
+          premiumProjects: (updates.premiumProjects || []).length,
+        },
+      })
+    }
+
+    const [users, sites, payments, tickets] = await Promise.all([
+      repo().listUsers(),
+      repo().listSites(),
+      repo().listPayments(),
+      repo().listTickets ? repo().listTickets() : [],
+    ])
+
+    const nextUsers = users
+      .filter((user) => newerThan(user.createdAt || user.updatedAt))
+      .slice(0, limit)
+      .map(sanitizeUser)
+
+    const nextSites = sites
+      .filter((site) => newerThan(site.createdAt || site.updatedAt || site.publishedAt))
+      .slice(0, limit)
+      .map((site) => ({
+        id: site.id,
+        name: site.name,
+        slug: site.slug,
+        status: site.status,
+        createdAt: site.createdAt,
+        updatedAt: site.updatedAt,
+      }))
+
+    const nextPayments = payments
+      .filter((payment) => newerThan(payment.createdAt || payment.updatedAt || payment.paidAt))
+      .slice(0, limit)
+      .map((payment) => ({
+        id: payment.id,
+        type: payment.type,
+        amount: payment.amount,
+        status: payment.status,
+        reference: payment.reference,
+        clientName: payment.clientName,
+        email: payment.email,
+        createdAt: payment.createdAt,
+        updatedAt: payment.updatedAt,
+      }))
+
+    const nextTickets = tickets
+      .filter((ticket) => newerThan(ticket.createdAt || ticket.updatedAt))
+      .slice(0, limit)
+      .map((ticket) => ({
+        id: ticket.id,
+        userName: ticket.userName,
+        userEmail: ticket.userEmail,
+        subject: ticket.subject,
+        priority: ticket.priority,
+        status: ticket.status,
+        createdAt: ticket.createdAt,
+        updatedAt: ticket.updatedAt,
+      }))
+
+    const nextPremiumProjects = payments
+      .filter((payment) => payment.type === 'premium' && newerThan(payment.createdAt || payment.updatedAt || payment.paidAt))
+      .slice(0, limit)
+      .map(toPremiumProject)
+
+    return res.json({
+      success: true,
+      since: new Date(sinceTime).toISOString(),
+      serverTime: new Date().toISOString(),
+      updates: {
+        users: nextUsers,
+        sites: nextSites,
+        payments: nextPayments,
+        tickets: nextTickets,
+        premiumProjects: nextPremiumProjects,
+      },
+      counts: {
+        users: nextUsers.length,
+        sites: nextSites.length,
+        payments: nextPayments.length,
+        tickets: nextTickets.length,
+        premiumProjects: nextPremiumProjects.length,
+      },
+    })
+  } catch (error) {
+    console.error('Error fetching admin updates:', error)
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching admin updates',
+    })
+  }
+})
+
 module.exports = router
