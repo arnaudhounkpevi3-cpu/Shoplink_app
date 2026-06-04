@@ -5,8 +5,14 @@ const { requireAuth } = require('../middleware/auth')
 const { uniqueSlug } = require('../utils/slug')
 const { getActivityTheme } = require('../utils/activityTheme')
 const { sendAdminPushNotification } = require('../services/pushNotifications')
+const { generateSmsReference } = require('../services/smsPayments')
 
 const router = express.Router()
+
+const SMS_PAYMENT_NUMBERS = {
+  mtn: '0167163481',
+  celtiis: '0147000674',
+}
 
 const MOBILE_MONEY_CONFIG = {
   MTN: {
@@ -391,6 +397,164 @@ router.post('/initiate', requireAuth, async (req, res) => {
     payment: updatedPayment,
     newSite,
     siteSlug: newSite ? newSite.slug : null,
+  })
+})
+
+router.post('/sms/initiate', requireAuth, async (req, res) => {
+  const {
+    userId,
+    type,
+    amount,
+    step,
+    siteId,
+    urgency,
+    siteName,
+    siteDescription,
+    whatsappNumber,
+    secondaryPhone,
+    address,
+    activityType,
+    slogan,
+    primaryColor,
+    secondaryColor,
+    logo,
+    email,
+    name,
+    premiumOrder,
+    network,
+    paymentId,
+  } = req.body
+
+  if (!type || amount === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: 'type et amount sont obligatoires',
+    })
+  }
+
+  const effectiveUserId = req.user.role === 'admin' && userId ? userId : req.user.id
+
+  let payment = null
+  if (paymentId) {
+    payment = await repo().findPaymentById(paymentId)
+    if (!payment) {
+      return res.status(404).json({ success: false, message: 'Paiement introuvable' })
+    }
+    if (req.user.role !== 'admin' && payment.userId !== effectiveUserId) {
+      return res.status(403).json({ success: false, message: 'Vous ne pouvez pas payer cette demande' })
+    }
+    if (payment.status !== 'pending') {
+      return res.status(400).json({ success: false, message: 'Ce paiement est déjà traité' })
+    }
+  }
+
+  if (!payment && siteId) {
+    const relatedSite = await repo().findSiteById(siteId)
+    if (!relatedSite) {
+      return res.status(404).json({ success: false, message: 'Site introuvable pour ce paiement' })
+    }
+    if (req.user.role !== 'admin' && relatedSite.userId !== effectiveUserId) {
+      return res.status(403).json({ success: false, message: 'Vous ne pouvez pas lancer un paiement pour ce site' })
+    }
+  }
+
+  let smsReference = generateSmsReference()
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const existing = repo().findSmsTransactionByReference
+      ? await repo().findSmsTransactionByReference(smsReference)
+      : null
+    if (!existing) break
+    smsReference = generateSmsReference()
+  }
+
+  const paymentPayload = {
+    userId: effectiveUserId,
+    type,
+    amount,
+    step: step || (type === 'premium' ? 'acompte' : 'full'),
+    siteId: siteId || '',
+    urgency: urgency || 'normal',
+    status: 'pending',
+    validationStatus: 'sms_pending',
+    reference: smsReference,
+    clientReference: smsReference,
+    siteName,
+    siteDescription,
+    whatsappNumber,
+    secondaryPhone,
+    address,
+    activityType,
+    slogan,
+    primaryColor,
+    secondaryColor,
+    logo,
+    premiumOrder: premiumOrder || null,
+    paymentStatus: 'pending',
+    projectStatus: type === 'premium' ? 'pending_payment' : undefined,
+    clientName: name || req.user.name,
+    email: email || req.user.email,
+    createdAt: new Date().toISOString(),
+  }
+
+  if (!payment) {
+    payment = await repo().createPayment(paymentPayload)
+    if (!payment) {
+      return res.status(500).json({ success: false, message: 'Impossible de créer le paiement' })
+    }
+  }
+
+  const transaction = repo().createSmsTransaction
+    ? await repo().createSmsTransaction({
+        userId: effectiveUserId,
+        paymentId: payment.id,
+        reference: smsReference,
+        amount: payment.amount || amount,
+        network: network || 'mtn',
+        status: 'pending',
+      })
+    : null
+
+  if (!transaction) {
+    return res.status(500).json({ success: false, message: 'Impossible de créer la transaction SMS' })
+  }
+
+  sendAdminPushNotification({
+    title: 'Paiement SMS initié',
+    body: `${payment.clientName || payment.email || 'Un client'} · ${Number(amount || 0).toLocaleString('fr-FR')} F · ${smsReference}`,
+    tag: 'shoplink-admin-sms-pending',
+  }).catch((error) => console.warn('Push admin transaction SMS non envoyé:', error.message))
+
+  return res.status(201).json({
+    success: true,
+    payment,
+    transaction,
+    reference: smsReference,
+    numbers: SMS_PAYMENT_NUMBERS,
+  })
+})
+
+router.get('/sms/status/:reference', requireAuth, async (req, res) => {
+  const reference = String(req.params.reference || '').toUpperCase()
+  const transaction = repo().findSmsTransactionByReference
+    ? await repo().findSmsTransactionByReference(reference)
+    : null
+
+  if (!transaction) {
+    return res.status(404).json({ success: false, message: 'Transaction introuvable' })
+  }
+
+  if (req.user.role !== 'admin' && transaction.userId && transaction.userId !== req.user.id) {
+    return res.status(403).json({ success: false, message: 'Accès refusé à cette transaction' })
+  }
+
+  const payment = transaction.paymentId ? await repo().findPaymentById(transaction.paymentId) : null
+  const site = payment?.siteId ? await repo().findSiteById(payment.siteId) : null
+
+  return res.json({
+    success: true,
+    transaction,
+    payment,
+    siteSlug: site?.slug || null,
   })
 })
 

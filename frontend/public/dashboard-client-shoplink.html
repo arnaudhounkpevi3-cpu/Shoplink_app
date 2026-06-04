@@ -386,6 +386,30 @@
       redirectToClientLogin();
     }
 
+    async function enforcePendingSmsPayment() {
+      const pending = getStoredJson('shoplink_pending', null);
+      const reference = String(pending?.paymentReference || pending?.reference || '').trim();
+      if (!reference || !/^SL-\d{8}-[A-Z0-9]{4}$/i.test(reference)) return;
+
+      try {
+        const data = await apiJson(`/api/payments/sms/status/${encodeURIComponent(reference)}`);
+        if (data?.transaction?.status === 'success') {
+          localStorage.removeItem('shoplink_pending');
+          return;
+        }
+
+        const amount = Number(pending.amount || 0) || '';
+        const type = encodeURIComponent(pending.type || 'autonome');
+        const step = encodeURIComponent(pending.step || 'full');
+        const paymentId = encodeURIComponent(pending.paymentId || '');
+        const amountQuery = amount ? `&amount=${amount}` : '';
+        const paymentQuery = paymentId ? `&paymentId=${paymentId}` : '';
+        window.location.href = `/payment.html?type=${type}&step=${step}${amountQuery}${paymentQuery}`;
+      } catch (error) {
+        console.warn('Vérification paiement SMS en attente indisponible:', error);
+      }
+    }
+
     function slugify(value) {
       return String(value || 'boutique')
         .normalize('NFD')
@@ -3115,6 +3139,7 @@
     }
 
     enforceExpectedDashboardAccount();
+    enforcePendingSmsPayment();
     resetVisibleNumbersAndContacts();
     applyAccountSiteToPreview();
     applyAccountProfileToSettings();

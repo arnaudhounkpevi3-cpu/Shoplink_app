@@ -260,13 +260,14 @@
             <div class="owner-number-box">
               <div>
                 <div class="owner-number-label" id="op-label">Numéro MTN MoMo ShopLink</div>
-                <div class="owner-number">0167163481</div>
+                <div class="owner-number" id="owner-number">0167163481</div>
                 <div class="owner-name">ShopLink Bénin — Administrateur</div>
               </div>
               <button class="copy-btn" id="copy-btn" onclick="copyNumber()"><img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier</button>
             </div>
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">📋 Étapes :</div>
             <div class="payment-steps" id="steps-list"></div>
+            <div class="err-msg" id="err-ref"></div>
           </div>
 
 
@@ -286,7 +287,8 @@
           <div class="recap-row"><span class="recap-label">Plan</span><span class="recap-val" id="r-plan">ShopLink Starter</span></div>
           <div class="recap-row" id="r-step-row" style="display:none;"><span class="recap-label">Étape</span><span class="recap-val" id="r-step">Acompte 50%</span></div>
           <div class="recap-row"><span class="recap-label">Opérateur</span><span class="recap-val" id="r-op">MTN MoMo</span></div>
-          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" style="font-family:monospace;color:var(--amber);">0167163481</span></div>
+          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" id="r-number" style="font-family:monospace;color:var(--amber);">0167163481</span></div>
+          <div class="recap-row"><span class="recap-label">Référence motif</span><span class="recap-val" id="r-reference" style="font-family:monospace;color:var(--green);">Générée après confirmation</span></div>
         </div>
         <div class="recap-total">
           <div class="recap-total-label">À payer</div>
@@ -385,8 +387,12 @@
   }
 
   // CONFIG
-  const OWNER_NUMBER = '0167163481';
-  const OWNER_RAW    = '2290167163481';
+  const PAYMENT_NUMBERS = {
+    mtn: '0167163481',
+    celtiis: '0147000674',
+  };
+  let currentSmsReference = '';
+  let paymentPollTimer = null;
 
   const OPS = {
     mtn:  { label:'MTN Mobile Money',  badge:'🟡 MTN Mobile Money sélectionné',  opLabel:'Numéro MTN MoMo ShopLink' },
@@ -395,9 +401,9 @@
   };
 
   const STEPS = {
-    mtn:  ['Composez <strong>#171#</strong> sur votre téléphone MTN','Choisissez <strong>"Transfert d\'argent"</strong>','Entrez le numéro : <strong>0167163481</strong>','Entrez le montant : <strong id="sa">—</strong>'],
-    moov: ['Composez <strong>#555#</strong> sur votre téléphone Moov','Choisissez <strong>"Envoi d\'argent"</strong>','Entrez le numéro : <strong>0167163481</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez avec votre <strong>code PIN Flooz</strong>'],
-    celtiis: ['Ouvrez l\'<strong>application Celtiis</strong>','Appuyez sur <strong>"Transfert"</strong>','Entrez le numéro : <strong>0167163481</strong>','Entrez le montant : <strong id="sa">—</strong>','Confirmez le transfert dans l\'app']
+    mtn:  ['Envoyez l’argent sur le numéro MTN affiché','Entrez le montant exact : <strong id="sa">—</strong>','Mettez la référence <strong id="sr">générée après confirmation</strong> dans le motif du transfert','Validez le transfert depuis votre téléphone'],
+    moov: ['Moov n’est pas disponible pour cette validation automatique','Choisissez MTN ou Celtiis pour être validé automatiquement'],
+    celtiis: ['Envoyez l’argent sur le numéro Celtiis affiché','Entrez le montant exact : <strong id="sa">—</strong>','Mettez la référence <strong id="sr">générée après confirmation</strong> dans le motif du transfert','Validez le transfert depuis votre téléphone']
   };
 
   // Paramètres URL
@@ -451,11 +457,15 @@
   }
 
   function selectOp(op) {
+    if (op === 'moov') op = 'mtn';
     selOp = op;
     ['mtn','moov','celtiis'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
     document.getElementById('op-badge').textContent   = OPS[op].badge;
     document.getElementById('op-label').textContent   = OPS[op].opLabel;
     document.getElementById('r-op').textContent       = OPS[op].label;
+    const number = PAYMENT_NUMBERS[op] || PAYMENT_NUMBERS.mtn;
+    document.getElementById('owner-number').textContent = number;
+    document.getElementById('r-number').textContent = number;
     renderSteps(op);
   }
 
@@ -470,11 +480,14 @@
     });
     const sa = list.querySelector('#sa');
     if (sa) sa.textContent = payAmt.toLocaleString('fr-FR') + ' FCFA';
+    const sr = list.querySelector('#sr');
+    if (sr) sr.textContent = currentSmsReference || 'générée après confirmation';
   }
 
   function copyNumber() {
+    const activeNumber = PAYMENT_NUMBERS[selOp] || PAYMENT_NUMBERS.mtn;
     const textArea = document.createElement('textarea');
-    textArea.value = OWNER_NUMBER;
+    textArea.value = activeNumber;
     textArea.style.position = 'fixed';
     textArea.style.left = '-9999px';
     document.body.appendChild(textArea);
@@ -487,7 +500,7 @@
       setTimeout(()=>{ b.innerHTML='<img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier'; b.classList.remove('copied'); },2500);
     } catch (err) {
       const b = document.getElementById('copy-btn');
-      b.textContent = OWNER_NUMBER;
+      b.textContent = activeNumber;
       b.classList.add('copied');
       setTimeout(()=>{ b.innerHTML='<img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier'; b.classList.remove('copied'); },3500);
     }
@@ -539,56 +552,6 @@
     document.getElementById('loading-overlay').classList.add('show');
     document.getElementById('pay-btn').disabled = true;
 
-    if (payType === 'premium' && existingPaymentId) {
-      try {
-        const res = await apiFetch('/payments/confirm-received', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            paymentId: existingPaymentId,
-            phoneNumber: toRaw(phone),
-            provider: selOp,
-          })
-        });
-        const data = await res.json();
-        document.getElementById('loading-overlay').classList.remove('show');
-
-        if (!res.ok || !data.success) {
-          setE('err-ref', data.message || 'Impossible de valider le paiement');
-          document.getElementById('pay-btn').disabled = false;
-          return;
-        }
-
-        const premiumOrder = JSON.parse(localStorage.getItem('shoplink_order') || '{}');
-        localStorage.setItem('shoplink_order', JSON.stringify({
-          ...premiumOrder,
-          paymentStatus: 'paid',
-          projectStatus: 'in_progress',
-          validatedAt: data.payment?.validatedAt || new Date().toISOString(),
-          deliveryTargetAt: data.payment?.deliveryTargetAt || '',
-        }));
-
-        showPending({
-          name,
-          email,
-          phone: toRaw(phone),
-          type: payType,
-          step: payStep,
-          amount: payAmt,
-          method: selOp,
-          paymentId: existingPaymentId,
-          paymentReference: data.payment?.reference || P.get('reference') || '',
-        });
-        return;
-      } catch (e) {
-        console.error('Premium payment confirmation error:', e);
-        document.getElementById('loading-overlay').classList.remove('show');
-        setE('err-ref', 'Erreur de connexion au serveur: ' + e.message);
-        document.getElementById('pay-btn').disabled = false;
-        return;
-      }
-    }
-
     const body = {
       userId: user.id || 'demo-user',
       name,
@@ -600,7 +563,7 @@
       method: selOp,
       premiumOrder,
       urgency: premiumOrder && premiumOrder.delai ? premiumOrder.delai : 'normal',
-      reference: 'AUTO-' + Date.now(),
+      reference: currentSmsReference || '',
       siteId: site && site.id ? site.id : '',
       siteName: premiumOrder && premiumOrder.company ? premiumOrder.company : (site && site.name ? site.name : ''),
       slogan: site && site.slogan ? site.slogan : '',
@@ -617,10 +580,16 @@
     console.log('Sending payment request:', body);
 
     try {
-      const res = await apiFetch('/payments/initiate',{
+      const smsPayload = {
+        ...body,
+        paymentId: existingPaymentId || '',
+        network: selOp,
+      };
+
+      const res = await apiFetch('/payments/sms/initiate',{
         method:'POST',
         headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
-        body: JSON.stringify(body)
+        body: JSON.stringify(smsPayload)
       });
       const data = await res.json();
       console.log('Payment response:', data);
@@ -630,17 +599,17 @@
         document.getElementById('pay-btn').disabled = false;
         return;
       }
-      
-      // If payment is auto-validated (testing), show success page
-      if (data.siteSlug) {
-        showSuccess(data.siteSlug);
-      } else {
-        showPending({
-          ...body,
-          paymentId: data.payment && data.payment.id ? data.payment.id : '',
-          paymentReference: data.payment && data.payment.reference ? data.payment.reference : body.reference
-        });
-      }
+      currentSmsReference = data.reference || data.transaction?.reference || data.payment?.reference || '';
+      document.getElementById('r-reference').textContent = currentSmsReference;
+      renderSteps(selOp);
+
+      showPending({
+        ...body,
+        paymentId: data.payment && data.payment.id ? data.payment.id : '',
+        paymentReference: currentSmsReference,
+        reference: currentSmsReference,
+      });
+      startPaymentPolling(currentSmsReference);
     } catch(e) {
       console.error('Payment error:', e);
       document.getElementById('loading-overlay').classList.remove('show');
@@ -657,6 +626,34 @@
     document.getElementById('p-amount').textContent  = data.amount.toLocaleString('fr-FR')+' FCFA';
     document.getElementById('p-ref').textContent     = data.paymentReference || data.reference;
     localStorage.setItem('shoplink_pending', JSON.stringify({...data, at: new Date().toISOString()}));
+  }
+
+  function startPaymentPolling(reference) {
+    if (!reference) return;
+    if (paymentPollTimer) clearInterval(paymentPollTimer);
+    const token = localStorage.getItem('shoplink_token');
+
+    async function checkStatus() {
+      try {
+        const res = await apiFetch('/payments/sms/status/' + encodeURIComponent(reference), {
+          headers: token ? { Authorization: 'Bearer ' + token } : {},
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) return;
+        if (data.transaction && data.transaction.status === 'success') {
+          clearInterval(paymentPollTimer);
+          paymentPollTimer = null;
+          localStorage.removeItem('shoplink_pending');
+          if (data.siteSlug) showSuccess(data.siteSlug);
+          else showSuccess('');
+        }
+      } catch (error) {
+        console.warn('Vérification paiement SMS indisponible:', error);
+      }
+    }
+
+    checkStatus();
+    paymentPollTimer = setInterval(checkStatus, 3000);
   }
 
   function showSuccess(slug) {

@@ -250,6 +250,60 @@ module.exports = {
     return { ...payment }
   },
 
+  async createSmsTransaction(data) {
+    if (!state.transactions) state.transactions = []
+    const transaction = {
+      id: data.id || `tx-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      userId: data.userId || '',
+      paymentId: data.paymentId || '',
+      reference: String(data.reference || '').toUpperCase(),
+      amount: Number(data.amount || data.montant || 0),
+      network: data.network || data.reseau || '',
+      status: data.status || data.statut || 'pending',
+      matchedAmount: Number(data.matchedAmount || 0),
+      smsFrom: data.smsFrom || '',
+      rawSms: data.rawSms || '',
+      createdAt: data.createdAt || new Date().toISOString(),
+    }
+    state.transactions.push(transaction)
+    saveState()
+    return { ...transaction }
+  },
+
+  async findSmsTransactionByReference(reference) {
+    const transaction = (state.transactions || []).find((entry) => entry.reference === String(reference || '').toUpperCase())
+    return transaction ? { ...transaction } : null
+  },
+
+  async updateSmsTransaction(reference, patch) {
+    const transaction = (state.transactions || []).find((entry) => entry.reference === String(reference || '').toUpperCase())
+    if (!transaction) return null
+    if (patch.status !== undefined) transaction.status = patch.status
+    if (patch.statut !== undefined) transaction.status = patch.statut
+    if (patch.matchedAmount !== undefined) transaction.matchedAmount = Number(patch.matchedAmount || 0)
+    if (patch.smsFrom !== undefined) transaction.smsFrom = patch.smsFrom || ''
+    if (patch.rawSms !== undefined) transaction.rawSms = patch.rawSms || ''
+    transaction.updatedAt = new Date().toISOString()
+    saveState()
+    return { ...transaction }
+  },
+
+  async createSmsLog(data) {
+    if (!state.smsLogs) state.smsLogs = []
+    state.smsLogs.push({
+      id: data.id || `sms-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      from: data.from || '',
+      content: data.content || '',
+      reference: data.reference || '',
+      matchedAmount: Number(data.matchedAmount || 0),
+      status: data.status || 'received',
+      reason: data.reason || '',
+      payload: data.payload || {},
+      createdAt: data.createdAt || new Date().toISOString(),
+    })
+    saveState()
+  },
+
   async countAutonomePaid() {
     return state.payments.filter(
       (payment) =>
