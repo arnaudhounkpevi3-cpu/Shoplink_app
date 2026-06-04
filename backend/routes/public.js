@@ -1,11 +1,28 @@
 const express = require('express')
 
 const { repo } = require('../data/repository')
-const { isInlineImage, storeInlineImageIfNeeded, thumbnailUrlForOriginal } = require('../services/imageStorage')
+const { isInlineImage, storeInlineImageIfNeeded } = require('../services/imageStorage')
 const { buildBoutiqueUrl } = require('../utils/publicUrl')
 
 const router = express.Router()
-const PUBLIC_PAYLOAD_VERSION = 'public-v2-image-fallback'
+const PUBLIC_PAYLOAD_VERSION = 'public-v4-cdn-images'
+const DEFAULT_IMAGE_CDN_BASE_URL = 'https://shoplink-images.arnaudhounkpevi3.workers.dev'
+
+function imageCdnBaseUrl() {
+  return String(process.env.IMAGE_CDN_BASE_URL || DEFAULT_IMAGE_CDN_BASE_URL || '').replace(/\/$/, '')
+}
+
+function cdnImageUrl(imageUrl) {
+  const raw = String(imageUrl || '')
+  const marker = '/storage/v1/object/public/'
+  const markerIndex = raw.indexOf(marker)
+  const cdnBase = imageCdnBaseUrl()
+
+  if (!raw || isInlineImage(raw) || !cdnBase || markerIndex === -1) return raw
+
+  const path = raw.slice(markerIndex + marker.length)
+  return `${cdnBase}/${path}`
+}
 
 function publicSitePayload(site, logo) {
   return {
@@ -14,7 +31,7 @@ function publicSitePayload(site, logo) {
     name: site.name,
     slug: site.slug,
     slogan: site.slogan || '',
-    logo: logo || '',
+    logo: cdnImageUrl(logo),
     description: site.description || '',
     whatsapp: site.whatsapp || '',
     secondaryPhone: site.secondaryPhone || '',
@@ -27,33 +44,12 @@ function publicSitePayload(site, logo) {
   }
 }
 
-function supabaseThumbnailUrl(imageUrl, width = 640, quality = 72) {
-  const raw = String(imageUrl || '')
-  if (!raw || isInlineImage(raw) || !raw.includes('/storage/v1/object/public/')) return raw
-
-  try {
-    const url = new URL(raw)
-    url.pathname = url.pathname.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')
-    url.searchParams.set('width', String(width))
-    url.searchParams.set('quality', String(quality))
-    url.searchParams.set('resize', 'contain')
-    return url.toString()
-  } catch (_error) {
-    return raw
-  }
-}
-
 function publicProductPayload(product, image, whatsapp) {
-  // Use Supabase's transform endpoint first because it is generated on demand.
-  // Real uploaded thumbnails are kept as a future optimization, but old products
-  // may not have them, so guessing /thumbs/... first can break product cards.
-  const thumbnail = supabaseThumbnailUrl(image) || thumbnailUrlForOriginal(image)
   return {
     id: product.id,
     name: product.name,
     price: product.price,
-    image: thumbnail || image || '',
-    fullImage: image || thumbnail || '',
+    image: cdnImageUrl(image),
     description: product.description || '',
     category: product.category || '',
     availability: product.availability || 'available',

@@ -62,8 +62,8 @@ self.addEventListener('notificationclick', (event) => {
   })())
 })
 
-const PUBLIC_CACHE = 'shoplink-public-cache-v2-image-fallback'
-const IMAGE_CACHE = 'shoplink-image-cache-v2-image-fallback'
+const PUBLIC_CACHE = 'shoplink-public-cache-v3-original-images'
+const IMAGE_CACHE = 'shoplink-image-cache-v3-original-images'
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
