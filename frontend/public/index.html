@@ -4,6 +4,11 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>ShopLink — Portail Principal</title>
+  <script>
+    if (new URLSearchParams(window.location.search).get('portal') !== '1') {
+      window.location.replace('/parcours-shoplink.html');
+    }
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/css/responsive.css"/>
   <style>
@@ -1484,7 +1489,7 @@
     <div class="category">
       <h2 class="category-title">Pages Publiques</h2>
       <div class="grid">
-        <a href="register.html" class="card" id="public-site-card">
+        <a href="#" class="card" id="public-site-card">
           <div class="card-icon"></div>
           <h3 class="card-title">Site Public</h3>
           <p class="card-desc">Créez votre site et partagez vos produits avec vos clients.</p>
@@ -1497,6 +1502,13 @@
     <div class="category">
       <h2 class="category-title">Informations</h2>
       <div class="grid">
+        <a href="parcours-shoplink.html" class="card">
+          <div class="card-icon"></div>
+          <h3 class="card-title">Parcours ShopLink</h3>
+          <p class="card-desc">Découvrez en images comment créer, partager et suivre votre boutique.</p>
+          <span class="card-tag">Présentation</span>
+        </a>
+
         <a href="faq.html" class="card">
           <div class="card-icon"></div>
           <h3 class="card-title">FAQ - Questions Fréquentes</h3>
@@ -1575,11 +1587,18 @@
       return;
     }
 
-    card.href = 'register.html';
+    card.href = '#';
     if (title) title.textContent = 'Créer votre site public';
-    if (desc) desc.textContent = 'Créez votre site, ajoutez vos produits et partagez votre lien à vos clients.';
+    if (desc) desc.textContent = 'Ajoutez vos produits, créez votre site puis revenez ici pour voir l’aperçu client.';
     if (tag) tag.textContent = 'À créer';
   }
+
+  document.getElementById('public-site-card')?.addEventListener('click', function(event) {
+    const site = getPortalSite();
+    if (site && site.slug) return;
+    event.preventDefault();
+    showToast('Ajoutez vos produits, créez votre site puis revenez ici pour prévisualiser ce que les clients verront.', 'info');
+  });
 
   const hadVisitedIndexBeforeThisLoad = localStorage.getItem('shoplink_index_seen') === 'true';
   localStorage.setItem('shoplink_index_seen', 'true');
