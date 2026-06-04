@@ -1395,7 +1395,7 @@
 <div class="grain"></div>
 
   <nav class="portal-nav" aria-label="Navigation principale">
-    <a href="/homepage-shoplink.html" class="logo">
+    <a href="/?portal=1" class="logo">
       <span class="logo-dot"></span>
       <span>ShopLink</span>
     </a>
@@ -1423,7 +1423,7 @@
         <strong>Créer mon site</strong>
         <span>Lancer une boutique maintenant</span>
       </a>
-      <a href="/homepage-shoplink.html">
+      <a href="/?portal=1">
         <strong>Accueil</strong>
         <span>Voir la présentation</span>
       </a>
@@ -1520,7 +1520,7 @@
   </div>
 
   <footer class="footer">
-    <a href="/homepage-shoplink.html" class="footer-brand"><span class="logo-dot"></span>ShopLink</a>
+    <a href="/?portal=1" class="footer-brand"><span class="logo-dot"></span>ShopLink</a>
     <p class="footer-copy">&copy; 2026 ShopLink. Digitalise ta boutique</p>
   </footer>
 
@@ -1546,6 +1546,44 @@
   function getStoredJson(key, fallback = null) {
     try { return JSON.parse(localStorage.getItem(key) || 'null') || fallback; }
     catch (_error) { return fallback; }
+  }
+
+  function clearClientSession() {
+    localStorage.removeItem('shoplink_token');
+    localStorage.removeItem('shoplink_user');
+    localStorage.removeItem('mos_auth_token');
+    localStorage.removeItem('demo_mode');
+  }
+
+  function isDemoOrTestUser(user) {
+    const value = `${user?.name || ''} ${user?.email || ''} ${user?.phone || ''}`.toLowerCase();
+    return /demo|test|essai/.test(value);
+  }
+
+  async function getVerifiedClientUser() {
+    const token = localStorage.getItem('shoplink_token') || '';
+    if (!token || token.startsWith('demo-token')) {
+      clearClientSession();
+      return null;
+    }
+
+    try {
+      const response = await fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.success || !data.user || data.user.role === 'admin') {
+        clearClientSession();
+        return null;
+      }
+
+      localStorage.setItem('shoplink_user', JSON.stringify(data.user));
+      return data.user;
+    } catch (error) {
+      console.warn('Verification session client indisponible:', error);
+      return null;
+    }
   }
 
   function getPortalAccountId() {
@@ -1603,24 +1641,35 @@
   const hadVisitedIndexBeforeThisLoad = localStorage.getItem('shoplink_index_seen') === 'true';
   localStorage.setItem('shoplink_index_seen', 'true');
 
-  function dashboardTargetUrl() {
+  async function dashboardTargetUrl() {
     const hasMobileFirstClick = localStorage.getItem('shoplink_mobile_dashboard_first_click_done') === 'true';
     const isMobile = window.matchMedia('(max-width: 768px)').matches || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-    const token = localStorage.getItem('shoplink_token');
-    const user = getStoredJson('shoplink_user', null);
 
     if (isMobile && !hadVisitedIndexBeforeThisLoad && !hasMobileFirstClick) {
       localStorage.setItem('shoplink_mobile_dashboard_first_click_done', 'true');
       return 'register.html';
     }
 
-    return token && user ? 'dashboard-client-shoplink.html' : 'dashboard-client-shoplink.html';
+    const user = await getVerifiedClientUser();
+    if (!user || isDemoOrTestUser(user)) {
+      clearClientSession();
+      return '/login.html?next=' + encodeURIComponent('/dashboard-client-shoplink.html');
+    }
+
+    return `/dashboard-client-shoplink.html?account=${encodeURIComponent(String(user.email || '').toLowerCase())}`;
   }
 
   document.querySelectorAll('[data-dashboard-client]').forEach(link => {
-    link.addEventListener('click', function(e) {
+    link.addEventListener('click', async function(e) {
       e.preventDefault();
-      window.location.href = dashboardTargetUrl();
+      const originalText = link.textContent;
+      link.style.pointerEvents = 'none';
+      link.setAttribute('aria-busy', 'true');
+      const target = await dashboardTargetUrl();
+      link.style.pointerEvents = '';
+      link.removeAttribute('aria-busy');
+      if (originalText) link.dataset.originalText = originalText;
+      window.location.href = target;
     });
   });
 
