@@ -1,0 +1,40 @@
+{
+  "name": "ShopLink Admin",
+  "short_name": "ShopLink",
+  "description": "Notifications et suivi administrateur ShopLink",
+  "start_url": "/admin/admin-dashboard.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f9fa",
+  "theme_color": "#1a6b4a",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2645/2645897.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ouvrir l’admin",
+      "short_name": "Admin",
+      "url": "/admin/admin-dashboard.html",
+      "icons": [
+        {
+          "src": "https://cdn-icons-png.flaticon.com/512/2645/2645897.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
