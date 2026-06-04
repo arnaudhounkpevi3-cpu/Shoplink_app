@@ -367,9 +367,20 @@
         border-radius: 20px;
       }
 
-      .cta-panel h2 { font-size: clamp(20px, 6vw, 26px); line-height: 1.05; }
+      .cta-panel h2 { font-size: clamp(18px, 5.2vw, 22px); line-height: 1.08; letter-spacing: -.035em; }
       .cta-panel p { margin: 6px auto 10px; font-size: 12px; line-height: 1.35; }
       .cta-button { min-height: 40px; padding: 0 16px; font-size: 13px; }
+
+      .slide[data-step="4"] {
+        align-content: center;
+        justify-content: center;
+      }
+
+      .slide[data-step="4"] > div:first-child,
+      .slide[data-step="4"] .illustration-card {
+        margin-left: auto;
+        margin-right: auto;
+      }
 
       .slide[data-step="5"] {
         align-content: start;
