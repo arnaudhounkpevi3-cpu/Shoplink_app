@@ -1056,7 +1056,34 @@
     return outputArray;
   }
 
+  function assertWebPushSupportedOnThisDevice() {
+    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isChromeIOS = /CriOS/i.test(navigator.userAgent);
+
+    if (isiOS && isChromeIOS) {
+      throw new Error('Sur iPhone, Chrome ne reçoit pas les Web Push comme Android. Installez ShopLink sur l’écran d’accueil via Safari, puis activez les notifications depuis cette app.');
+    }
+
+    if (!window.isSecureContext) {
+      throw new Error('Les notifications Web Push nécessitent HTTPS. Utilisez le lien Vercel en https.');
+    }
+  }
+
+  async function showLocalAdminNotification(message) {
+    if (!('serviceWorker' in navigator) || Notification.permission !== 'granted') return;
+    const registration = await navigator.serviceWorker.ready;
+    await registration.showNotification('ShopLink Admin', {
+      body: message,
+      icon: 'https://cdn-icons-png.flaticon.com/512/2645/2645897.png',
+      badge: 'https://cdn-icons-png.flaticon.com/512/2645/2645897.png',
+      tag: 'shoplink-admin-local-test',
+      data: { url: '/admin/admin-dashboard.html' },
+    });
+  }
+
   async function subscribeAdminPush() {
+    assertWebPushSupportedOnThisDevice();
+
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       throw new Error('Web Push indisponible sur ce navigateur.');
     }
@@ -1067,7 +1094,9 @@
       throw new Error(keyData.message || 'Clé Web Push indisponible.');
     }
 
-    const registration = await navigator.serviceWorker.register('/admin-push-sw.js');
+    const registration = await navigator.serviceWorker.register('/admin-push-sw.js', { scope: '/' });
+    await navigator.serviceWorker.ready;
+    if (registration.update) registration.update().catch(() => {});
     const existingSubscription = await registration.pushManager.getSubscription();
     const subscription = existingSubscription || await registration.pushManager.subscribe({
       userVisibleOnly: true,
@@ -1097,6 +1126,7 @@
       try {
         await subscribeAdminPush();
         adminToast('Les notifications admin sont déjà activées sur ce navigateur.', 'success', 'Notifications activées');
+        await showLocalAdminNotification('Test local OK. Le téléphone peut afficher les notifications ShopLink.');
         await apiFetch('/push/test', { method: 'POST' });
       } catch (error) {
         adminToast(error.message, 'error', 'Notifications non activées');
@@ -1114,6 +1144,7 @@
       try {
         await subscribeAdminPush();
         adminToast('Notifications admin activées. Vous serez alerté même si l’onglet admin est fermé.', 'success', 'Notifications activées');
+        await showLocalAdminNotification('Test local OK. Le téléphone peut afficher les notifications ShopLink.');
         await apiFetch('/push/test', { method: 'POST' });
       } catch (error) {
         adminToast(error.message, 'error', 'Notifications non activées');
