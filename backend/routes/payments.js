@@ -4,6 +4,7 @@ const { repo } = require('../data/repository')
 const { requireAuth } = require('../middleware/auth')
 const { uniqueSlug } = require('../utils/slug')
 const { getActivityTheme } = require('../utils/activityTheme')
+const { sendAdminPushNotification } = require('../services/pushNotifications')
 
 const router = express.Router()
 
@@ -246,6 +247,12 @@ router.post('/premium-order', async (req, res) => {
     })
   }
 
+  sendAdminPushNotification({
+    title: 'Nouveau projet premium',
+    body: `${payment.clientName || payment.email || 'Un client'} a lancé un projet premium.`,
+    tag: 'shoplink-admin-premium',
+  }).catch((error) => console.warn('Push admin premium non envoyé:', error.message))
+
   return res.status(201).json({
     success: true,
     message: 'Commande premium creee en attente de paiement',
@@ -334,6 +341,14 @@ router.post('/initiate', requireAuth, async (req, res) => {
   }
 
   const payment = await repo().createPayment(paymentPayload)
+
+  if (payment) {
+    sendAdminPushNotification({
+      title: 'Nouveau paiement',
+      body: `${payment.clientName || payment.email || 'Un client'} · ${payment.type || 'paiement'} · ${Number(payment.amount || 0).toLocaleString('fr-FR')} F`,
+      tag: 'shoplink-admin-payment',
+    }).catch((error) => console.warn('Push admin paiement non envoyé:', error.message))
+  }
 
   // Auto-validate for testing
   const transactionId = `TXN-TEST-${Date.now()}`

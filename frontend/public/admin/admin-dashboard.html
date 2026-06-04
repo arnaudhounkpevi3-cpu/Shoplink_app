@@ -22,6 +22,11 @@
       --radius-lg:   12px;
     }
     *{margin:0;padding:0;box-sizing:border-box;}
+    *,*::before,*::after{-webkit-tap-highlight-color:transparent;}
+    a,button,[role="button"],summary,label,select,.btn,.nav-item,.tab,.filter-pill,.icon-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+    button,[role="button"],.btn,.nav-item,.tab,.filter-pill,.icon-btn{user-select:none;}
+    a:focus:not(:focus-visible),button:focus:not(:focus-visible),[role="button"]:focus:not(:focus-visible),.btn:focus:not(:focus-visible),.nav-item:focus:not(:focus-visible),.tab:focus:not(:focus-visible),.filter-pill:focus:not(:focus-visible),.icon-btn:focus:not(:focus-visible){outline:none;}
+    a:focus-visible,button:focus-visible,[role="button"]:focus-visible,.btn:focus-visible,.nav-item:focus-visible,.tab:focus-visible,.filter-pill:focus-visible,.icon-btn:focus-visible{outline:2px solid rgba(109,217,168,.7);outline-offset:3px;}
     body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);font-size:14px;}
     .layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
 
@@ -1042,6 +1047,46 @@
     }
   }
 
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let index = 0; index < rawData.length; index += 1) outputArray[index] = rawData.charCodeAt(index);
+    return outputArray;
+  }
+
+  async function subscribeAdminPush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      throw new Error('Web Push indisponible sur ce navigateur.');
+    }
+
+    const keyResponse = await apiFetch('/push/vapid-public-key');
+    const keyData = await keyResponse.json().catch(() => ({}));
+    if (!keyResponse.ok || !keyData.publicKey) {
+      throw new Error(keyData.message || 'Clé Web Push indisponible.');
+    }
+
+    const registration = await navigator.serviceWorker.register('/admin-push-sw.js');
+    const existingSubscription = await registration.pushManager.getSubscription();
+    const subscription = existingSubscription || await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(keyData.publicKey),
+    });
+
+    const subscribeResponse = await apiFetch('/push/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription }),
+    });
+    const subscribeData = await subscribeResponse.json().catch(() => ({}));
+    if (!subscribeResponse.ok || !subscribeData.success) {
+      throw new Error(subscribeData.message || 'Abonnement Web Push non sauvegardé.');
+    }
+
+    return subscription;
+  }
+
   async function enableAdminNotifications() {
     if (!('Notification' in window)) {
       adminToast('Votre navigateur ne supporte pas les notifications.', 'warning', 'Notifications indisponibles');
@@ -1049,8 +1094,13 @@
     }
 
     if (Notification.permission === 'granted') {
-      adminToast('Les notifications admin sont déjà activées sur ce navigateur.', 'success', 'Notifications activées');
-      browserAdminNotification('ShopLink Admin', 'Les notifications sont bien actives.');
+      try {
+        await subscribeAdminPush();
+        adminToast('Les notifications admin sont déjà activées sur ce navigateur.', 'success', 'Notifications activées');
+        await apiFetch('/push/test', { method: 'POST' });
+      } catch (error) {
+        adminToast(error.message, 'error', 'Notifications non activées');
+      }
       return;
     }
 
@@ -1061,8 +1111,13 @@
 
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      adminToast('Notifications admin activées. Vous serez alerté des nouveaux éléments.', 'success', 'Notifications activées');
-      browserAdminNotification('ShopLink Admin', 'Vous recevrez maintenant les alertes admin.');
+      try {
+        await subscribeAdminPush();
+        adminToast('Notifications admin activées. Vous serez alerté même si l’onglet admin est fermé.', 'success', 'Notifications activées');
+        await apiFetch('/push/test', { method: 'POST' });
+      } catch (error) {
+        adminToast(error.message, 'error', 'Notifications non activées');
+      }
     } else {
       adminToast('Notifications non activées. Le navigateur n’a pas accordé l’autorisation.', 'warning', 'Autorisation refusée');
     }

@@ -18,6 +18,14 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+    a, button, [role="button"], .topbar-link, .cta-button, .dot {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+    }
+    a:focus:not(:focus-visible), button:focus:not(:focus-visible), [role="button"]:focus:not(:focus-visible), .topbar-link:focus:not(:focus-visible), .cta-button:focus:not(:focus-visible), .dot:focus:not(:focus-visible) { outline: none; }
+    a:focus-visible, button:focus-visible, [role="button"]:focus-visible, .topbar-link:focus-visible, .cta-button:focus-visible, .dot:focus-visible { outline: 2px solid rgba(26, 92, 56, .45); outline-offset: 3px; }
     html { scroll-behavior: smooth; }
     body {
       min-height: 100vh;

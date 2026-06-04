@@ -62,6 +62,7 @@ async function main() {
   const trackingRoutes = require('./routes/tracking')
   const emailRoutes = require('./routes/emails')
   const ordersRoutes = require('./routes/orders')
+  const pushRoutes = require('./routes/push')
   const { requireAuth, requireAdmin } = require('./middleware/auth')
 
   const app = express()
@@ -176,6 +177,7 @@ async function main() {
   app.use('/api/tracking', trackingRoutes)
   app.use('/api', emailRoutes)
   app.use('/api/orders', ordersRoutes)
+  app.use('/api/push', pushRoutes)
 
   app.get('/boutique/:slug', async (req, res, next) => {
     const { slug } = req.params

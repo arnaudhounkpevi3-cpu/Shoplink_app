@@ -2,6 +2,7 @@ const express = require('express')
 
 const { repo } = require('../data/repository')
 const { attachUser, requireAuth } = require('../middleware/auth')
+const { sendAdminPushNotification } = require('../services/pushNotifications')
 
 const router = express.Router()
 
@@ -73,6 +74,12 @@ router.post('/', requireAuth, async (req, res) => {
       status: 'open',
       createdAt: new Date().toISOString(),
     })
+
+    sendAdminPushNotification({
+      title: 'Nouveau ticket support',
+      body: `${req.user.name || req.user.email} a ouvert : ${subject}`,
+      tag: 'shoplink-admin-ticket',
+    }).catch((error) => console.warn('Push admin ticket non envoyé:', error.message))
     
     res.status(201).json({
       success: true,

@@ -3,6 +3,7 @@ const express = require('express')
 const { repo } = require('../data/repository')
 const { attachUser, requireAuth } = require('../middleware/auth')
 const { uniqueSlug } = require('../utils/slug')
+const { sendAdminPushNotification } = require('../services/pushNotifications')
 
 const router = express.Router()
 
@@ -72,6 +73,12 @@ router.post('/create', requireAuth, async (req, res) => {
       message: 'Impossible de créer le site dans la base de données',
     })
   }
+
+  sendAdminPushNotification({
+    title: 'Nouveau site public',
+    body: `${site.name || 'Un site'} vient d’être créé${site.slug ? ` : /boutique/${site.slug}` : '.'}`,
+    tag: 'shoplink-admin-site',
+  }).catch((error) => console.warn('Push admin site non envoyé:', error.message))
 
   return res.status(201).json({
     success: true,

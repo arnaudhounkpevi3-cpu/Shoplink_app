@@ -12,6 +12,35 @@ body { min-width: 320px; overflow-x: hidden; -webkit-font-smoothing: antialiased
 img, video, iframe { max-width: 100%; height: auto; display: block; }
 input, textarea, select, button { max-width: 100%; font-family: inherit; }
 
+/* Supprime le flash bleu mobile sur les zones cliquables sans casser le focus clavier */
+*, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+a, button, [role="button"], summary, label, select,
+input[type="button"], input[type="submit"], input[type="reset"],
+.btn, .card, .nav-item, .tab, .filter-pill, .icon-btn,
+.product-card, .btn-details, .btn-add, .btn-order {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"],
+.btn, .card, .nav-item, .tab, .filter-pill, .icon-btn,
+.product-card, .btn-details, .btn-add, .btn-order {
+  user-select: none;
+}
+a:focus:not(:focus-visible), button:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible), summary:focus:not(:focus-visible),
+input[type="button"]:focus:not(:focus-visible), input[type="submit"]:focus:not(:focus-visible), input[type="reset"]:focus:not(:focus-visible),
+.btn:focus:not(:focus-visible), .card:focus:not(:focus-visible), .nav-item:focus:not(:focus-visible), .tab:focus:not(:focus-visible), .filter-pill:focus:not(:focus-visible), .icon-btn:focus:not(:focus-visible),
+.product-card:focus:not(:focus-visible), .btn-details:focus:not(:focus-visible), .btn-add:focus:not(:focus-visible), .btn-order:focus:not(:focus-visible) {
+  outline: none;
+}
+a:focus-visible, button:focus-visible, [role="button"]:focus-visible, summary:focus-visible,
+input[type="button"]:focus-visible, input[type="submit"]:focus-visible, input[type="reset"]:focus-visible,
+.btn:focus-visible, .card:focus-visible, .nav-item:focus-visible, .tab:focus-visible, .filter-pill:focus-visible, .icon-btn:focus-visible,
+.product-card:focus-visible, .btn-details:focus-visible, .btn-add:focus-visible, .btn-order:focus-visible {
+  outline: 2px solid rgba(26, 92, 56, .45);
+  outline-offset: 3px;
+}
+
 /* ============================================================
    NAVIGATION
    ============================================================ */

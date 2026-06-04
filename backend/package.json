@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.3.3",
     "nodemailer": "^8.0.4",
+    "web-push": "^3.6.7",
     "ws": "^8.14.2"
   }
 }

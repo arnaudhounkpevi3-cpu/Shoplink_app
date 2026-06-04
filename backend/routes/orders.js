@@ -2,6 +2,7 @@ const express = require('express')
 
 const { repo } = require('../data/repository')
 const { requireAuth, requireAdmin } = require('../middleware/auth')
+const { sendAdminPushNotification } = require('../services/pushNotifications')
 
 const router = express.Router()
 
@@ -92,6 +93,12 @@ router.post('/public', async (req, res) => {
       message: 'Impossible de créer la commande',
     })
   }
+
+  sendAdminPushNotification({
+    title: 'Nouvelle commande',
+    body: `${buyerName} a commandé sur ${site.name || 'une boutique'} · ${Number(totalAmount || 0).toLocaleString('fr-FR')} F`,
+    tag: 'shoplink-admin-order',
+  }).catch((error) => console.warn('Push admin commande non envoyé:', error.message))
 
   if (repo().createClientEvent) {
     await repo().createClientEvent({

@@ -7,6 +7,7 @@ const { sanitizeUser } = require('../utils/sanitizeUser')
 const { uniqueSlug } = require('../utils/slug')
 const { getActivityTheme } = require('../utils/activityTheme')
 const { sendPasswordResetEmail } = require('../services/emailService')
+const { sendAdminPushNotification } = require('../services/pushNotifications')
 
 const router = express.Router()
 
@@ -200,6 +201,12 @@ router.post('/register', async (req, res) => {
   }
 
   const pricing = await getAutonomousPricing()
+
+  sendAdminPushNotification({
+    title: 'Nouvel utilisateur',
+    body: `${user.name || user.email} vient de créer un compte ShopLink.`,
+    tag: 'shoplink-admin-user',
+  }).catch((error) => console.warn('Push admin inscription non envoyé:', error.message))
 
   return res.status(201).json({
     success: true,
