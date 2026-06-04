@@ -43,6 +43,24 @@ function invalidateCache(prefix = '') {
   }
 }
 
+function pageRange(pageValue = 1, limitValue = 25) {
+  const limit = Math.min(Math.max(Number(limitValue || 25), 1), 50)
+  const page = Math.max(Number(pageValue || 1), 1)
+  const from = (page - 1) * limit
+  const to = from + limit - 1
+  return { page, limit, from, to }
+}
+
+function pagedResult({ data, count, page, limit, mapper }) {
+  return {
+    items: data ? data.map(mapper) : [],
+    page,
+    limit,
+    total: Number(count || 0),
+    totalPages: Math.max(1, Math.ceil(Number(count || 0) / limit)),
+  }
+}
+
 function iso(d) {
   if (!d) {
     return undefined
@@ -465,6 +483,17 @@ module.exports = {
     })
   },
 
+  async listUsersPage(pageValue = 1, limitValue = 25) {
+    const { page, limit, from, to } = pageRange(pageValue, limitValue)
+    const { data, error, count } = await supabase
+      .from('users')
+      .select(PUBLIC_USER_COLUMNS, { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to)
+    if (error) return pagedResult({ data: [], count: 0, page, limit, mapper: mapUser })
+    return pagedResult({ data, count, page, limit, mapper: mapUser })
+  },
+
   async listSites() {
     return cached('sites:list', CACHE_TTL_MS, async () => {
       const { data, error } = await supabase
@@ -474,6 +503,17 @@ module.exports = {
         .limit(ADMIN_LIMIT)
       return error ? [] : data.map(mapSite)
     })
+  },
+
+  async listSitesPage(pageValue = 1, limitValue = 25) {
+    const { page, limit, from, to } = pageRange(pageValue, limitValue)
+    const { data, error, count } = await supabase
+      .from('sites')
+      .select(SITE_COLUMNS, { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to)
+    if (error) return pagedResult({ data: [], count: 0, page, limit, mapper: mapSite })
+    return pagedResult({ data, count, page, limit, mapper: mapSite })
   },
 
   async findSiteById(id) {
@@ -730,6 +770,17 @@ module.exports = {
     })
   },
 
+  async listPaymentsPage(pageValue = 1, limitValue = 25) {
+    const { page, limit, from, to } = pageRange(pageValue, limitValue)
+    const { data, error, count } = await supabase
+      .from('payments')
+      .select(PAYMENT_COLUMNS, { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to)
+    if (error) return pagedResult({ data: [], count: 0, page, limit, mapper: mapPayment })
+    return pagedResult({ data, count, page, limit, mapper: mapPayment })
+  },
+
   async findPaymentById(id) {
     const { data, error } = await supabase
       .from('payments')
@@ -900,6 +951,30 @@ module.exports = {
       updatedAt: t.updated_at ? iso(t.updated_at) : undefined,
       }))
     })
+  },
+
+  async listTicketsPage(pageValue = 1, limitValue = 25) {
+    const { page, limit, from, to } = pageRange(pageValue, limitValue)
+    const mapTicket = (t) => ({
+      id: t.id,
+      userId: t.user_id,
+      userName: t.user_name,
+      userEmail: t.user_email,
+      subject: t.subject,
+      message: t.message,
+      priority: t.priority,
+      status: t.status,
+      replies: t.replies || [],
+      createdAt: iso(t.created_at),
+      updatedAt: t.updated_at ? iso(t.updated_at) : undefined,
+    })
+    const { data, error, count } = await supabase
+      .from('tickets')
+      .select(TICKET_COLUMNS, { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to)
+    if (error) return pagedResult({ data: [], count: 0, page, limit, mapper: mapTicket })
+    return pagedResult({ data, count, page, limit, mapper: mapTicket })
   },
 
   async findTicketById(id) {

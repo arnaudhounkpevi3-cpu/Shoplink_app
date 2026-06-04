@@ -1,10 +1,11 @@
 const express = require('express')
 
 const { repo } = require('../data/repository')
-const { isInlineImage, storeInlineImageIfNeeded } = require('../services/imageStorage')
+const { isInlineImage, storeInlineImageIfNeeded, thumbnailUrlForOriginal } = require('../services/imageStorage')
 const { buildBoutiqueUrl } = require('../utils/publicUrl')
 
 const router = express.Router()
+const PUBLIC_PAYLOAD_VERSION = 'public-v2-image-fallback'
 
 function publicSitePayload(site, logo) {
   return {
@@ -43,7 +44,10 @@ function supabaseThumbnailUrl(imageUrl, width = 640, quality = 72) {
 }
 
 function publicProductPayload(product, image, whatsapp) {
-  const thumbnail = supabaseThumbnailUrl(image)
+  // Use Supabase's transform endpoint first because it is generated on demand.
+  // Real uploaded thumbnails are kept as a future optimization, but old products
+  // may not have them, so guessing /thumbs/... first can break product cards.
+  const thumbnail = supabaseThumbnailUrl(image) || thumbnailUrlForOriginal(image)
   return {
     id: product.id,
     name: product.name,
@@ -64,6 +68,7 @@ function publicProductPayload(product, image, whatsapp) {
 
 function weakEtag(site, products = []) {
   const seed = [
+    PUBLIC_PAYLOAD_VERSION,
     site.id,
     site.updatedAt || site.publishedAt || site.createdAt || '',
     products.length,

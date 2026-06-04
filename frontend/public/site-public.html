@@ -1118,6 +1118,11 @@
     let currentProducts = []
     let cart = []
     const startTime = Date.now()
+    const PUBLIC_SITE_CACHE_VERSION = 'v2-image-fallback'
+
+    if ('serviceWorker' in navigator && window.isSecureContext) {
+      navigator.serviceWorker.register('/admin-push-sw.js', { scope: '/' }).catch(() => {})
+    }
 
     const THEMES = {
       food: { label: 'Restaurant', title: 'Nos menus', subtitle: 'Choisissez vos plats et commandez directement via WhatsApp.', primary: '#9a3f13', secondary: '#6f2c0d', accent: '#f59c1a', bg: '#fff7eb', soft: '#fff2df', text: '#24140a', icon: '🍽️', iconUrl: 'https://cdn-icons-png.flaticon.com/512/562/562678.png' },
@@ -1179,7 +1184,7 @@
       const params = new URLSearchParams(window.location.search)
       return params.get('slug') || window.location.pathname.split('/').filter(Boolean).pop() || 'boutique-test'
     }
-    function siteCacheKey(slug) { return `shoplink_public_site_cache:${slug}` }
+    function siteCacheKey(slug) { return `shoplink_public_site_cache:${PUBLIC_SITE_CACHE_VERSION}:${slug}` }
     function isInlineImage(value) { return /^data:image\//i.test(String(value || '')) }
     function stripInlineImagesForCache(site, products) {
       return {
@@ -1233,9 +1238,6 @@
       const cachedSlug = String(cacheData?.site?.slug || '').trim()
       return !cachedSlug || cachedSlug === slug
     }
-    function cacheIsFresh(cacheData, maxAgeMs = 5 * 60 * 1000) {
-      return Boolean(cacheData?.cachedAt && Date.now() - Number(cacheData.cachedAt) < maxAgeMs)
-    }
     function money(value) { return Number(value || 0).toLocaleString('fr-FR') + ' FCFA' }
     function safe(value) { return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') }
     function cleanUrl(slug) { return `${window.location.origin}/boutique/${slug}` }
@@ -1248,6 +1250,7 @@
       const { silent = false } = options
       const slug = slugFromUrl()
       let renderedCachedSite = false
+      let trackedVisit = false
 
       if (!silent) {
         const cached = localStorage.getItem(siteCacheKey(slug))
@@ -1263,12 +1266,10 @@
               applyTheme(currentSite)
               renderSite(currentSite, currentProducts)
               renderedCachedSite = true
-              if (cacheIsFresh(cachedData)) {
-                trackOfficialSiteVisit(currentSite.id, visitSource())
-                trackWeeklyLinkVisit(currentSite.id, visitSource())
-                trackVisit(currentSite.id)
-                return
-              }
+              trackOfficialSiteVisit(currentSite.id, visitSource())
+              trackWeeklyLinkVisit(currentSite.id, visitSource())
+              trackVisit(currentSite.id)
+              trackedVisit = true
             }
           } catch (_error) {
             localStorage.removeItem(siteCacheKey(slug))
@@ -1286,12 +1287,14 @@
         window.currentSiteId = currentSite.id
         applyTheme(currentSite)
         savePublicSiteCache(slug, currentSite, currentProducts)
-        trackOfficialSiteVisit(currentSite.id, visitSource())
-        trackWeeklyLinkVisit(currentSite.id, visitSource())
-        trackVisit(currentSite.id)
+        if (!trackedVisit) {
+          trackOfficialSiteVisit(currentSite.id, visitSource())
+          trackWeeklyLinkVisit(currentSite.id, visitSource())
+          trackVisit(currentSite.id)
+        }
         renderSite(currentSite, currentProducts)
       } catch (error) {
-        if (!silent) {
+        if (!silent && !renderedCachedSite) {
           document.getElementById('app').innerHTML = `<div class="error"><strong>Erreur :</strong> ${safe(error.message)}</div>`
         }
       }
@@ -1434,7 +1437,8 @@
       const theme = window.shopTheme || THEMES.general
       const badgeText = product.badge ? productBadgeLabel(product.badge) : 'Disponible'
       const category = displayCategory(product)
-      return `<article class="product-card" onclick="openProductModal('${product.id}')"><div class="product-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}">` : theme.icon}<span class="promo-badge">${safe(badgeText)}</span></div><div class="product-body">${category ? `<div class="product-category">${safe(category)}</div>` : ''}<h3 class="product-name">${safe(product.name)}</h3>${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="product-bottom"><div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}</div></div>${productMetaTags(product)}<div class="product-actions"><button class="btn-details" onclick="event.stopPropagation();openProductModal('${product.id}')">Voir</button><button class="btn-add" onclick="event.stopPropagation();addToCart('${product.id}')">Ajouter au panier</button></div></div></article>`
+      const fallbackImage = product.fullImage && product.fullImage !== product.image ? ` onerror="this.onerror=null;this.src='${safe(product.fullImage)}'"` : ''
+      return `<article class="product-card" onclick="openProductModal('${product.id}')"><div class="product-image">${product.image ? `<img src="${product.image}" alt="${safe(product.name)}"${fallbackImage}>` : theme.icon}<span class="promo-badge">${safe(badgeText)}</span></div><div class="product-body">${category ? `<div class="product-category">${safe(category)}</div>` : ''}<h3 class="product-name">${safe(product.name)}</h3>${product.description ? `<p class="product-description">${safe(product.description)}</p>` : ''}<div class="product-bottom"><div><div class="product-price">${money(product.price)}</div>${product.oldPrice ? `<div class="product-old-price">${money(product.oldPrice)}</div>` : ''}</div></div>${productMetaTags(product)}<div class="product-actions"><button class="btn-details" onclick="event.stopPropagation();openProductModal('${product.id}')">Voir</button><button class="btn-add" onclick="event.stopPropagation();addToCart('${product.id}')">Ajouter au panier</button></div></div></article>`
     }
 
     function productBadgeLabel(value) {

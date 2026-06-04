@@ -820,6 +820,7 @@
               <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
             </tbody>
           </table>
+          <div id="users-pager"></div>
         </div>
       </div>
     </div>
@@ -841,10 +842,11 @@
           <div class="tab" onclick="switchTabP('pay-pending',this)">En attente (3)</div>
         </div>
         <div id="pay-all" class="tab-panel active">
-          <table><thead><tr><th>Client</th><th>Type</th><th>Montant</th><th>Transaction</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
+        <table><thead><tr><th>Client</th><th>Type</th><th>Montant</th><th>Transaction</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
           <tbody id="payments-all-tbody">
             <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
           </tbody></table>
+          <div id="payments-pager"></div>
         </div>
         <div id="pay-auto" class="tab-panel">
           <table><thead><tr><th>Client</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead>
@@ -949,6 +951,7 @@
         <tbody id="sites-table">
           <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Chargement...</td></tr>
         </tbody></table>
+        <div id="sites-pager"></div>
       </div>
     </div>
 
@@ -981,6 +984,7 @@
             </tr>
           </tbody>
         </table>
+        <div id="tickets-pager"></div>
       </div>
     </div>
 
@@ -1039,6 +1043,13 @@
   let allSites = [];
   let allPayments = [];
   let adminUpdatesCursor = new Date().toISOString();
+  const ADMIN_PAGE_SIZE = 25;
+  const adminPages = {
+    users: 1,
+    sites: 1,
+    payments: 1,
+    tickets: 1,
+  };
   const adminNotificationState = {
     users: null,
     sites: null,
@@ -1256,6 +1267,33 @@
       if (id) map.set(id, { ...(map.get(id) || {}), ...item });
     });
     return [...map.values()].sort((a, b) => new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0));
+  }
+
+  function paginationQuery(key) {
+    return `page=${adminPages[key] || 1}&limit=${ADMIN_PAGE_SIZE}`;
+  }
+
+  function renderPager(containerId, key, pagination) {
+    const container = document.getElementById(containerId);
+    if (!container || !pagination) return;
+
+    const page = Number(pagination.page || adminPages[key] || 1);
+    const totalPages = Number(pagination.totalPages || 1);
+    const total = Number(pagination.total || 0);
+    container.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
+        <span>Page ${page} / ${totalPages} · ${total.toLocaleString('fr-FR')} éléments</span>
+        <span style="display:flex;gap:8px;">
+          <button class="btn" ${page <= 1 ? 'disabled' : ''} onclick="changeAdminPage('${key}', -1)">Précédent</button>
+          <button class="btn" ${page >= totalPages ? 'disabled' : ''} onclick="changeAdminPage('${key}', 1)">Suivant</button>
+        </span>
+      </div>
+    `;
+  }
+
+  async function changeAdminPage(key, delta) {
+    adminPages[key] = Math.max(1, Number(adminPages[key] || 1) + Number(delta || 0));
+    await fetchAdminData({ skipSummary: true, trackNotifications: false });
   }
 
   async function fetchAdminUpdates() {
@@ -1988,44 +2026,49 @@
   }
 
   // Fetch real data from backend
-  async function fetchAdminData() {
+  async function fetchAdminData(options = {}) {
     try {
+      const shouldTrackNotifications = options.trackNotifications !== false;
       // Fetch summary
-      const summaryRes = await apiFetch('/admin/summary');
-      const summaryData = await summaryRes.json();
-      if (summaryData.success) {
-        const data = summaryData.data;
-        // Update metrics with proper IDs
-        const metricUsers = document.getElementById('metric-users');
-        const metricSites = document.getElementById('metric-sites');
-        const metricRevenue = document.getElementById('metric-revenue');
-        const metricPending = document.getElementById('metric-pending');
+      if (!options.skipSummary) {
+        const summaryRes = await apiFetch('/admin/summary');
+        const summaryData = await summaryRes.json();
+        if (summaryData.success) {
+          const data = summaryData.data;
+          // Update metrics with proper IDs
+          const metricUsers = document.getElementById('metric-users');
+          const metricSites = document.getElementById('metric-sites');
+          const metricRevenue = document.getElementById('metric-revenue');
+          const metricPending = document.getElementById('metric-pending');
 
-        if (metricUsers) metricUsers.textContent = data.users || 0;
-        if (metricSites) metricSites.textContent = data.sites || 0;
-        // Payment system not finished - set to 0
-        if (metricRevenue) metricRevenue.textContent = '0';
-        if (metricPending) metricPending.textContent = '0';
+          if (metricUsers) metricUsers.textContent = data.users || 0;
+          if (metricSites) metricSites.textContent = data.sites || 0;
+          // Payment system not finished - set to 0
+          if (metricRevenue) metricRevenue.textContent = '0';
+          if (metricPending) metricPending.textContent = '0';
 
-        // Update badges
-        const badgeUsers = document.getElementById('badge-users');
-        const badgePending = document.getElementById('badge-pending');
-        if (badgeUsers) badgeUsers.textContent = data.users || 0;
-        if (badgePending) badgePending.textContent = '0';
+          // Update badges
+          const badgeUsers = document.getElementById('badge-users');
+          const badgePending = document.getElementById('badge-pending');
+          if (badgeUsers) badgeUsers.textContent = data.users || 0;
+          if (badgePending) badgePending.textContent = '0';
+        }
       }
 
       // Fetch users
-      const usersRes = await apiFetch('/admin/users');
+      const usersRes = await apiFetch(`/admin/users?${paginationQuery('users')}`);
       const usersData = await usersRes.json();
       if (usersData.success) {
         allUsers = usersData.users || [];
-        trackNewAdminItems(
-          'users',
-          allUsers,
-          (user) => user.id || user.email,
-          'Nouvel utilisateur',
-          (user) => `${user.name || 'Utilisateur'} vient de rejoindre ShopLink (${user.email || 'email non renseigné'}).`,
-        );
+        if (shouldTrackNotifications) {
+          trackNewAdminItems(
+            'users',
+            allUsers,
+            (user) => user.id || user.email,
+            'Nouvel utilisateur',
+            (user) => `${user.name || 'Utilisateur'} vient de rejoindre ShopLink (${user.email || 'email non renseigné'}).`,
+          );
+        }
         const usersTable = document.getElementById('users-table');
         if (usersTable && allUsers.length > 0) {
           const tbody = usersTable.querySelector('tbody') || usersTable;
@@ -2047,21 +2090,24 @@
           // Update badge
           const badgeUsers = document.getElementById('badge-users');
           if (badgeUsers) badgeUsers.textContent = allUsers.length;
+          renderPager('users-pager', 'users', usersData.pagination);
         }
       }
 
       // Fetch sites
-      const sitesRes = await apiFetch('/admin/sites');
+      const sitesRes = await apiFetch(`/admin/sites?${paginationQuery('sites')}`);
       const sitesData = await sitesRes.json();
       if (sitesData.success) {
         allSites = sitesData.sites || [];
-        trackNewAdminItems(
-          'sites',
-          allSites,
-          (site) => site.id || site.slug,
-          'Nouveau site public',
-          (site) => `${site.name || 'Un site'} vient d’être créé${site.slug ? ` : /boutique/${site.slug}` : '.'}`,
-        );
+        if (shouldTrackNotifications) {
+          trackNewAdminItems(
+            'sites',
+            allSites,
+            (site) => site.id || site.slug,
+            'Nouveau site public',
+            (site) => `${site.name || 'Un site'} vient d’être créé${site.slug ? ` : /boutique/${site.slug}` : '.'}`,
+          );
+        }
         const sitesTable = document.getElementById('sites-table');
         if (sitesTable) {
           if (!allSites.length) {
@@ -2079,21 +2125,24 @@
               </tr>
             `).join('');
           }
+          renderPager('sites-pager', 'sites', sitesData.pagination);
         }
       }
 
       // Fetch tickets
-      const ticketsRes = await apiFetch('/tickets');
+      const ticketsRes = await apiFetch(`/admin/tickets?${paginationQuery('tickets')}`);
       const ticketsData = await ticketsRes.json();
       if (ticketsData.success) {
         allTickets = ticketsData.tickets || [];
-        trackNewAdminItems(
-          'tickets',
-          allTickets,
-          (ticket) => ticket.id || `${ticket.userEmail || ''}-${ticket.subject || ''}-${ticket.createdAt || ''}`,
-          'Nouveau ticket support',
-          (ticket) => `${ticket.userName || ticket.userEmail || 'Un client'} a ouvert : ${ticket.subject || 'Ticket support'}`,
-        );
+        if (shouldTrackNotifications) {
+          trackNewAdminItems(
+            'tickets',
+            allTickets,
+            (ticket) => ticket.id || `${ticket.userEmail || ''}-${ticket.subject || ''}-${ticket.createdAt || ''}`,
+            'Nouveau ticket support',
+            (ticket) => `${ticket.userName || ticket.userEmail || 'Un client'} a ouvert : ${ticket.subject || 'Ticket support'}`,
+          );
+        }
         const ticketsTable = document.getElementById('tickets-tbody');
         if (ticketsTable) {
           if (allTickets.length === 0) {
@@ -2117,26 +2166,30 @@
           }
           const badgeTickets = document.getElementById('badge-tickets');
           if (badgeTickets) badgeTickets.textContent = allTickets.length;
+          renderPager('tickets-pager', 'tickets', ticketsData.pagination);
         }
       }
 
       // Fetch payments
-      const paymentsRes = await apiFetch('/admin/payments');
+      const paymentsRes = await apiFetch(`/admin/payments?${paginationQuery('payments')}`);
       const paymentsData = await paymentsRes.json();
       if (paymentsData.success) {
         allPayments = paymentsData.payments || [];
-        trackNewAdminItems(
-          'payments',
-          allPayments,
-          (payment) => payment.id || payment.reference,
-          'Nouveau paiement',
-          (payment) => `${payment.clientName || payment.email || 'Un client'} · ${payment.type || 'paiement'} · ${fmtMoney(payment.amount)}`,
-        );
+        if (shouldTrackNotifications) {
+          trackNewAdminItems(
+            'payments',
+            allPayments,
+            (payment) => payment.id || payment.reference,
+            'Nouveau paiement',
+            (payment) => `${payment.clientName || payment.email || 'Un client'} · ${payment.type || 'paiement'} · ${fmtMoney(payment.amount)}`,
+          );
+        }
         renderPaymentsTables();
         // Update pending badge
         const pendingPayments = allPayments.filter(p => p.status === 'pending');
         const pendingBadge = document.getElementById('badge-pending');
         if (pendingBadge) pendingBadge.textContent = pendingPayments.length;
+        renderPager('payments-pager', 'payments', paymentsData.pagination);
       }
 
     } catch (error) {

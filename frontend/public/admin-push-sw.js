@@ -1,3 +1,11 @@
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting())
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim())
+})
+
 self.addEventListener('push', (event) => {
   let data = {}
   try {
@@ -52,4 +60,66 @@ self.addEventListener('notificationclick', (event) => {
 
     return clients.openWindow(url)
   })())
+})
+
+const PUBLIC_CACHE = 'shoplink-public-cache-v2-image-fallback'
+const IMAGE_CACHE = 'shoplink-image-cache-v2-image-fallback'
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys()
+    await Promise.all(keys
+      .filter((key) => key.startsWith('shoplink-public-cache-') || key.startsWith('shoplink-image-cache-'))
+      .filter((key) => key !== PUBLIC_CACHE && key !== IMAGE_CACHE)
+      .map((key) => caches.delete(key)))
+    await self.clients.claim()
+  })())
+})
+
+function isPublicApiRequest(request) {
+  const url = new URL(request.url)
+  return url.origin === self.location.origin && url.pathname.startsWith('/api/public/')
+}
+
+function isCacheableImageRequest(request) {
+  const url = new URL(request.url)
+  return request.destination === 'image' || /\/storage\/v1\/(object\/public|render\/image\/public)\//.test(url.pathname)
+}
+
+async function networkFirst(request) {
+  const cache = await caches.open(PUBLIC_CACHE)
+  try {
+    const response = await fetch(request)
+    if (response && (response.ok || response.status === 304)) {
+      cache.put(request, response.clone()).catch(() => {})
+    }
+    return response
+  } catch (_error) {
+    const cached = await cache.match(request)
+    if (cached) return cached
+    throw _error
+  }
+}
+
+async function cacheFirst(request) {
+  const cache = await caches.open(IMAGE_CACHE)
+  const cached = await cache.match(request)
+  if (cached) return cached
+
+  const response = await fetch(request)
+  if (response && (response.ok || response.type === 'opaque')) {
+    cache.put(request, response.clone()).catch(() => {})
+  }
+  return response
+}
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return
+  if (isPublicApiRequest(event.request)) {
+    event.respondWith(networkFirst(event.request))
+    return
+  }
+  if (isCacheableImageRequest(event.request)) {
+    event.respondWith(cacheFirst(event.request))
+  }
 })

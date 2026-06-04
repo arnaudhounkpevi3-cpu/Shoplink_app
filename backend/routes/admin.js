@@ -128,28 +128,52 @@ router.get('/summary', async (_req, res) => {
   })
 })
 
-router.get('/users', async (_req, res) => {
-  const users = await repo().listUsers()
+function pageParams(req) {
+  return {
+    page: Math.max(Number(req.query.page || 1), 1),
+    limit: Math.min(Math.max(Number(req.query.limit || 25), 1), 50),
+  }
+}
+
+function paginationPayload(pageData, fallbackItems = []) {
+  return {
+    page: pageData?.page || 1,
+    limit: pageData?.limit || fallbackItems.length,
+    total: pageData?.total ?? fallbackItems.length,
+    totalPages: pageData?.totalPages || 1,
+  }
+}
+
+router.get('/users', async (req, res) => {
+  const { page, limit } = pageParams(req)
+  const usersPage = repo().listUsersPage ? await repo().listUsersPage(page, limit) : null
+  const users = usersPage ? usersPage.items : (await repo().listUsers()).slice((page - 1) * limit, page * limit)
   res.json({
     success: true,
     users: users.map(sanitizeUser),
+    pagination: paginationPayload(usersPage, users),
   })
 })
 
-router.get('/sites', async (_req, res) => {
-  const sites = await repo().listSites()
+router.get('/sites', async (req, res) => {
+  const { page, limit } = pageParams(req)
+  const sitesPage = repo().listSitesPage ? await repo().listSitesPage(page, limit) : null
+  const sites = sitesPage ? sitesPage.items : (await repo().listSites()).slice((page - 1) * limit, page * limit)
   res.json({
     success: true,
-    
     sites,
+    pagination: paginationPayload(sitesPage, sites),
   })
 })
 
-router.get('/payments', async (_req, res) => {
-  const payments = await repo().listPayments()
+router.get('/payments', async (req, res) => {
+  const { page, limit } = pageParams(req)
+  const paymentsPage = repo().listPaymentsPage ? await repo().listPaymentsPage(page, limit) : null
+  const payments = paymentsPage ? paymentsPage.items : (await repo().listPayments()).slice((page - 1) * limit, page * limit)
   res.json({
     success: true,
     payments,
+    pagination: paginationPayload(paymentsPage, payments),
   })
 })
 
@@ -241,12 +265,15 @@ router.get('/auto-created-clients', async (_req, res) => {
   })
 })
 
-router.get('/tickets', async (_req, res) => {
+router.get('/tickets', async (req, res) => {
   try {
-    const tickets = await repo().listTickets()
+    const { page, limit } = pageParams(req)
+    const ticketsPage = repo().listTicketsPage ? await repo().listTicketsPage(page, limit) : null
+    const tickets = ticketsPage ? ticketsPage.items : (await repo().listTickets()).slice((page - 1) * limit, page * limit)
     res.json({
       success: true,
       tickets,
+      pagination: paginationPayload(ticketsPage, tickets),
     })
   } catch (error) {
     console.error('Error fetching tickets:', error)
