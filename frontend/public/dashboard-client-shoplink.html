@@ -2985,6 +2985,7 @@
       }
 
       saveAccountProducts();
+      preloadPublicSiteCache(site, data.products || localProducts);
       syncCatalogFilterOptions();
       applyCatalogFilter(false);
       renderClientStats();

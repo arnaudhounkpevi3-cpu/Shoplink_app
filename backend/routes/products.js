@@ -64,6 +64,10 @@ router.post('/', requireAuth, async (req, res) => {
     createdAt: new Date().toISOString(),
   })
 
+  if (product && repo().updateSite) {
+    await repo().updateSite(siteId, {})
+  }
+
   return res.status(201).json({
     success: true,
     message: 'Produit cree',
@@ -125,6 +129,10 @@ router.put('/site/:siteId/replace', requireAuth, async (req, res) => {
   for (const product of cleanProducts) {
     const saved = await repo().createProduct(product)
     if (saved) savedProducts.push(saved)
+  }
+
+  if (repo().updateSite) {
+    await repo().updateSite(site.id, {})
   }
 
   return res.json({
@@ -194,6 +202,10 @@ router.put('/:id', requireAuth, async (req, res) => {
 
   const product = await repo().updateProduct(req.params.id, patch)
 
+  if (product && repo().updateSite) {
+    await repo().updateSite(existingProduct.siteId, {})
+  }
+
   return res.json({
     success: true,
     message: 'Produit mis a jour',
@@ -221,6 +233,10 @@ router.delete('/:id', requireAuth, async (req, res) => {
   }
 
   const deletedProduct = await repo().deleteProduct(req.params.id)
+
+  if (deletedProduct && repo().updateSite) {
+    await repo().updateSite(existingProduct.siteId, {})
+  }
 
   return res.json({
     success: true,

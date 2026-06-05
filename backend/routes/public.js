@@ -72,7 +72,21 @@ function weakEtag(site, products = []) {
     site.description || '',
     site.updatedAt || site.publishedAt || site.createdAt || '',
     products.length,
-    ...products.map((product) => `${product.id}:${product.updatedAt || product.createdAt || ''}:${product.image || ''}`),
+    ...products.map((product) => [
+      product.id,
+      product.updatedAt || product.createdAt || '',
+      product.image || '',
+      product.name || '',
+      product.price || '',
+      product.category || '',
+      product.description || '',
+      product.availability || '',
+      product.stock || '',
+      product.badge || '',
+      product.oldPrice || '',
+      product.variantInfo || '',
+      product.extraInfo || '',
+    ].join(':')),
   ].join('|')
   return `W/"${Buffer.from(seed).toString('base64url').slice(0, 48)}"`
 }
@@ -102,7 +116,7 @@ async function normalizePublicImage(value, options = {}) {
 }
 
 router.get('/:slug', async (req, res) => {
-  res.set('Cache-Control', 'public, max-age=30, s-maxage=60, stale-while-revalidate=86400')
+  res.set('Cache-Control', 'public, max-age=0, s-maxage=30, stale-while-revalidate=300')
 
   const site = await repo().findSiteBySlug(req.params.slug)
 
