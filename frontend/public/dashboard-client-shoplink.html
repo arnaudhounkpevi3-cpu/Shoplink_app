@@ -1522,6 +1522,12 @@
       return /^data:image\//i.test(String(value || ''));
     }
 
+    const PUBLIC_SITE_CACHE_VERSION = 'v3-original-images';
+
+    function publicSiteCacheKey(slug) {
+      return `shoplink_public_site_cache:${PUBLIC_SITE_CACHE_VERSION}:${slug}`;
+    }
+
     function stripInlineImagesForPublicCache(site, products) {
       return {
         site: {
@@ -1568,7 +1574,9 @@
 
     function preloadPublicSiteCache(site, products) {
       if (!site?.slug) return;
-      const cacheKey = `shoplink_public_site_cache:${site.slug}`;
+      const legacyCacheKey = `shoplink_public_site_cache:${site.slug}`;
+      const cacheKey = publicSiteCacheKey(site.slug);
+      localStorage.removeItem(legacyCacheKey);
       const publicProducts = (products || []).filter((product) => product && product.name && product.visible !== false && product.status !== 'hidden');
       savePublicSiteCache(cacheKey, site, publicProducts);
     }
@@ -2513,7 +2521,8 @@
         logo: selectedSiteLogo || context.site.logo || '',
       };
       setActiveSite(nextSite);
-      await ensureBackendSite(nextSite);
+      const savedSite = await ensureBackendSite(nextSite);
+      preloadPublicSiteCache(savedSite, getProductRows().map(productFromRow));
       updateClientGreeting();
       applyAccountSiteToPreview();
       notify('Paramètres de la boutique sauvegardés.');

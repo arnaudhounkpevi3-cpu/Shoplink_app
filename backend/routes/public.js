@@ -98,7 +98,7 @@ async function normalizePublicImage(value, options = {}) {
 }
 
 router.get('/:slug', async (req, res) => {
-  res.set('Cache-Control', 'public, max-age=60, s-maxage=600, stale-while-revalidate=86400')
+  res.set('Cache-Control', 'public, max-age=30, s-maxage=60, stale-while-revalidate=86400')
 
   const site = await repo().findSiteBySlug(req.params.slug)
 

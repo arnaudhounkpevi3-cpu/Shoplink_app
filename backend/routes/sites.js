@@ -4,6 +4,7 @@ const { repo } = require('../data/repository')
 const { attachUser, requireAuth } = require('../middleware/auth')
 const { uniqueSlug } = require('../utils/slug')
 const { sendAdminPushNotification } = require('../services/pushNotifications')
+const { storeInlineImageIfNeeded } = require('../services/imageStorage')
 
 const router = express.Router()
 
@@ -25,7 +26,6 @@ router.post('/create', requireAuth, async (req, res) => {
     name,
     slug,
     slogan,
-    logo,
     description,
     whatsapp,
     secondaryPhone,
@@ -44,6 +44,16 @@ router.post('/create', requireAuth, async (req, res) => {
   }
 
   const targetUserId = req.user.role === 'admin' && userId ? userId : req.user.id
+  let logo = req.body.logo || ''
+  try {
+    logo = await storeInlineImageIfNeeded(logo, { siteId: targetUserId })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: `Impossible d'enregistrer le logo : ${error.message}`,
+    })
+  }
+
   const nextSlug = await uniqueSlug(
     slug || name,
     async (candidate) => repo().slugTaken(candidate),
@@ -149,6 +159,17 @@ router.put('/:id', requireAuth, async (req, res) => {
 
   if (patch.userId && req.user.role !== 'admin') {
     delete patch.userId
+  }
+
+  if (patch.logo !== undefined) {
+    try {
+      patch.logo = await storeInlineImageIfNeeded(patch.logo, { siteId: existingSite.id })
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: `Impossible d'enregistrer le logo : ${error.message}`,
+      })
+    }
   }
 
   if (patch.slug && patch.slug !== existingSite.slug) {
