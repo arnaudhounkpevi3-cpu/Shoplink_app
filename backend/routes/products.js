@@ -6,6 +6,27 @@ const { storeInlineImageIfNeeded } = require('../services/imageStorage')
 
 const router = express.Router()
 
+function productDuplicateKey(product = {}) {
+  return [
+    String(product.name || '').trim().toLowerCase(),
+    String(product.category || '').trim().toLowerCase(),
+    Number(product.price || 0),
+    String(product.variantInfo || '').trim().toLowerCase(),
+    String(product.extraInfo || '').trim().toLowerCase(),
+  ].join('|')
+}
+
+function dedupeProductList(products = []) {
+  const seen = new Set()
+  return products.filter((product) => {
+    if (!product || !String(product.name || '').trim()) return false
+    const key = productDuplicateKey(product)
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
 function canManageSite(user, site) {
   return Boolean(user && site && (user.role === 'admin' || user.id === site.userId))
 }
@@ -95,8 +116,7 @@ router.put('/site/:siteId/replace', requireAuth, async (req, res) => {
 
   let cleanProducts = []
   try {
-    cleanProducts = await Promise.all(products
-      .filter((product) => product && product.name)
+    cleanProducts = await Promise.all(dedupeProductList(products)
       .map(async (product) => ({
         siteId: site.id,
         userId: req.user.id,

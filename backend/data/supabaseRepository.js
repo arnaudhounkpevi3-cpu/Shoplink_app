@@ -699,6 +699,7 @@ module.exports = {
   },
 
   async updateProduct(id, patch) {
+    const existingProduct = await this.findProductById(id)
     const updates = {
       updated_at: new Date().toISOString(),
     }
@@ -706,7 +707,20 @@ module.exports = {
     if (patch.name) updates.name = patch.name
     if (patch.price !== undefined) updates.price = patch.price
     if (patch.image !== undefined) updates.image_url = patch.image
-    if (patch.description !== undefined) updates.description = patch.description
+    const advancedPatch = {
+      availability: patch.availability !== undefined ? patch.availability : existingProduct?.availability,
+      stock: patch.stock !== undefined ? patch.stock : existingProduct?.stock,
+      badge: patch.badge !== undefined ? patch.badge : existingProduct?.badge,
+      oldPrice: patch.oldPrice !== undefined ? patch.oldPrice : existingProduct?.oldPrice,
+      variantInfo: patch.variantInfo !== undefined ? patch.variantInfo : existingProduct?.variantInfo,
+      extraInfo: patch.extraInfo !== undefined ? patch.extraInfo : existingProduct?.extraInfo,
+    }
+    if (patch.description !== undefined || Object.values(advancedPatch).some((value) => value !== undefined && value !== '')) {
+      updates.description = encodeProductDescription(
+        patch.description !== undefined ? patch.description : (existingProduct?.description || ''),
+        productMetaFromData(advancedPatch),
+      )
+    }
     if (patch.category !== undefined) updates.category = patch.category
     if (patch.visible !== undefined) updates.is_visible = patch.visible !== false
     if (patch.status !== undefined) updates.is_visible = patch.status !== 'hidden'

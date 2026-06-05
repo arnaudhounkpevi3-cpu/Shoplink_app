@@ -62,6 +62,27 @@ function publicProductPayload(product, image, whatsapp) {
   }
 }
 
+function publicProductDuplicateKey(product = {}) {
+  return [
+    String(product.name || '').trim().toLowerCase(),
+    String(product.category || '').trim().toLowerCase(),
+    Number(product.price || 0),
+    String(product.variantInfo || '').trim().toLowerCase(),
+    String(product.extraInfo || '').trim().toLowerCase(),
+  ].join('|')
+}
+
+function uniquePublicProducts(products = []) {
+  const seen = new Set()
+  return products.filter((product) => {
+    if (!product || !String(product.name || '').trim()) return false
+    const key = publicProductDuplicateKey(product)
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
 function weakEtag(site, products = []) {
   const seed = [
     PUBLIC_PAYLOAD_VERSION,
@@ -148,8 +169,8 @@ router.get('/:slug', async (req, res) => {
   }
 
   const rawProducts = await repo().listProductsBySiteId(site.id)
-  const visibleRawProducts = rawProducts
-    .filter((product) => product.visible !== false && product.status !== 'hidden')
+  const visibleRawProducts = uniquePublicProducts(rawProducts
+    .filter((product) => product.visible !== false && product.status !== 'hidden'))
   const etag = weakEtag(site, visibleRawProducts)
   res.set('ETag', etag)
 
