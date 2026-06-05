@@ -71,16 +71,13 @@
       letter-spacing: -.04em;
     }
 
-    .brand-mark {
-      width: 35px;
-      height: 35px;
-      border-radius: 13px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--green), var(--amber));
-      color: #fff;
-      box-shadow: 0 12px 26px rgba(26, 92, 56, .18);
-      font: 800 14px 'Syne', sans-serif;
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      display: inline-block;
+      flex: 0 0 auto;
     }
 
     .nav-links { display: flex; align-items: center; gap: 6px; }
@@ -356,11 +353,232 @@
       .metric-row { grid-template-columns: repeat(3, 1fr); width: 100%; gap: 8px; }
       .metric b { font-size: 22px; }
     }
+
+    @media (max-width: 640px) {
+      body { width: 100%; overflow-x: hidden; }
+      .shell { width: calc(100% - 24px); }
+
+      .topbar {
+        position: sticky;
+        top: 8px;
+        left: auto;
+        transform: none;
+        width: calc(100% - 16px);
+        min-height: 48px;
+        margin: 8px auto 0;
+        padding: 7px 8px;
+        border-radius: 18px;
+        flex-wrap: nowrap;
+      }
+
+      .brand {
+        font-size: 14px;
+        gap: 7px;
+        flex: 0 0 auto;
+      }
+
+      .logo-dot { width: 7px; height: 7px; }
+
+      .nav-actions {
+        width: auto;
+        justify-content: flex-end;
+        gap: 6px;
+        flex: 0 0 auto;
+      }
+
+      .nav-action {
+        min-height: 32px;
+        padding: 0 10px;
+        font-size: 11px;
+      }
+
+      .hero {
+        padding: 34px 0 34px;
+        min-height: auto;
+        gap: 18px;
+      }
+
+      .badge {
+        font-size: 9px;
+        padding: 6px 9px;
+        margin-bottom: 12px;
+        letter-spacing: .06em;
+      }
+
+      h1 {
+        max-width: 340px;
+        font-size: clamp(29px, 9vw, 38px);
+        line-height: 1;
+        letter-spacing: -.06em;
+      }
+
+      .hero-copy {
+        max-width: 340px;
+        margin-top: 14px;
+        font-size: 13px;
+        line-height: 1.48;
+      }
+
+      .hero-actions {
+        width: 100%;
+        max-width: 340px;
+        flex-wrap: nowrap;
+        gap: 7px;
+        margin-top: 20px;
+      }
+
+      .btn {
+        min-height: 40px;
+        min-width: 0;
+        padding: 0 9px;
+        font-size: 11px;
+        line-height: 1.15;
+        text-align: center;
+        flex: 1 1 0;
+      }
+
+      .metric-row {
+        width: min(100%, 350px);
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-top: 18px;
+      }
+
+      .metric {
+        min-width: 0;
+        max-width: 100%;
+        min-height: 72px;
+        padding: 10px 4px;
+        border-radius: 16px;
+        background: rgba(255,255,255,.78);
+        border: 1px solid rgba(26,92,56,.10);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        text-align: center;
+        overflow: visible;
+      }
+
+      .metric b {
+        display: block;
+        max-width: 100%;
+        font-size: clamp(9px, 3vw, 12px);
+        line-height: 1;
+        letter-spacing: -.02em;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .metric b:nth-child(1) {
+        width: 100%;
+      }
+
+      .metric span {
+        display: block;
+        max-width: 100%;
+        margin-top: 0;
+        font-size: clamp(7px, 2.05vw, 8px);
+        line-height: 1.25;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .solutions,
+      .simulator,
+      .why {
+        padding: 42px 0;
+      }
+
+      .section-head {
+        margin-bottom: 20px;
+      }
+
+      .section-kicker {
+        font-size: 10px;
+        margin-bottom: 8px;
+      }
+
+      .section-title {
+        font-size: clamp(25px, 8vw, 34px);
+        line-height: 1.02;
+        letter-spacing: -.055em;
+      }
+
+      .section-copy {
+        font-size: 13px;
+        line-height: 1.48;
+      }
+
+      .solution-grid,
+      .why-grid {
+        gap: 12px;
+      }
+
+      .solution-card,
+      .why-card {
+        min-height: auto;
+        padding: 18px;
+        border-radius: 22px;
+      }
+
+      .solution-card h3,
+      .why-card h3 {
+        font-size: 19px;
+      }
+
+      .solution-card p,
+      .why-card p {
+        font-size: 12.5px;
+      }
+
+      .sim-box {
+        padding: 18px;
+        border-radius: 24px;
+        text-align: left;
+      }
+
+      .sim-box h2 {
+        font-size: clamp(24px, 8vw, 34px);
+      }
+
+      .sim-box p {
+        font-size: 13px;
+      }
+
+      .sim-option {
+        padding: 12px;
+        align-items: flex-start;
+      }
+
+      .cta-zone { padding: 24px 0 42px; }
+      .cta-box {
+        border-radius: 22px;
+        padding: 18px;
+      }
+
+      .cta-box h2 {
+        font-size: clamp(21px, 7vw, 29px);
+      }
+
+      .cta-box p {
+        font-size: 12px;
+      }
+
+      .footer-inner {
+        justify-content: center;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/index.html?portal=1"><span class="brand-mark">S</span>ShopLink</a>
+    <a class="brand" href="/index.html?portal=1"><span class="logo-dot"></span>ShopLink</a>
     <nav class="nav-links" aria-label="Navigation principale">
       <a href="#solutions">Solutions</a>
       <a href="#simulateur">Comment ça marche</a>
@@ -379,8 +597,8 @@
         <h1>Développez votre activité grâce à votre site ShopLink.</h1>
         <p class="hero-copy">Créez une vitrine de vente sans compétence de codage, publiez vos produits, partagez votre lien et recevez des commandes depuis WhatsApp. Simple, rapide et pensé pour les commerçants.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="/register.html">Créer mon site</a>
           <a class="btn btn-secondary" href="#solutions">Découvrir les solutions</a>
+          <a class="btn btn-primary" href="/register.html">Créer mon site</a>
         </div>
         <div class="metric-row">
           <div class="metric"><b>04</b><span>étapes simples</span></div>
@@ -455,7 +673,7 @@
 
   <footer class="footer">
     <div class="footer-inner shell">
-      <a class="brand" href="/index.html?portal=1"><span class="brand-mark">S</span>ShopLink</a>
+      <a class="brand" href="/index.html?portal=1"><span class="logo-dot"></span>ShopLink</a>
       <div class="footer-links"><a href="/index.html?portal=1">Accueil</a><a href="/faq.html">FAQ</a><a href="/login.html">Connexion</a></div>
     </div>
   </footer>
