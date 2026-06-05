@@ -5,7 +5,7 @@ const { isInlineImage, storeInlineImageIfNeeded } = require('../services/imageSt
 const { buildBoutiqueUrl } = require('../utils/publicUrl')
 
 const router = express.Router()
-const PUBLIC_PAYLOAD_VERSION = 'public-v4-cdn-images'
+const PUBLIC_PAYLOAD_VERSION = 'public-v5-logo-address-cache'
 const DEFAULT_IMAGE_CDN_BASE_URL = 'https://shoplink-images.arnaudhounkpevi3.workers.dev'
 
 function imageCdnBaseUrl() {
@@ -66,6 +66,10 @@ function weakEtag(site, products = []) {
   const seed = [
     PUBLIC_PAYLOAD_VERSION,
     site.id,
+    site.logo || '',
+    site.address || '',
+    site.slogan || '',
+    site.description || '',
     site.updatedAt || site.publishedAt || site.createdAt || '',
     products.length,
     ...products.map((product) => `${product.id}:${product.updatedAt || product.createdAt || ''}:${product.image || ''}`),

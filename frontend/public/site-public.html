@@ -1118,7 +1118,7 @@
     let currentProducts = []
     let cart = []
     const startTime = Date.now()
-    const PUBLIC_SITE_CACHE_VERSION = 'v3-original-images'
+    const PUBLIC_SITE_CACHE_VERSION = 'v5-logo-address-cache'
 
     if ('serviceWorker' in navigator && window.isSecureContext) {
       navigator.serviceWorker.register('/admin-push-sw.js', { scope: '/' }).catch(() => {})
@@ -1278,7 +1278,7 @@
       }
 
       try {
-        const response = await fetch(`${API_BASE}/public/${slug}`, { cache: 'default' })
+        const response = await fetch(`${API_BASE}/public/${slug}`, { cache: 'no-cache' })
         if (response.status === 304 && renderedCachedSite) return
         const data = await response.json()
         if (!response.ok) throw new Error(data.message || 'Site non trouvé')
