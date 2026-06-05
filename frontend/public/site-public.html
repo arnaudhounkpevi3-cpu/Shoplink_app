@@ -1249,37 +1249,27 @@
     async function loadSite(options = {}) {
       const { silent = false } = options
       const slug = slugFromUrl()
-      let renderedCachedSite = false
       let trackedVisit = false
+      let cachedData = null
 
       if (!silent) {
         const cached = localStorage.getItem(siteCacheKey(slug))
         if (cached) {
           try {
-            const cachedData = JSON.parse(cached)
+            cachedData = JSON.parse(cached)
             if (!cacheMatchesSlug(cachedData, slug) || cacheHasInlineImages(cachedData)) {
               localStorage.removeItem(siteCacheKey(slug))
-            } else if (cachedData.site) {
-              currentSite = cachedData.site
-              currentProducts = cachedData.products || []
-              window.currentSiteId = currentSite.id
-              applyTheme(currentSite)
-              renderSite(currentSite, currentProducts)
-              renderedCachedSite = true
-              trackOfficialSiteVisit(currentSite.id, visitSource())
-              trackWeeklyLinkVisit(currentSite.id, visitSource())
-              trackVisit(currentSite.id)
-              trackedVisit = true
+              cachedData = null
             }
           } catch (_error) {
             localStorage.removeItem(siteCacheKey(slug))
+            cachedData = null
           }
         }
       }
 
       try {
-        const response = await fetch(`${API_BASE}/public/${slug}`, { cache: 'no-cache' })
-        if (response.status === 304 && renderedCachedSite) return
+        const response = await fetch(`${API_BASE}/public/${slug}`, { cache: 'no-store' })
         const data = await response.json()
         if (!response.ok) throw new Error(data.message || 'Site non trouvé')
         currentSite = data.site
@@ -1294,7 +1284,15 @@
         }
         renderSite(currentSite, currentProducts)
       } catch (error) {
-        if (!silent && !renderedCachedSite) {
+        if (!silent && cachedData?.site) {
+          currentSite = cachedData.site
+          currentProducts = cachedData.products || []
+          window.currentSiteId = currentSite.id
+          applyTheme(currentSite)
+          renderSite(currentSite, currentProducts)
+          return
+        }
+        if (!silent) {
           document.getElementById('app').innerHTML = `<div class="error"><strong>Erreur :</strong> ${safe(error.message)}</div>`
         }
       }

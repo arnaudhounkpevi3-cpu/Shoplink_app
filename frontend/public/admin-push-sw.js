@@ -87,7 +87,6 @@ function isCacheableImageRequest(request) {
 }
 
 async function networkFirst(request) {
-  const cache = await caches.open(PUBLIC_CACHE)
   try {
     const headers = new Headers(request.headers)
     headers.set('Cache-Control', 'no-cache')
@@ -101,14 +100,8 @@ async function networkFirst(request) {
       redirect: request.redirect,
       referrer: request.referrer,
     })
-    const response = await fetch(freshRequest)
-    if (response && (response.ok || response.status === 304)) {
-      cache.put(request, response.clone()).catch(() => {})
-    }
-    return response
+    return fetch(freshRequest)
   } catch (_error) {
-    const cached = await cache.match(request)
-    if (cached) return cached
     throw _error
   }
 }

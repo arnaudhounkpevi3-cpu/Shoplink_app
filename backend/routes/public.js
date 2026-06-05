@@ -116,9 +116,9 @@ async function normalizePublicImage(value, options = {}) {
 }
 
 router.get('/:slug', async (req, res) => {
-  res.set('Cache-Control', 'no-cache, max-age=0, must-revalidate')
-  res.set('CDN-Cache-Control', 'no-cache')
-  res.set('Vercel-CDN-Cache-Control', 'no-cache')
+  res.set('Cache-Control', 'no-store, no-cache, max-age=0, must-revalidate')
+  res.set('CDN-Cache-Control', 'no-store')
+  res.set('Vercel-CDN-Cache-Control', 'no-store')
 
   const site = await repo().findSiteBySlug(req.params.slug)
 
