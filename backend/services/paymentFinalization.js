@@ -2,35 +2,7 @@ const { repo } = require('../data/repository')
 const { uniqueSlug } = require('../utils/slug')
 const { getActivityTheme } = require('../utils/activityTheme')
 const { sendAdminPushNotification } = require('./pushNotifications')
-
-function generateSmsReference(date = new Date()) {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  const code = Math.random().toString(36).slice(2, 6).toUpperCase().replace(/[^A-Z0-9]/g, 'X')
-  return `SL-${y}${m}${d}-${code}`
-}
-
-function extractSmsReference(content = '') {
-  const match = String(content || '').match(/SL-\d{8}-[A-Z0-9]{4}/i)
-  return match ? match[0].toUpperCase() : ''
-}
-
-function parseAmountValue(value = '') {
-  const clean = String(value || '').replace(/[^\d]/g, '')
-  return clean ? Number(clean) : 0
-}
-
-function extractSmsAmount(content = '', reference = '') {
-  const text = String(content || '').replace(reference, ' ')
-  const currencyMatch = text.match(/(\d[\d\s.,]*)\s*(?:XOF|FCFA|F\s*CFA|F\b)/i)
-  if (currencyMatch) return parseAmountValue(currencyMatch[1])
-
-  const amounts = [...text.matchAll(/\b\d[\d\s.,]{2,}\b/g)]
-    .map((match) => parseAmountValue(match[0]))
-    .filter((amount) => amount > 0 && amount < 10000000)
-  return amounts.length ? Math.max(...amounts) : 0
-}
+const { sendWelcomeEmailAfterPayment } = require('./welcomeEmail')
 
 function premiumDeliveryDays(payment) {
   return payment?.urgency === 'urgent' || payment?.premiumOrder?.delai === 'urgent' ? 21 : 28
@@ -104,19 +76,14 @@ async function publishAutonomousSite(userId, paymentData) {
   })
 }
 
-async function finalizeSmsPayment(payment, options = {}) {
-  const provider = options.provider || 'sms'
-  const transactionId = options.transactionId || `SMS-${Date.now()}`
-  const phoneNumber = options.phoneNumber || ''
-
+async function finalizePayment(payment, options = {}) {
   await repo().patchPayment(payment.id, {
     status: 'paid',
-    validationStatus: 'sms_validated',
+    validationStatus: options.validationStatus || 'mtn_validated',
     paymentStatus: 'paid',
-    mobileMoneyPhone: phoneNumber,
-    mobileMoneyProvider: provider,
-    transactionId,
-    smsCode: options.reference || '',
+    mobileMoneyPhone: options.phoneNumber || '',
+    mobileMoneyProvider: options.provider || 'mtn',
+    transactionId: options.transactionId || '',
     validatedAt: new Date().toISOString(),
     ...(payment.type === 'premium' && payment.step === 'acompte'
       ? {
@@ -140,19 +107,28 @@ async function finalizeSmsPayment(payment, options = {}) {
     await repo().updateUser(payment.userId, { paiement: true })
   }
 
+  if (payment.userId && repo().findUserById) {
+    const user = await repo().findUserById(payment.userId)
+    if (user) {
+      sendWelcomeEmailAfterPayment(user).catch((error) => {
+        console.warn('Email de bienvenue post-paiement non envoyé:', error.message)
+      })
+    }
+  }
+
   const updatedPayment = await repo().findPaymentById(payment.id)
   sendAdminPushNotification({
-    title: 'Paiement SMS validé',
-    body: `${payment.clientName || payment.email || 'Un client'} · ${Number(payment.amount || 0).toLocaleString('fr-FR')} F · ${options.reference || payment.reference}`,
-    tag: 'shoplink-admin-sms-payment',
-  }).catch((error) => console.warn('Push admin SMS non envoyé:', error.message))
+    title: 'Paiement validé',
+    body: `${payment.clientName || payment.email || 'Un client'} · ${Number(payment.amount || 0).toLocaleString('fr-FR')} F · ${options.transactionId || payment.reference}`,
+    tag: 'shoplink-admin-payment-validated',
+  }).catch((error) => console.warn('Push admin paiement non envoyé:', error.message))
 
   return { payment: updatedPayment, newSite }
 }
 
 module.exports = {
-  extractSmsAmount,
-  extractSmsReference,
-  finalizeSmsPayment,
-  generateSmsReference,
+  finalizePayment,
+  premiumDeliveryTarget,
+  publishAutonomousSite,
+  publishPremiumSite,
 }
