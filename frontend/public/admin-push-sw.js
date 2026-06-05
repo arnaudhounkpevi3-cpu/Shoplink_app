@@ -62,8 +62,8 @@ self.addEventListener('notificationclick', (event) => {
   })())
 })
 
-const PUBLIC_CACHE = 'shoplink-public-cache-v5-logo-address-cache'
-const IMAGE_CACHE = 'shoplink-image-cache-v5-logo-address-cache'
+const PUBLIC_CACHE = 'shoplink-public-cache-v6-fresh-catalog'
+const IMAGE_CACHE = 'shoplink-image-cache-v6-fresh-catalog'
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
@@ -89,7 +89,19 @@ function isCacheableImageRequest(request) {
 async function networkFirst(request) {
   const cache = await caches.open(PUBLIC_CACHE)
   try {
-    const response = await fetch(request)
+    const headers = new Headers(request.headers)
+    headers.set('Cache-Control', 'no-cache')
+    headers.set('Pragma', 'no-cache')
+    const freshRequest = new Request(request.url, {
+      method: request.method,
+      headers,
+      credentials: request.credentials,
+      cache: 'no-store',
+      mode: request.mode,
+      redirect: request.redirect,
+      referrer: request.referrer,
+    })
+    const response = await fetch(freshRequest)
     if (response && (response.ok || response.status === 304)) {
       cache.put(request, response.clone()).catch(() => {})
     }

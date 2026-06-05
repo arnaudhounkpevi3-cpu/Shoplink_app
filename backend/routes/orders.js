@@ -52,14 +52,25 @@ router.post('/public', async (req, res) => {
 
   const products = await repo().listProductsBySiteId(site.id)
   const itemsWithPrices = items.map((item) => {
-    const product = products.find((entry) => entry.id === item.productId)
-    if (!product) return null
+    const requestedProductId = String(item.productId || item.id || '')
+    const requestedName = String(item.name || '').trim().toLowerCase()
+    const requestedPrice = Number(item.price || 0)
+    const product = products.find((entry) => String(entry.id) === requestedProductId)
+      || products.find((entry) => (
+        requestedName
+        && String(entry.name || '').trim().toLowerCase() === requestedName
+        && Number(entry.price || 0) === requestedPrice
+      ))
+
     const quantity = Math.max(1, Number(item.quantity || 1))
-    const unitPrice = Number(product.price || 0)
+    const unitPrice = Number((product ? product.price : item.price) || 0)
+    const name = product ? product.name : String(item.name || '').trim()
+    if (!name || unitPrice <= 0) return null
+
     return {
-      productId: product.id,
-      name: product.name,
-      category: product.category || '',
+      productId: product?.id || requestedProductId || `snapshot-${Date.now()}`,
+      name,
+      category: product?.category || item.category || '',
       quantity,
       unitPrice,
       total: unitPrice * quantity,

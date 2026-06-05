@@ -5,7 +5,7 @@ const { isInlineImage, storeInlineImageIfNeeded } = require('../services/imageSt
 const { buildBoutiqueUrl } = require('../utils/publicUrl')
 
 const router = express.Router()
-const PUBLIC_PAYLOAD_VERSION = 'public-v5-logo-address-cache'
+const PUBLIC_PAYLOAD_VERSION = 'public-v6-fresh-catalog'
 const DEFAULT_IMAGE_CDN_BASE_URL = 'https://shoplink-images.arnaudhounkpevi3.workers.dev'
 
 function imageCdnBaseUrl() {
@@ -116,7 +116,9 @@ async function normalizePublicImage(value, options = {}) {
 }
 
 router.get('/:slug', async (req, res) => {
-  res.set('Cache-Control', 'public, max-age=0, s-maxage=30, stale-while-revalidate=300')
+  res.set('Cache-Control', 'no-cache, max-age=0, must-revalidate')
+  res.set('CDN-Cache-Control', 'no-cache')
+  res.set('Vercel-CDN-Cache-Control', 'no-cache')
 
   const site = await repo().findSiteBySlug(req.params.slug)
 
