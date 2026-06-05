@@ -34,10 +34,16 @@
     .form-input{padding:11px 14px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--bg);font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;width:100%;}
     .form-input:focus{border-color:var(--green);background:#fff;}
     .form-input.err{border-color:#e24b4a;}
+    .phone-fixed-wrap{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:border-color 0.2s,background 0.2s;}
+    .phone-fixed-wrap:focus-within{border-color:var(--green);background:#fff;}
+    .phone-fixed-prefix{height:100%;padding:11px 0 11px 14px;font-size:14px;font-weight:700;color:var(--green);font-family:'DM Sans',sans-serif;white-space:nowrap;}
+    .phone-fixed-input{border:0;background:transparent;outline:none;padding:11px 14px 11px 4px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%;min-width:0;}
+    .phone-fixed-input::placeholder{color:rgba(17,17,17,0.34);}
+    .phone-fixed-wrap.err{border-color:#e24b4a;}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
     .err-msg{font-size:12px;color:#e24b4a;margin-top:3px;}
     .form-hint{font-size:12px;color:var(--soft);margin-top:3px;}
-    .methods-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px;}
+    .methods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
     .method-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
     .method-card:hover{border-color:var(--amber);}
     .method-card.sel{border-color:var(--amber);background:var(--amber-light);}
@@ -118,7 +124,7 @@
       .form-row{grid-template-columns:1fr;gap:12px;}
       .form-label{font-size:12px;}
       .form-input{padding:10px 12px;font-size:13px;}
-      .methods-grid{grid-template-columns:1fr;gap:8px;}
+      .methods-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
       .method-card{padding:12px 8px;}
       .method-icon{font-size:24px;}
       .method-name{font-size:11px;}
@@ -156,7 +162,7 @@
       .form-group{margin-bottom:12px;}
       .form-label{font-size:11px;}
       .form-input{padding:9px 11px;font-size:13px;}
-      .methods-grid{grid-template-columns:1fr;gap:8px;}
+      .methods-grid{grid-template-columns:1fr 1fr;gap:8px;}
       .method-card{padding:10px 8px;}
       .method-icon img{width:32px;height:32px;}
       .method-name{font-size:10px;}
@@ -204,9 +210,12 @@
               <div class="err-msg" id="err-name"></div>
             </div>
             <div class="form-group">
-              <label class="form-label">Numéro MTN à débiter *</label>
-              <input class="form-input" id="pay-phone" placeholder="Sandbox : 46733123450 ou +229 01XXXXXXXX"/>
-              <div class="form-hint">Test sandbox MTN : 46733123450 = succès, 46733123451 = échec, 46733123452 = attente</div>
+              <label class="form-label">Votre numéro de téléphone *</label>
+              <div class="phone-fixed-wrap" id="pay-phone-wrap">
+                <span class="phone-fixed-prefix">+229 01</span>
+                <input class="phone-fixed-input" id="pay-phone" inputmode="numeric" maxlength="8" placeholder="02030405" oninput="formatPhone(this)"/>
+              </div>
+              <div class="form-hint">Le préfixe +229 01 est déjà fixé. Saisissez seulement les 8 derniers chiffres.</div>
               <div class="err-msg" id="err-phone"></div>
             </div>
           </div>
@@ -223,14 +232,22 @@
       <div class="pay-section">
         <div class="pay-section-header">
           <div class="pay-section-num">2</div>
-          <div class="pay-section-title">Paiement MTN Mobile Money</div>
+          <div class="pay-section-title">Choisissez votre opérateur Mobile Money</div>
         </div>
         <div class="pay-section-body">
           <div class="methods-grid">
             <div class="method-card sel" id="mc-mtn" onclick="selectOp('mtn')">
               <div class="method-icon"><img src="images/mtn-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="MTN"></div>
-              <div class="method-name">MTN Mobile Money</div>
+              <div class="method-name">MTN MoMo</div>
               <div class="method-tag">Recommandé</div>
+            </div>
+            <div class="method-card" id="mc-moov" onclick="selectOp('moov')">
+              <div class="method-icon"><img src="images/moov-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Moov"></div>
+              <div class="method-name">Moov Money</div>
+            </div>
+            <div class="method-card" id="mc-celtiis" onclick="selectOp('celtiis')">
+              <div class="method-icon"><img src="images/celtiis-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Celtiis"></div>
+              <div class="method-name">Celtiis</div>
             </div>
           </div>
           <div class="active-op-badge" id="op-badge">🟡 MTN Mobile Money sélectionné</div>
@@ -241,7 +258,7 @@
       <div class="pay-section">
         <div class="pay-section-header">
           <div class="pay-section-num">3</div>
-          <div class="pay-section-title">Confirmez le paiement sur votre téléphone</div>
+          <div class="pay-section-title">Effectuez le transfert puis entrez la référence</div>
         </div>
         <div class="pay-section-body">
           <div class="momo-instructions">
@@ -251,11 +268,11 @@
             </div>
             <div class="owner-number-box">
               <div>
-                <div class="owner-number-label" id="op-label">Numéro MTN à débiter</div>
-                <div class="owner-number" id="owner-number">Votre numéro MTN</div>
-                <div class="owner-name">Une demande de paiement s’affichera sur votre téléphone.</div>
+                <div class="owner-number-label" id="op-label">Numéro MTN MoMo ShopLink</div>
+                <div class="owner-number" id="owner-number">0167163481</div>
+                <div class="owner-name">ShopLink Bénin — Administrateur</div>
               </div>
-              <button class="copy-btn" id="copy-btn" onclick="focusPhoneInput()"><img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Modifier</button>
+              <button class="copy-btn" id="copy-btn" onclick="copyNumber()"><img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier</button>
             </div>
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">📋 Étapes :</div>
             <div class="payment-steps" id="steps-list"></div>
@@ -279,8 +296,8 @@
           <div class="recap-row"><span class="recap-label">Plan</span><span class="recap-val" id="r-plan">ShopLink Starter</span></div>
           <div class="recap-row" id="r-step-row" style="display:none;"><span class="recap-label">Étape</span><span class="recap-val" id="r-step">Acompte 50%</span></div>
           <div class="recap-row"><span class="recap-label">Opérateur</span><span class="recap-val" id="r-op">MTN MoMo</span></div>
-          <div class="recap-row"><span class="recap-label">Téléphone débité</span><span class="recap-val" id="r-number" style="font-family:monospace;color:var(--amber);">—</span></div>
-          <div class="recap-row"><span class="recap-label">Référence MTN</span><span class="recap-val" id="r-reference" style="font-family:monospace;color:var(--green);">Générée après confirmation</span></div>
+          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" id="r-number" style="font-family:monospace;color:var(--amber);">0167163481</span></div>
+          <div class="recap-row"><span class="recap-label">Référence motif</span><span class="recap-val" id="r-reference" style="font-family:monospace;color:var(--green);">Générée après confirmation</span></div>
         </div>
         <div class="recap-total">
           <div class="recap-total-label">À payer</div>
@@ -315,7 +332,7 @@
   <div class="pending-icon">⏳</div>
   <h2 style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:10px;">Demande envoyée !</h2>
   <p style="font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.7;">
-    Confirmez la demande MTN MoMo sur votre téléphone. Votre site sera activé automatiquement dès validation.
+    Votre paiement est en cours de vérification. Votre site sera activé dès validation.
   </p>
   <div class="detail-card">
     <div style="font-size:14px;font-weight:500;color:var(--green-mid);margin-bottom:14px;">Détails de votre demande</div>
@@ -326,9 +343,9 @@
     <div class="detail-row"><span class="detail-label">Statut</span><span style="background:var(--amber-light);color:#854f0b;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:500;">En attente de validation</span></div>
   </div>
   <div style="background:var(--green-light);border:1px solid #9fe1cb;border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;text-align:left;font-size:13px;color:var(--green-mid);line-height:1.8;">
-    ✓ Demande MTN MoMo envoyée sur votre téléphone<br>
-    ✓ Confirmez avec votre code PIN MTN<br>
-    ✓ Activation automatique après paiement réussi
+    ✓ Confirmation email envoyée<br>
+    ✓ Validation sous <strong>15 min à 1 heure</strong> en heures ouvrées<br>
+    ✓ Activation automatique de votre site après validation
   </div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
     <a href="https://wa.me/2290167163481" target="_blank" style="background:#25d366;color:#fff;border-radius:var(--radius);padding:12px 24px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">📲 Suivre sur WhatsApp</a>
@@ -378,16 +395,23 @@
     }
   }
 
-  let currentMtnReferenceId = '';
-  let currentPaymentId = '';
+  // CONFIG
+  const PAYMENT_NUMBERS = {
+    mtn: '0167163481',
+    celtiis: '0147000674',
+  };
   let paymentPollTimer = null;
 
   const OPS = {
-    mtn:  { label:'MTN Mobile Money',  badge:'🟡 MTN Mobile Money sélectionné',  opLabel:'Numéro MTN à débiter' }
+    mtn:  { label:'MTN Mobile Money',  badge:'🟡 MTN Mobile Money sélectionné',  opLabel:'Numéro MTN MoMo ShopLink' },
+    moov: { label:'Moov Money',        badge:'🔵 Moov Money sélectionné',         opLabel:'Numéro Moov Money ShopLink' },
+    celtiis: { label:'Celtiis',              badge:'🟢 Celtiis sélectionné',               opLabel:'Numéro Celtiis ShopLink' }
   };
 
   const STEPS = {
-    mtn:  ['Entrez votre numéro MTN à débiter.', 'Cliquez sur <strong>Confirmer mon paiement</strong>.', 'Confirmez la demande MTN MoMo sur votre téléphone avec votre code PIN.', 'Gardez cette page ouverte : ShopLink vérifie automatiquement le statut.']
+    mtn:  ['Envoyez l’argent sur le numéro MTN affiché','Entrez le montant exact : <strong id="sa">—</strong>','Mettez la référence <strong id="sr">générée après confirmation</strong> dans le motif du transfert','Validez le transfert depuis votre téléphone'],
+    moov: ['Moov n’est pas disponible pour cette validation automatique','Choisissez MTN ou Celtiis pour être validé automatiquement'],
+    celtiis: ['Envoyez l’argent sur le numéro Celtiis affiché','Entrez le montant exact : <strong id="sa">—</strong>','Mettez la référence <strong id="sr">générée après confirmation</strong> dans le motif du transfert','Validez le transfert depuis votre téléphone']
   };
 
   // Paramètres URL
@@ -423,28 +447,40 @@
     document.getElementById('pay-btn').addEventListener('click', submit);
   }
 
+  function formatPhone(input) {
+    let v = input.value.replace(/\D/g,'');
+    if (v.startsWith('22901')) v = v.slice(5);
+    else if (v.startsWith('229')) v = v.slice(3).replace(/^01/, '');
+    else if (v.startsWith('01')) v = v.slice(2);
+    input.value = v.slice(0, 8);
+  }
+
   function toDisplay(phone) {
-    const digits = String(phone || '').replace(/\D/g,'');
-    if (/^4673312345[0-2]$/.test(digits)) return digits;
-    const d = digits.replace(/^229/,'').slice(0,10);
-    return d ? '+229 '+d : '';
+    let d = String(phone || '').replace(/\D/g,'');
+    if (d.startsWith('22901')) d = d.slice(5);
+    else if (d.startsWith('229')) d = d.slice(3).replace(/^01/, '');
+    else if (d.startsWith('01')) d = d.slice(2);
+    return d.slice(0, 8);
   }
 
   function toRaw(phone) {
-    const d = phone.replace(/\D/g,'');
-    if (/^4673312345[0-2]$/.test(d)) return d;
-    return d.startsWith('229') ? d : '229'+d;
+    let d = String(phone || '').replace(/\D/g,'');
+    if (d.startsWith('22901')) return d.slice(0, 13);
+    if (d.startsWith('229')) d = d.slice(3).replace(/^01/, '');
+    if (d.startsWith('01')) d = d.slice(2);
+    return '22901' + d.slice(0, 8);
   }
 
   function selectOp(op) {
+    if (op === 'moov') op = 'mtn';
     selOp = op;
-    ['mtn'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
+    ['mtn','moov','celtiis'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
     document.getElementById('op-badge').textContent   = OPS[op].badge;
     document.getElementById('op-label').textContent   = OPS[op].opLabel;
     document.getElementById('r-op').textContent       = OPS[op].label;
-    const phone = document.getElementById('pay-phone').value.trim() || 'Votre numéro MTN';
-    document.getElementById('owner-number').textContent = phone;
-    document.getElementById('r-number').textContent = phone;
+    const number = PAYMENT_NUMBERS[op] || PAYMENT_NUMBERS.mtn;
+    document.getElementById('owner-number').textContent = number;
+    document.getElementById('r-number').textContent = number;
     renderSteps(op);
   }
 
@@ -459,10 +495,32 @@
     });
     const sa = list.querySelector('#sa');
     if (sa) sa.textContent = payAmt.toLocaleString('fr-FR') + ' FCFA';
+    const sr = list.querySelector('#sr');
+    if (sr) sr.textContent = 'générée après confirmation';
   }
 
-  function focusPhoneInput() {
-    document.getElementById('pay-phone').focus();
+  function copyNumber() {
+    const activeNumber = PAYMENT_NUMBERS[selOp] || PAYMENT_NUMBERS.mtn;
+    const textArea = document.createElement('textarea');
+    textArea.value = activeNumber;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+      document.execCommand('copy');
+      const b = document.getElementById('copy-btn');
+      b.textContent='✓ Copié !'; b.classList.add('copied');
+      setTimeout(()=>{ b.innerHTML='<img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier'; b.classList.remove('copied'); },2500);
+    } catch (err) {
+      const b = document.getElementById('copy-btn');
+      b.textContent = activeNumber;
+      b.classList.add('copied');
+      setTimeout(()=>{ b.innerHTML='<img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier'; b.classList.remove('copied'); },3500);
+    }
+    
+    document.body.removeChild(textArea);
   }
 
   function startTimer(sec) {
@@ -493,10 +551,8 @@
     let ok = true;
 
     if (!name)                          { setE('err-name','Nom requis'); ok=false; } else clrE('err-name');
-    const rawPhone = toRaw(phone);
-    const isSandboxPhone = /^4673312345[0-2]$/.test(rawPhone);
-    const localPhone = rawPhone.replace(/^229/,'');
-    if (!rawPhone || (!isSandboxPhone && (localPhone.length !== 10 || !localPhone.startsWith('01')))) { setE('err-phone','Numéro invalide — utilisez 46733123450 en sandbox ou +229 01XXXXXXXX'); ok=false; } else clrE('err-phone');
+    const localPhone = phone.replace(/\D/g,'');
+    if (!phone || localPhone.length !== 8) { setE('err-phone','Entrez les 8 chiffres après +229 01'); ok=false; } else clrE('err-phone');
     if (!email||!email.includes('@'))   { setE('err-email','Email invalide'); ok=false; } else clrE('err-email');
     
     // Disable token/site validation for testing
@@ -514,7 +570,7 @@
     const body = {
       userId: user.id || 'demo-user',
       name,
-      phone: rawPhone,
+      phone: toRaw(phone),
       email,
       type: payType,
       step: payStep,
@@ -522,12 +578,12 @@
       method: selOp,
       premiumOrder,
       urgency: premiumOrder && premiumOrder.delai ? premiumOrder.delai : 'normal',
-      reference: '',
+      reference: 'PAY-' + Date.now(),
       siteId: site && site.id ? site.id : '',
       siteName: premiumOrder && premiumOrder.company ? premiumOrder.company : (site && site.name ? site.name : ''),
       slogan: site && site.slogan ? site.slogan : '',
       siteDescription: premiumOrder && premiumOrder.activityDescription ? premiumOrder.activityDescription : (site && site.description ? site.description : ''),
-      whatsappNumber: premiumOrder && premiumOrder.whatsapp ? premiumOrder.whatsapp : (site && site.whatsapp ? site.whatsapp : rawPhone),
+      whatsappNumber: premiumOrder && premiumOrder.whatsapp ? premiumOrder.whatsapp : (site && site.whatsapp ? site.whatsapp : toRaw(phone)),
       secondaryPhone: site && site.secondaryPhone ? site.secondaryPhone : '',
       address: premiumOrder ? [premiumOrder.city, premiumOrder.district].filter(Boolean).join(', ') : (site && site.address ? site.address : ''),
       activityType: premiumOrder && premiumOrder.activity ? premiumOrder.activity : (site && site.activityType ? site.activityType : ''),
@@ -539,17 +595,10 @@
     console.log('Sending payment request:', body);
 
     try {
-      const mtnPayload = {
-        ...body,
-        paymentId: existingPaymentId || '',
-        phone: rawPhone,
-      };
-
-      document.getElementById('loading-text').textContent = 'Envoi de la demande MTN MoMo...';
-      const res = await apiFetch('/payments/mtn/request',{
+      const res = await apiFetch('/payments/initiate',{
         method:'POST',
         headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
-        body: JSON.stringify(mtnPayload)
+        body: JSON.stringify(body)
       });
       const data = await res.json();
       console.log('Payment response:', data);
@@ -559,21 +608,16 @@
         document.getElementById('pay-btn').disabled = false;
         return;
       }
-      currentMtnReferenceId = data.referenceId || '';
-      currentPaymentId = data.payment && data.payment.id ? data.payment.id : '';
-      document.getElementById('r-reference').textContent = currentMtnReferenceId || 'En attente';
-      document.getElementById('owner-number').textContent = phone;
-      document.getElementById('r-number').textContent = phone;
+      const paymentReference = data.payment?.reference || body.reference;
+      document.getElementById('r-reference').textContent = paymentReference;
       renderSteps(selOp);
 
       showPending({
         ...body,
-        paymentId: currentPaymentId,
-        paymentReference: currentMtnReferenceId,
-        reference: currentMtnReferenceId,
-        mtnPhone: rawPhone,
+        paymentId: data.payment && data.payment.id ? data.payment.id : '',
+        paymentReference,
+        reference: paymentReference,
       });
-      startPaymentPolling(currentMtnReferenceId, currentPaymentId, rawPhone);
     } catch(e) {
       console.error('Payment error:', e);
       document.getElementById('loading-overlay').classList.remove('show');
@@ -590,59 +634,6 @@
     document.getElementById('p-amount').textContent  = data.amount.toLocaleString('fr-FR')+' FCFA';
     document.getElementById('p-ref').textContent     = data.paymentReference || data.reference;
     localStorage.setItem('shoplink_pending', JSON.stringify({...data, at: new Date().toISOString()}));
-  }
-
-  function startPaymentPolling(referenceId, paymentId, phone) {
-    if (!referenceId || !paymentId) return;
-    if (paymentPollTimer) clearInterval(paymentPollTimer);
-    const token = localStorage.getItem('shoplink_token');
-    const startedAt = Date.now();
-
-    async function checkStatus() {
-      try {
-        if (Date.now() - startedAt > 5 * 60 * 1000) {
-          clearInterval(paymentPollTimer);
-          paymentPollTimer = null;
-          setE('err-ref', 'Temps dépassé. Relancez le paiement si vous n’avez pas reçu de confirmation.');
-          document.getElementById('pay-btn').disabled = false;
-          return;
-        }
-
-        const res = await apiFetch('/payments/mtn/status', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
-          body: JSON.stringify({ referenceId, paymentId, phone }),
-        });
-        const data = await res.json();
-        if (!res.ok) return;
-        if (data.status === 'FAILED' || data.status === 'REJECTED') {
-          clearInterval(paymentPollTimer);
-          paymentPollTimer = null;
-          localStorage.removeItem('shoplink_pending');
-          document.getElementById('pending-page').classList.remove('show');
-          document.getElementById('payment-page').style.display = 'block';
-          setE('err-ref', 'Paiement MTN échoué ou rejeté. Vérifiez le numéro puis réessayez.');
-          document.getElementById('pay-btn').disabled = false;
-          return;
-        }
-        if (data.status === 'SUCCESSFUL' || data.success === true) {
-          clearInterval(paymentPollTimer);
-          paymentPollTimer = null;
-          localStorage.removeItem('shoplink_pending');
-          showSuccess(data.siteSlug || '');
-          setTimeout(() => {
-            const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
-            const account = user.email ? `?account=${encodeURIComponent(String(user.email).toLowerCase())}` : '';
-            window.location.href = `/dashboard-client-shoplink.html${account}`;
-          }, 1800);
-        }
-      } catch (error) {
-        console.warn('Vérification paiement MTN indisponible:', error);
-      }
-    }
-
-    checkStatus();
-    paymentPollTimer = setInterval(checkStatus, 3000);
   }
 
   function showSuccess(slug) {
@@ -667,8 +658,14 @@
     window.open('https://wa.me/?text='+msg,'_blank');
   }
 
-  function setE(id,msg){ document.getElementById(id).textContent=msg; }
-  function clrE(id){ document.getElementById(id).textContent=''; }
+  function setE(id,msg){
+    document.getElementById(id).textContent=msg;
+    if (id === 'err-phone') document.getElementById('pay-phone-wrap')?.classList.add('err');
+  }
+  function clrE(id){
+    document.getElementById(id).textContent='';
+    if (id === 'err-phone') document.getElementById('pay-phone-wrap')?.classList.remove('err');
+  }
 
   init();
 </script>

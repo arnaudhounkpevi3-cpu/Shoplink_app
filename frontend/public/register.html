@@ -527,12 +527,10 @@
         localStorage.setItem('shoplink_order', JSON.stringify(nextOrder));
         localStorage.setItem('shoplink_order:' + accountId, JSON.stringify(nextOrder));
         if (data.pricing) localStorage.setItem('shoplink_pricing', JSON.stringify(data.pricing));
-        console.log('Token stored, redirecting to payment...');
+        sendWelcomeEmail(data.token, data.user && data.user.name ? data.user.name : body.name);
+        console.log('Token stored, redirecting to dashboard...');
         document.getElementById('success-box').classList.add('show');
-        const autonomousAmount = data.pricing && data.pricing.autonomousAmount ? data.pricing.autonomousAmount : 4000;
-        setTimeout(() => {
-          window.location.href = `payment.html?type=autonome&step=full&amount=${encodeURIComponent(autonomousAmount)}`;
-        }, 1500);
+        setTimeout(() => window.location.href = 'dashboard-client-shoplink.html', 1500);
       } else {
         console.error('Registration failed:', data.message);
         showGlobalError(data.message || 'Erreur lors de l\'inscription');

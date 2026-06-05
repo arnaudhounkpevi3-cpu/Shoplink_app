@@ -20,6 +20,7 @@ const SITE_VISIT_COLUMNS = 'id,shop_id,site_id,ip_address,visitor_id,source,visi
 const PRODUCT_EVENT_COLUMNS = 'id,shop_id,site_id,product_id,event_type,ip_address,visitor_id,created_at,event_date,week_number,year'
 const ORDER_COLUMNS = 'id,reference,site_order_number,site_id,site_slug,site_name,seller_user_id,buyer_name,buyer_phone,buyer_address,buyer_note,total_amount,currency,source,status,payment_status,payment_method,payer_name,payer_phone,transaction_reference,payment_submitted_at,cancelled_at,cancellation_source,created_at,updated_at'
 const ORDER_ITEM_COLUMNS = 'id,order_id,product_id,name,category,quantity,unit_price,total,created_at'
+
 const memoryCache = new Map()
 
 function cached(key, ttlMs, producer) {

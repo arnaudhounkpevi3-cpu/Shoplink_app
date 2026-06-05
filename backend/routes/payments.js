@@ -3,12 +3,10 @@ const express = require('express')
 const { repo } = require('../data/repository')
 const { requireAuth } = require('../middleware/auth')
 const { sendAdminPushNotification } = require('../services/pushNotifications')
-const { requestToPay, getPaymentStatus } = require('../services/mtnMomo')
-const { finalizePayment } = require('../services/paymentFinalization')
 
 const router = express.Router()
 
-function paymentPayloadFromBody(req, overrides = {}) {
+function paymentPayloadFromBody(req) {
   const {
     userId,
     type,
@@ -30,6 +28,7 @@ function paymentPayloadFromBody(req, overrides = {}) {
     email,
     name,
     premiumOrder,
+    method,
   } = req.body
 
   const effectiveUserId = req.user?.role === 'admin' && userId ? userId : req.user?.id
@@ -42,8 +41,8 @@ function paymentPayloadFromBody(req, overrides = {}) {
     siteId: siteId || '',
     urgency: urgency || 'normal',
     status: 'pending',
-    validationStatus: 'pending',
-    method: 'mtn',
+    validationStatus: 'manual_pending',
+    method: method || 'manual_mobile_money',
     reference: reference || `PAY-${Date.now()}`,
     clientReference: reference || '',
     siteName,
@@ -62,7 +61,6 @@ function paymentPayloadFromBody(req, overrides = {}) {
     clientName: name || req.user?.name,
     email: email || req.user?.email,
     createdAt: new Date().toISOString(),
-    ...overrides,
   }
 }
 
@@ -107,8 +105,8 @@ router.post('/premium-order', async (req, res) => {
     siteId: null,
     urgency: premiumOrder.delai || 'normal',
     status: 'pending',
-    validationStatus: 'pending',
-    method: 'mtn',
+    validationStatus: 'manual_pending',
+    method: 'manual_mobile_money',
     reference: `PAY-${Date.now()}`,
     clientReference: reference || '',
     siteName: premiumOrder.company || '',
@@ -135,7 +133,7 @@ router.post('/premium-order', async (req, res) => {
     tag: 'shoplink-admin-premium',
   }).catch((error) => console.warn('Push admin premium non envoyé:', error.message))
 
-  return res.status(201).json({ success: true, message: 'Commande premium créée en attente de paiement MTN', payment })
+  return res.status(201).json({ success: true, message: 'Commande premium créée en attente de paiement manuel', payment })
 })
 
 router.post('/initiate', requireAuth, async (req, res) => {
@@ -147,108 +145,16 @@ router.post('/initiate', requireAuth, async (req, res) => {
   try {
     const effectiveUserId = req.user.role === 'admin' && req.body.userId ? req.body.userId : req.user.id
     await assertSiteBelongsToUser(siteId, effectiveUserId, req.user.role)
-    const payment = await repo().createPayment(paymentPayloadFromBody(req, { userId: effectiveUserId }))
+    const payment = await repo().createPayment(paymentPayloadFromBody(req))
     if (!payment) return res.status(500).json({ success: false, message: 'Impossible de créer le paiement' })
 
     sendAdminPushNotification({
-      title: 'Nouveau paiement',
+      title: 'Nouveau paiement en attente',
       body: `${payment.clientName || payment.email || 'Un client'} · ${payment.type || 'paiement'} · ${Number(payment.amount || 0).toLocaleString('fr-FR')} F`,
       tag: 'shoplink-admin-payment',
     }).catch((error) => console.warn('Push admin paiement non envoyé:', error.message))
 
-    return res.status(201).json({ success: true, message: 'Paiement créé en attente de validation MTN MoMo.', payment })
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({ success: false, message: error.message })
-  }
-})
-
-router.post('/mtn/request', requireAuth, async (req, res) => {
-  const { type, amount, siteId, paymentId, phone } = req.body
-  if (!type || amount === undefined) {
-    return res.status(400).json({ success: false, message: 'type et amount sont obligatoires' })
-  }
-
-  try {
-    const effectiveUserId = req.user.role === 'admin' && req.body.userId ? req.body.userId : req.user.id
-    let payment = null
-
-    if (paymentId) {
-      payment = await repo().findPaymentById(paymentId)
-      if (!payment) return res.status(404).json({ success: false, message: 'Paiement introuvable' })
-      if (req.user.role !== 'admin' && payment.userId !== effectiveUserId) {
-        return res.status(403).json({ success: false, message: 'Vous ne pouvez pas payer cette demande' })
-      }
-      if (payment.status !== 'pending') {
-        return res.status(400).json({ success: false, message: 'Ce paiement est déjà traité' })
-      }
-    } else {
-      await assertSiteBelongsToUser(siteId, effectiveUserId, req.user.role)
-      payment = await repo().createPayment(paymentPayloadFromBody(req, {
-        userId: effectiveUserId,
-        validationStatus: 'mtn_pending',
-        reference: `MTN-${Date.now()}`,
-      }))
-      if (!payment) return res.status(500).json({ success: false, message: 'Impossible de créer le paiement' })
-    }
-
-    const mtn = await requestToPay({
-      phone: phone || req.user.phone || '',
-      amount: payment.amount || amount,
-      externalId: payment.id,
-      payerMessage: 'Paiement ShopLink',
-      payeeNote: payment.type === 'premium' ? 'Projet premium ShopLink' : 'Site autonome ShopLink',
-    })
-
-    const patchedPayment = await repo().patchPayment(payment.id, {
-      validationStatus: 'mtn_pending',
-      mobileMoneyPhone: phone || req.user.phone || '',
-      mobileMoneyProvider: 'mtn',
-      transactionId: mtn.referenceId,
-    })
-
-    sendAdminPushNotification({
-      title: 'Paiement MTN initié',
-      body: `${payment.clientName || payment.email || 'Un client'} · ${Number(payment.amount || amount || 0).toLocaleString('fr-FR')} F`,
-      tag: 'shoplink-admin-mtn-pending',
-    }).catch((error) => console.warn('Push admin MTN non envoyé:', error.message))
-
-    return res.status(202).json({ success: true, payment: patchedPayment || payment, referenceId: mtn.referenceId })
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({ success: false, message: error.message })
-  }
-})
-
-router.post('/mtn/status', requireAuth, async (req, res) => {
-  const { referenceId, paymentId, phone } = req.body
-  if (!referenceId || !paymentId) {
-    return res.status(400).json({ success: false, message: 'referenceId et paymentId sont obligatoires' })
-  }
-
-  try {
-    const payment = await repo().findPaymentById(paymentId)
-    if (!payment) return res.status(404).json({ success: false, message: 'Paiement introuvable' })
-    if (req.user.role !== 'admin' && payment.userId !== req.user.id) {
-      return res.status(403).json({ success: false, message: 'Accès refusé à ce paiement' })
-    }
-
-    const mtnStatus = await getPaymentStatus(referenceId)
-    const status = mtnStatus.status || 'PENDING'
-
-    if (status === 'SUCCESSFUL' && payment.status === 'pending') {
-      const result = await finalizePayment(payment, {
-        provider: 'mtn',
-        transactionId: referenceId,
-        phoneNumber: phone || payment.mobileMoneyPhone || '',
-        validationStatus: 'mtn_validated',
-      })
-      return res.json({ success: true, status, payment: result.payment, siteSlug: result.newSite?.slug || null })
-    }
-
-    if ((status === 'FAILED' || status === 'REJECTED') && payment.status === 'pending') {
-      await repo().patchPayment(payment.id, { status: 'failed', validationStatus: 'mtn_failed', transactionId: referenceId })
-    }
-
-    return res.json({ success: status === 'SUCCESSFUL', status, payment, mtn: mtnStatus })
+    return res.status(201).json({ success: true, message: 'Paiement enregistré en attente de validation manuelle.', payment })
   } catch (error) {
     return res.status(error.statusCode || 500).json({ success: false, message: error.message })
   }
@@ -285,15 +191,9 @@ router.post('/callback', async (req, res) => {
   const payment = await repo().findPaymentByReference(reference)
   if (!payment) return res.status(404).json({ success: false, message: 'Paiement introuvable' })
 
-  let result = { payment, newSite: null }
-  if (status === 'paid' || status === 'paye' || status === 'SUCCESSFUL') {
-    result = await finalizePayment(payment, { provider: 'callback', transactionId: transactionId || payment.transactionId, validationStatus: 'callback_validated' })
-  } else {
-    await repo().patchPayment(payment.id, { status, transactionId: transactionId || payment.transactionId })
-    result.payment = await repo().findPaymentById(payment.id)
-  }
-
-  return res.json({ success: true, message: 'Paiement mis à jour', payment: result.payment, newSite: result.newSite })
+  await repo().patchPayment(payment.id, { status, transactionId: transactionId || payment.transactionId })
+  const updatedPayment = await repo().findPaymentById(payment.id)
+  return res.json({ success: true, message: 'Paiement mis à jour', payment: updatedPayment })
 })
 
 module.exports = router
