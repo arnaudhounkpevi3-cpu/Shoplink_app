@@ -6,6 +6,7 @@ const { requireAuth } = require('../middleware/auth')
 const { sanitizeUser } = require('../utils/sanitizeUser')
 
 const router = express.Router()
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase()
 
 // GET user's premium project
 router.get('/premium/my-project', requireAuth, async (req, res) => {
@@ -54,7 +55,16 @@ router.put('/:id', requireAuth, async (req, res) => {
     const updates = {}
     
     if (name) updates.name = name
-    if (email) updates.email = String(email).toLowerCase()
+    if (email) {
+      const normalizedEmail = String(email).trim().toLowerCase()
+      if (normalizedEmail === ADMIN_EMAIL && existingUser.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Cet email est réservé au compte administrateur',
+        })
+      }
+      updates.email = normalizedEmail
+    }
     if (phone) updates.phone = phone
     if (password) {
       updates.passwordHash = await bcrypt.hash(password, 10)

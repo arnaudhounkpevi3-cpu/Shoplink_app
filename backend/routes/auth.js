@@ -10,6 +10,7 @@ const { sendPasswordResetEmail } = require('../services/emailService')
 const { sendAdminPushNotification } = require('../services/pushNotifications')
 
 const router = express.Router()
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase()
 
 function createToken(user) {
   return jwt.sign(
@@ -135,10 +136,19 @@ router.post('/register', async (req, res) => {
     secondaryColor,
   } = req.body
 
-  if (!name || !email || !password) {
+  const normalizedEmail = String(email || '').trim().toLowerCase()
+
+  if (!name || !normalizedEmail || !password) {
     return res.status(400).json({
       success: false,
       message: 'name, email et password sont obligatoires',
+    })
+  }
+
+  if (normalizedEmail === ADMIN_EMAIL) {
+    return res.status(403).json({
+      success: false,
+      message: 'Cet email est réservé au compte administrateur',
     })
   }
 
@@ -149,7 +159,7 @@ router.post('/register', async (req, res) => {
     })
   }
 
-  const existingUser = await repo().findUserByEmail(email)
+  const existingUser = await repo().findUserByEmail(normalizedEmail)
 
   if (existingUser) {
     return res.status(409).json({
@@ -161,7 +171,7 @@ router.post('/register', async (req, res) => {
   const passwordHash = await bcrypt.hash(password, 10)
   const user = await repo().createUser({
     name,
-    email: String(email).toLowerCase(),
+    email: normalizedEmail,
     phone: phone || '',
     role: 'user',
     passwordHash,
@@ -220,15 +230,16 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body
+  const normalizedEmail = String(email || '').trim().toLowerCase()
 
-  if (!email || !password) {
+  if (!normalizedEmail || !password) {
     return res.status(400).json({
       success: false,
       message: 'email et password sont obligatoires',
     })
   }
 
-  const user = await repo().findUserByEmail(email)
+  const user = await repo().findUserByEmail(normalizedEmail)
 
   if (!user) {
     return res.status(401).json({
@@ -247,11 +258,17 @@ router.post('/login', async (req, res) => {
   }
 
   // Admin access is intentionally separated from the public client login.
-  const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase();
-  if (user.role === 'admin' && user.email !== ADMIN_EMAIL.toLowerCase()) {
+  if (user.role === 'admin' && user.email !== ADMIN_EMAIL) {
     return res.status(403).json({
       success: false,
       message: 'Accès admin refusé',
+    })
+  }
+
+  if (normalizedEmail === ADMIN_EMAIL && user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Cet email est réservé au compte administrateur',
     })
   }
 
