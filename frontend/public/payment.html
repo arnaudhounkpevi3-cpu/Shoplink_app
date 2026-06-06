@@ -548,10 +548,6 @@
     const localPhone = phone.replace(/\D/g,'');
     if (!phone || localPhone.length !== 8) { setE('err-phone','Entrez les 8 chiffres après +229 01'); ok=false; } else clrE('err-phone');
     if (!email||!email.includes('@'))   { setE('err-email','Email invalide'); ok=false; } else clrE('err-email');
-    if (payType === 'premium' && !existingPaymentId) {
-      setE('err-ref', 'Reprenez depuis le formulaire Premium afin que les photos soient envoyées au dashboard admin.');
-      ok=false;
-    }
     
     // Disable token/site validation for testing
     // if (!token || !user.id)             { setE('err-ref','Reconnectez-vous avant de payer'); ok=false; }

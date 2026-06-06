@@ -204,13 +204,6 @@ router.post('/deeplink/initiate', requireAuth, async (req, res) => {
     return res.status(400).json({ success: false, message: 'type et amount sont obligatoires' })
   }
 
-  if (type === 'premium' && !paymentId) {
-    return res.status(400).json({
-      success: false,
-      message: 'Reprenez depuis le formulaire Premium afin d’envoyer les photos au dashboard admin.',
-    })
-  }
-
   const telephone = normalizeLocalPhone(phone || req.user.phone || '')
   if (!telephone) {
     return res.status(400).json({ success: false, message: 'Numéro de téléphone obligatoire' })
