@@ -33,14 +33,14 @@ function paymentUrls(network, amount) {
     return {
       number,
       appUrl: `celtiis://transfer?phone=${number}&amount=${value}`,
-      ussdUrl: `tel:*144*1*${number}*${value}%23`,
+      ussdUrl: 'tel:*889%23',
     }
   }
 
   return {
     number,
     appUrl: `mtnmomo://transfer?phone=${number}&amount=${value}`,
-    ussdUrl: `tel:*880*1*${number}*${value}%23`,
+    ussdUrl: 'tel:*880%23',
   }
 }
 
