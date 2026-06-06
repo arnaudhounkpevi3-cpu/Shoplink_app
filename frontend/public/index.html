@@ -8,21 +8,7 @@
     (function () {
       const params = new URLSearchParams(window.location.search);
       if (params.get('portal') === '1') return;
-
-      const isMobile = window.matchMedia('(max-width: 768px)').matches || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-      if (!isMobile) {
-        window.location.replace('/parcours-shoplink.html');
-        return;
-      }
-
-      const mobileEntrySeen = localStorage.getItem('shoplink_mobile_entry_seen') === 'true';
-      if (!mobileEntrySeen) {
-        localStorage.setItem('shoplink_mobile_entry_seen', 'true');
-        window.location.replace('/parcours-shoplink.html');
-        return;
-      }
-
-      window.location.replace('/?portal=1');
+      window.location.replace('/parcours-shoplink.html');
     })();
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
