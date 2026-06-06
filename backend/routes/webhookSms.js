@@ -17,12 +17,21 @@ function normalizePhone(value = '') {
   return digits
 }
 
+function eventTypeFromBody(body = {}) {
+  return String(body.type || body.event || '').trim()
+}
+
 function contentFromBody(body = {}) {
-  return String(body.content || body.message || body.text || body.sms || body.body || '')
+  return String(body.data?.content || body.content || body.message || body.text || body.sms || body.body || '')
 }
 
 function senderFromBody(body = {}) {
-  return String(body.from || body.sender || body.phone || body.address || '')
+  return String(body.data?.contact || body.from || body.sender || body.phone || body.address || '')
+}
+
+function phonesFromContent(content = '') {
+  const matches = String(content || '').match(/(?:\+?229)?\s*0?1?[\s.-]*\d{2}[\s.-]*\d{2}[\s.-]*\d{2}[\s.-]*\d{2}/g) || []
+  return [...new Set(matches.map(normalizePhone).filter(Boolean))]
 }
 
 function extractAmount(content = '') {
@@ -66,6 +75,20 @@ router.get('/', (_req, res) => {
 })
 
 router.post('/', async (req, res) => {
+  const eventType = eventTypeFromBody(req.body)
+  if (eventType && eventType !== 'message.phone.received') {
+    if (repo().createSmsLog) {
+      await repo().createSmsLog({
+        from: senderFromBody(req.body),
+        content: contentFromBody(req.body),
+        status: 'ignored',
+        reason: `Événement ignoré: ${eventType}`,
+        payload: req.body || {},
+      })
+    }
+    return res.status(200).json({ success: false, reason: 'Événement ignoré' })
+  }
+
   const from = senderFromBody(req.body)
   const content = contentFromBody(req.body)
   const telephone = normalizePhone(from)
@@ -92,9 +115,20 @@ router.post('/', async (req, res) => {
     return res.status(200).json({ success: false, reason: 'Pas de montant détecté' })
   }
 
-  const transaction = repo().findPendingSmsTransactionByPhone
+  let transaction = repo().findPendingSmsTransactionByPhone
     ? await repo().findPendingSmsTransactionByPhone(telephone)
     : null
+
+  if (!transaction && repo().findPendingSmsTransactionByPhone) {
+    for (const phone of phonesFromContent(content)) {
+      transaction = await repo().findPendingSmsTransactionByPhone(phone)
+      if (transaction) break
+    }
+  }
+
+  if (!transaction && repo().findPendingSmsTransactionByAmount) {
+    transaction = await repo().findPendingSmsTransactionByAmount(matchedAmount)
+  }
 
   if (!transaction) {
     await log('ignored', 'Transaction non trouvée')

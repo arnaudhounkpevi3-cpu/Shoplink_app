@@ -991,6 +991,19 @@ module.exports = {
     return error || !data ? null : mapSmsTransaction(data)
   },
 
+  async findPendingSmsTransactionByAmount(amount) {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select(TRANSACTION_COLUMNS)
+      .eq('montant', Number(amount || 0))
+      .eq('statut', 'pending')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    return error || !data ? null : mapSmsTransaction(data)
+  },
+
   async updateSmsTransaction(idOrReference, patch) {
     const updates = { updated_at: new Date().toISOString() }
     if (patch.status !== undefined) updates.statut = patch.status

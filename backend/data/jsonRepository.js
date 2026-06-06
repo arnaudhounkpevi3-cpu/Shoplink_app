@@ -283,6 +283,13 @@ module.exports = {
     return transaction ? { ...transaction } : null
   },
 
+  async findPendingSmsTransactionByAmount(amount) {
+    const transaction = [...(state.transactions || [])]
+      .reverse()
+      .find((entry) => Number(entry.amount || 0) === Number(amount || 0) && entry.status === 'pending')
+    return transaction ? { ...transaction } : null
+  },
+
   async updateSmsTransaction(idOrReference, patch) {
     const transaction = (state.transactions || []).find((entry) => entry.id === idOrReference || entry.reference === idOrReference)
     if (!transaction) return null
