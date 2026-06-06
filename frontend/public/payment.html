@@ -586,13 +586,20 @@
       logo: premiumOrder && premiumOrder.logo && premiumOrder.logo.src ? premiumOrder.logo.src : (site && site.logo ? site.logo : '')
     };
 
-    console.log('Sending payment request:', body);
+    const effectivePaymentId = existingPaymentId || (premiumOrder && premiumOrder.paymentId) || '';
+    const requestBody = {
+      ...body,
+      paymentId: effectivePaymentId,
+      network: selOp,
+    };
+
+    console.log('Sending payment request:', requestBody);
 
     try {
       const res = await apiFetch('/payments/deeplink/initiate',{
         method:'POST',
         headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
-        body: JSON.stringify(body)
+        body: JSON.stringify(requestBody)
       });
       const data = await res.json();
       console.log('Payment response:', data);
@@ -607,7 +614,7 @@
       renderSteps(selOp);
 
       showPending({
-        ...body,
+        ...requestBody,
         paymentId: data.payment && data.payment.id ? data.payment.id : '',
         paymentReference,
         reference: paymentReference,

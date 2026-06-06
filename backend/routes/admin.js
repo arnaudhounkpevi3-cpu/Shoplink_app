@@ -77,6 +77,81 @@ function toPremiumProject(payment) {
   }
 }
 
+function premiumProjectKey(project = {}) {
+  return [
+    String(project.clientEmail || '').trim().toLowerCase(),
+    String(project.company || '').trim().toLowerCase(),
+    String(project.whatsapp || '').replace(/\D/g, ''),
+    String(project.siteType || '').trim().toLowerCase(),
+    Number(project.totalAmount || 0),
+  ].join('|')
+}
+
+function premiumProjectCompleteness(project = {}) {
+  const order = project.premiumOrder || {}
+  const productPhotos = (order.products || []).reduce((total, product) => {
+    return total + (product.photos || []).filter((photo) => photo && photo.src).length
+  }, 0)
+
+  return [
+    project.depositPaid ? 8 : 0,
+    order.logo?.src ? 10 : 0,
+    productPhotos * 12,
+    (order.products || []).length * 2,
+    order.company ? 2 : 0,
+    order.manager ? 2 : 0,
+    order.email ? 2 : 0,
+    order.activityDescription ? 2 : 0,
+    order.notes ? 1 : 0,
+  ].reduce((sum, value) => sum + value, 0)
+}
+
+function mergePremiumProject(primary, secondary) {
+  const complete = premiumProjectCompleteness(primary) >= premiumProjectCompleteness(secondary) ? primary : secondary
+  const other = complete === primary ? secondary : primary
+
+  if (other.depositPaid && !complete.depositPaid) {
+    return {
+      ...complete,
+      depositPaid: other.depositPaid,
+      paymentStatus: other.paymentStatus,
+      validationStatus: other.validationStatus,
+      status: other.status,
+      progress: other.progress,
+      depositDate: other.depositDate,
+      validatedAt: other.validatedAt,
+      transactionId: other.transactionId,
+      deliveryStartedAt: other.deliveryStartedAt,
+      deliveryTargetAt: other.deliveryTargetAt,
+      countdown: other.countdown,
+      reference: other.reference || complete.reference,
+      paymentId: other.paymentId || complete.paymentId,
+    }
+  }
+
+  return complete
+}
+
+function dedupePremiumProjects(projects = []) {
+  const grouped = new Map()
+  const passthrough = []
+
+  projects.forEach((project) => {
+    const key = premiumProjectKey(project)
+    if (!key.replace(/\|/g, '')) {
+      passthrough.push(project)
+      return
+    }
+
+    const existing = grouped.get(key)
+    grouped.set(key, existing ? mergePremiumProject(existing, project) : project)
+  })
+
+  return [...grouped.values(), ...passthrough].sort(
+    (a, b) => new Date(b.createdAt || b.validatedAt || 0) - new Date(a.createdAt || a.validatedAt || 0),
+  )
+}
+
 router.get('/summary', async (_req, res) => {
   // Use Supabase-specific summary function if available
   if (repo().getSummary) {
@@ -287,14 +362,14 @@ router.get('/tickets', async (req, res) => {
 router.get('/premium-projects', async (_req, res) => {
   try {
     const payments = await repo().listPayments()
-    const projects = payments
+    const projects = dedupePremiumProjects(payments
       .filter((payment) => payment.type === 'premium')
       .sort(
         (a, b) =>
           new Date(b.createdAt || b.validatedAt || 0) -
           new Date(a.createdAt || a.validatedAt || 0),
       )
-      .map(toPremiumProject)
+      .map(toPremiumProject))
 
     return res.json({
       success: true,
