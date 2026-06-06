@@ -2203,6 +2203,41 @@
       return productForm.category?.value || '';
     }
 
+    function productStableKey(product = {}) {
+      return [
+        String(product.backendId || product.id || '').trim(),
+        String(product.name || '').trim().toLowerCase(),
+        String(product.category || '').trim().toLowerCase(),
+        Number(product.price || 0),
+      ].join('|');
+    }
+
+    function productContentKey(product = {}) {
+      return [
+        String(product.name || '').trim().toLowerCase(),
+        String(product.category || '').trim().toLowerCase(),
+        Number(product.price || 0),
+      ].join('|');
+    }
+
+    function dedupeProductsForSync(products = []) {
+      const seenStable = new Set();
+      const seenContent = new Set();
+      const next = [];
+
+      products.forEach((product) => {
+        if (!product || !String(product.name || '').trim()) return;
+        const stableKey = productStableKey(product);
+        const contentKey = productContentKey(product);
+        if (seenStable.has(stableKey) || seenContent.has(contentKey)) return;
+        seenStable.add(stableKey);
+        seenContent.add(contentKey);
+        next.push(product);
+      });
+
+      return next;
+    }
+
     function resetProductForm() {
       const productForm = getProductForm();
       [productForm.name, productForm.price, productForm.description].forEach(field => { if (field) field.value = ''; });
@@ -2367,7 +2402,16 @@
       };
 
       if (editingProductRow) {
-        const nextProducts = getProductRows().map((row) => row === editingProductRow ? nextProduct : productFromRow(row));
+        const originalProduct = productFromRow(editingProductRow);
+        const originalStableKey = productStableKey(originalProduct);
+        const originalContentKey = productContentKey(originalProduct);
+        const nextProducts = dedupeProductsForSync([
+          nextProduct,
+          ...getProductRows()
+            .filter((row) => row !== editingProductRow)
+            .map(productFromRow)
+            .filter((product) => productStableKey(product) !== originalStableKey && productContentKey(product) !== originalContentKey),
+        ]);
         try {
           await syncLocalProductsToBackend({ strict: true, productsOverride: nextProducts });
           notify('Produit modifié et publié sur votre site.');
@@ -2377,7 +2421,7 @@
         }
         recordClientEvent('product_updated', `Produit modifié : ${name}`, { productName: name, category, price, description });
       } else {
-        const nextProducts = [nextProduct, ...getProductRows().map(productFromRow)];
+        const nextProducts = dedupeProductsForSync([nextProduct, ...getProductRows().map(productFromRow)]);
         try {
           await syncLocalProductsToBackend({ strict: true, productsOverride: nextProducts });
           notify('Produit publié sur votre site.');
@@ -2930,9 +2974,10 @@
       const sourceProducts = Array.isArray(productsOverride)
         ? productsOverride
         : getProductRows().map(productFromRow);
+      const dedupedSourceProducts = dedupeProductsForSync(sourceProducts);
 
       const rawLocalProducts = await Promise.all(
-        sourceProducts.map(async (product) => {
+        dedupedSourceProducts.map(async (product) => {
           return {
             name: product.name,
             id: product.backendId || product.id || '',
