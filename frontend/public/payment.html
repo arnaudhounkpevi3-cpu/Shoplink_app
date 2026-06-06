@@ -43,7 +43,7 @@
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
     .err-msg{font-size:12px;color:#e24b4a;margin-top:3px;}
     .form-hint{font-size:12px;color:var(--soft);margin-top:3px;}
-    .methods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+    .methods-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
     .method-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
     .method-card:hover{border-color:var(--amber);}
     .method-card.sel{border-color:var(--amber);background:var(--amber-light);}
@@ -124,7 +124,7 @@
       .form-row{grid-template-columns:1fr;gap:12px;}
       .form-label{font-size:12px;}
       .form-input{padding:10px 12px;font-size:13px;}
-      .methods-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+      .methods-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
       .method-card{padding:12px 8px;}
       .method-icon{font-size:24px;}
       .method-name{font-size:11px;}
@@ -239,10 +239,6 @@
               <div class="method-icon"><img src="images/mtn-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="MTN"></div>
               <div class="method-name">MTN MoMo</div>
               <div class="method-tag">Recommandé</div>
-            </div>
-            <div class="method-card" id="mc-moov" onclick="selectOp('moov')">
-              <div class="method-icon"><img src="images/moov-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Moov"></div>
-              <div class="method-name">Moov Money</div>
             </div>
             <div class="method-card" id="mc-celtiis" onclick="selectOp('celtiis')">
               <div class="method-icon"><img src="images/celtiis-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Celtiis"></div>
@@ -403,21 +399,19 @@
 
   const OPS = {
     mtn:  { label:'MTN Mobile Money',  badge:'🟡 MTN Mobile Money sélectionné',  opLabel:'Numéro MTN MoMo ShopLink' },
-    moov: { label:'Moov Money',        badge:'🔵 Moov Money sélectionné',         opLabel:'Numéro Moov Money ShopLink' },
-    celtiis: { label:'Celtiis',              badge:'🟢 Celtiis sélectionné',               opLabel:'Numéro Celtiis ShopLink' }
+    celtiis: { label:'Celtiis Cash',              badge:'🟢 Celtiis Cash sélectionné',               opLabel:'Numéro Celtiis Cash ShopLink' }
   };
 
   const STEPS = {
-    mtn:  ['Envoyez l’argent sur le numéro MTN affiché','Entrez le montant exact : <strong id="sa">—</strong>','Mettez la référence <strong id="sr">générée après confirmation</strong> dans le motif du transfert','Validez le transfert depuis votre téléphone'],
-    moov: ['Moov n’est pas disponible pour cette validation automatique','Choisissez MTN ou Celtiis pour être validé automatiquement'],
-    celtiis: ['Envoyez l’argent sur le numéro Celtiis affiché','Entrez le montant exact : <strong id="sa">—</strong>','Mettez la référence <strong id="sr">générée après confirmation</strong> dans le motif du transfert','Validez le transfert depuis votre téléphone']
+    mtn:  ['Cliquez sur <strong>Confirmer mon paiement</strong> pour enregistrer votre demande','L’application MTN MoMo ou le code USSD s’ouvrira automatiquement','Envoyez le montant exact : <strong id="sa">—</strong>','Revenez sur cette page après paiement : ShopLink vérifiera le SMS de confirmation'],
+    celtiis: ['Cliquez sur <strong>Confirmer mon paiement</strong> pour enregistrer votre demande','L’application Celtiis ou le code USSD s’ouvrira automatiquement','Envoyez le montant exact : <strong id="sa">—</strong>','Revenez sur cette page après paiement : ShopLink vérifiera le SMS de confirmation']
   };
 
   // Paramètres URL
   const P       = new URLSearchParams(window.location.search);
   const payType = P.get('type')   || 'autonome';
   const payStep = P.get('step')   || 'full';
-  const payAmt  = parseInt(P.get('amount')) || 4000;
+  const payAmt  = parseInt(P.get('amount')) || 5000;
   const existingPaymentId = P.get('paymentId') || '';
   let   selOp   = 'mtn';
 
@@ -471,9 +465,8 @@
   }
 
   function selectOp(op) {
-    if (op === 'moov') op = 'mtn';
     selOp = op;
-    ['mtn','moov','celtiis'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
+    ['mtn','celtiis'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
     document.getElementById('op-badge').textContent   = OPS[op].badge;
     document.getElementById('op-label').textContent   = OPS[op].opLabel;
     document.getElementById('r-op').textContent       = OPS[op].label;
@@ -594,7 +587,7 @@
     console.log('Sending payment request:', body);
 
     try {
-      const res = await apiFetch('/payments/initiate',{
+      const res = await apiFetch('/payments/deeplink/initiate',{
         method:'POST',
         headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
         body: JSON.stringify(body)
@@ -607,7 +600,7 @@
         document.getElementById('pay-btn').disabled = false;
         return;
       }
-      const paymentReference = data.payment?.reference || body.reference;
+      const paymentReference = data.transaction?.reference || data.payment?.reference || body.reference;
       document.getElementById('r-reference').textContent = paymentReference;
       renderSteps(selOp);
 
@@ -617,12 +610,65 @@
         paymentReference,
         reference: paymentReference,
       });
+      openDeepLinkPayment(data);
+      startPaymentPolling(paymentReference);
     } catch(e) {
       console.error('Payment error:', e);
       document.getElementById('loading-overlay').classList.remove('show');
       setE('err-ref','Erreur de connexion au serveur: ' + e.message);
       document.getElementById('pay-btn').disabled = false;
     }
+  }
+
+  function openDeepLinkPayment(data) {
+    if (!data || (!data.appUrl && !data.ussdUrl)) return;
+    const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    if (!isMobile) return;
+
+    if (data.appUrl) window.location.href = data.appUrl;
+    if (data.ussdUrl) {
+      setTimeout(() => {
+        window.location.href = data.ussdUrl;
+      }, 1800);
+    }
+  }
+
+  function startPaymentPolling(reference) {
+    if (!reference) return;
+    if (paymentPollTimer) clearInterval(paymentPollTimer);
+    const token = localStorage.getItem('shoplink_token');
+    const startedAt = Date.now();
+
+    async function checkStatus() {
+      try {
+        if (Date.now() - startedAt > 5 * 60 * 1000) {
+          clearInterval(paymentPollTimer);
+          paymentPollTimer = null;
+          setE('err-ref', 'Temps dépassé. Si vous avez payé, contactez le support avec votre référence.');
+          return;
+        }
+
+        const res = await apiFetch('/payments/deeplink/status/' + encodeURIComponent(reference), {
+          headers: token ? { Authorization: 'Bearer ' + token } : {},
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) return;
+        if (data.transaction && data.transaction.status === 'success') {
+          clearInterval(paymentPollTimer);
+          paymentPollTimer = null;
+          localStorage.removeItem('shoplink_pending');
+          showSuccess(data.siteSlug || '');
+          setTimeout(() => {
+            window.location.href = '/dashboard-client-shoplink.html';
+          }, 1800);
+        }
+      } catch (error) {
+        console.warn('Vérification paiement indisponible:', error);
+      }
+    }
+
+    checkStatus();
+    paymentPollTimer = setInterval(checkStatus, 3000);
   }
 
   function showPending(data) {
