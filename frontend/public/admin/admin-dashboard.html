@@ -829,17 +829,17 @@
     <div id="page-payments" class="page">
       <div class="topbar"><div><div class="page-title">Paiements</div><div class="page-sub">Historique complet · acomptes · soldes</div></div><button class="btn" onclick="exportPayments()">📤 Exporter</button></div>
       <div class="metrics">
-        <div class="metric-card"><div class="metric-label">Total encaissé</div><div class="metric-value">98 000</div><div class="metric-sub">FCFA</div></div>
-        <div class="metric-card"><div class="metric-label">Acomptes reçus</div><div class="metric-value">30 000</div><div class="metric-sub">FCFA · 6 projets</div></div>
-        <div class="metric-card"><div class="metric-label">Soldes restants</div><div class="metric-value">30 000</div><div class="metric-sub">FCFA à encaisser</div></div>
-        <div class="metric-card"><div class="metric-label">En attente</div><div class="metric-value">3</div><div class="metric-sub">paiements à valider</div></div>
+        <div class="metric-card"><div class="metric-label">Total encaissé</div><div class="metric-value" id="pay-metric-total">0</div><div class="metric-sub">FCFA</div></div>
+        <div class="metric-card"><div class="metric-label">Acomptes reçus</div><div class="metric-value" id="pay-metric-deposits">0</div><div class="metric-sub" id="pay-metric-deposits-sub">FCFA · 0 projet</div></div>
+        <div class="metric-card"><div class="metric-label">Soldes restants</div><div class="metric-value" id="pay-metric-remaining">0</div><div class="metric-sub">FCFA à encaisser</div></div>
+        <div class="metric-card"><div class="metric-label">En attente</div><div class="metric-value" id="pay-metric-pending">0</div><div class="metric-sub">paiements à valider</div></div>
       </div>
       <div class="section-card">
         <div class="tab-bar">
           <div class="tab active" onclick="switchTabP('pay-all',this)">Tous les paiements</div>
           <div class="tab" onclick="switchTabP('pay-auto',this)">Création autonome</div>
           <div class="tab" onclick="switchTabP('pay-prem',this)">Service premium</div>
-          <div class="tab" onclick="switchTabP('pay-pending',this)">En attente (3)</div>
+          <div class="tab" id="pay-pending-tab" onclick="switchTabP('pay-pending',this)">En attente (0)</div>
         </div>
         <div id="pay-all" class="tab-panel active">
         <table><thead><tr><th>Client</th><th>Type</th><th>Montant</th><th>Transaction</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
@@ -1073,6 +1073,29 @@
 
   function fmtMoney(value) {
     return Number(value || 0).toLocaleString('fr-FR') + ' F';
+  }
+
+  function fmtMetricNumber(value) {
+    return Number(value || 0).toLocaleString('fr-FR');
+  }
+
+  function updatePaymentMetrics(metrics = {}) {
+    const total = document.getElementById('pay-metric-total');
+    const deposits = document.getElementById('pay-metric-deposits');
+    const depositsSub = document.getElementById('pay-metric-deposits-sub');
+    const remaining = document.getElementById('pay-metric-remaining');
+    const pending = document.getElementById('pay-metric-pending');
+    const pendingTab = document.getElementById('pay-pending-tab');
+
+    if (total) total.textContent = fmtMetricNumber(metrics.totalCollected);
+    if (deposits) deposits.textContent = fmtMetricNumber(metrics.depositsReceived);
+    if (depositsSub) {
+      const count = Number(metrics.depositProjectCount || 0);
+      depositsSub.textContent = `FCFA · ${count} projet${count > 1 ? 's' : ''}`;
+    }
+    if (remaining) remaining.textContent = fmtMetricNumber(metrics.remainingBalances);
+    if (pending) pending.textContent = fmtMetricNumber(metrics.pendingCount);
+    if (pendingTab) pendingTab.textContent = `En attente (${Number(metrics.pendingCount || 0)})`;
   }
 
   function fmtDate(value) {
@@ -2085,6 +2108,7 @@
           const badgePending = document.getElementById('badge-pending');
           if (badgeUsers) badgeUsers.textContent = data.users || 0;
           if (badgePending) badgePending.textContent = '0';
+          updatePaymentMetrics(data.paymentMetrics || {});
         }
       }
 

@@ -152,10 +152,32 @@ function dedupePremiumProjects(projects = []) {
   )
 }
 
+function paymentMetricsFromPayments(payments = []) {
+  const paidPayments = payments.filter((payment) => isPaid(payment.status))
+  const premiumProjects = dedupePremiumProjects(payments
+    .filter((payment) => payment.type === 'premium')
+    .map(toPremiumProject))
+  const paidPremiumProjects = premiumProjects.filter((project) => project.depositPaid)
+  const pendingPayments = payments.filter((payment) => String(payment.status || 'pending').toLowerCase() === 'pending')
+
+  return {
+    totalCollected: paidPayments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0),
+    depositsReceived: paidPremiumProjects.reduce((sum, project) => sum + Number(project.depositAmount || 0), 0),
+    depositProjectCount: paidPremiumProjects.length,
+    remainingBalances: paidPremiumProjects.reduce((sum, project) => sum + Number(project.remainingAmount || 0), 0),
+    pendingCount: pendingPayments.length,
+  }
+}
+
 router.get('/summary', async (_req, res) => {
   // Use Supabase-specific summary function if available
   if (repo().getSummary) {
     const summary = await repo().getSummary()
+    const payments = await repo().listPayments()
+    summary.data = {
+      ...(summary.data || {}),
+      paymentMetrics: paymentMetricsFromPayments(payments),
+    }
     return res.json(summary)
   }
 
@@ -198,6 +220,7 @@ router.get('/summary', async (_req, res) => {
       revenue: payments
         .filter((p) => isPaid(p.status))
         .reduce((sum, p) => sum + (p.amount || 0), 0),
+      paymentMetrics: paymentMetricsFromPayments(payments),
       countdown,
     },
   })
