@@ -303,10 +303,28 @@ router.get('/sites', async (req, res) => {
   const { page, limit } = pageParams(req)
   const sitesPage = repo().listSitesPage ? await repo().listSitesPage(page, limit) : null
   const sites = sitesPage ? sitesPage.items : (await repo().listSites()).slice((page - 1) * limit, page * limit)
+
+  const enrichedSites = await Promise.all(sites.map(async (site) => {
+    const [products, tracking] = await Promise.all([
+      repo().listProductsBySiteId ? repo().listProductsBySiteId(site.id).catch(() => []) : [],
+      repo().getTrackingBySite ? repo().getTrackingBySite(site.id).catch(() => []) : [],
+    ])
+
+    const productCount = (products || []).filter((product) => product.visible !== false && product.status !== 'hidden').length
+    const views = (tracking || []).filter((event) => event.type === 'visit').length
+
+    return {
+      ...site,
+      productCount,
+      productsCount: productCount,
+      views,
+    }
+  }))
+
   res.json({
     success: true,
-    sites,
-    pagination: paginationPayload(sitesPage, sites),
+    sites: enrichedSites,
+    pagination: paginationPayload(sitesPage, enrichedSites),
   })
 })
 
