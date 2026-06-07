@@ -169,14 +169,59 @@ function paymentMetricsFromPayments(payments = []) {
   }
 }
 
+async function globalStatsFromData(users = [], sites = [], payments = []) {
+  const paidPayments = payments.filter((payment) => isPaid(payment.status))
+  const autonomousRevenue = paidPayments
+    .filter((payment) => payment.type === 'autonome')
+    .reduce((sum, payment) => sum + Number(payment.amount || 0), 0)
+
+  const premiumProjects = dedupePremiumProjects(payments
+    .filter((payment) => payment.type === 'premium')
+    .map(toPremiumProject))
+  const paidPremiumProjects = premiumProjects.filter((project) => project.depositPaid)
+  const premiumDepositsRevenue = paidPremiumProjects.reduce((sum, project) => sum + Number(project.depositAmount || 0), 0)
+  const premiumBalancesRevenue = paidPayments
+    .filter((payment) => payment.type === 'premium' && ['solde', 'balance', 'remaining'].includes(String(payment.step || '').toLowerCase()))
+    .reduce((sum, payment) => sum + Number(payment.amount || 0), 0)
+
+  const paidUserIds = new Set(paidPayments.map((payment) => payment.userId).filter(Boolean))
+  const conversionRate = users.length ? Math.round((paidUserIds.size / users.length) * 100) : 0
+
+  let whatsappClicks = 0
+  if (repo().getTrackingBySite) {
+    const siteTrackings = await Promise.all(
+      sites.map((site) => repo().getTrackingBySite(site.id).catch(() => [])),
+    )
+    whatsappClicks = siteTrackings
+      .flat()
+      .filter((event) => event.type === 'whatsapp_click')
+      .length
+  }
+
+  return {
+    conversionRate,
+    whatsappClicks,
+    autonomousSites: sites.length,
+    totalUsers: users.length,
+    premiumSites: premiumProjects.length,
+    autonomousRevenue,
+    premiumDepositsRevenue,
+    premiumBalancesRevenue,
+    totalRevenue: autonomousRevenue + premiumDepositsRevenue + premiumBalancesRevenue,
+  }
+}
+
 router.get('/summary', async (_req, res) => {
   // Use Supabase-specific summary function if available
   if (repo().getSummary) {
     const summary = await repo().getSummary()
     const payments = await repo().listPayments()
+    const users = await repo().listUsers()
+    const sites = await repo().listSites()
     summary.data = {
       ...(summary.data || {}),
       paymentMetrics: paymentMetricsFromPayments(payments),
+      globalStats: await globalStatsFromData(users, sites, payments),
     }
     return res.json(summary)
   }
@@ -221,6 +266,7 @@ router.get('/summary', async (_req, res) => {
         .filter((p) => isPaid(p.status))
         .reduce((sum, p) => sum + (p.amount || 0), 0),
       paymentMetrics: paymentMetricsFromPayments(payments),
+      globalStats: await globalStatsFromData(users, sites, payments),
       countdown,
     },
   })

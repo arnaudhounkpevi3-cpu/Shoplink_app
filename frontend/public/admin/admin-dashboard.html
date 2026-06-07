@@ -927,18 +927,18 @@
     <div id="page-stats" class="page">
       <div class="topbar"><div><div class="page-title">Statistiques globales</div><div class="page-sub">Performance de la plateforme</div></div></div>
       <div class="metrics">
-        <div class="metric-card"><div class="metric-label">Taux de conversion</div><div class="metric-value">0%</div><div class="metric-sub">Inscrits → Payants</div></div>
-        <div class="metric-card"><div class="metric-label">Clics WhatsApp totaux</div><div class="metric-value">0</div><div class="metric-sub">Sur tous les sites</div></div>
-        <div class="metric-card"><div class="metric-label">Sites autonomes</div><div class="metric-value">0</div><div class="metric-sub">sur 0 inscrits</div></div>
-        <div class="metric-card"><div class="metric-label">Sites premium</div><div class="metric-value">0</div><div class="metric-sub">commandés</div></div>
+        <div class="metric-card"><div class="metric-label">Taux de conversion</div><div class="metric-value" id="stats-conversion">0%</div><div class="metric-sub">Inscrits → Payants</div></div>
+        <div class="metric-card"><div class="metric-label">Clics WhatsApp totaux</div><div class="metric-value" id="stats-whatsapp-clicks">0</div><div class="metric-sub">Sur tous les sites</div></div>
+        <div class="metric-card"><div class="metric-label">Sites autonomes</div><div class="metric-value" id="stats-autonomous-sites">0</div><div class="metric-sub" id="stats-autonomous-sub">sur 0 inscrits</div></div>
+        <div class="metric-card"><div class="metric-label">Sites premium</div><div class="metric-value" id="stats-premium-sites">0</div><div class="metric-sub">commandés</div></div>
       </div>
       <div class="section-card">
         <div class="card-header"><span class="card-title">Revenus par type de service</span></div>
         <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
-          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Création autonome</span><span style="font-weight:500;color:var(--brand);">0 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:0%;"></div></div></div>
-          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Service premium (acomptes)</span><span style="font-weight:500;color:var(--accent);">0 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill amber" style="width:0%;"></div></div></div>
-          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Premium soldes encaissés</span><span style="font-weight:500;color:var(--brand);">0 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:0%;"></div></div></div>
-          <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;font-size:14px;font-weight:500;"><span>Total encaissé</span><span style="color:var(--brand);">0 FCFA</span></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Création autonome</span><span id="stats-revenue-auto" style="font-weight:500;color:var(--brand);">0 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill" id="stats-revenue-auto-bar" style="width:0%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Service premium (acomptes)</span><span id="stats-revenue-premium-deposits" style="font-weight:500;color:var(--accent);">0 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill amber" id="stats-revenue-premium-deposits-bar" style="width:0%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>Premium soldes encaissés</span><span id="stats-revenue-premium-balances" style="font-weight:500;color:var(--brand);">0 FCFA</span></div><div class="progress-wrap" style="height:8px;"><div class="progress-fill" id="stats-revenue-premium-balances-bar" style="width:0%;"></div></div></div>
+          <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;font-size:14px;font-weight:500;"><span>Total encaissé</span><span id="stats-revenue-total" style="color:var(--brand);">0 FCFA</span></div>
         </div>
       </div>
     </div>
@@ -1096,6 +1096,44 @@
     if (remaining) remaining.textContent = fmtMetricNumber(metrics.remainingBalances);
     if (pending) pending.textContent = fmtMetricNumber(metrics.pendingCount);
     if (pendingTab) pendingTab.textContent = `En attente (${Number(metrics.pendingCount || 0)})`;
+  }
+
+  function setProgressWidth(id, value, total) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    const percent = total > 0 ? Math.min(100, Math.round((Number(value || 0) / total) * 100)) : 0;
+    element.style.width = `${percent}%`;
+  }
+
+  function updateGlobalStats(stats = {}) {
+    const conversion = document.getElementById('stats-conversion');
+    const whatsappClicks = document.getElementById('stats-whatsapp-clicks');
+    const autonomousSites = document.getElementById('stats-autonomous-sites');
+    const autonomousSub = document.getElementById('stats-autonomous-sub');
+    const premiumSites = document.getElementById('stats-premium-sites');
+    const autoRevenue = document.getElementById('stats-revenue-auto');
+    const premiumDeposits = document.getElementById('stats-revenue-premium-deposits');
+    const premiumBalances = document.getElementById('stats-revenue-premium-balances');
+    const totalRevenue = document.getElementById('stats-revenue-total');
+
+    const total = Number(stats.totalRevenue || 0);
+    const autonomousRevenue = Number(stats.autonomousRevenue || 0);
+    const premiumDepositsRevenue = Number(stats.premiumDepositsRevenue || 0);
+    const premiumBalancesRevenue = Number(stats.premiumBalancesRevenue || 0);
+
+    if (conversion) conversion.textContent = `${Number(stats.conversionRate || 0)}%`;
+    if (whatsappClicks) whatsappClicks.textContent = fmtMetricNumber(stats.whatsappClicks || 0);
+    if (autonomousSites) autonomousSites.textContent = fmtMetricNumber(stats.autonomousSites || 0);
+    if (autonomousSub) autonomousSub.textContent = `sur ${fmtMetricNumber(stats.totalUsers || 0)} inscrit${Number(stats.totalUsers || 0) > 1 ? 's' : ''}`;
+    if (premiumSites) premiumSites.textContent = fmtMetricNumber(stats.premiumSites || 0);
+    if (autoRevenue) autoRevenue.textContent = `${fmtMetricNumber(autonomousRevenue)} FCFA`;
+    if (premiumDeposits) premiumDeposits.textContent = `${fmtMetricNumber(premiumDepositsRevenue)} FCFA`;
+    if (premiumBalances) premiumBalances.textContent = `${fmtMetricNumber(premiumBalancesRevenue)} FCFA`;
+    if (totalRevenue) totalRevenue.textContent = `${fmtMetricNumber(total)} FCFA`;
+
+    setProgressWidth('stats-revenue-auto-bar', autonomousRevenue, total);
+    setProgressWidth('stats-revenue-premium-deposits-bar', premiumDepositsRevenue, total);
+    setProgressWidth('stats-revenue-premium-balances-bar', premiumBalancesRevenue, total);
   }
 
   function fmtDate(value) {
@@ -2109,6 +2147,7 @@
           if (badgeUsers) badgeUsers.textContent = data.users || 0;
           if (badgePending) badgePending.textContent = fmtMetricNumber(paymentMetrics.pendingCount ?? 0);
           updatePaymentMetrics(paymentMetrics);
+          updateGlobalStats(data.globalStats || {});
         }
       }
 
