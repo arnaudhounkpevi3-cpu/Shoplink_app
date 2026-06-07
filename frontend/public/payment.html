@@ -596,7 +596,7 @@
     console.log('Sending payment request:', requestBody);
 
     try {
-      const res = await apiFetch('/payments/deeplink/initiate',{
+      const res = await apiFetch('/payments/initiate',{
         method:'POST',
         headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
         body: JSON.stringify(requestBody)
@@ -609,7 +609,7 @@
         document.getElementById('pay-btn').disabled = false;
         return;
       }
-      const paymentReference = data.transaction?.reference || data.payment?.reference || body.reference;
+      const paymentReference = data.payment?.reference || body.reference;
       document.getElementById('r-reference').textContent = paymentReference;
       renderSteps(selOp);
 
@@ -619,65 +619,12 @@
         paymentReference,
         reference: paymentReference,
       });
-      openDeepLinkPayment(data);
-      startPaymentPolling(paymentReference);
     } catch(e) {
       console.error('Payment error:', e);
       document.getElementById('loading-overlay').classList.remove('show');
       setE('err-ref','Erreur de connexion au serveur: ' + e.message);
       document.getElementById('pay-btn').disabled = false;
     }
-  }
-
-  function openDeepLinkPayment(data) {
-    if (!data || (!data.appUrl && !data.ussdUrl)) return;
-    const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-    if (!isMobile) return;
-
-    if (data.appUrl) window.location.href = data.appUrl;
-    if (data.ussdUrl) {
-      setTimeout(() => {
-        window.location.href = data.ussdUrl;
-      }, 1800);
-    }
-  }
-
-  function startPaymentPolling(reference) {
-    if (!reference) return;
-    if (paymentPollTimer) clearInterval(paymentPollTimer);
-    const token = localStorage.getItem('shoplink_token');
-    const startedAt = Date.now();
-
-    async function checkStatus() {
-      try {
-        if (Date.now() - startedAt > 5 * 60 * 1000) {
-          clearInterval(paymentPollTimer);
-          paymentPollTimer = null;
-          setE('err-ref', 'Temps dépassé. Si vous avez payé, contactez le support avec votre référence.');
-          return;
-        }
-
-        const res = await apiFetch('/payments/deeplink/status/' + encodeURIComponent(reference), {
-          headers: token ? { Authorization: 'Bearer ' + token } : {},
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) return;
-        if (data.transaction && data.transaction.status === 'success') {
-          clearInterval(paymentPollTimer);
-          paymentPollTimer = null;
-          localStorage.removeItem('shoplink_pending');
-          showSuccess(data.siteSlug || '');
-          setTimeout(() => {
-            window.location.href = '/dashboard-client-shoplink.html';
-          }, 1800);
-        }
-      } catch (error) {
-        console.warn('Vérification paiement indisponible:', error);
-      }
-    }
-
-    checkStatus();
-    paymentPollTimer = setInterval(checkStatus, 3000);
   }
 
   function showPending(data) {

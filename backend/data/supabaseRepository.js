@@ -20,7 +20,6 @@ const SITE_VISIT_COLUMNS = 'id,shop_id,site_id,ip_address,visitor_id,source,visi
 const PRODUCT_EVENT_COLUMNS = 'id,shop_id,site_id,product_id,event_type,ip_address,visitor_id,created_at,event_date,week_number,year'
 const ORDER_COLUMNS = 'id,reference,site_order_number,site_id,site_slug,site_name,seller_user_id,buyer_name,buyer_phone,buyer_address,buyer_note,total_amount,currency,source,status,payment_status,payment_method,payer_name,payer_phone,transaction_reference,payment_submitted_at,cancelled_at,cancellation_source,created_at,updated_at'
 const ORDER_ITEM_COLUMNS = 'id,order_id,product_id,name,category,quantity,unit_price,total,created_at'
-const TRANSACTION_COLUMNS = 'id,user_id,payment_id,telephone,reference,montant,reseau,statut,created_at,updated_at,matched_amount,sms_from,raw_sms'
 
 const memoryCache = new Map()
 
@@ -292,25 +291,6 @@ function mapOrder(row, items = []) {
     cancelledAt: row.cancelled_at ? iso(row.cancelled_at) : undefined,
     cancellationSource: row.cancellation_source || '',
     createdAt: iso(row.created_at),
-    updatedAt: row.updated_at ? iso(row.updated_at) : undefined,
-  }
-}
-
-function mapSmsTransaction(row) {
-  if (!row) return null
-  return {
-    id: row.id,
-    userId: row.user_id || '',
-    paymentId: row.payment_id || '',
-    telephone: row.telephone || '',
-    reference: row.reference || '',
-    amount: Number(row.montant || 0),
-    network: row.reseau || '',
-    status: row.statut || 'pending',
-    matchedAmount: Number(row.matched_amount || 0),
-    smsFrom: row.sms_from || '',
-    rawSms: row.raw_sms || '',
-    createdAt: row.created_at ? iso(row.created_at) : undefined,
     updatedAt: row.updated_at ? iso(row.updated_at) : undefined,
   }
 }
@@ -940,102 +920,6 @@ module.exports = {
 
     invalidateCache('payments:')
     return !data ? null : mapPayment(data)
-  },
-
-  async createSmsTransaction(data) {
-    const { data: result, error } = await supabase
-      .from('transactions')
-      .insert({
-        user_id: data.userId || null,
-        payment_id: data.paymentId || null,
-        telephone: data.telephone || '',
-        reference: data.reference || `PAY-${Date.now()}`,
-        montant: Number(data.amount || data.montant || 0),
-        reseau: data.network || data.reseau || '',
-        statut: data.status || data.statut || 'pending',
-        created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
-      })
-      .select(TRANSACTION_COLUMNS)
-      .limit(1)
-      .single()
-
-    if (error) {
-      console.error('❌ Erreur création transaction SMS Supabase:', error.message)
-      return null
-    }
-
-    return mapSmsTransaction(result)
-  },
-
-  async findSmsTransactionByReference(reference) {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select(TRANSACTION_COLUMNS)
-      .eq('reference', String(reference || ''))
-      .limit(1)
-      .single()
-
-    return error || !data ? null : mapSmsTransaction(data)
-  },
-
-  async findPendingSmsTransactionByPhone(telephone) {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select(TRANSACTION_COLUMNS)
-      .eq('telephone', String(telephone || ''))
-      .eq('statut', 'pending')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
-    return error || !data ? null : mapSmsTransaction(data)
-  },
-
-  async findPendingSmsTransactionByAmount(amount) {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select(TRANSACTION_COLUMNS)
-      .eq('montant', Number(amount || 0))
-      .eq('statut', 'pending')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
-    return error || !data ? null : mapSmsTransaction(data)
-  },
-
-  async updateSmsTransaction(idOrReference, patch) {
-    const updates = { updated_at: new Date().toISOString() }
-    if (patch.status !== undefined) updates.statut = patch.status
-    if (patch.statut !== undefined) updates.statut = patch.statut
-    if (patch.matchedAmount !== undefined) updates.matched_amount = Number(patch.matchedAmount || 0)
-    if (patch.smsFrom !== undefined) updates.sms_from = patch.smsFrom || ''
-    if (patch.rawSms !== undefined) updates.raw_sms = patch.rawSms || ''
-
-    const query = supabase.from('transactions').update(updates)
-    const filteredQuery = String(idOrReference || '').startsWith('tx-') || String(idOrReference || '').includes('-')
-      ? query.eq('id', idOrReference)
-      : query.eq('reference', idOrReference)
-
-    const { data, error } = await filteredQuery.select(TRANSACTION_COLUMNS).limit(1).single()
-    return error || !data ? null : mapSmsTransaction(data)
-  },
-
-  async createSmsLog(data) {
-    const { error } = await supabase
-      .from('sms_logs')
-      .insert({
-        sms_from: data.from || '',
-        content: data.content || '',
-        telephone: data.telephone || '',
-        reference: data.reference || '',
-        matched_amount: Number(data.matchedAmount || 0),
-        status: data.status || 'received',
-        reason: data.reason || '',
-        payload: data.payload || {},
-        created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
-      })
-    if (error) console.warn('SMS log non sauvegardé:', error.message)
   },
 
   async countAutonomePaid() {
