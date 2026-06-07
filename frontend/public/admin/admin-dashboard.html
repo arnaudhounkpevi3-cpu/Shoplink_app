@@ -2099,16 +2099,16 @@
 
           if (metricUsers) metricUsers.textContent = data.users || 0;
           if (metricSites) metricSites.textContent = data.sites || 0;
-          // Payment system not finished - set to 0
-          if (metricRevenue) metricRevenue.textContent = '0';
-          if (metricPending) metricPending.textContent = '0';
+          const paymentMetrics = data.paymentMetrics || {};
+          if (metricRevenue) metricRevenue.textContent = fmtMetricNumber(paymentMetrics.totalCollected ?? data.revenue ?? 0);
+          if (metricPending) metricPending.textContent = fmtMetricNumber(paymentMetrics.pendingCount ?? 0);
 
           // Update badges
           const badgeUsers = document.getElementById('badge-users');
           const badgePending = document.getElementById('badge-pending');
           if (badgeUsers) badgeUsers.textContent = data.users || 0;
-          if (badgePending) badgePending.textContent = '0';
-          updatePaymentMetrics(data.paymentMetrics || {});
+          if (badgePending) badgePending.textContent = fmtMetricNumber(paymentMetrics.pendingCount ?? 0);
+          updatePaymentMetrics(paymentMetrics);
         }
       }
 
