@@ -512,17 +512,23 @@
     }
   }
 
+  function cleanKkiapayTransactionId(value) {
+    const id = String(value || '').trim();
+    if (!id || /^PAY-/i.test(id)) return '';
+    return id;
+  }
+
   function kkiapayReturnTransactionId() {
     const params = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(String(window.location.hash || '').replace(/^#/, ''));
-    return params.get('transaction_id')
-      || params.get('transactionId')
-      || params.get('transaction')
-      || params.get('kkiapay_transaction_id')
-      || hashParams.get('transaction_id')
-      || hashParams.get('transactionId')
-      || hashParams.get('transaction')
-      || hashParams.get('kkiapay_transaction_id')
+    return cleanKkiapayTransactionId(params.get('transaction_id'))
+      || cleanKkiapayTransactionId(params.get('transactionId'))
+      || cleanKkiapayTransactionId(params.get('transaction'))
+      || cleanKkiapayTransactionId(params.get('kkiapay_transaction_id'))
+      || cleanKkiapayTransactionId(hashParams.get('transaction_id'))
+      || cleanKkiapayTransactionId(hashParams.get('transactionId'))
+      || cleanKkiapayTransactionId(hashParams.get('transaction'))
+      || cleanKkiapayTransactionId(hashParams.get('kkiapay_transaction_id'))
       || '';
   }
 
@@ -762,7 +768,15 @@
   }
 
   function transactionIdFromKkiapay(response = {}) {
-    return response.transactionId || response.transaction_id || response.reference || response.id || response.data?.transactionId || '';
+    return cleanKkiapayTransactionId(response.transactionId)
+      || cleanKkiapayTransactionId(response.transaction_id)
+      || cleanKkiapayTransactionId(response.id)
+      || cleanKkiapayTransactionId(response.reference)
+      || cleanKkiapayTransactionId(response.data?.transactionId)
+      || cleanKkiapayTransactionId(response.data?.transaction_id)
+      || cleanKkiapayTransactionId(response.data?.id)
+      || cleanKkiapayTransactionId(response.data?.reference)
+      || '';
   }
 
   async function handleKkiapaySuccess(response = {}) {
