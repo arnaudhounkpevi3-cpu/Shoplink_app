@@ -3,9 +3,6 @@ const express = require('express')
 const { repo } = require('../data/repository')
 const { requireAuth } = require('../middleware/auth')
 const { sendAdminPushNotification } = require('../services/pushNotifications')
-const { publicKey, sandboxEnabled, verifyKkiapayTransaction } = require('../services/kkiapayPayments')
-const { finalizePayment } = require('../services/paymentFinalization')
-const { sendWelcomeEmailAfterPayment } = require('../services/welcomeEmail')
 
 const router = express.Router()
 
@@ -162,127 +159,6 @@ router.post('/initiate', requireAuth, async (req, res) => {
     return res.status(201).json({ success: true, message: 'Paiement enregistré en attente de validation manuelle.', payment })
   } catch (error) {
     return res.status(error.statusCode || 500).json({ success: false, message: error.message })
-  }
-})
-
-router.get('/kkiapay/config', requireAuth, (_req, res) => {
-  const key = publicKey()
-  if (!key) {
-    return res.status(500).json({
-      success: false,
-      message: 'Clé publique KKiaPay non configurée',
-    })
-  }
-
-  return res.json({
-    success: true,
-    publicKey: key,
-    sandbox: sandboxEnabled(),
-    theme: '#1a5c38',
-  })
-})
-
-router.post('/kkiapay/confirm', requireAuth, async (req, res) => {
-  const { paymentId, transactionId, transactionIds = [], kkiapayResponse = {} } = req.body
-  const candidateIds = [...new Set([transactionId, ...transactionIds].map((id) => String(id || '').trim()).filter(Boolean))]
-
-  if (!paymentId || !candidateIds.length) {
-    return res.status(400).json({
-      success: false,
-      message: 'paymentId et transactionId sont obligatoires',
-    })
-  }
-
-  try {
-    const payment = await repo().findPaymentById(paymentId)
-    if (!payment) return res.status(404).json({ success: false, message: 'Paiement introuvable' })
-    if (req.user.role !== 'admin' && payment.userId !== req.user.id) {
-      return res.status(403).json({ success: false, message: 'Accès refusé à ce paiement' })
-    }
-    if (payment.status !== 'pending') {
-      if (repo().updateUser && payment.userId) {
-        await repo().updateUser(payment.userId, { paiement: true })
-      }
-      if (payment.userId && repo().findUserById) {
-        const user = await repo().findUserById(payment.userId)
-        if (user) {
-          const emailResult = await sendWelcomeEmailAfterPayment(user)
-          if (!emailResult.success) console.warn('Email de bienvenue déjà-traité non envoyé:', emailResult.message)
-        }
-      }
-      const site = payment.siteId ? await repo().findSiteById(payment.siteId) : null
-      return res.json({ success: true, alreadyProcessed: true, payment, siteSlug: site?.slug || null })
-    }
-
-    let verification = null
-    let status = ''
-    let verifiedAmount = 0
-    let verifiedTransactionId = candidateIds[0]
-    let lastVerificationError = null
-
-    for (const candidateId of candidateIds) {
-      try {
-        verification = await verifyKkiapayTransaction(candidateId)
-        status = String(verification.status || '').toUpperCase()
-        verifiedAmount = Number(verification.amount || verification.amountDebited || 0)
-        verifiedTransactionId = candidateId
-        lastVerificationError = null
-        break
-      } catch (verificationError) {
-        lastVerificationError = verificationError
-      }
-    }
-
-    if (!verification) {
-      const message = String(lastVerificationError?.message || '')
-      const widgetStatus = String(kkiapayResponse?.status || kkiapayResponse?.state || kkiapayResponse?.data?.status || '').toUpperCase()
-      const widgetLooksSuccessful = ['SUCCESS', 'SUCCESSFUL', 'PAID'].includes(widgetStatus) || Boolean(kkiapayResponse?.transactionId || kkiapayResponse?.transaction_id || kkiapayResponse?.id || kkiapayResponse?.reference)
-      const isSandboxTransactionDelay = sandboxEnabled() && /transaction not found|not found|introuvable/i.test(message) && widgetLooksSuccessful
-
-      if (!isSandboxTransactionDelay) throw lastVerificationError
-
-      console.warn('KKiaPay sandbox: transaction encore introuvable, validation via callback succès frontend:', {
-        paymentId,
-        candidateIds,
-      })
-      verification = { status: 'SUCCESSFUL', sandboxFallback: true }
-      status = 'SUCCESSFUL'
-      verifiedAmount = Number(payment.amount || 0)
-    }
-
-    const expectedAmount = Number(payment.amount || 0)
-
-    if (!['SUCCESS', 'SUCCESSFUL', 'PAID'].includes(status)) {
-      return res.status(400).json({
-        success: false,
-        status,
-        message: 'Paiement KKiaPay non confirmé',
-      })
-    }
-
-    if (verifiedAmount && expectedAmount && verifiedAmount < expectedAmount) {
-      return res.status(400).json({
-        success: false,
-        message: 'Montant KKiaPay insuffisant',
-      })
-    }
-
-    const result = await finalizePayment(payment, {
-      transactionId: verifiedTransactionId,
-      validationStatus: 'kkiapay_validated',
-    })
-
-    return res.json({
-      success: true,
-      status,
-      payment: result.payment,
-      siteSlug: result.newSite?.slug || null,
-    })
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Erreur de confirmation KKiaPay',
-    })
   }
 })
 

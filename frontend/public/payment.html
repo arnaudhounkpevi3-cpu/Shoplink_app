@@ -380,7 +380,6 @@
   </div>
 </div>
 
-<script src="https://cdn.kkiapay.me/k.js"></script>
 <script>
   const API_BASE = window.__SHOPLINK_API_URL__ || (
     window.location.protocol === 'http:' && /^(localhost|127\.0\.0\.1|10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(window.location.hostname)
@@ -388,25 +387,6 @@
       : '/api'
   );
   const API_FALLBACK = '/api';
-  const KKIAPAY_PENDING_KEY = 'shoplink_kkiapay_pending';
-  let kkiapayConfig = null;
-  let currentPaymentPayload = null;
-  let currentPaymentId = '';
-
-  function storageSet(key, value) {
-    const payload = JSON.stringify(value);
-    localStorage.setItem(key, payload);
-    sessionStorage.setItem(key, payload);
-  }
-
-  function storageGet(key) {
-    return localStorage.getItem(key) || sessionStorage.getItem(key);
-  }
-
-  function storageRemove(key) {
-    localStorage.removeItem(key);
-    sessionStorage.removeItem(key);
-  }
 
   async function apiFetch(path, options = {}) {
     try {
@@ -417,35 +397,20 @@
     }
   }
 
-  async function loadKkiapayConfig() {
-    if (kkiapayConfig) return kkiapayConfig;
-    const token = localStorage.getItem('shoplink_token');
-    const res = await apiFetch('/payments/kkiapay/config', {
-      headers: token ? { Authorization: 'Bearer ' + token } : {},
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.success || !data.publicKey) {
-      throw new Error(data.message || 'Configuration KKiaPay indisponible');
-    }
-    kkiapayConfig = data;
-    return kkiapayConfig;
-  }
-
   // CONFIG
   let paymentPollTimer = null;
 
   const OPS = {
-    mtn:  { label:'MTN Money', badge:'MTN Money disponible via KKiaPay' },
-    moov: { label:'Moov Money', badge:'Moov Money disponible via KKiaPay' },
-    card: { label:'Carte bancaire', badge:'Carte bancaire disponible via KKiaPay' }
+    mtn:  { label:'MTN Mobile Money', badge:'MTN Mobile Money sélectionné', opLabel:'Numéro MTN MoMo ShopLink' },
+    moov: { label:'Moov Money', badge:'Moov Money sélectionné', opLabel:'Numéro Moov Money ShopLink' },
+    card: { label:'Paiement manuel', badge:'Paiement manuel sélectionné', opLabel:'Validation manuelle ShopLink' }
   };
 
   const STEPS = [
-    'Cliquez sur <strong>Confirmer mon paiement</strong>.',
-    'Le popup sécurisé <strong>KKiaPay</strong> s’ouvre automatiquement.',
-    'Choisissez MTN Money, Moov Money ou Carte bancaire dans KKiaPay.',
-    'Validez le paiement dans le popup ou sur votre téléphone.',
-    'ShopLink confirme le paiement puis ouvre automatiquement votre dashboard.'
+    'Cliquez sur <strong>Confirmer mon paiement</strong> pour enregistrer votre demande.',
+    'Effectuez le paiement selon les instructions ou contactez le support ShopLink.',
+    'Votre paiement sera vérifié par l’équipe ShopLink.',
+    'Votre site sera activé après validation du paiement.'
   ];
 
   // Paramètres URL
@@ -479,118 +444,6 @@
 
     // Add click listener to pay button
     document.getElementById('pay-btn').addEventListener('click', submit);
-    setupKkiapayListeners();
-    restoreKkiapayContext();
-    handleKkiapayReturnIfNeeded();
-  }
-
-  function restoreKkiapayContext() {
-    try {
-      const pending = JSON.parse(storageGet(KKIAPAY_PENDING_KEY) || 'null');
-      if (!pending || !pending.paymentPayload) return null;
-      currentPaymentPayload = pending.paymentPayload;
-      currentPaymentId = pending.paymentPayload.paymentId || '';
-
-      if (currentPaymentPayload.amount) {
-        const restoredAmount = Number(currentPaymentPayload.amount || 0).toLocaleString('fr-FR') + ' FCFA';
-        document.getElementById('r-amount').textContent = restoredAmount;
-        document.getElementById('btn-amt').textContent = restoredAmount;
-        document.getElementById('send-amount').textContent = restoredAmount;
-      }
-      if (currentPaymentPayload.name) document.getElementById('pay-name').value = currentPaymentPayload.name;
-      if (currentPaymentPayload.email) document.getElementById('pay-email').value = currentPaymentPayload.email;
-      if (currentPaymentPayload.phone) document.getElementById('pay-phone').value = toDisplay(currentPaymentPayload.phone);
-      if (currentPaymentPayload.paymentReference) document.getElementById('r-reference').textContent = currentPaymentPayload.paymentReference;
-      if (currentPaymentPayload.type === 'premium') {
-        document.getElementById('r-service').textContent = 'Service Premium';
-        document.getElementById('r-plan').textContent = 'ShopLink Pro';
-      }
-      return pending;
-    } catch (_error) {
-      storageRemove(KKIAPAY_PENDING_KEY);
-      return null;
-    }
-  }
-
-  function cleanKkiapayTransactionId(value) {
-    const id = String(value || '').trim();
-    if (!id || /^PAY-/i.test(id)) return '';
-    return id;
-  }
-
-  function kkiapayTransactionCandidates(response = {}) {
-    const candidates = [];
-    const add = (value) => {
-      const id = cleanKkiapayTransactionId(value);
-      if (id && !candidates.includes(id)) candidates.push(id);
-    };
-
-    add(response.transactionId);
-    add(response.transaction_id);
-    add(response.kkiapay_transaction_id);
-    add(response.transaction);
-    add(response.id);
-    add(response.reference);
-
-    if (response.data && typeof response.data === 'object') {
-      add(response.data.transactionId);
-      add(response.data.transaction_id);
-      add(response.data.kkiapay_transaction_id);
-      add(response.data.transaction);
-      add(response.data.id);
-      add(response.data.reference);
-    }
-
-    return candidates;
-  }
-
-  function kkiapayReturnTransactionId() {
-    const params = new URLSearchParams(window.location.search);
-    const hashParams = new URLSearchParams(String(window.location.hash || '').replace(/^#/, ''));
-    return cleanKkiapayTransactionId(params.get('transaction_id'))
-      || cleanKkiapayTransactionId(params.get('transactionId'))
-      || cleanKkiapayTransactionId(params.get('transaction'))
-      || cleanKkiapayTransactionId(params.get('kkiapay_transaction_id'))
-      || cleanKkiapayTransactionId(hashParams.get('transaction_id'))
-      || cleanKkiapayTransactionId(hashParams.get('transactionId'))
-      || cleanKkiapayTransactionId(hashParams.get('transaction'))
-      || cleanKkiapayTransactionId(hashParams.get('kkiapay_transaction_id'))
-      || '';
-  }
-
-  function handleKkiapayReturnIfNeeded() {
-    const transactionId = kkiapayReturnTransactionId();
-    const pending = restoreKkiapayContext();
-    if (!pending) return;
-
-    if (transactionId) {
-      handleKkiapaySuccess({ transactionId });
-      return;
-    }
-
-    if (new URLSearchParams(window.location.search).get('kkiapay_return') === '1') {
-      setE('err-ref', 'Paiement KKiaPay en attente de confirmation. Si le débit est effectué, contactez le support avec votre reçu KKiaPay.');
-    }
-  }
-
-  function setupKkiapayListeners() {
-    if (window.__shoplinkKkiapayListenersReady) return;
-    window.__shoplinkKkiapayListenersReady = true;
-
-    if (typeof addSuccessListener === 'function') {
-      addSuccessListener((response) => handleKkiapaySuccess(response));
-    }
-
-    if (typeof addFailedListener === 'function') {
-      addFailedListener((response) => handleKkiapayFailure(response));
-    }
-
-    document.addEventListener('kkiapaySuccessCallback', (event) => handleKkiapaySuccess(event.detail));
-    document.addEventListener('kkiapayFailedCallback', (event) => handleKkiapayFailure(event.detail));
-    document.addEventListener('kkiapayCloseCallback', () => {
-      document.getElementById('loading-overlay').classList.remove('show');
-      document.getElementById('pay-btn').disabled = false;
-    });
   }
 
   function formatPhone(input) {
@@ -695,7 +548,7 @@
       type: payType,
       step: payStep,
       amount: payAmt,
-      method: 'kkiapay',
+      method: selOp || 'manual_mobile_money',
       premiumOrder,
       urgency: premiumOrder && premiumOrder.delai ? premiumOrder.delai : 'normal',
       reference: 'PAY-' + Date.now(),
@@ -739,14 +592,12 @@
       const paymentReference = data.payment?.reference || body.reference;
       document.getElementById('r-reference').textContent = paymentReference;
       renderSteps(selOp);
-      currentPaymentPayload = {
+      showPending({
         ...requestBody,
         paymentId: data.payment && data.payment.id ? data.payment.id : '',
         paymentReference,
         reference: paymentReference,
-      };
-      currentPaymentId = currentPaymentPayload.paymentId;
-      await openKkiapayPayment(currentPaymentPayload);
+      });
     } catch(e) {
       console.error('Payment error:', e);
       document.getElementById('loading-overlay').classList.remove('show');
@@ -755,94 +606,6 @@
     }
   }
 
-  async function openKkiapayPayment(paymentData) {
-    const config = await loadKkiapayConfig();
-    document.getElementById('loading-overlay').classList.remove('show');
-
-    if (typeof openKkiapayWidget !== 'function') {
-      document.getElementById('pay-btn').disabled = false;
-      throw new Error('Widget KKiaPay non chargé. Vérifiez votre connexion et réessayez.');
-    }
-
-    storageSet(KKIAPAY_PENDING_KEY, {
-      paymentPayload: paymentData,
-      createdAt: new Date().toISOString(),
-    });
-
-    openKkiapayWidget({
-      amount: Number(paymentData.amount || payAmt),
-      key: config.publicKey,
-      api_key: config.publicKey,
-      sandbox: config.sandbox !== false,
-      name: paymentData.name || '',
-      email: paymentData.email || '',
-      phone: paymentData.phone || '',
-      data: JSON.stringify({ paymentId: paymentData.paymentId, reference: paymentData.paymentReference }),
-      position: 'center',
-      theme: config.theme || '#1a5c38',
-    });
-  }
-
-  function transactionIdFromKkiapay(response = {}) {
-    return kkiapayTransactionCandidates(response)[0] || '';
-  }
-
-  async function handleKkiapaySuccess(response = {}) {
-    const transactionId = transactionIdFromKkiapay(response);
-    const paymentId = currentPaymentId || currentPaymentPayload?.paymentId;
-    const token = localStorage.getItem('shoplink_token');
-
-    if (!transactionId || !paymentId) {
-      setE('err-ref', 'Paiement KKiaPay reçu, mais référence locale introuvable. Contactez le support.');
-      document.getElementById('pay-btn').disabled = false;
-      return;
-    }
-
-    document.getElementById('loading-text').textContent = 'Confirmation du paiement KKiaPay...';
-    document.getElementById('loading-overlay').classList.add('show');
-
-    try {
-      const transactionCandidates = kkiapayTransactionCandidates(response);
-      const res = await apiFetch('/payments/kkiapay/confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
-        body: JSON.stringify({
-          paymentId,
-          transactionId,
-          transactionIds: transactionCandidates,
-          kkiapayResponse: response,
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
-      document.getElementById('loading-overlay').classList.remove('show');
-
-      if (!res.ok || !data.success) {
-        setE('err-ref', data.message || 'Impossible de confirmer le paiement KKiaPay.');
-        document.getElementById('pay-btn').disabled = false;
-        return;
-      }
-
-      localStorage.removeItem('shoplink_pending');
-      storageRemove(KKIAPAY_PENDING_KEY);
-      showSuccess(data.siteSlug || '');
-      setTimeout(() => {
-        const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
-        const account = user.email ? `?account=${encodeURIComponent(String(user.email).toLowerCase())}` : '';
-        window.location.href = `/dashboard-client-shoplink.html${account}`;
-      }, 1800);
-    } catch (error) {
-      document.getElementById('loading-overlay').classList.remove('show');
-      setE('err-ref', 'Erreur de confirmation KKiaPay: ' + error.message);
-      document.getElementById('pay-btn').disabled = false;
-    }
-  }
-
-  function handleKkiapayFailure(response = {}) {
-    console.warn('Paiement KKiaPay échoué:', response);
-    document.getElementById('loading-overlay').classList.remove('show');
-    setE('err-ref', 'Paiement échoué. Veuillez réessayer.');
-    document.getElementById('pay-btn').disabled = false;
-  }
 
   function showPending(data) {
     document.getElementById('payment-page').style.display = 'none';
