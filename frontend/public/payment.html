@@ -348,6 +348,7 @@
     ✓ Activation automatique de votre site après validation
   </div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <a id="validate-capture-btn" href="/validate-payment.html" class="btn-main">📸 Valider par capture</a>
     <a href="https://wa.me/2290167163481" target="_blank" style="background:#25d366;color:#fff;border-radius:var(--radius);padding:12px 24px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
       <img src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="" style="width:18px;height:18px;object-fit:contain;filter:brightness(0) invert(1);display:block;flex:0 0 auto;">
       Suivre sur WhatsApp
@@ -614,6 +615,9 @@
     document.getElementById('p-service').textContent = data.type==='premium'?'Service Premium':'Création autonome';
     document.getElementById('p-amount').textContent  = data.amount.toLocaleString('fr-FR')+' FCFA';
     document.getElementById('p-ref').textContent     = data.paymentReference || data.reference;
+    const validateUrl = `/validate-payment.html?amount=${encodeURIComponent(data.amount || payAmt)}${data.paymentId ? `&paymentId=${encodeURIComponent(data.paymentId)}` : ''}`;
+    const validateBtn = document.getElementById('validate-capture-btn');
+    if (validateBtn) validateBtn.href = validateUrl;
     localStorage.setItem('shoplink_pending', JSON.stringify({...data, at: new Date().toISOString()}));
   }
 

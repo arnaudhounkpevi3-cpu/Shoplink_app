@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopLink — Valider mon paiement</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--green:#1a5c38;--amber:#e8620a;--bg:#f5f0e8;--text:#111;--muted:rgba(17,17,17,.58);--border:rgba(17,17,17,.1);--radius:18px;}
+    *{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 50% -10%,rgba(232,98,10,.16),transparent 32%),var(--bg);min-height:100vh;color:var(--text);display:grid;place-items:center;padding:20px}.card{width:min(520px,100%);background:#fff;border:1px solid var(--border);border-radius:28px;padding:26px;box-shadow:0 24px 70px rgba(17,17,17,.12)}.logo{font-family:'Syne',sans-serif;font-weight:800;color:var(--green);display:flex;gap:8px;align-items:center;margin-bottom:22px}.dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}h1{font-family:'Syne',sans-serif;font-size:30px;letter-spacing:-.05em;color:var(--green);margin-bottom:8px}.lead{color:var(--muted);line-height:1.55;font-size:14px;margin-bottom:20px}.upload{border:1.5px dashed rgba(26,92,56,.28);border-radius:20px;padding:18px;text-align:center;background:#f9fbf8;margin-bottom:16px}input{width:100%;margin-top:12px}#preview{display:none;width:100%;max-height:340px;object-fit:contain;border-radius:16px;border:1px solid var(--border);margin:14px 0}.btn{width:100%;border:0;border-radius:999px;background:var(--green);color:#fff;min-height:48px;font-weight:800;font-family:'DM Sans',sans-serif;cursor:pointer}.status{margin-top:14px;border-radius:14px;padding:13px 14px;background:#eef7f1;color:#0f6e56;font-size:13px;line-height:1.5;display:none}.status.err{background:#fee2e2;color:#a32d2d}.hint{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.5}</style>
+</head>
+<body>
+  <main class="card">
+    <div class="logo"><span class="dot"></span>ShopLink</div>
+    <h1>Validez votre paiement</h1>
+    <p class="lead">Uploadez la capture de confirmation MTN Money ou Celtiis Cash. ShopLink analyse le reçu et débloque votre compte si tout est correct.</p>
+    <div class="upload">
+      <strong>Capture de paiement</strong>
+      <input type="file" id="capture" accept="image/*" onchange="previewImage(this)">
+    </div>
+    <img id="preview" alt="Aperçu capture">
+    <button class="btn" id="validate-btn" onclick="validatePayment()">Analyser et valider</button>
+    <div id="status" class="status"></div>
+    <p class="hint">La capture doit montrer le montant, le réseau, la date et le code transaction. Une capture déjà utilisée sera refusée.</p>
+  </main>
+  <script src="/js/api-config.js"></script>
+  <script>
+    const API_BASE = window.SHOPLINK_API_BASE || '/api'
+    const params = new URLSearchParams(window.location.search)
+    const expectedAmount = Number(params.get('amount') || 5000)
+    const paymentId = params.get('paymentId') || ''
+
+    function status(message, error = false) {
+      const el = document.getElementById('status')
+      el.textContent = message
+      el.classList.toggle('err', error)
+      el.style.display = 'block'
+    }
+
+    function previewImage(input) {
+      const file = input.files && input.files[0]
+      if (!file) return
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const preview = document.getElementById('preview')
+        preview.src = event.target.result
+        preview.style.display = 'block'
+      }
+      reader.readAsDataURL(file)
+    }
+
+    async function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = (event) => resolve(String(event.target.result).split(',')[1])
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+    }
+
+    async function validatePayment() {
+      const file = document.getElementById('capture').files[0]
+      const token = localStorage.getItem('shoplink_token') || ''
+      if (!token) { status('Connectez-vous avant de valider le paiement.', true); return }
+      if (!file) { status('Uploadez une capture d’écran.', true); return }
+      const button = document.getElementById('validate-btn')
+      button.disabled = true
+      status('Analyse OCR en cours...')
+      try {
+        const image = await fileToBase64(file)
+        const response = await fetch(`${API_BASE}/validate-payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ image, montantAttendu: expectedAmount, paymentId }),
+        })
+        const result = await response.json()
+        if (!response.ok || !result.success) {
+          status(result.reason || result.message || 'Capture invalide.', true)
+          button.disabled = false
+          return
+        }
+        status('Paiement confirmé. Redirection vers votre dashboard...')
+        const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}')
+        const account = user.email ? `?account=${encodeURIComponent(String(user.email).toLowerCase())}` : ''
+        setTimeout(() => { window.location.href = `/dashboard-client-shoplink.html${account}` }, 1600)
+      } catch (error) {
+        status('Erreur serveur — réessayez.', true)
+        button.disabled = false
+      }
+    }
+  </script>
+</body>
+</html>

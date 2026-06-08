@@ -17,6 +17,7 @@ const trackingRoutes = require('./routes/tracking')
 const emailRoutes = require('./routes/emails')
 const ordersRoutes = require('./routes/orders')
 const pushRoutes = require('./routes/push')
+const validatePaymentRoutes = require('./routes/validatePayment')
 const { requireAuth, requireAdmin } = require('./middleware/auth')
 
 let appPromise = null
@@ -130,6 +131,7 @@ async function createApp() {
   app.use('/api', emailRoutes)
   app.use('/api/orders', ordersRoutes)
   app.use('/api/push', pushRoutes)
+  app.use('/api/validate-payment', validatePaymentRoutes)
 
   app.get('/boutique/:slug', async (req, res, next) => {
     const { slug } = req.params
