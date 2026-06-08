@@ -743,15 +743,6 @@
       createdAt: new Date().toISOString(),
     });
 
-    const callbackParams = new URLSearchParams();
-    callbackParams.set('type', paymentData.type || payType);
-    callbackParams.set('step', paymentData.step || payStep);
-    callbackParams.set('amount', String(paymentData.amount || payAmt));
-    if (paymentData.paymentId) callbackParams.set('paymentId', paymentData.paymentId);
-    if (paymentData.paymentReference) callbackParams.set('shoplink_reference', paymentData.paymentReference);
-    callbackParams.set('kkiapay_return', '1');
-    const callbackUrl = `${window.location.origin}/payment.html?${callbackParams.toString()}`;
-
     openKkiapayWidget({
       amount: Number(paymentData.amount || payAmt),
       key: config.publicKey,
@@ -761,7 +752,6 @@
       email: paymentData.email || '',
       phone: paymentData.phone || '',
       data: JSON.stringify({ paymentId: paymentData.paymentId, reference: paymentData.paymentReference }),
-      callback: callbackUrl,
       position: 'center',
       theme: config.theme || '#1a5c38',
     });
