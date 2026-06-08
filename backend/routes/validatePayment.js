@@ -37,8 +37,6 @@ function detectOperator(text = '') {
   const value = text.toLowerCase()
   if (/229\s*01\s*67\s*16\s*34\s*81|0167163481|2290167163481/.test(value)) return 'MTN'
   if (/229\s*01\s*47\s*00\s*06\s*74|0147000674|2290147000674/.test(value)) return 'CELTIIS'
-  if (value.includes('mtn') || value.includes('momo')) return 'MTN'
-  if (value.includes('celtiis') || value.includes('celtiis cash')) return 'CELTIIS'
   return ''
 }
 
@@ -130,10 +128,6 @@ router.post('/', requireAuth, async (req, res) => {
     const receiptDate = extractRecentDate(text)
     const now = Date.now()
 
-    if (!operator) {
-      await logAttempt({ userId: req.user.id, paymentId, amountExpected, amountDetected, operator, transactionCode, text, status: 'rejected', reason: 'Opérateur non reconnu' })
-      return res.json({ success: false, reason: 'Capture non reconnue — MTN ou Celtiis uniquement' })
-    }
     if (!hasValidRecipient(text)) {
       await logAttempt({ userId: req.user.id, paymentId, amountExpected, amountDetected, operator, transactionCode, text, status: 'rejected', reason: 'Numéro destinataire incorrect' })
       return res.json({ success: false, reason: 'Numéro destinataire incorrect — payez au 0167163481 (MTN) ou 0147000674 (Celtiis)' })

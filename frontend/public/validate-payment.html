@@ -7,13 +7,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet" />
   <style>
     :root{--green:#1a5c38;--amber:#e8620a;--bg:#f5f0e8;--text:#111;--muted:rgba(17,17,17,.58);--border:rgba(17,17,17,.1);--radius:18px;}
-    *{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 50% -10%,rgba(232,98,10,.16),transparent 32%),var(--bg);min-height:100vh;color:var(--text);display:grid;place-items:center;padding:20px}.card{width:min(520px,100%);background:#fff;border:1px solid var(--border);border-radius:28px;padding:26px;box-shadow:0 24px 70px rgba(17,17,17,.12)}.logo{font-family:'Syne',sans-serif;font-weight:800;color:var(--green);display:flex;gap:8px;align-items:center;margin-bottom:22px}.dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}h1{font-family:'Syne',sans-serif;font-size:30px;letter-spacing:-.05em;color:var(--green);margin-bottom:8px}.lead{color:var(--muted);line-height:1.55;font-size:14px;margin-bottom:20px}.upload{border:1.5px dashed rgba(26,92,56,.28);border-radius:20px;padding:18px;text-align:center;background:#f9fbf8;margin-bottom:16px}input{width:100%;margin-top:12px}#preview{display:none;width:100%;max-height:340px;object-fit:contain;border-radius:16px;border:1px solid var(--border);margin:14px 0}.btn{width:100%;border:0;border-radius:999px;background:var(--green);color:#fff;min-height:48px;font-weight:800;font-family:'DM Sans',sans-serif;cursor:pointer}.status{margin-top:14px;border-radius:14px;padding:13px 14px;background:#eef7f1;color:#0f6e56;font-size:13px;line-height:1.5;display:none}.status.err{background:#fee2e2;color:#a32d2d}.hint{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.5}</style>
+    *{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 50% -10%,rgba(232,98,10,.16),transparent 32%),var(--bg);min-height:100vh;color:var(--text);display:grid;place-items:center;padding:20px}.card{width:min(560px,100%);background:#fff;border:1px solid var(--border);border-radius:28px;padding:26px;box-shadow:0 24px 70px rgba(17,17,17,.12)}.logo{font-family:'Syne',sans-serif;font-weight:800;color:var(--green);display:flex;gap:8px;align-items:center;margin-bottom:22px}.dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}h1{font-family:'Syne',sans-serif;font-size:30px;letter-spacing:-.05em;color:var(--green);margin-bottom:8px}.lead{color:var(--muted);line-height:1.55;font-size:14px;margin-bottom:18px}.instructions{display:grid;gap:10px;margin:16px 0 18px}.instruction{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;padding:12px;border-radius:16px;background:#f9fbf8;border:1px solid rgba(26,92,56,.1)}.instruction-num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--green);color:#fff;font-weight:800;font-size:13px}.instruction strong{color:var(--green)}.instruction p{font-size:13px;color:var(--text);line-height:1.45}.numbers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.number-card{padding:12px;border-radius:16px;background:#fff7ef;border:1px solid rgba(232,98,10,.16);font-size:13px;line-height:1.4}.number-card b{display:block;color:var(--amber);font-family:'Syne',sans-serif;font-size:16px;margin-top:3px}.checklist{padding:13px 14px;border-radius:16px;background:#eef7f1;border:1px solid rgba(26,92,56,.12);margin-bottom:16px}.checklist-title{font-weight:800;color:var(--green);font-size:13px;margin-bottom:8px}.checklist ul{padding-left:18px;color:var(--muted);font-size:12px;line-height:1.55}.upload{border:1.5px dashed rgba(26,92,56,.28);border-radius:20px;padding:18px;text-align:center;background:#f9fbf8;margin-bottom:16px}input{width:100%;margin-top:12px}#preview{display:none;width:100%;max-height:340px;object-fit:contain;border-radius:16px;border:1px solid var(--border);margin:14px 0}.btn{width:100%;border:0;border-radius:999px;background:var(--green);color:#fff;min-height:48px;font-weight:800;font-family:'DM Sans',sans-serif;cursor:pointer}.status{margin-top:14px;border-radius:14px;padding:13px 14px;background:#eef7f1;color:#0f6e56;font-size:13px;line-height:1.5;display:none}.status.err{background:#fee2e2;color:#a32d2d}.hint{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.5}@media(max-width:520px){.numbers{grid-template-columns:1fr}.card{padding:20px}h1{font-size:26px}}</style>
 </head>
 <body>
   <main class="card">
     <div class="logo"><span class="dot"></span>ShopLink</div>
     <h1>Validez votre paiement</h1>
-    <p class="lead">Uploadez la capture de confirmation MTN Money ou Celtiis Cash. ShopLink analyse le reçu et débloque votre compte si tout est correct.</p>
+    <p class="lead">Après avoir payé, envoyez ici la capture de confirmation. ShopLink lit automatiquement le reçu et active votre compte si les informations sont correctes.</p>
+    <section class="instructions" aria-label="Étapes de validation du paiement">
+      <div class="instruction"><div class="instruction-num">1</div><p>Payez le montant demandé depuis <strong>MTN Money</strong> ou <strong>Celtiis Cash</strong>.</p></div>
+      <div class="instruction"><div class="instruction-num">2</div><p>Prenez une capture complète de la confirmation de paiement reçue dans l’application ou par SMS.</p></div>
+      <div class="instruction"><div class="instruction-num">3</div><p>Uploadez la capture ci-dessous, puis cliquez sur <strong>Analyser et valider</strong>.</p></div>
+    </section>
+    <div class="numbers">
+      <div class="number-card">MTN Money à payer :<b>0167163481</b></div>
+      <div class="number-card">Celtiis Cash à payer :<b>0147000674</b></div>
+    </div>
+    <div class="checklist">
+      <div class="checklist-title">La capture doit montrer clairement :</div>
+      <ul>
+        <li>le montant payé ;</li>
+        <li>le numéro destinataire ShopLink ;</li>
+        <li>le code ou la référence de transaction ;</li>
+        <li>la date ou l’heure si elle est visible.</li>
+      </ul>
+    </div>
     <div class="upload">
       <strong>Capture de paiement</strong>
       <input type="file" id="capture" accept="image/*" onchange="previewImage(this)">
