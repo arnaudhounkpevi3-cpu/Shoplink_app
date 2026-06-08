@@ -518,14 +518,11 @@
     return params.get('transaction_id')
       || params.get('transactionId')
       || params.get('transaction')
-      || params.get('transaction_id')
       || params.get('kkiapay_transaction_id')
-      || params.get('reference')
       || hashParams.get('transaction_id')
       || hashParams.get('transactionId')
       || hashParams.get('transaction')
       || hashParams.get('kkiapay_transaction_id')
-      || hashParams.get('reference')
       || '';
   }
 
@@ -745,7 +742,7 @@
     callbackParams.set('step', paymentData.step || payStep);
     callbackParams.set('amount', String(paymentData.amount || payAmt));
     if (paymentData.paymentId) callbackParams.set('paymentId', paymentData.paymentId);
-    if (paymentData.paymentReference) callbackParams.set('reference', paymentData.paymentReference);
+    if (paymentData.paymentReference) callbackParams.set('shoplink_reference', paymentData.paymentReference);
     callbackParams.set('kkiapay_return', '1');
     const callbackUrl = `${window.location.origin}/payment.html?${callbackParams.toString()}`;
 
