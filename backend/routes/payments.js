@@ -183,9 +183,10 @@ router.get('/kkiapay/config', requireAuth, (_req, res) => {
 })
 
 router.post('/kkiapay/confirm', requireAuth, async (req, res) => {
-  const { paymentId, transactionId } = req.body
+  const { paymentId, transactionId, transactionIds = [], kkiapayResponse = {} } = req.body
+  const candidateIds = [...new Set([transactionId, ...transactionIds].map((id) => String(id || '').trim()).filter(Boolean))]
 
-  if (!paymentId || !transactionId) {
+  if (!paymentId || !candidateIds.length) {
     return res.status(400).json({
       success: false,
       message: 'paymentId et transactionId sont obligatoires',
@@ -216,22 +217,33 @@ router.post('/kkiapay/confirm', requireAuth, async (req, res) => {
     let verification = null
     let status = ''
     let verifiedAmount = 0
+    let verifiedTransactionId = candidateIds[0]
+    let lastVerificationError = null
 
-    try {
-      verification = await verifyKkiapayTransaction(transactionId)
-      status = String(verification.status || '').toUpperCase()
-      verifiedAmount = Number(verification.amount || verification.amountDebited || 0)
-    } catch (verificationError) {
-      const message = String(verificationError.message || '')
-      const isSandboxTransactionDelay = sandboxEnabled() && /transaction not found|not found|introuvable/i.test(message)
-
-      if (!isSandboxTransactionDelay) {
-        throw verificationError
+    for (const candidateId of candidateIds) {
+      try {
+        verification = await verifyKkiapayTransaction(candidateId)
+        status = String(verification.status || '').toUpperCase()
+        verifiedAmount = Number(verification.amount || verification.amountDebited || 0)
+        verifiedTransactionId = candidateId
+        lastVerificationError = null
+        break
+      } catch (verificationError) {
+        lastVerificationError = verificationError
       }
+    }
+
+    if (!verification) {
+      const message = String(lastVerificationError?.message || '')
+      const widgetStatus = String(kkiapayResponse?.status || kkiapayResponse?.state || kkiapayResponse?.data?.status || '').toUpperCase()
+      const widgetLooksSuccessful = ['SUCCESS', 'SUCCESSFUL', 'PAID'].includes(widgetStatus) || Boolean(kkiapayResponse?.transactionId || kkiapayResponse?.transaction_id || kkiapayResponse?.id || kkiapayResponse?.reference)
+      const isSandboxTransactionDelay = sandboxEnabled() && /transaction not found|not found|introuvable/i.test(message) && widgetLooksSuccessful
+
+      if (!isSandboxTransactionDelay) throw lastVerificationError
 
       console.warn('KKiaPay sandbox: transaction encore introuvable, validation via callback succès frontend:', {
         paymentId,
-        transactionId,
+        candidateIds,
       })
       verification = { status: 'SUCCESSFUL', sandboxFallback: true }
       status = 'SUCCESSFUL'
@@ -256,7 +268,7 @@ router.post('/kkiapay/confirm', requireAuth, async (req, res) => {
     }
 
     const result = await finalizePayment(payment, {
-      transactionId,
+      transactionId: verifiedTransactionId,
       validationStatus: 'kkiapay_validated',
     })
 

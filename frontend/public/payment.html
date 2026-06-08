@@ -518,6 +518,32 @@
     return id;
   }
 
+  function kkiapayTransactionCandidates(response = {}) {
+    const candidates = [];
+    const add = (value) => {
+      const id = cleanKkiapayTransactionId(value);
+      if (id && !candidates.includes(id)) candidates.push(id);
+    };
+
+    add(response.transactionId);
+    add(response.transaction_id);
+    add(response.kkiapay_transaction_id);
+    add(response.transaction);
+    add(response.id);
+    add(response.reference);
+
+    if (response.data && typeof response.data === 'object') {
+      add(response.data.transactionId);
+      add(response.data.transaction_id);
+      add(response.data.kkiapay_transaction_id);
+      add(response.data.transaction);
+      add(response.data.id);
+      add(response.data.reference);
+    }
+
+    return candidates;
+  }
+
   function kkiapayReturnTransactionId() {
     const params = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(String(window.location.hash || '').replace(/^#/, ''));
@@ -758,15 +784,7 @@
   }
 
   function transactionIdFromKkiapay(response = {}) {
-    return cleanKkiapayTransactionId(response.transactionId)
-      || cleanKkiapayTransactionId(response.transaction_id)
-      || cleanKkiapayTransactionId(response.id)
-      || cleanKkiapayTransactionId(response.reference)
-      || cleanKkiapayTransactionId(response.data?.transactionId)
-      || cleanKkiapayTransactionId(response.data?.transaction_id)
-      || cleanKkiapayTransactionId(response.data?.id)
-      || cleanKkiapayTransactionId(response.data?.reference)
-      || '';
+    return kkiapayTransactionCandidates(response)[0] || '';
   }
 
   async function handleKkiapaySuccess(response = {}) {
@@ -784,10 +802,16 @@
     document.getElementById('loading-overlay').classList.add('show');
 
     try {
+      const transactionCandidates = kkiapayTransactionCandidates(response);
       const res = await apiFetch('/payments/kkiapay/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
-        body: JSON.stringify({ paymentId, transactionId }),
+        body: JSON.stringify({
+          paymentId,
+          transactionId,
+          transactionIds: transactionCandidates,
+          kkiapayResponse: response,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       document.getElementById('loading-overlay').classList.remove('show');
