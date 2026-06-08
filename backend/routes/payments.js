@@ -5,6 +5,7 @@ const { requireAuth } = require('../middleware/auth')
 const { sendAdminPushNotification } = require('../services/pushNotifications')
 const { publicKey, sandboxEnabled, verifyKkiapayTransaction } = require('../services/kkiapayPayments')
 const { finalizePayment } = require('../services/paymentFinalization')
+const { sendWelcomeEmailAfterPayment } = require('../services/welcomeEmail')
 
 const router = express.Router()
 
@@ -198,7 +199,18 @@ router.post('/kkiapay/confirm', requireAuth, async (req, res) => {
       return res.status(403).json({ success: false, message: 'Accès refusé à ce paiement' })
     }
     if (payment.status !== 'pending') {
-      return res.json({ success: true, alreadyProcessed: true, payment })
+      if (repo().updateUser && payment.userId) {
+        await repo().updateUser(payment.userId, { paiement: true })
+      }
+      if (payment.userId && repo().findUserById) {
+        const user = await repo().findUserById(payment.userId)
+        if (user) {
+          const emailResult = await sendWelcomeEmailAfterPayment(user)
+          if (!emailResult.success) console.warn('Email de bienvenue déjà-traité non envoyé:', emailResult.message)
+        }
+      }
+      const site = payment.siteId ? await repo().findSiteById(payment.siteId) : null
+      return res.json({ success: true, alreadyProcessed: true, payment, siteSlug: site?.slug || null })
     }
 
     const verification = await verifyKkiapayTransaction(transactionId)

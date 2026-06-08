@@ -114,9 +114,10 @@ async function finalizePayment(payment, options = {}) {
   if (payment.userId && repo().findUserById) {
     const user = await repo().findUserById(payment.userId)
     if (user) {
-      sendWelcomeEmailAfterPayment(user).catch((error) => {
-        console.warn('Email de bienvenue post-paiement non envoyé:', error.message)
-      })
+      const emailResult = await sendWelcomeEmailAfterPayment(user)
+      if (!emailResult.success) {
+        console.warn('Email de bienvenue post-paiement non envoyé:', emailResult.message)
+      }
     }
   }
 

@@ -393,6 +393,21 @@
   let currentPaymentPayload = null;
   let currentPaymentId = '';
 
+  function storageSet(key, value) {
+    const payload = JSON.stringify(value);
+    localStorage.setItem(key, payload);
+    sessionStorage.setItem(key, payload);
+  }
+
+  function storageGet(key) {
+    return localStorage.getItem(key) || sessionStorage.getItem(key);
+  }
+
+  function storageRemove(key) {
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  }
+
   async function apiFetch(path, options = {}) {
     try {
       return await fetch(`${API_BASE}${path}`, options);
@@ -471,7 +486,7 @@
 
   function restoreKkiapayContext() {
     try {
-      const pending = JSON.parse(localStorage.getItem(KKIAPAY_PENDING_KEY) || 'null');
+      const pending = JSON.parse(storageGet(KKIAPAY_PENDING_KEY) || 'null');
       if (!pending || !pending.paymentPayload) return null;
       currentPaymentPayload = pending.paymentPayload;
       currentPaymentId = pending.paymentPayload.paymentId || '';
@@ -492,18 +507,25 @@
       }
       return pending;
     } catch (_error) {
-      localStorage.removeItem(KKIAPAY_PENDING_KEY);
+      storageRemove(KKIAPAY_PENDING_KEY);
       return null;
     }
   }
 
   function kkiapayReturnTransactionId() {
     const params = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(String(window.location.hash || '').replace(/^#/, ''));
     return params.get('transaction_id')
       || params.get('transactionId')
       || params.get('transaction')
-      || params.get('reference')
+      || params.get('transaction_id')
       || params.get('kkiapay_transaction_id')
+      || params.get('reference')
+      || hashParams.get('transaction_id')
+      || hashParams.get('transactionId')
+      || hashParams.get('transaction')
+      || hashParams.get('kkiapay_transaction_id')
+      || hashParams.get('reference')
       || '';
   }
 
@@ -713,12 +735,19 @@
       throw new Error('Widget KKiaPay non chargé. Vérifiez votre connexion et réessayez.');
     }
 
-    localStorage.setItem(KKIAPAY_PENDING_KEY, JSON.stringify({
+    storageSet(KKIAPAY_PENDING_KEY, {
       paymentPayload: paymentData,
       createdAt: new Date().toISOString(),
-    }));
+    });
 
-    const callbackUrl = `${window.location.origin}/payment.html${window.location.search ? `${window.location.search}&` : '?'}kkiapay_return=1`;
+    const callbackParams = new URLSearchParams();
+    callbackParams.set('type', paymentData.type || payType);
+    callbackParams.set('step', paymentData.step || payStep);
+    callbackParams.set('amount', String(paymentData.amount || payAmt));
+    if (paymentData.paymentId) callbackParams.set('paymentId', paymentData.paymentId);
+    if (paymentData.paymentReference) callbackParams.set('reference', paymentData.paymentReference);
+    callbackParams.set('kkiapay_return', '1');
+    const callbackUrl = `${window.location.origin}/payment.html?${callbackParams.toString()}`;
 
     openKkiapayWidget({
       amount: Number(paymentData.amount || payAmt),
@@ -769,7 +798,7 @@
       }
 
       localStorage.removeItem('shoplink_pending');
-      localStorage.removeItem(KKIAPAY_PENDING_KEY);
+      storageRemove(KKIAPAY_PENDING_KEY);
       showSuccess(data.siteSlug || '');
       setTimeout(() => {
         const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
