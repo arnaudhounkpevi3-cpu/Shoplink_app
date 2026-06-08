@@ -11,6 +11,9 @@ function normalizeText(value = '') {
 }
 
 function extractAmount(text = '') {
+  const transferMatch = text.match(/(?:transfert|envoy[ée]?|envoi|paiement)\D{0,30}(\d[\d\s.,]*)\s*(?:XOF|FCFA|F\b|F\s*CFA)/i)
+  if (transferMatch) return Number(transferMatch[1].replace(/[^\d]/g, '')) || 0
+
   const match = text.match(/(\d[\d\s.,]*)\s*(?:XOF|FCFA|F\s*CFA|F\b)/i)
   if (match) return Number(match[1].replace(/[^\d]/g, '')) || 0
   const numbers = [...text.matchAll(/\b\d[\d\s.,]{2,}\b/g)].map((m) => Number(m[0].replace(/[^\d]/g, '')) || 0).filter((n) => n > 0 && n < 10000000)
@@ -18,15 +21,33 @@ function extractAmount(text = '') {
 }
 
 function extractTransactionCode(text = '') {
+  const refMatch = text.match(/(?:REF|R[ÉE]F[ÉE]RENCE|REFERENCE|TRANSACTION|CODE)\s*[:\-]?\s*([A-Z0-9]{6,24})/i)
+  if (refMatch) return refMatch[1].toUpperCase()
+
   const candidates = [...text.matchAll(/\b[A-Z0-9][A-Z0-9-]{7,24}\b/gi)].map((m) => m[0].replace(/-/g, '').toUpperCase())
-  return candidates.find((code) => !/^0+$/.test(code) && !/^229/.test(code) && !/^202\d/.test(code)) || ''
+  return candidates.find((code) => (
+    !/^0+$/.test(code)
+    && !/^229/.test(code)
+    && !/^202\d/.test(code)
+    && !['TRANSFERT', 'ENVOYE', 'ENVOYEE', 'RETRAIT', 'SOLDE', 'RAISON'].includes(code)
+  )) || ''
 }
 
 function detectOperator(text = '') {
   const value = text.toLowerCase()
+  if (/229\s*01\s*67\s*16\s*34\s*81|0167163481|2290167163481/.test(value)) return 'MTN'
+  if (/229\s*01\s*47\s*00\s*06\s*74|0147000674|2290147000674/.test(value)) return 'CELTIIS'
   if (value.includes('mtn') || value.includes('momo')) return 'MTN'
   if (value.includes('celtiis') || value.includes('celtiis cash')) return 'CELTIIS'
   return ''
+}
+
+function hasValidRecipient(text = '') {
+  const value = String(text || '').replace(/[\s.\-\/]/g, '')
+  return value.includes('2290167163481')
+    || value.includes('0167163481')
+    || value.includes('2290147000674')
+    || value.includes('0147000674')
 }
 
 function extractRecentDate(text = '') {
@@ -112,6 +133,10 @@ router.post('/', requireAuth, async (req, res) => {
     if (!operator) {
       await logAttempt({ userId: req.user.id, paymentId, amountExpected, amountDetected, operator, transactionCode, text, status: 'rejected', reason: 'Opérateur non reconnu' })
       return res.json({ success: false, reason: 'Capture non reconnue — MTN ou Celtiis uniquement' })
+    }
+    if (!hasValidRecipient(text)) {
+      await logAttempt({ userId: req.user.id, paymentId, amountExpected, amountDetected, operator, transactionCode, text, status: 'rejected', reason: 'Numéro destinataire incorrect' })
+      return res.json({ success: false, reason: 'Numéro destinataire incorrect — payez au 0167163481 (MTN) ou 0147000674 (Celtiis)' })
     }
     if (amountDetected < amountExpected) {
       await logAttempt({ userId: req.user.id, paymentId, amountExpected, amountDetected, operator, transactionCode, text, status: 'rejected', reason: 'Montant insuffisant' })

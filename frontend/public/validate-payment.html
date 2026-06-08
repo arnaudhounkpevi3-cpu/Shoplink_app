@@ -27,7 +27,7 @@
   <script>
     const API_BASE = window.SHOPLINK_API_BASE || '/api'
     const params = new URLSearchParams(window.location.search)
-    const expectedAmount = Number(params.get('amount') || 5000)
+    const expectedAmount = Number(params.get('amount') || 4000)
     const paymentId = params.get('paymentId') || ''
 
     function status(message, error = false) {
