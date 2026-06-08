@@ -213,9 +213,31 @@ router.post('/kkiapay/confirm', requireAuth, async (req, res) => {
       return res.json({ success: true, alreadyProcessed: true, payment, siteSlug: site?.slug || null })
     }
 
-    const verification = await verifyKkiapayTransaction(transactionId)
-    const status = String(verification.status || '').toUpperCase()
-    const verifiedAmount = Number(verification.amount || verification.amountDebited || 0)
+    let verification = null
+    let status = ''
+    let verifiedAmount = 0
+
+    try {
+      verification = await verifyKkiapayTransaction(transactionId)
+      status = String(verification.status || '').toUpperCase()
+      verifiedAmount = Number(verification.amount || verification.amountDebited || 0)
+    } catch (verificationError) {
+      const message = String(verificationError.message || '')
+      const isSandboxTransactionDelay = sandboxEnabled() && /transaction not found|not found|introuvable/i.test(message)
+
+      if (!isSandboxTransactionDelay) {
+        throw verificationError
+      }
+
+      console.warn('KKiaPay sandbox: transaction encore introuvable, validation via callback succès frontend:', {
+        paymentId,
+        transactionId,
+      })
+      verification = { status: 'SUCCESSFUL', sandboxFallback: true }
+      status = 'SUCCESSFUL'
+      verifiedAmount = Number(payment.amount || 0)
+    }
+
     const expectedAmount = Number(payment.amount || 0)
 
     if (!['SUCCESS', 'SUCCESSFUL', 'PAID'].includes(status)) {
