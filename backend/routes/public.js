@@ -37,6 +37,7 @@ function publicSitePayload(site, logo) {
     secondaryPhone: site.secondaryPhone || '',
     address: site.address || '',
     activityType: site.activityType || 'Boutique',
+    activityLabel: site.activityLabel || '',
     primaryColor: site.primaryColor || '',
     status: site.status,
     publicUrl: '',

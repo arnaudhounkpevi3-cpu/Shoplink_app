@@ -3,6 +3,8 @@ const express = require('express')
 const { repo } = require('../data/repository')
 const { requireAuth } = require('../middleware/auth')
 const { sendAdminPushNotification } = require('../services/pushNotifications')
+const { publicKey, sandboxEnabled, verifyKkiapayTransaction } = require('../services/kkiapayPayments')
+const { finalizePayment } = require('../services/paymentFinalization')
 
 const router = express.Router()
 
@@ -20,6 +22,7 @@ function paymentPayloadFromBody(req) {
     secondaryPhone,
     address,
     activityType,
+    activityLabel,
     slogan,
     primaryColor,
     secondaryColor,
@@ -51,6 +54,7 @@ function paymentPayloadFromBody(req) {
     secondaryPhone,
     address,
     activityType,
+    activityLabel,
     slogan,
     primaryColor,
     secondaryColor,
@@ -157,6 +161,82 @@ router.post('/initiate', requireAuth, async (req, res) => {
     return res.status(201).json({ success: true, message: 'Paiement enregistré en attente de validation manuelle.', payment })
   } catch (error) {
     return res.status(error.statusCode || 500).json({ success: false, message: error.message })
+  }
+})
+
+router.get('/kkiapay/config', requireAuth, (_req, res) => {
+  const key = publicKey()
+  if (!key) {
+    return res.status(500).json({
+      success: false,
+      message: 'Clé publique KKiaPay non configurée',
+    })
+  }
+
+  return res.json({
+    success: true,
+    publicKey: key,
+    sandbox: sandboxEnabled(),
+    theme: '#1a5c38',
+  })
+})
+
+router.post('/kkiapay/confirm', requireAuth, async (req, res) => {
+  const { paymentId, transactionId } = req.body
+
+  if (!paymentId || !transactionId) {
+    return res.status(400).json({
+      success: false,
+      message: 'paymentId et transactionId sont obligatoires',
+    })
+  }
+
+  try {
+    const payment = await repo().findPaymentById(paymentId)
+    if (!payment) return res.status(404).json({ success: false, message: 'Paiement introuvable' })
+    if (req.user.role !== 'admin' && payment.userId !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Accès refusé à ce paiement' })
+    }
+    if (payment.status !== 'pending') {
+      return res.json({ success: true, alreadyProcessed: true, payment })
+    }
+
+    const verification = await verifyKkiapayTransaction(transactionId)
+    const status = String(verification.status || '').toUpperCase()
+    const verifiedAmount = Number(verification.amount || verification.amountDebited || 0)
+    const expectedAmount = Number(payment.amount || 0)
+
+    if (!['SUCCESS', 'SUCCESSFUL', 'PAID'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        status,
+        message: 'Paiement KKiaPay non confirmé',
+      })
+    }
+
+    if (verifiedAmount && expectedAmount && verifiedAmount < expectedAmount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Montant KKiaPay insuffisant',
+      })
+    }
+
+    const result = await finalizePayment(payment, {
+      transactionId,
+      validationStatus: 'kkiapay_validated',
+    })
+
+    return res.json({
+      success: true,
+      status,
+      payment: result.payment,
+      siteSlug: result.newSite?.slug || null,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Erreur de confirmation KKiaPay',
+    })
   }
 })
 

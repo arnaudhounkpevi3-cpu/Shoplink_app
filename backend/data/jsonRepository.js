@@ -38,6 +38,7 @@ module.exports = {
       email: data.email,
       phone: data.phone || '',
       role: data.role || 'user',
+      paiement: Boolean(data.paiement || false),
       passwordHash: data.passwordHash,
       createdAt: data.createdAt || new Date().toISOString(),
     }
@@ -97,6 +98,7 @@ module.exports = {
       secondaryPhone: data.secondaryPhone || '',
       address: data.address || '',
       activityType: theme.activityType,
+      activityLabel: theme.activityType === 'autre' ? String(data.activityLabel || '').trim() : '',
       primaryColor: data.primaryColor || theme.primaryColor,
       secondaryColor: data.secondaryColor || theme.secondaryColor,
       status: data.status || 'draft',
@@ -117,8 +119,12 @@ module.exports = {
     if (patch.activityType !== undefined) {
       const theme = getActivityTheme(patch.activityType)
       nextPatch.activityType = theme.activityType
+      nextPatch.activityLabel = theme.activityType === 'autre' ? String(patch.activityLabel || site.activityLabel || '').trim() : ''
       if (patch.primaryColor === undefined) nextPatch.primaryColor = theme.primaryColor
       if (patch.secondaryColor === undefined) nextPatch.secondaryColor = theme.secondaryColor
+    }
+    if (patch.activityLabel !== undefined && (nextPatch.activityType || site.activityType) === 'autre') {
+      nextPatch.activityLabel = String(patch.activityLabel || '').trim()
     }
     Object.assign(site, nextPatch, { updatedAt: new Date().toISOString() })
     saveState()
@@ -221,6 +227,7 @@ module.exports = {
       secondaryPhone: data.secondaryPhone,
       address: data.address,
       activityType: data.activityType,
+      activityLabel: data.activityLabel || '',
       slogan: data.slogan,
       primaryColor: data.primaryColor,
       secondaryColor: data.secondaryColor,

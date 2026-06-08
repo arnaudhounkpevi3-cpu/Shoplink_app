@@ -227,25 +227,31 @@
         </div>
       </div>
 
-      <!-- 2. OPÉRATEUR -->
+      <!-- 2. MOYEN DE PAIEMENT -->
       <div class="pay-section">
         <div class="pay-section-header">
           <div class="pay-section-num">2</div>
-          <div class="pay-section-title">Choisissez votre opérateur Mobile Money</div>
+          <div class="pay-section-title">Paiement sécurisé avec KKiaPay</div>
         </div>
         <div class="pay-section-body">
           <div class="methods-grid">
             <div class="method-card sel" id="mc-mtn" onclick="selectOp('mtn')">
               <div class="method-icon"><img src="images/mtn-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="MTN"></div>
-              <div class="method-name">MTN MoMo</div>
-              <div class="method-tag">Recommandé</div>
+              <div class="method-name">MTN Money</div>
+              <div class="method-tag">KKiaPay</div>
             </div>
-            <div class="method-card" id="mc-celtiis" onclick="selectOp('celtiis')">
-              <div class="method-icon"><img src="images/celtiis-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Celtiis"></div>
-              <div class="method-name">Celtiis</div>
+            <div class="method-card" id="mc-moov" onclick="selectOp('moov')">
+              <div class="method-icon"><img src="images/moov-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Moov"></div>
+              <div class="method-name">Moov Money</div>
+              <div class="method-tag">KKiaPay</div>
+            </div>
+            <div class="method-card" id="mc-card" onclick="selectOp('card')">
+              <div class="method-icon">💳</div>
+              <div class="method-name">Carte bancaire</div>
+              <div class="method-tag">KKiaPay</div>
             </div>
           </div>
-          <div class="active-op-badge" id="op-badge">🟡 MTN Mobile Money sélectionné</div>
+          <div class="active-op-badge" id="op-badge">Paiement via le popup sécurisé KKiaPay</div>
         </div>
       </div>
 
@@ -253,21 +259,20 @@
       <div class="pay-section">
         <div class="pay-section-header">
           <div class="pay-section-num">3</div>
-          <div class="pay-section-title">Effectuez le transfert puis entrez la référence</div>
+          <div class="pay-section-title">Confirmez dans le popup KKiaPay</div>
         </div>
         <div class="pay-section-body">
           <div class="momo-instructions">
             <div class="amount-to-send">
-              <div class="amount-label">Montant exact à envoyer</div>
+              <div class="amount-label">Montant à payer</div>
               <div class="amount-value" id="send-amount">4 000 FCFA</div>
             </div>
             <div class="owner-number-box">
               <div>
-                <div class="owner-number-label" id="op-label">Numéro MTN MoMo ShopLink</div>
-                <div class="owner-number" id="owner-number">0167163481</div>
-                <div class="owner-name">ShopLink Bénin — Administrateur</div>
+                <div class="owner-number-label" id="op-label">Fenêtre de paiement</div>
+                <div class="owner-number" id="owner-number">KKiaPay</div>
+                <div class="owner-name">MTN Money, Moov Money et carte bancaire</div>
               </div>
-              <button class="copy-btn" id="copy-btn" onclick="copyNumber()"><img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier</button>
             </div>
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">📋 Étapes :</div>
             <div class="payment-steps" id="steps-list"></div>
@@ -290,9 +295,9 @@
           <div class="recap-row"><span class="recap-label">Service</span><span class="recap-val" id="r-service">Création autonome</span></div>
           <div class="recap-row"><span class="recap-label">Plan</span><span class="recap-val" id="r-plan">ShopLink Starter</span></div>
           <div class="recap-row" id="r-step-row" style="display:none;"><span class="recap-label">Étape</span><span class="recap-val" id="r-step">Acompte 50%</span></div>
-          <div class="recap-row"><span class="recap-label">Opérateur</span><span class="recap-val" id="r-op">MTN MoMo</span></div>
-          <div class="recap-row"><span class="recap-label">Numéro ShopLink</span><span class="recap-val" id="r-number" style="font-family:monospace;color:var(--amber);">0167163481</span></div>
-          <div class="recap-row"><span class="recap-label">Référence motif</span><span class="recap-val" id="r-reference" style="font-family:monospace;color:var(--green);">Générée après confirmation</span></div>
+          <div class="recap-row"><span class="recap-label">Paiement</span><span class="recap-val" id="r-op">KKiaPay</span></div>
+          <div class="recap-row"><span class="recap-label">Méthodes disponibles</span><span class="recap-val" id="r-number" style="font-family:monospace;color:var(--amber);">MTN · Moov · Carte</span></div>
+          <div class="recap-row"><span class="recap-label">Référence</span><span class="recap-val" id="r-reference" style="font-family:monospace;color:var(--green);">Générée après paiement</span></div>
         </div>
         <div class="recap-total">
           <div class="recap-total-label">À payer</div>
@@ -375,6 +380,7 @@
   </div>
 </div>
 
+<script src="https://cdn.kkiapay.me/k.js"></script>
 <script>
   const API_BASE = window.__SHOPLINK_API_URL__ || (
     window.location.protocol === 'http:' && /^(localhost|127\.0\.0\.1|10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(window.location.hostname)
@@ -382,6 +388,9 @@
       : '/api'
   );
   const API_FALLBACK = '/api';
+  let kkiapayConfig = null;
+  let currentPaymentPayload = null;
+  let currentPaymentId = '';
 
   async function apiFetch(path, options = {}) {
     try {
@@ -392,22 +401,36 @@
     }
   }
 
+  async function loadKkiapayConfig() {
+    if (kkiapayConfig) return kkiapayConfig;
+    const token = localStorage.getItem('shoplink_token');
+    const res = await apiFetch('/payments/kkiapay/config', {
+      headers: token ? { Authorization: 'Bearer ' + token } : {},
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success || !data.publicKey) {
+      throw new Error(data.message || 'Configuration KKiaPay indisponible');
+    }
+    kkiapayConfig = data;
+    return kkiapayConfig;
+  }
+
   // CONFIG
-  const PAYMENT_NUMBERS = {
-    mtn: '0167163481',
-    celtiis: '0147000674',
-  };
   let paymentPollTimer = null;
 
   const OPS = {
-    mtn:  { label:'MTN Mobile Money',  badge:'🟡 MTN Mobile Money sélectionné',  opLabel:'Numéro MTN MoMo ShopLink' },
-    celtiis: { label:'Celtiis Cash',              badge:'🟢 Celtiis Cash sélectionné',               opLabel:'Numéro Celtiis Cash ShopLink' }
+    mtn:  { label:'MTN Money', badge:'MTN Money disponible via KKiaPay' },
+    moov: { label:'Moov Money', badge:'Moov Money disponible via KKiaPay' },
+    card: { label:'Carte bancaire', badge:'Carte bancaire disponible via KKiaPay' }
   };
 
-  const STEPS = {
-    mtn:  ['Cliquez sur <strong>Confirmer mon paiement</strong> pour enregistrer votre demande','Le code USSD <strong>*880#</strong> s’ouvrira automatiquement','Choisissez <strong>Transfert</strong>, puis entrez le numéro : <strong>0167163481</strong>','Entrez le montant exact : <strong id="sa">—</strong> et confirmez avec votre PIN','Revenez sur cette page après paiement : ShopLink vérifiera le SMS de confirmation'],
-    celtiis: ['Cliquez sur <strong>Confirmer mon paiement</strong> pour enregistrer votre demande','Le code USSD <strong>*889#</strong> s’ouvrira automatiquement','Choisissez <strong>Transfert</strong>, puis entrez le numéro : <strong>0147000674</strong>','Entrez le montant exact : <strong id="sa">—</strong> et confirmez avec votre PIN','Revenez sur cette page après paiement : ShopLink vérifiera le SMS de confirmation']
-  };
+  const STEPS = [
+    'Cliquez sur <strong>Confirmer mon paiement</strong>.',
+    'Le popup sécurisé <strong>KKiaPay</strong> s’ouvre automatiquement.',
+    'Choisissez MTN Money, Moov Money ou Carte bancaire dans KKiaPay.',
+    'Validez le paiement dans le popup ou sur votre téléphone.',
+    'ShopLink confirme le paiement puis ouvre automatiquement votre dashboard.'
+  ];
 
   // Paramètres URL
   const P       = new URLSearchParams(window.location.search);
@@ -440,6 +463,27 @@
 
     // Add click listener to pay button
     document.getElementById('pay-btn').addEventListener('click', submit);
+    setupKkiapayListeners();
+  }
+
+  function setupKkiapayListeners() {
+    if (window.__shoplinkKkiapayListenersReady) return;
+    window.__shoplinkKkiapayListenersReady = true;
+
+    if (typeof addSuccessListener === 'function') {
+      addSuccessListener((response) => handleKkiapaySuccess(response));
+    }
+
+    if (typeof addFailedListener === 'function') {
+      addFailedListener((response) => handleKkiapayFailure(response));
+    }
+
+    document.addEventListener('kkiapaySuccessCallback', (event) => handleKkiapaySuccess(event.detail));
+    document.addEventListener('kkiapayFailedCallback', (event) => handleKkiapayFailure(event.detail));
+    document.addEventListener('kkiapayCloseCallback', () => {
+      document.getElementById('loading-overlay').classList.remove('show');
+      document.getElementById('pay-btn').disabled = false;
+    });
   }
 
   function formatPhone(input) {
@@ -468,53 +512,28 @@
 
   function selectOp(op) {
     selOp = op;
-    ['mtn','celtiis'].forEach(o => document.getElementById('mc-'+o).classList.toggle('sel', o===op));
-    document.getElementById('op-badge').textContent   = OPS[op].badge;
-    document.getElementById('op-label').textContent   = OPS[op].opLabel;
-    document.getElementById('r-op').textContent       = OPS[op].label;
-    const number = PAYMENT_NUMBERS[op] || PAYMENT_NUMBERS.mtn;
-    document.getElementById('owner-number').textContent = number;
-    document.getElementById('r-number').textContent = number;
+    ['mtn','moov','card'].forEach(o => document.getElementById('mc-'+o)?.classList.toggle('sel', o===op));
+    document.getElementById('op-badge').textContent = OPS[op]?.badge || 'Paiement via le popup sécurisé KKiaPay';
+    document.getElementById('op-label').textContent = 'Fenêtre de paiement';
+    document.getElementById('r-op').textContent = 'KKiaPay';
+    document.getElementById('owner-number').textContent = 'KKiaPay';
+    document.getElementById('r-number').textContent = 'MTN · Moov · Carte';
     renderSteps(op);
   }
 
-  function renderSteps(op) {
+  function renderSteps() {
     const list = document.getElementById('steps-list');
     list.innerHTML = '';
-    STEPS[op].forEach((text, i) => {
+    STEPS.forEach((text, i) => {
       const d = document.createElement('div');
       d.className = 'payment-step';
       d.innerHTML = `<div class="step-badge">${i+1}</div><div class="step-text">${text}</div>`;
       list.appendChild(d);
     });
-    const sa = list.querySelector('#sa');
-    if (sa) sa.textContent = payAmt.toLocaleString('fr-FR') + ' FCFA';
-    const sr = list.querySelector('#sr');
-    if (sr) sr.textContent = 'générée après confirmation';
   }
 
   function copyNumber() {
-    const activeNumber = PAYMENT_NUMBERS[selOp] || PAYMENT_NUMBERS.mtn;
-    const textArea = document.createElement('textarea');
-    textArea.value = activeNumber;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-9999px';
-    document.body.appendChild(textArea);
-    textArea.select();
-    
-    try {
-      document.execCommand('copy');
-      const b = document.getElementById('copy-btn');
-      b.textContent='✓ Copié !'; b.classList.add('copied');
-      setTimeout(()=>{ b.innerHTML='<img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier'; b.classList.remove('copied'); },2500);
-    } catch (err) {
-      const b = document.getElementById('copy-btn');
-      b.textContent = activeNumber;
-      b.classList.add('copied');
-      setTimeout(()=>{ b.innerHTML='<img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier'; b.classList.remove('copied'); },3500);
-    }
-    
-    document.body.removeChild(textArea);
+    document.getElementById('pay-btn').focus();
   }
 
   function startTimer(sec) {
@@ -569,7 +588,7 @@
       type: payType,
       step: payStep,
       amount: payAmt,
-      method: selOp,
+      method: 'kkiapay',
       premiumOrder,
       urgency: premiumOrder && premiumOrder.delai ? premiumOrder.delai : 'normal',
       reference: 'PAY-' + Date.now(),
@@ -581,6 +600,7 @@
       secondaryPhone: site && site.secondaryPhone ? site.secondaryPhone : '',
       address: premiumOrder ? [premiumOrder.city, premiumOrder.district].filter(Boolean).join(', ') : (site && site.address ? site.address : ''),
       activityType: premiumOrder && premiumOrder.activity ? premiumOrder.activity : (site && site.activityType ? site.activityType : ''),
+      activityLabel: premiumOrder && premiumOrder.activity === 'autre' ? (premiumOrder.activityLabel || '') : (site && site.activityLabel ? site.activityLabel : ''),
       primaryColor: site && site.primaryColor ? site.primaryColor : '',
       secondaryColor: site && site.secondaryColor ? site.secondaryColor : '',
       logo: premiumOrder && premiumOrder.logo && premiumOrder.logo.src ? premiumOrder.logo.src : (site && site.logo ? site.logo : '')
@@ -612,19 +632,98 @@
       const paymentReference = data.payment?.reference || body.reference;
       document.getElementById('r-reference').textContent = paymentReference;
       renderSteps(selOp);
-
-      showPending({
+      currentPaymentPayload = {
         ...requestBody,
         paymentId: data.payment && data.payment.id ? data.payment.id : '',
         paymentReference,
         reference: paymentReference,
-      });
+      };
+      currentPaymentId = currentPaymentPayload.paymentId;
+      await openKkiapayPayment(currentPaymentPayload);
     } catch(e) {
       console.error('Payment error:', e);
       document.getElementById('loading-overlay').classList.remove('show');
       setE('err-ref','Erreur de connexion au serveur: ' + e.message);
       document.getElementById('pay-btn').disabled = false;
     }
+  }
+
+  async function openKkiapayPayment(paymentData) {
+    const config = await loadKkiapayConfig();
+    document.getElementById('loading-overlay').classList.remove('show');
+
+    if (typeof openKkiapayWidget !== 'function') {
+      document.getElementById('pay-btn').disabled = false;
+      throw new Error('Widget KKiaPay non chargé. Vérifiez votre connexion et réessayez.');
+    }
+
+    openKkiapayWidget({
+      amount: Number(paymentData.amount || payAmt),
+      key: config.publicKey,
+      api_key: config.publicKey,
+      sandbox: config.sandbox !== false,
+      name: paymentData.name || '',
+      email: paymentData.email || '',
+      phone: paymentData.phone || '',
+      data: JSON.stringify({ paymentId: paymentData.paymentId, reference: paymentData.paymentReference }),
+      callback: `${window.location.origin}/payment.html`,
+      position: 'center',
+      theme: config.theme || '#1a5c38',
+    });
+  }
+
+  function transactionIdFromKkiapay(response = {}) {
+    return response.transactionId || response.transaction_id || response.reference || response.id || response.data?.transactionId || '';
+  }
+
+  async function handleKkiapaySuccess(response = {}) {
+    const transactionId = transactionIdFromKkiapay(response);
+    const paymentId = currentPaymentId || currentPaymentPayload?.paymentId;
+    const token = localStorage.getItem('shoplink_token');
+
+    if (!transactionId || !paymentId) {
+      setE('err-ref', 'Paiement KKiaPay reçu, mais référence locale introuvable. Contactez le support.');
+      document.getElementById('pay-btn').disabled = false;
+      return;
+    }
+
+    document.getElementById('loading-text').textContent = 'Confirmation du paiement KKiaPay...';
+    document.getElementById('loading-overlay').classList.add('show');
+
+    try {
+      const res = await apiFetch('/payments/kkiapay/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
+        body: JSON.stringify({ paymentId, transactionId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      document.getElementById('loading-overlay').classList.remove('show');
+
+      if (!res.ok || !data.success) {
+        setE('err-ref', data.message || 'Impossible de confirmer le paiement KKiaPay.');
+        document.getElementById('pay-btn').disabled = false;
+        return;
+      }
+
+      localStorage.removeItem('shoplink_pending');
+      showSuccess(data.siteSlug || '');
+      setTimeout(() => {
+        const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
+        const account = user.email ? `?account=${encodeURIComponent(String(user.email).toLowerCase())}` : '';
+        window.location.href = `/dashboard-client-shoplink.html${account}`;
+      }, 1800);
+    } catch (error) {
+      document.getElementById('loading-overlay').classList.remove('show');
+      setE('err-ref', 'Erreur de confirmation KKiaPay: ' + error.message);
+      document.getElementById('pay-btn').disabled = false;
+    }
+  }
+
+  function handleKkiapayFailure(response = {}) {
+    console.warn('Paiement KKiaPay échoué:', response);
+    document.getElementById('loading-overlay').classList.remove('show');
+    setE('err-ref', 'Paiement échoué. Veuillez réessayer.');
+    document.getElementById('pay-btn').disabled = false;
   }
 
   function showPending(data) {

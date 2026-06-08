@@ -7,8 +7,8 @@ const ADMIN_LIMIT = Number(process.env.SUPABASE_ADMIN_LIMIT || 200)
 const TRACKING_LIMIT = Number(process.env.SUPABASE_TRACKING_LIMIT || 500)
 const CACHE_TTL_MS = Number(process.env.SUPABASE_CACHE_TTL_MS || 120000)
 
-const USER_COLUMNS = 'id,name,email,phone,role,password,created_at,updated_at'
-const PUBLIC_USER_COLUMNS = 'id,name,email,phone,role,created_at,updated_at'
+const USER_COLUMNS = 'id,name,email,phone,role,password,paiement,created_at,updated_at'
+const PUBLIC_USER_COLUMNS = 'id,name,email,phone,role,paiement,created_at,updated_at'
 const SITE_COLUMNS = 'id,user_id,name,slug,slogan,logo_url,description,whatsapp,phone2,address,activity_type,primary_color,status,created_at,published_at,updated_at'
 const PRODUCT_COLUMNS = 'id,site_id,user_id,name,price,image_url,description,category,is_visible,availability,stock,badge,old_price,variant_info,extra_info,created_at,updated_at'
 const PAYMENT_COLUMNS = 'id,user_id,site_id,type,amount,step,status,method,reference,admin_note,paid_at,created_at,updated_at'
@@ -74,6 +74,31 @@ function newEntityId(prefix) {
 
 const PRODUCT_META_PREFIX = '\n<!--SHOPLINK_PRODUCT_META:'
 const PRODUCT_META_SUFFIX = '-->'
+const SITE_META_PREFIX = '\n<!--SHOPLINK_SITE_META:'
+const SITE_META_SUFFIX = '-->'
+
+function encodeSiteDescription(description = '', meta = {}) {
+  const cleanDescription = String(description || '').replace(/\n<!--SHOPLINK_SITE_META:[\s\S]*?-->/g, '')
+  if (!meta || !meta.activityLabel) return cleanDescription
+  return `${cleanDescription}${SITE_META_PREFIX}${JSON.stringify({ activityLabel: meta.activityLabel })}${SITE_META_SUFFIX}`
+}
+
+function decodeSiteDescription(description = '') {
+  const raw = String(description || '')
+  const match = raw.match(/\n<!--SHOPLINK_SITE_META:([\s\S]*?)-->/)
+  let meta = {}
+  if (match) {
+    try {
+      meta = JSON.parse(match[1]) || {}
+    } catch (_error) {
+      meta = {}
+    }
+  }
+  return {
+    description: raw.replace(/\n<!--SHOPLINK_SITE_META:[\s\S]*?-->/g, ''),
+    meta,
+  }
+}
 
 function productMetaFromData(data = {}) {
   return {
@@ -133,6 +158,7 @@ function mapUser(u) {
     email: u.email,
     phone: u.phone || '',
     role: u.role,
+    paiement: Boolean(u.paiement || false),
     passwordHash: u.password,
     createdAt: iso(u.created_at),
   }
@@ -142,6 +168,7 @@ function mapSite(s) {
   if (!s) {
     return null
   }
+  const decoded = decodeSiteDescription(s.description || '')
   return {
     id: s.id,
     userId: s.user_id,
@@ -149,11 +176,12 @@ function mapSite(s) {
     slug: s.slug,
     slogan: s.slogan || '',
     logo: s.logo_url || '',
-    description: s.description || '',
+    description: decoded.description || '',
     whatsapp: s.whatsapp || '',
     secondaryPhone: s.phone2 || '',
     address: s.address || '',
     activityType: s.activity_type || 'Boutique',
+    activityLabel: decoded.meta?.activityLabel || '',
     primaryColor: s.primary_color,
     secondaryColor: '', // Not in Supabase schema
     status: s.status,
@@ -232,12 +260,15 @@ function mapPayment(p) {
     return null
   }
   let premiumOrder = null
+  let paymentMeta = {}
   if (p.admin_note) {
     try {
       const parsed = JSON.parse(p.admin_note)
       premiumOrder = parsed.premiumOrder || null
+      paymentMeta = parsed.paymentData || parsed.paymentMeta || {}
     } catch (_e) {
       premiumOrder = null
+      paymentMeta = {}
     }
   }
   return {
@@ -257,6 +288,17 @@ function mapPayment(p) {
     projectStatus: premiumOrder?.projectStatus,
     deliveryStartedAt: premiumOrder?.deliveryStartedAt,
     deliveryTargetAt: premiumOrder?.deliveryTargetAt,
+    siteName: paymentMeta.siteName || '',
+    siteDescription: paymentMeta.siteDescription || '',
+    whatsappNumber: paymentMeta.whatsappNumber || '',
+    secondaryPhone: paymentMeta.secondaryPhone || '',
+    address: paymentMeta.address || '',
+    activityType: paymentMeta.activityType || '',
+    activityLabel: paymentMeta.activityLabel || '',
+    slogan: paymentMeta.slogan || '',
+    primaryColor: paymentMeta.primaryColor || '',
+    secondaryColor: paymentMeta.secondaryColor || '',
+    logo: paymentMeta.logo || '',
     paidAt: p.paid_at ? iso(p.paid_at) : undefined,
     createdAt: iso(p.created_at),
     updatedAt: p.updated_at ? iso(p.updated_at) : undefined,
@@ -558,6 +600,7 @@ module.exports = {
   async createSite(data) {
     const id = data.id || newEntityId('site')
     const theme = getActivityTheme(data.activityType)
+    const activityLabel = theme.activityType === 'autre' ? String(data.activityLabel || '').trim() : ''
     const { data: result, error } = await supabase
       .from('sites')
       .insert({
@@ -567,7 +610,7 @@ module.exports = {
         slug: data.slug,
         slogan: data.slogan || '',
         logo_url: data.logo || '',
-        description: data.description || '',
+        description: encodeSiteDescription(data.description || '', { activityLabel }),
         whatsapp: data.whatsapp || '',
         phone2: data.secondaryPhone || '',
         address: data.address || '',
@@ -590,6 +633,7 @@ module.exports = {
   },
 
   async updateSite(id, patch) {
+    const existingSite = await this.findSiteById(id)
     const updates = {
       updated_at: new Date().toISOString(),
     }
@@ -598,7 +642,16 @@ module.exports = {
     if (patch.slug !== undefined) updates.slug = patch.slug
     if (patch.slogan !== undefined) updates.slogan = patch.slogan
     if (patch.logo !== undefined) updates.logo_url = patch.logo
-    if (patch.description !== undefined) updates.description = patch.description
+    if (patch.description !== undefined || patch.activityLabel !== undefined || patch.activityType !== undefined) {
+      const nextActivityType = patch.activityType !== undefined ? getActivityTheme(patch.activityType).activityType : existingSite?.activityType
+      const activityLabel = nextActivityType === 'autre'
+        ? String(patch.activityLabel !== undefined ? patch.activityLabel : existingSite?.activityLabel || '').trim()
+        : ''
+      updates.description = encodeSiteDescription(
+        patch.description !== undefined ? patch.description : existingSite?.description || '',
+        { activityLabel },
+      )
+    }
     if (patch.whatsapp !== undefined) updates.whatsapp = patch.whatsapp
     if (patch.secondaryPhone !== undefined) updates.phone2 = patch.secondaryPhone
     if (patch.address !== undefined) updates.address = patch.address
@@ -826,7 +879,22 @@ module.exports = {
             projectStatus: data.projectStatus,
           },
         })
-      : (data.adminNote || '')
+      : JSON.stringify({
+          paymentData: {
+            siteName: data.siteName || '',
+            siteDescription: data.siteDescription || '',
+            whatsappNumber: data.whatsappNumber || '',
+            secondaryPhone: data.secondaryPhone || '',
+            address: data.address || '',
+            activityType: data.activityType || '',
+            activityLabel: data.activityLabel || '',
+            slogan: data.slogan || '',
+            primaryColor: data.primaryColor || '',
+            secondaryColor: data.secondaryColor || '',
+            logo: data.logo || '',
+          },
+          note: data.adminNote || '',
+        })
 
     const { data: result, error } = await supabase
       .from('payments')
@@ -871,6 +939,23 @@ module.exports = {
     if (existing?.premiumOrder || notePayload.premiumOrder) {
       notePayload.premiumOrder = {
         ...(notePayload.premiumOrder || existing.premiumOrder || {}),
+      }
+    }
+
+    if (!notePayload.premiumOrder) {
+      notePayload.paymentData = {
+        ...(notePayload.paymentData || {}),
+        siteName: patch.siteName !== undefined ? patch.siteName : existing?.siteName || '',
+        siteDescription: patch.siteDescription !== undefined ? patch.siteDescription : existing?.siteDescription || '',
+        whatsappNumber: patch.whatsappNumber !== undefined ? patch.whatsappNumber : existing?.whatsappNumber || '',
+        secondaryPhone: patch.secondaryPhone !== undefined ? patch.secondaryPhone : existing?.secondaryPhone || '',
+        address: patch.address !== undefined ? patch.address : existing?.address || '',
+        activityType: patch.activityType !== undefined ? patch.activityType : existing?.activityType || '',
+        activityLabel: patch.activityLabel !== undefined ? patch.activityLabel : existing?.activityLabel || '',
+        slogan: patch.slogan !== undefined ? patch.slogan : existing?.slogan || '',
+        primaryColor: patch.primaryColor !== undefined ? patch.primaryColor : existing?.primaryColor || '',
+        secondaryColor: patch.secondaryColor !== undefined ? patch.secondaryColor : existing?.secondaryColor || '',
+        logo: patch.logo !== undefined ? patch.logo : existing?.logo || '',
       }
     }
 

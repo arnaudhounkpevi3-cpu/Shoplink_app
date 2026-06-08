@@ -88,6 +88,9 @@ async function getAutonomousPricing() {
 async function createDraftSiteForUser(userId, payload) {
   const shopName = String(payload.shopName || payload.siteName || '').trim()
   const theme = getActivityTheme(payload.activityType || 'Boutique')
+  const activityLabel = theme.activityType === 'autre'
+    ? String(payload.activityLabel || '').trim()
+    : ''
 
   if (!shopName) {
     return null
@@ -110,6 +113,7 @@ async function createDraftSiteForUser(userId, payload) {
     secondaryPhone: String(payload.secondaryPhone || '').trim(),
     address: String(payload.address || payload.city || '').trim(),
     activityType: theme.activityType,
+    activityLabel,
     primaryColor: payload.primaryColor || theme.primaryColor,
     secondaryColor: payload.secondaryColor || theme.secondaryColor,
     status: 'draft',

@@ -368,6 +368,15 @@
       return Boolean(token && !token.startsWith('demo-token') && user && user.role !== 'admin' && currentUserMatchesExpectedAccount());
     }
 
+    function enforcePaidClientAccess() {
+      const user = getCurrentUser();
+      if (!user || user.role === 'admin') return;
+      if (user.paiement !== false) return;
+
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = `/payment.html?type=autonome&step=full&amount=5000&next=${next}`;
+    }
+
     function redirectToClientLogin() {
       localStorage.removeItem('demo_mode');
       localStorage.removeItem('shoplink_token');
@@ -1496,10 +1505,23 @@
       return `${getPublicSiteOrigin()}/boutique/${context.slug}?source=shared`;
     }
 
+    function getShopLinkForSite(site) {
+      const slug = site?.slug || getClientContext().slug;
+      return `${getPublicSiteOrigin()}/boutique/${slug}?source=shared`;
+    }
+
     function getTrackedShopLink() {
       const context = getClientContext();
       const target = `/boutique/${context.slug}?source=shared`;
       return `${window.location.origin}/api/tracking/shared-link/${encodeURIComponent(context.siteId)}?target=${encodeURIComponent(target)}`;
+    }
+
+    function getTrackedShopLinkForSite(site) {
+      const context = getClientContext();
+      const slug = site?.slug || context.slug;
+      const siteId = site?.id || context.siteId;
+      const target = `/boutique/${slug}?source=shared`;
+      return `${window.location.origin}/api/tracking/shared-link/${encodeURIComponent(siteId)}?target=${encodeURIComponent(target)}`;
     }
 
     function getPublicSiteOrigin() {
@@ -1581,12 +1603,13 @@
       savePublicSiteCache(cacheKey, site, publicProducts);
     }
 
-    function preparePublicSiteSnapshot() {
+    function preparePublicSiteSnapshot(siteOverride = null) {
       const context = getClientContext();
-      const slug = context.site?.slug || context.slug;
+      const baseSite = siteOverride || context.site;
+      const slug = baseSite?.slug || context.slug;
       if (!slug) return { slug: '', products: [] };
 
-      const siteSnapshot = buildSitePayload({ slug });
+      const siteSnapshot = siteOverride || buildSitePayload({ slug });
       const productsSnapshot = getProductRows().map(productFromRow);
       preloadPublicSiteCache(siteSnapshot, productsSnapshot);
       return { slug, site: siteSnapshot, products: productsSnapshot };
@@ -1637,17 +1660,24 @@
       return normalizeWhatsAppNumber(context.site.whatsapp || context.order.whatsapp || siteInput?.value || '');
     }
 
-    function shareShopLinkToClientWhatsapp() {
+    async function shareShopLinkToClientWhatsapp() {
       const phone = getClientWhatsAppNumber();
-      preparePublicSiteSnapshot();
-      syncPublicSiteInBackground();
-      const link = getShopLink();
       if (!phone || phone.includes('X')) {
         notify('Renseignez un vrai numéro WhatsApp dans Mon site avant de tester.', 'warning');
         nav('monsite', document.querySelector('[data-page="monsite"]'));
         return;
       }
-      const trackedLink = getTrackedShopLink();
+      let site;
+      try {
+        site = await ensureBackendSite({}, { allowLocalFallback: false });
+      } catch (error) {
+        notify(`Impossible de préparer le lien : ${error.message}`, 'danger');
+        return;
+      }
+      preparePublicSiteSnapshot(site);
+      syncPublicSiteInBackground();
+      const link = getShopLinkForSite(site);
+      const trackedLink = getTrackedShopLinkForSite(site);
       const message = `Visite ma boutique à travers ce lien : ${trackedLink}`;
       recordClientEvent('link_shared', 'Lien boutique envoyé sur WhatsApp', { phone, link, trackedLink });
       window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
@@ -1656,10 +1686,11 @@
     async function copyShopLink(){
       if (isCopyingShopLink) return;
       isCopyingShopLink = true;
-      preparePublicSiteSnapshot();
-      syncPublicSiteInBackground();
-      const link = getShopLink();
       try {
+        const site = await ensureBackendSite({}, { allowLocalFallback: false });
+        preparePublicSiteSnapshot(site);
+        syncPublicSiteInBackground();
+        const link = getShopLinkForSite(site);
         if (navigator.clipboard?.writeText) {
           await navigator.clipboard.writeText(link);
         } else {
@@ -1676,8 +1707,8 @@
         notify('Lien copié.');
         recordClientEvent('link_shared', 'Lien boutique copié');
       }
-      catch (_error) {
-        notify('Impossible de copier automatiquement le lien.', 'warning');
+      catch (error) {
+        notify(`Impossible de copier le lien : ${error.message}`, 'warning');
       }
       finally {
         window.setTimeout(() => { isCopyingShopLink = false; }, 700);
@@ -3039,7 +3070,15 @@
     }
 
     async function openPublicSite() {
-      const snapshot = preparePublicSiteSnapshot();
+      let backendSite = null;
+      try {
+        backendSite = await ensureBackendSite({}, { allowLocalFallback: false });
+      } catch (error) {
+        notify(`Impossible de préparer le site public : ${error.message}`, 'danger');
+        return;
+      }
+
+      const snapshot = preparePublicSiteSnapshot(backendSite);
       if (snapshot.slug) {
         const immediateUrl = getPublicPreviewUrl(snapshot.slug);
         const previewWindow = window.open(immediateUrl, '_blank');
@@ -3170,6 +3209,7 @@
     }
 
     enforceExpectedDashboardAccount();
+    enforcePaidClientAccess();
     resetVisibleNumbersAndContacts();
     applyAccountSiteToPreview();
     applyAccountProfileToSettings();
