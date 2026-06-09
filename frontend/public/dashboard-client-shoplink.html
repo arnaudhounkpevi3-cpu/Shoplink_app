@@ -718,7 +718,7 @@
       const officialUniqueVisitors = Number(officialMetrics.uniqueVisitors || 0);
       const officialProductViewsTotal = Number(officialMetrics.productViewsTotal || 0);
       const officialAddToCartTotal = Number(officialMetrics.addToCartTotal || 0);
-      const officialOrdersTotal = Number(officialMetrics.ordersTotal ?? stats.ordersTotal ?? 0);
+      const officialOrdersTotal = Number(stats.ordersTotal ?? officialMetrics.ordersTotal ?? 0);
 
       setMetric('Vues du site', officialSiteViews);
       setMetric('Vues totales', officialSiteViews);
@@ -761,7 +761,6 @@
           stats.views = Number(data.stats.totalViews || 0);
         }
         stats.whatsappClicks = Number(data.stats.whatsappClicks || 0);
-        stats.ordersTotal = Number(data.stats.ordersTotal || 0);
         stats.topProduct = data.stats.topProduct || null;
         stats.productOrders = data.stats.productOrders || {};
         stats.sourceBreakdown = data.stats.sourceBreakdown || {};
@@ -813,7 +812,6 @@
         stats.productViews = data.productViews || {};
         stats.productOrders = data.productOrders || {};
         stats.whatsappClicks = Number(metrics.ordersTotal || 0);
-        stats.ordersTotal = Number(metrics.ordersTotal || stats.ordersTotal || 0);
         stats.topProduct = data.topProduct || null;
         stats.weeklyTopProducts = data.topProducts || [];
         stats.productViewsTotal = Number(metrics.productViewsTotal || 0);
@@ -1125,6 +1123,37 @@
         confirmProductDelete(row);
       });
       return row;
+    }
+
+    async function syncOrderCountsFromBackend() {
+      const context = getClientContext();
+      if (!context.siteId || !hasValidClientSession()) return;
+
+      try {
+        const data = await apiJson(`/api/orders/site/${encodeURIComponent(context.siteId)}`);
+        const orders = (data.orders || []).filter((order) => order && order.status !== 'cancelled');
+        const productOrders = {};
+
+        orders.forEach((order) => {
+          (order.items || []).forEach((item) => {
+            const key = String(item.productId || '');
+            if (!key) return;
+            productOrders[key] = (productOrders[key] || 0) + Number(item.quantity || 1);
+          });
+        });
+
+        const stats = loadStats();
+        stats.ordersTotal = orders.length;
+        stats.productOrders = {
+          ...(stats.productOrders || {}),
+          ...productOrders,
+        };
+        saveStats(stats);
+        setMetric('Commandes reçues', orders.length);
+        renderTopViewedProducts(stats.productViews || {});
+      } catch (error) {
+        console.warn('Synchronisation commandes indisponible:', error);
+      }
     }
 
     async function toBackendProductPayload(product, siteId) {
@@ -3474,13 +3503,21 @@
     updateClientGreeting();
     renderClientStats();
     syncTrackedStats();
-    window.addEventListener('focus', () => refreshBackendClientData({ force: true }));
+    syncOrderCountsFromBackend();
+    window.addEventListener('focus', () => {
+      refreshBackendClientData({ force: true });
+      syncOrderCountsFromBackend();
+    });
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) refreshBackendClientData({ force: true });
+      if (!document.hidden) {
+        refreshBackendClientData({ force: true });
+        syncOrderCountsFromBackend();
+      }
     });
     setInterval(renderClientStats, 60000);
     setInterval(normalizeClientDashboardIcons, 1000);
     setInterval(syncTrackedStats, 30000);
+    setInterval(syncOrderCountsFromBackend, 30000);
     setInterval(() => refreshBackendClientData(), 120000);
     document.addEventListener('keydown', event => {
       if(event.key === 'Escape') {
