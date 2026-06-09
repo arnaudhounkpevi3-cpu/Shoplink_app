@@ -261,14 +261,17 @@ function mapPayment(p) {
   }
   let premiumOrder = null
   let paymentMeta = {}
+  let notePayload = {}
   if (p.admin_note) {
     try {
       const parsed = JSON.parse(p.admin_note)
+      notePayload = parsed || {}
       premiumOrder = parsed.premiumOrder || null
       paymentMeta = parsed.paymentData || parsed.paymentMeta || {}
     } catch (_e) {
       premiumOrder = null
       paymentMeta = {}
+      notePayload = {}
     }
   }
   return {
@@ -282,12 +285,20 @@ function mapPayment(p) {
     reference: p.reference,
     adminNote: p.admin_note || '',
     premiumOrder,
-    validationStatus: premiumOrder?.validationStatus,
-    transactionId: premiumOrder?.transactionId,
-    paymentStatus: premiumOrder?.paymentStatus,
-    projectStatus: premiumOrder?.projectStatus,
-    deliveryStartedAt: premiumOrder?.deliveryStartedAt,
-    deliveryTargetAt: premiumOrder?.deliveryTargetAt,
+    clientName: premiumOrder?.manager || paymentMeta.clientName || notePayload.clientName || '',
+    userName: premiumOrder?.manager || paymentMeta.clientName || notePayload.clientName || '',
+    email: premiumOrder?.email || paymentMeta.email || notePayload.email || '',
+    phone: premiumOrder?.whatsapp || paymentMeta.phone || paymentMeta.whatsappNumber || notePayload.phone || '',
+    method: p.method || notePayload.method || '',
+    validationStatus: premiumOrder?.validationStatus || notePayload.validationStatus || '',
+    transactionId: premiumOrder?.transactionId || notePayload.transactionId || '',
+    paymentStatus: premiumOrder?.paymentStatus || notePayload.paymentStatus || '',
+    projectStatus: premiumOrder?.projectStatus || notePayload.projectStatus || '',
+    deliveryStartedAt: premiumOrder?.deliveryStartedAt || notePayload.deliveryStartedAt || '',
+    deliveryTargetAt: premiumOrder?.deliveryTargetAt || notePayload.deliveryTargetAt || '',
+    mobileMoneyProvider: premiumOrder?.mobileMoneyProvider || notePayload.mobileMoneyProvider || '',
+    mobileMoneyPhone: premiumOrder?.mobileMoneyPhone || notePayload.mobileMoneyPhone || '',
+    smsCode: premiumOrder?.smsCode || notePayload.smsCode || '',
     siteName: paymentMeta.siteName || '',
     siteDescription: paymentMeta.siteDescription || '',
     whatsappNumber: paymentMeta.whatsappNumber || '',
@@ -300,6 +311,7 @@ function mapPayment(p) {
     secondaryColor: paymentMeta.secondaryColor || '',
     logo: paymentMeta.logo || '',
     paidAt: p.paid_at ? iso(p.paid_at) : undefined,
+    validatedAt: p.paid_at ? iso(p.paid_at) : notePayload.validatedAt || undefined,
     createdAt: iso(p.created_at),
     updatedAt: p.updated_at ? iso(p.updated_at) : undefined,
   }
@@ -877,10 +889,26 @@ module.exports = {
             ...data.premiumOrder,
             paymentStatus: data.paymentStatus,
             projectStatus: data.projectStatus,
+            validationStatus: data.validationStatus,
+            transactionId: data.transactionId,
+            mobileMoneyProvider: data.mobileMoneyProvider,
+            mobileMoneyPhone: data.mobileMoneyPhone,
           },
         })
       : JSON.stringify({
+          clientName: data.clientName || data.name || '',
+          email: data.email || '',
+          phone: data.phone || data.whatsappNumber || '',
+          method: data.method || '',
+          validationStatus: data.validationStatus || '',
+          transactionId: data.transactionId || '',
+          paymentStatus: data.paymentStatus || '',
+          mobileMoneyProvider: data.mobileMoneyProvider || '',
+          mobileMoneyPhone: data.mobileMoneyPhone || '',
           paymentData: {
+            clientName: data.clientName || data.name || '',
+            email: data.email || '',
+            phone: data.phone || data.whatsappNumber || '',
             siteName: data.siteName || '',
             siteDescription: data.siteDescription || '',
             whatsappNumber: data.whatsappNumber || '',
@@ -985,6 +1013,17 @@ module.exports = {
           notePayload[key] = patch[key]
         }
       }
+    }
+
+    for (const key of ['clientName', 'email', 'phone', 'method']) {
+      if (patch[key] !== undefined) {
+        notePayload[key] = patch[key]
+        if (notePayload.paymentData) notePayload.paymentData[key] = patch[key]
+      }
+    }
+
+    if (patch.validatedAt !== undefined) {
+      notePayload.validatedAt = patch.validatedAt
     }
 
     if (Object.keys(notePayload).length) {
