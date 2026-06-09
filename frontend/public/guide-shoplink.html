@@ -498,14 +498,15 @@
     <div>
       <div class="eyebrow">Guide d’utilisation</div>
       <h1>Comment utiliser ShopLink.</h1>
-      <p class="hero-text">Un guide visuel et coloré pour comprendre le parcours complet : créer son compte, préparer son paiement, gérer sa boutique, publier ses produits et partager son site.</p>
+      <p class="hero-text">Un guide visuel et coloré pour comprendre le parcours complet : créer son compte, préparer son paiement, valider par capture, gérer sa boutique, publier ses produits et partager son site.</p>
     </div>
     <div class="hero-card">
       <div class="mini-flow">
         <div class="flow-item"><div class="flow-icon">1</div><div><div class="flow-title">Inscription</div><div class="flow-copy">Renseigner le compte, la boutique, l’activité et les conditions.</div></div></div>
-        <div class="flow-item"><div class="flow-icon">2</div><div><div class="flow-title">Paiement</div><div class="flow-copy">Valider le service avant l’accès complet au dashboard.</div></div></div>
-        <div class="flow-item"><div class="flow-icon">3</div><div><div class="flow-title">Dashboard</div><div class="flow-copy">Ajouter les produits, modifier les infos et publier le site.</div></div></div>
-        <div class="flow-item"><div class="flow-icon">4</div><div><div class="flow-title">Site public</div><div class="flow-copy">Partager le lien et recevoir les commandes des clients.</div></div></div>
+        <div class="flow-item"><div class="flow-icon">2</div><div><div class="flow-title">Paiement</div><div class="flow-copy">Le client envoie le montant au numéro ShopLink indiqué.</div></div></div>
+        <div class="flow-item"><div class="flow-icon">3</div><div><div class="flow-title">Validation</div><div class="flow-copy">Il uploade la capture du reçu pour débloquer son compte.</div></div></div>
+        <div class="flow-item"><div class="flow-icon">4</div><div><div class="flow-title">Dashboard</div><div class="flow-copy">Ajouter les produits, modifier les infos et publier le site.</div></div></div>
+        <div class="flow-item"><div class="flow-icon">5</div><div><div class="flow-title">Site public</div><div class="flow-copy">Partager le lien et recevoir les commandes des clients.</div></div></div>
       </div>
     </div>
   </section>
@@ -513,6 +514,7 @@
   <div class="quick-links">
     <a class="quick-link" href="#inscription">Inscription</a>
     <a class="quick-link" href="#paiement">Paiement</a>
+    <a class="quick-link" href="#validation">Validation</a>
     <a class="quick-link" href="#dashboard">Dashboard</a>
     <a class="quick-link" href="#site-public">Site public</a>
   </div>
@@ -542,11 +544,11 @@
       <div class="step-copy">
         <div class="step-number">2</div>
         <h2>Passer par la page paiement</h2>
-        <p class="step-desc">Après la création, le client passe par la page paiement. Cette étape permet d’enregistrer la demande avant l’accès complet à son tableau de bord.</p>
+        <p class="step-desc">Après la création, le client passe par la page paiement. Il voit le montant, choisit le moyen de paiement et envoie l’argent au numéro ShopLink indiqué.</p>
         <div class="bullets">
           <div class="bullet">Le montant et le service sont affichés clairement.</div>
-          <div class="bullet">Le numéro client est saisi au format demandé.</div>
-          <div class="bullet">Le dashboard s’ouvre après validation du paiement.</div>
+          <div class="bullet">Les numéros MTN et Celtiis sont visibles et copiables.</div>
+          <div class="bullet">Après paiement, le client passe à la validation par capture.</div>
         </div>
         <div class="action-row"><a class="btn-main" href="/payment.html?type=autonome&step=full&amount=4000">Ouvrir le paiement</a></div>
       </div>
@@ -558,11 +560,31 @@
       </div>
     </article>
 
-    <article class="step" id="dashboard">
+    <article class="step" id="validation">
       <div class="step-copy">
         <div class="step-number">3</div>
+        <h2>Valider le paiement par capture</h2>
+        <p class="step-desc">Après le paiement, le client uploade une capture de confirmation MTN ou Celtiis. ShopLink lit automatiquement le reçu et vérifie les informations essentielles.</p>
+        <div class="bullets">
+          <div class="bullet">La capture doit montrer le montant payé et le numéro destinataire ShopLink.</div>
+          <div class="bullet">Le système détecte le code transaction pour éviter les doublons.</div>
+          <div class="bullet">Si tout est correct, le compte est débloqué et le dashboard s’ouvre.</div>
+        </div>
+        <div class="action-row"><a class="btn-main" href="/validate-payment.html?amount=4000">Voir la validation</a></div>
+      </div>
+      <div class="screen">
+        <div class="screen-window">
+          <iframe class="screen-frame" src="/validate-payment.html?amount=4000" title="Aperçu de la page validation paiement ShopLink" loading="lazy" scrolling="no" sandbox=""></iframe>
+        </div>
+        <div class="screen-label"><strong>Validation capture</strong><span>OCR du reçu</span></div>
+      </div>
+    </article>
+
+    <article class="step" id="dashboard">
+      <div class="step-copy">
+        <div class="step-number">4</div>
         <h2>Gérer la boutique depuis le dashboard</h2>
-        <p class="step-desc">Une fois le compte prêt, le client utilise le dashboard pour modifier les informations de sa boutique, ajouter des produits et suivre ses statistiques.</p>
+        <p class="step-desc">Une fois le paiement validé, le client utilise le dashboard pour modifier les informations de sa boutique, ajouter des produits et suivre ses statistiques.</p>
         <div class="bullets">
           <div class="bullet">Ajouter, modifier ou supprimer des produits du catalogue.</div>
           <div class="bullet">Changer logo, adresse, WhatsApp, description et activité.</div>
@@ -580,7 +602,7 @@
 
     <article class="step" id="site-public">
       <div class="step-copy">
-        <div class="step-number">4</div>
+        <div class="step-number">5</div>
         <h2>Partager le site public</h2>
         <p class="step-desc">Quand les produits sont publiés, le client partage son lien public. Les visiteurs peuvent voir les produits, ajouter au panier et commander via WhatsApp.</p>
         <div class="bullets">
