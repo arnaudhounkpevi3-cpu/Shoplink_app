@@ -166,6 +166,7 @@
     let isCatalogExpanded = false;
     let currentTrafficWeekOffset = 0;
     let activeDashboardSite = null;
+    let lastBackendClientSyncAt = 0;
     const CLIENT_STATS_KEY = 'shoplink_client_dashboard_stats';
     const CLIENT_PRODUCTS_KEY = 'shoplink_client_products';
     const CLIENT_PROFILE_KEY = 'shoplink_user';
@@ -3300,8 +3301,32 @@
         });
     }
 
-    async function loadBackendClientData() {
+    function currentClientPageId() {
+      return document.querySelector('.page.active')?.id || '';
+    }
+
+    function shouldDeferBackendClientSync() {
+      const pageId = currentClientPageId();
+      const activeField = document.activeElement?.closest?.('input, textarea, select, .upload-zone');
+      return Boolean(
+        editingProductRow ||
+        (activeField && ['p-produits', 'p-monsite', 'p-parametres'].includes(pageId))
+      );
+    }
+
+    async function refreshBackendClientData(options = {}) {
+      const { force = false } = options;
+      const now = Date.now();
+      if (!force && now - lastBackendClientSyncAt < 15000) return;
+      if (!force && shouldDeferBackendClientSync()) return;
+      lastBackendClientSyncAt = now;
+      await loadBackendClientData({ silent: true, background: true });
+    }
+
+    async function loadBackendClientData(options = {}) {
+      const { silent = false, background = false } = options;
       if (!getAuthToken()) return;
+      if (background && shouldDeferBackendClientSync()) return;
 
       try {
         const sitesData = await apiJson('/api/sites/user/my-sites');
@@ -3328,7 +3353,7 @@
         renderClientStats();
       } catch (error) {
         console.warn('Données backend indisponibles, fallback local:', error);
-        notify('Données locales utilisées. La synchronisation sera retentée automatiquement.', 'warning');
+        if (!silent) notify('Données locales utilisées. La synchronisation sera retentée automatiquement.', 'warning');
       }
     }
 
@@ -3447,9 +3472,14 @@
     updateClientGreeting();
     renderClientStats();
     syncTrackedStats();
+    window.addEventListener('focus', () => refreshBackendClientData({ force: true }));
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) refreshBackendClientData({ force: true });
+    });
     setInterval(renderClientStats, 60000);
     setInterval(normalizeClientDashboardIcons, 1000);
     setInterval(syncTrackedStats, 30000);
+    setInterval(() => refreshBackendClientData(), 120000);
     document.addEventListener('keydown', event => {
       if(event.key === 'Escape') {
         closeClientMenu();

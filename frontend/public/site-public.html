@@ -1146,14 +1146,13 @@
     function applyTheme(site) {
       const key = activityKey(site.activityType || site.activity || site.category)
       const theme = THEMES[key] || THEMES.general
-      const legacyDefaults = new Set(['#d9643a', '#1a6b4a', '#1a5c38', '#667eea', '#176b5b', '#764ba2'])
       const storedPrimary = String(site.primaryColor || '').toLowerCase()
       const storedSecondary = String(site.secondaryColor || '').toLowerCase()
-      const primary = storedPrimary && !legacyDefaults.has(storedPrimary) ? site.primaryColor : theme.primary
-      const secondary = storedSecondary && !legacyDefaults.has(storedSecondary) ? site.secondaryColor : theme.secondary
+      const primary = storedPrimary ? site.primaryColor : theme.primary
+      const secondary = storedSecondary ? site.secondaryColor : theme.secondary
       document.documentElement.style.setProperty('--primary', primary)
       document.documentElement.style.setProperty('--secondary', secondary)
-      document.documentElement.style.setProperty('--accent', theme.accent)
+      document.documentElement.style.setProperty('--accent', storedSecondary ? secondary : theme.accent)
       document.documentElement.style.setProperty('--bg', theme.bg)
       document.documentElement.style.setProperty('--soft', theme.soft)
       document.documentElement.style.setProperty('--text', theme.text)
