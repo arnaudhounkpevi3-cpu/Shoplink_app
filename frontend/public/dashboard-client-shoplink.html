@@ -1630,30 +1630,56 @@
       const palettes = activityColorPalettes();
       colorGroup.innerHTML = `
         <label class="form-label">Palettes proposées pour votre activité</label>
-        <div style="font-size:12px;color:var(--soft);line-height:1.45;margin:4px 0 10px;">Choisissez une couleur principale. Elle s’appliquera à l’aperçu, aux boutons, au header et au site public après sauvegarde.</div>
+        <div style="font-size:12px;color:var(--soft);line-height:1.45;margin:4px 0 10px;">Cliquez sur une couleur de la bande pour l’essayer. La couleur choisie s’applique à l’aperçu, aux boutons, au header et au site public après sauvegarde.</div>
         <div class="activity-palette-list" style="display:grid;gap:10px;">
           ${palettes.map((palette) => {
-            const isSelected = palette.primary.toLowerCase() === currentColor;
-            return `<button type="button" class="activity-palette-card ${isSelected ? 'sel' : ''}" data-primary="${palette.primary}" data-secondary="${palette.secondary}" style="border:${isSelected ? '2px solid var(--green)' : '1px solid var(--border)'};background:#fff;border-radius:14px;padding:10px;cursor:pointer;text-align:left;font-family:inherit;">
-              <div style="display:flex;height:28px;border-radius:10px;overflow:hidden;margin-bottom:8px;">${palette.colors.map((color) => `<span style="background:${color};flex:1;"></span>`).join('')}</div>
+            const isSelected = palette.colors.some((color) => color.toLowerCase() === currentColor) || palette.primary.toLowerCase() === currentColor;
+            return `<div class="activity-palette-card ${isSelected ? 'sel' : ''}" data-primary="${palette.primary}" data-secondary="${palette.secondary}" style="border:${isSelected ? '2px solid var(--green)' : '1px solid var(--border)'};background:#fff;border-radius:14px;padding:10px;text-align:left;font-family:inherit;">
+              <div class="activity-palette-strip" style="display:flex;height:30px;border-radius:10px;overflow:hidden;margin-bottom:8px;gap:0;">${palette.colors.map((color) => {
+                const colorSelected = color.toLowerCase() === currentColor;
+                return `<button type="button" class="activity-palette-swatch" data-primary="${color}" data-secondary="${palette.secondary}" aria-label="Essayer ${color}" title="${color}" style="background:${color};flex:1;border:0;cursor:pointer;box-shadow:${colorSelected ? 'inset 0 0 0 3px #fff, inset 0 0 0 5px #111' : 'none'};"></button>`;
+              }).join('')}</div>
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><strong style="font-size:12.5px;color:var(--text);">${palette.name}</strong><span style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">${palette.tag}</span></div>
-            </button>`;
+            </div>`;
           }).join('')}
         </div>
       `;
 
-      colorGroup.querySelectorAll('.activity-palette-card').forEach((button) => {
-        button.addEventListener('click', () => {
-          selectedSitePrimaryColor = button.dataset.primary || '';
-          selectedSiteSecondaryColor = button.dataset.secondary || '';
-          colorGroup.querySelectorAll('.activity-palette-card').forEach((card) => {
-            card.classList.remove('sel');
-            card.style.border = '1px solid var(--border)';
-          });
-          button.classList.add('sel');
-          button.style.border = '2px solid var(--green)';
-          applyPreviewTheme();
-          notify('Palette appliquée à l’aperçu. Cliquez sur Sauvegarder pour publier cette couleur.');
+      function applyPaletteColor(primary, secondary, selectedElement) {
+        selectedSitePrimaryColor = primary || '';
+        selectedSiteSecondaryColor = secondary || '';
+
+        colorGroup.querySelectorAll('.activity-palette-card').forEach((card) => {
+          card.classList.remove('sel');
+          card.style.border = '1px solid var(--border)';
+        });
+        colorGroup.querySelectorAll('.activity-palette-swatch').forEach((swatch) => {
+          swatch.style.boxShadow = 'none';
+        });
+
+        const card = selectedElement?.closest('.activity-palette-card');
+        if (card) {
+          card.classList.add('sel');
+          card.style.border = '2px solid var(--green)';
+        }
+        if (selectedElement?.classList?.contains('activity-palette-swatch')) {
+          selectedElement.style.boxShadow = 'inset 0 0 0 3px #fff, inset 0 0 0 5px #111';
+        }
+
+        applyPreviewTheme();
+        notify('Couleur appliquée à l’aperçu. Cliquez sur Sauvegarder pour publier cette couleur.');
+      }
+
+      colorGroup.querySelectorAll('.activity-palette-swatch').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          applyPaletteColor(button.dataset.primary, button.dataset.secondary, button);
+        });
+      });
+
+      colorGroup.querySelectorAll('.activity-palette-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          applyPaletteColor(card.dataset.primary, card.dataset.secondary, card);
         });
       });
     }
