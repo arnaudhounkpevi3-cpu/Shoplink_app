@@ -1107,6 +1107,16 @@
       row.querySelector('.prod-desc').textContent = product.description || '';
       row.querySelector('.prod-desc').style.display = product.description ? 'block' : 'none';
       row.querySelector('.prod-price').textContent = `${Number(product.price || 0).toLocaleString('fr-FR')} F`;
+      row.querySelector('[data-action="edit"]')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        editProduct(row);
+      });
+      row.querySelector('[data-action="delete"]')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        confirmProductDelete(row);
+      });
       return row;
     }
 
