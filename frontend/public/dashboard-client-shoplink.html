@@ -1666,7 +1666,7 @@
         <div class="activity-palette-list" style="display:grid;gap:10px;">
           ${palettes.map((palette) => {
             const isSelected = palette.colors.some((color) => color.toLowerCase() === currentColor) || palette.primary.toLowerCase() === currentColor;
-            return `<div class="activity-palette-card ${isSelected ? 'sel' : ''}" data-primary="${palette.primary}" data-secondary="${palette.secondary}" style="border:${isSelected ? '2px solid var(--green)' : '1px solid var(--border)'};background:#fff;border-radius:14px;padding:10px;text-align:left;font-family:inherit;">
+            return `<div class="activity-palette-card ${isSelected ? 'sel' : ''}" data-primary="${palette.primary}" data-secondary="${palette.primary}" style="border:${isSelected ? '2px solid var(--green)' : '1px solid var(--border)'};background:#fff;border-radius:14px;padding:10px;text-align:left;font-family:inherit;">
               <div class="activity-palette-strip" style="display:flex;height:30px;border-radius:10px;overflow:hidden;margin-bottom:8px;gap:0;">${palette.colors.map((color) => {
                 const colorSelected = color.toLowerCase() === currentColor;
                 return `<button type="button" class="activity-palette-swatch" data-primary="${color}" data-secondary="${color}" aria-label="Essayer ${color}" title="${color}" style="background:${color};flex:1;border:0;cursor:pointer;box-shadow:${colorSelected ? 'inset 0 0 0 3px #fff, inset 0 0 0 5px #111' : 'none'};"></button>`;
@@ -2169,10 +2169,12 @@
         },
       };
       const baseTheme = themes[getActivityKey()] || themes.general;
+      const customPrimary = selectedSitePrimaryColor || context.site.primaryColor || '';
       return {
         ...baseTheme,
-        primary: selectedSitePrimaryColor || context.site.primaryColor || baseTheme.primary,
-        accent: selectedSiteSecondaryColor || context.site.secondaryColor || baseTheme.accent,
+        primary: customPrimary || baseTheme.primary,
+        accent: customPrimary || selectedSiteSecondaryColor || context.site.secondaryColor || baseTheme.accent,
+        soft: customPrimary ? `color-mix(in srgb, ${customPrimary} 11%, #fff)` : baseTheme.soft,
       };
     }
 

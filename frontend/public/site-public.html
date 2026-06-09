@@ -1148,16 +1148,20 @@
       const theme = THEMES[key] || THEMES.general
       const storedPrimary = String(site.primaryColor || '').toLowerCase()
       const storedSecondary = String(site.secondaryColor || '').toLowerCase()
-      const primary = storedPrimary ? site.primaryColor : theme.primary
-      const secondary = storedSecondary ? site.secondaryColor : theme.secondary
+      const hasCustomColor = Boolean(storedPrimary)
+      const primary = hasCustomColor ? site.primaryColor : theme.primary
+      const secondary = hasCustomColor ? primary : (storedSecondary ? site.secondaryColor : theme.secondary)
+      const accent = hasCustomColor ? primary : (storedSecondary ? secondary : theme.accent)
+      const soft = hasCustomColor ? `color-mix(in srgb, ${primary} 11%, #fff)` : theme.soft
+      const bg = hasCustomColor ? `color-mix(in srgb, ${primary} 5%, #fff)` : theme.bg
       document.documentElement.style.setProperty('--primary', primary)
       document.documentElement.style.setProperty('--secondary', secondary)
-      document.documentElement.style.setProperty('--accent', storedSecondary ? secondary : theme.accent)
-      document.documentElement.style.setProperty('--bg', theme.bg)
-      document.documentElement.style.setProperty('--soft', theme.soft)
+      document.documentElement.style.setProperty('--accent', accent)
+      document.documentElement.style.setProperty('--bg', bg)
+      document.documentElement.style.setProperty('--soft', soft)
       document.documentElement.style.setProperty('--text', theme.text)
       document.body.dataset.activity = key
-      window.shopTheme = { ...theme, primary, secondary, key }
+      window.shopTheme = { ...theme, primary, secondary, accent, bg, soft, key }
       updateCheckoutPlaceholders(key)
     }
 
