@@ -1669,7 +1669,7 @@
             return `<div class="activity-palette-card ${isSelected ? 'sel' : ''}" data-primary="${palette.primary}" data-secondary="${palette.secondary}" style="border:${isSelected ? '2px solid var(--green)' : '1px solid var(--border)'};background:#fff;border-radius:14px;padding:10px;text-align:left;font-family:inherit;">
               <div class="activity-palette-strip" style="display:flex;height:30px;border-radius:10px;overflow:hidden;margin-bottom:8px;gap:0;">${palette.colors.map((color) => {
                 const colorSelected = color.toLowerCase() === currentColor;
-                return `<button type="button" class="activity-palette-swatch" data-primary="${color}" data-secondary="${palette.secondary}" aria-label="Essayer ${color}" title="${color}" style="background:${color};flex:1;border:0;cursor:pointer;box-shadow:${colorSelected ? 'inset 0 0 0 3px #fff, inset 0 0 0 5px #111' : 'none'};"></button>`;
+                return `<button type="button" class="activity-palette-swatch" data-primary="${color}" data-secondary="${color}" aria-label="Essayer ${color}" title="${color}" style="background:${color};flex:1;border:0;cursor:pointer;box-shadow:${colorSelected ? 'inset 0 0 0 3px #fff, inset 0 0 0 5px #111' : 'none'};"></button>`;
               }).join('')}</div>
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><strong style="font-size:12.5px;color:var(--text);">${palette.name}</strong><span style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">${palette.tag}</span></div>
             </div>`;
@@ -1679,7 +1679,7 @@
 
       function applyPaletteColor(primary, secondary, selectedElement) {
         selectedSitePrimaryColor = primary || '';
-        selectedSiteSecondaryColor = secondary || '';
+        selectedSiteSecondaryColor = secondary || primary || '';
 
         colorGroup.querySelectorAll('.activity-palette-card').forEach((card) => {
           card.classList.remove('sel');
