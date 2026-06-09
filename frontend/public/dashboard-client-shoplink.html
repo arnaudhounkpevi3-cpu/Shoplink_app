@@ -1483,6 +1483,15 @@
       }, 2400);
     }
 
+    function escapeClientHtml(value = '') {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function confirmProductDelete(row) {
       if (!row) return;
       const productName = row.querySelector('.prod-name')?.textContent || 'ce produit';
@@ -1501,7 +1510,7 @@
             <div style="width:40px;height:40px;border-radius:15px;background:#fde8e8;color:#a32d2d;display:grid;place-items:center;flex:0 0 auto;font-size:18px;"><i class="fi fi-rr-trash"></i></div>
             <div style="min-width:0;">
               <div style="font-size:15px;font-weight:900;color:#111;letter-spacing:-.01em;">Supprimer le produit ?</div>
-              <div style="font-size:12.5px;color:rgba(17,17,17,.62);line-height:1.5;margin-top:4px;">Voulez-vous vraiment supprimer <strong>${escapeHtml(productName)}</strong> ? Cette action retirera aussi le produit du site public après synchronisation.</div>
+              <div style="font-size:12.5px;color:rgba(17,17,17,.62);line-height:1.5;margin-top:4px;">Voulez-vous vraiment supprimer <strong>${escapeClientHtml(productName)}</strong> ? Cette action retirera aussi le produit du site public après synchronisation.</div>
             </div>
           </div>
           <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;">
@@ -3219,8 +3228,17 @@
     });
 
     document.addEventListener('click', event => {
-      const deleteTarget = event.target.closest('[data-action="delete"], .fi-rr-trash');
+      const deleteTarget = event.target.closest('.prod-row [data-action="delete"], .prod-row .fi-rr-trash, .prod-row .iBtn');
       if (!deleteTarget) return;
+
+      const deleteText = deleteTarget.textContent || '';
+      const isDeleteAction = deleteTarget.dataset.action === 'delete'
+        || deleteTarget.classList.contains('fi-rr-trash')
+        || Boolean(deleteTarget.querySelector?.('.fi-rr-trash'))
+        || deleteText.includes('🗑')
+        || deleteText.toLowerCase().includes('supprimer');
+
+      if (!isDeleteAction) return;
 
       const row = deleteTarget.closest('.prod-row');
       if (!row) return;
@@ -3247,7 +3265,7 @@
         const row = actionButton.closest('.prod-row');
         if (!row) return;
         if (actionButton.dataset.action === 'edit' || target.classList.contains('fi-rr-pencil') || actionButton.querySelector?.('.fi-rr-pencil') || text.includes('✏️')) return editProduct(row);
-        if (actionButton.dataset.action === 'delete' || target.classList.contains('fi-rr-trash') || actionButton.querySelector?.('.fi-rr-trash')) return confirmProductDelete(row);
+        if (actionButton.dataset.action === 'delete' || target.classList.contains('fi-rr-trash') || actionButton.querySelector?.('.fi-rr-trash') || text.includes('🗑') || text.toLowerCase().includes('supprimer')) return confirmProductDelete(row);
       }
       if (text.includes('Publier le produit') || text.includes('Enregistrer les modifications')) return addOrUpdateProduct();
       if (text === 'Annuler') return resetProductForm();
