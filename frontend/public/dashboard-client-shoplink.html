@@ -160,6 +160,8 @@
     let editingProductRow = null;
     let selectedProductImage = '';
     let selectedSiteLogo = '';
+    let selectedSitePrimaryColor = '';
+    let selectedSiteSecondaryColor = '';
     let isCopyingShopLink = false;
     let isCatalogExpanded = false;
     let currentTrafficWeekOffset = 0;
@@ -469,6 +471,8 @@
         description,
         activityType,
         activityLabel,
+        primaryColor: overrides.primaryColor ?? selectedSitePrimaryColor ?? context.site.primaryColor ?? '',
+        secondaryColor: overrides.secondaryColor ?? selectedSiteSecondaryColor ?? context.site.secondaryColor ?? '',
         logo: overrides.logo ?? selectedSiteLogo ?? context.site.logo ?? '',
         status: overrides.status || context.site.status || 'published',
       };
@@ -1563,12 +1567,95 @@
       window.scrollTo({top:0,behavior:'smooth'});
     }
 
-    function selectColor(el,color){
+    function selectColor(el,color,secondaryColor = ''){
       document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('sel'));
       el.classList.add('sel');
-      const head=document.getElementById('phone-head');
-      if(head) head.style.background=color;
+      selectedSitePrimaryColor = color;
+      selectedSiteSecondaryColor = secondaryColor || selectedSiteSecondaryColor || getPreviewTheme().accent;
+      applyPreviewTheme();
       notify('Couleur appliquée à l’aperçu mobile.');
+    }
+
+    const ACTIVITY_COLOR_PALETTES = {
+      beauty: [
+        { name: 'Nude Africain', tag: 'Naturel', primary: '#8B4513', secondary: '#C4813A', colors: ['#3D1F0D', '#8B4513', '#C4813A', '#E8C49A', '#F5EAD7'] },
+        { name: 'Or & Rose', tag: 'Élégant', primary: '#8B1A3A', secondary: '#D4527A', colors: ['#1A0A0E', '#8B1A3A', '#D4527A', '#F0A8B8', '#F8E8ED'] },
+        { name: 'Vert Émeraude', tag: 'Premium', primary: '#1A4A30', secondary: '#3A8A5C', colors: ['#0A1A12', '#1A4A30', '#3A8A5C', '#A8D4B8', '#F0F8F4'] },
+        { name: 'Corail & Crème', tag: 'Doux', primary: '#C4521A', secondary: '#E8885A', colors: ['#2A1008', '#C4521A', '#E8885A', '#F4C4A4', '#FDF0E8'] },
+      ],
+      fashion: [
+        { name: 'Soir d’Or', tag: 'Luxe', primary: '#4A3220', secondary: '#B8922A', colors: ['#1C1410', '#4A3220', '#B8922A', '#E8D080', '#FBF6EC'] },
+        { name: 'Velours Pourpre', tag: 'Bijoux', primary: '#5A1A6A', secondary: '#C060D0', colors: ['#1A0A1E', '#5A1A6A', '#C060D0', '#E8B8F0', '#FDF4FF'] },
+        { name: 'Terracotta Marché', tag: 'Accessible', primary: '#C4521A', secondary: '#E88040', colors: ['#C4521A', '#E88040', '#F4C090', '#FBE8D8', '#2E4A1A'] },
+        { name: 'Indigo Populaire', tag: 'Moderne', primary: '#1A2A6A', secondary: '#3A5AC4', colors: ['#1A2A6A', '#3A5AC4', '#80A0E8', '#D0DCF8', '#F4F6FF'] },
+      ],
+      fastfood: [
+        { name: 'Flamethrower', tag: 'Burger', primary: '#FF2200', secondary: '#FF6B00', colors: ['#0D0D0D', '#FF2200', '#FF6B00', '#FFB800', '#F5F0E0'] },
+        { name: 'Smokehouse', tag: 'Grill', primary: '#A0461A', secondary: '#E8862A', colors: ['#120A04', '#3D1C08', '#A0461A', '#E8862A', '#F5D9A8'] },
+        { name: 'Neon Slice', tag: 'Pizza', primary: '#C4102A', secondary: '#E8D020', colors: ['#080812', '#1A0A2E', '#C4102A', '#E8D020', '#F0EEF8'] },
+        { name: 'Concrete Mix', tag: 'Street', primary: '#FF4500', secondary: '#C8B400', colors: ['#0A0A0A', '#1C1C1C', '#3A3A3A', '#FF4500', '#F5F5F0'] },
+      ],
+      food: [
+        { name: 'Gastronomie Noire', tag: 'Élite', primary: '#6B2D0A', secondary: '#C4771A', colors: ['#1A0F08', '#6B2D0A', '#C4771A', '#E8C87A', '#F5EDD8'] },
+        { name: 'Maquis Africain', tag: 'Local', primary: '#8B5E1A', secondary: '#C4963A', colors: ['#1C1208', '#4A2C10', '#8B5E1A', '#C4963A', '#2E4A1A'] },
+        { name: 'Street Food Coloré', tag: 'Vivant', primary: '#C43A10', secondary: '#E87A20', colors: ['#1A0A06', '#C43A10', '#E87A20', '#F5C840', '#2A3A1A'] },
+        { name: 'Végétal & Frais', tag: 'Frais', primary: '#1E3C14', secondary: '#4A7A2A', colors: ['#0A1408', '#1E3C14', '#4A7A2A', '#A8C870', '#F4F8EC'] },
+      ],
+      commerce: [
+        { name: 'ShopLink Vert', tag: 'Commerce', primary: '#176b5b', secondary: '#f59c1a', colors: ['#0f493f', '#176b5b', '#1a5c38', '#f59c1a', '#e8f7ef'] },
+        { name: 'Indigo Marché', tag: 'Digital', primary: '#1A2A6A', secondary: '#3A5AC4', colors: ['#1A2A6A', '#3A5AC4', '#80A0E8', '#D0DCF8', '#F4F6FF'] },
+        { name: 'Terracotta Vente', tag: 'Chaleur', primary: '#C4521A', secondary: '#E88040', colors: ['#C4521A', '#E88040', '#F4C090', '#FBE8D8', '#2E4A1A'] },
+      ],
+      general: [
+        { name: 'Violet Accueil', tag: 'Autre', primary: '#4c2f88', secondary: '#f59c1a', colors: ['#2f1d55', '#4c2f88', '#764ba2', '#f59c1a', '#eee7ff'] },
+        { name: 'Vert Pro', tag: 'Sobre', primary: '#176b5b', secondary: '#f59c1a', colors: ['#0f493f', '#176b5b', '#1a5c38', '#f59c1a', '#e8f7ef'] },
+        { name: 'Corail Service', tag: 'Créatif', primary: '#C4521A', secondary: '#E8885A', colors: ['#2A1008', '#C4521A', '#E8885A', '#F4C4A4', '#FDF0E8'] },
+      ],
+    };
+
+    function activityColorPalettes() {
+      return ACTIVITY_COLOR_PALETTES[getActivityKey()] || ACTIVITY_COLOR_PALETTES.general;
+    }
+
+    function renderActivityColorPalettes() {
+      const appearanceCards = Array.from(document.querySelectorAll('#p-monsite .card'));
+      const appearanceCard = appearanceCards.find((card) => card.querySelector('.card-title')?.textContent?.trim().toLowerCase() === 'apparence');
+      const body = appearanceCard?.querySelector('.card-body');
+      if (!body) return;
+
+      const colorGroup = Array.from(body.querySelectorAll('.form-group')).find((group) => group.querySelector('.form-label')?.textContent?.includes('Couleur principale'));
+      if (!colorGroup) return;
+
+      const currentColor = (selectedSitePrimaryColor || getClientContext().site.primaryColor || getPreviewTheme().primary || '').toLowerCase();
+      const palettes = activityColorPalettes();
+      colorGroup.innerHTML = `
+        <label class="form-label">Palettes proposées pour votre activité</label>
+        <div style="font-size:12px;color:var(--soft);line-height:1.45;margin:4px 0 10px;">Choisissez une couleur principale. Elle s’appliquera à l’aperçu, aux boutons, au header et au site public après sauvegarde.</div>
+        <div class="activity-palette-list" style="display:grid;gap:10px;">
+          ${palettes.map((palette) => {
+            const isSelected = palette.primary.toLowerCase() === currentColor;
+            return `<button type="button" class="activity-palette-card ${isSelected ? 'sel' : ''}" data-primary="${palette.primary}" data-secondary="${palette.secondary}" style="border:${isSelected ? '2px solid var(--green)' : '1px solid var(--border)'};background:#fff;border-radius:14px;padding:10px;cursor:pointer;text-align:left;font-family:inherit;">
+              <div style="display:flex;height:28px;border-radius:10px;overflow:hidden;margin-bottom:8px;">${palette.colors.map((color) => `<span style="background:${color};flex:1;"></span>`).join('')}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><strong style="font-size:12.5px;color:var(--text);">${palette.name}</strong><span style="font-size:10px;color:var(--soft);font-weight:900;text-transform:uppercase;">${palette.tag}</span></div>
+            </button>`;
+          }).join('')}
+        </div>
+      `;
+
+      colorGroup.querySelectorAll('.activity-palette-card').forEach((button) => {
+        button.addEventListener('click', () => {
+          selectedSitePrimaryColor = button.dataset.primary || '';
+          selectedSiteSecondaryColor = button.dataset.secondary || '';
+          colorGroup.querySelectorAll('.activity-palette-card').forEach((card) => {
+            card.classList.remove('sel');
+            card.style.border = '1px solid var(--border)';
+          });
+          button.classList.add('sel');
+          button.style.border = '2px solid var(--green)';
+          applyPreviewTheme();
+          notify('Palette appliquée à l’aperçu. Cliquez sur Sauvegarder pour publier cette couleur.');
+        });
+      });
     }
 
     function openClientMenu(){document.querySelector('.topnav')?.classList.add('open');document.querySelector('.client-overlay')?.classList.add('open');document.body.style.overflow='hidden';}
@@ -1984,6 +2071,7 @@
     }
 
     function getPreviewTheme() {
+      const context = getClientContext();
       const themes = {
         food: {
           primary: '#9a3f13',
@@ -2022,7 +2110,12 @@
           text: '#111827',
         },
       };
-      return themes[getActivityKey()] || themes.general;
+      const baseTheme = themes[getActivityKey()] || themes.general;
+      return {
+        ...baseTheme,
+        primary: selectedSitePrimaryColor || context.site.primaryColor || baseTheme.primary,
+        accent: selectedSiteSecondaryColor || context.site.secondaryColor || baseTheme.accent,
+      };
     }
 
     function applyPreviewTheme() {
@@ -2667,6 +2760,8 @@
         secondaryPhone: normalizedCallPhone,
         address: document.getElementById('site-address')?.value || context.site.address || '',
         description: document.getElementById('site-description')?.value || context.site.description || '',
+        primaryColor: selectedSitePrimaryColor || context.site.primaryColor || getPreviewTheme().primary,
+        secondaryColor: selectedSiteSecondaryColor || context.site.secondaryColor || getPreviewTheme().accent,
         logo: selectedSiteLogo || context.site.logo || '',
       };
       setActiveSite(nextSite);
@@ -2757,8 +2852,11 @@
       });
 
       selectedSiteLogo = site.logo || '';
+      selectedSitePrimaryColor = site.primaryColor || '';
+      selectedSiteSecondaryColor = site.secondaryColor || '';
       updatePhoneLogoPreview();
       applyPreviewTheme();
+      renderActivityColorPalettes();
     }
 
     function normalizePhonePreviewWhatsAppButtons() {
@@ -2954,12 +3052,7 @@
         identityBody.appendChild(actions);
       }
 
-      document.querySelectorAll('#p-monsite .card').forEach((card) => {
-        const title = card.querySelector('.card-title')?.textContent?.trim().toLowerCase() || '';
-        if (title === 'apparence' || card.textContent.includes('Couleur principale')) {
-          card.remove();
-        }
-      });
+      renderActivityColorPalettes();
     }
 
     function getUserInitials(user = getCurrentUser()) {
