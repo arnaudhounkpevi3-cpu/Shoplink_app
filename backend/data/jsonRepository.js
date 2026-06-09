@@ -356,6 +356,35 @@ module.exports = {
     return state.tracking.filter((entry) => entry.siteId === siteId).map((entry) => ({ ...entry }))
   },
 
+  async addRootVisit(data = {}) {
+    if (!state.rootVisits) state.rootVisits = []
+    const event = {
+      ...data,
+      id: data.id || `root-visit-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      path: data.path || '/',
+      source: data.source || 'direct',
+      visitedAt: data.visitedAt || new Date().toISOString(),
+      createdAt: data.createdAt || new Date().toISOString(),
+    }
+    state.rootVisits.push(event)
+    saveState()
+    return { ...event }
+  },
+
+  async getRootVisitStats() {
+    if (!state.rootVisits) state.rootVisits = []
+    const now = new Date()
+    const todayStart = new Date(now)
+    todayStart.setHours(0, 0, 0, 0)
+    const sevenDaysAgo = new Date(now)
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+    return {
+      total: state.rootVisits.length,
+      today: state.rootVisits.filter((visit) => new Date(visit.visitedAt || visit.createdAt || 0) >= todayStart).length,
+      last7Days: state.rootVisits.filter((visit) => new Date(visit.visitedAt || visit.createdAt || 0) >= sevenDaysAgo).length,
+    }
+  },
+
   async addLinkVisit(data) {
     if (!state.linkVisits) state.linkVisits = []
     const event = {

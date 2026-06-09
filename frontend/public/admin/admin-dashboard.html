@@ -785,6 +785,7 @@
         <div class="metric-card"><div class="metric-label">Sites actifs</div><div class="metric-value" id="metric-sites">0</div><div class="metric-sub">Sites publiés</div></div>
         <div class="metric-card"><div class="metric-label">Revenus totaux</div><div class="metric-value" id="metric-revenue">0</div><div class="metric-sub">FCFA encaissés</div></div>
         <div class="metric-card"><div class="metric-label">Paiements en attente</div><div class="metric-value" id="metric-pending">0</div><div class="metric-sub">À valider manuellement</div></div>
+        <div class="metric-card"><div class="metric-label">Ouvertures du lien principal</div><div class="metric-value" id="metric-root-total">0</div><div class="metric-sub" id="metric-root-sub">0 aujourd’hui · 0 sur 7 jours</div></div>
       </div>
       <div class="two-col">
         <div class="section-card">
@@ -1104,6 +1105,13 @@
     setProgressWidth('stats-revenue-auto-bar', autonomousRevenue, total);
     setProgressWidth('stats-revenue-premium-deposits-bar', premiumDepositsRevenue, total);
     setProgressWidth('stats-revenue-premium-balances-bar', premiumBalancesRevenue, total);
+  }
+
+  function updateRootVisitMetrics(stats = {}) {
+    const total = document.getElementById('metric-root-total');
+    const sub = document.getElementById('metric-root-sub');
+    if (total) total.textContent = fmtMetricNumber(stats.total || 0);
+    if (sub) sub.textContent = `${fmtMetricNumber(stats.today || 0)} aujourd’hui · ${fmtMetricNumber(stats.last7Days || 0)} sur 7 jours`;
   }
 
   function fmtDate(value) {
@@ -2118,6 +2126,7 @@
           if (badgePending) badgePending.textContent = fmtMetricNumber(paymentMetrics.pendingCount ?? 0);
           updatePaymentMetrics(paymentMetrics);
           updateGlobalStats(data.globalStats || {});
+          updateRootVisitMetrics(data.rootVisitStats || {});
         }
       }
 

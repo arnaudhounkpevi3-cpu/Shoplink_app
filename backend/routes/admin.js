@@ -218,10 +218,12 @@ router.get('/summary', async (_req, res) => {
     const payments = await repo().listPayments()
     const users = await repo().listUsers()
     const sites = await repo().listSites()
+    const rootVisitStats = repo().getRootVisitStats ? await repo().getRootVisitStats() : { total: 0, today: 0, last7Days: 0 }
     summary.data = {
       ...(summary.data || {}),
       paymentMetrics: paymentMetricsFromPayments(payments),
       globalStats: await globalStatsFromData(users, sites, payments),
+      rootVisitStats,
     }
     return res.json(summary)
   }
@@ -233,6 +235,7 @@ router.get('/summary', async (_req, res) => {
     await Promise.all(sites.map((s) => repo().listProductsBySiteId(s.id)))
   ).flat()
   const payments = await repo().listPayments()
+  const rootVisitStats = repo().getRootVisitStats ? await repo().getRootVisitStats() : { total: 0, today: 0, last7Days: 0 }
 
   const premiumOrders = payments.filter((payment) => payment.type === 'premium')
   const activeCountdownPayment = premiumOrders.find(
@@ -267,6 +270,7 @@ router.get('/summary', async (_req, res) => {
         .reduce((sum, p) => sum + (p.amount || 0), 0),
       paymentMetrics: paymentMetricsFromPayments(payments),
       globalStats: await globalStatsFromData(users, sites, payments),
+      rootVisitStats,
       countdown,
     },
   })

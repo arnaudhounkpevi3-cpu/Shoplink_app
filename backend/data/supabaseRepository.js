@@ -20,6 +20,7 @@ const SITE_VISIT_COLUMNS = 'id,shop_id,site_id,ip_address,visitor_id,source,visi
 const PRODUCT_EVENT_COLUMNS = 'id,shop_id,site_id,product_id,event_type,ip_address,visitor_id,created_at,event_date,week_number,year'
 const ORDER_COLUMNS = 'id,reference,site_order_number,site_id,site_slug,site_name,seller_user_id,buyer_name,buyer_phone,buyer_address,buyer_note,total_amount,currency,source,status,payment_status,payment_method,payer_name,payer_phone,transaction_reference,payment_submitted_at,cancelled_at,cancellation_source,created_at,updated_at'
 const ORDER_ITEM_COLUMNS = 'id,order_id,product_id,name,category,quantity,unit_price,total,created_at'
+const ROOT_VISIT_COLUMNS = 'id,path,source,visitor_id,session_id,ip_address,user_agent,referrer,visited_at,created_at'
 
 const memoryCache = new Map()
 
@@ -1331,6 +1332,69 @@ module.exports = {
       timestamp: iso(t.created_at),
       createdAt: iso(t.created_at),
     }))
+  },
+
+  async addRootVisit(data = {}) {
+    const id = data.id || newEntityId('root-visit')
+    const visitedAt = data.visitedAt ? new Date(data.visitedAt) : new Date()
+    const { data: result, error } = await supabase
+      .from('root_visits')
+      .insert({
+        id,
+        path: data.path || '/',
+        source: data.source || 'direct',
+        visitor_id: data.visitorId || null,
+        session_id: data.sessionId || null,
+        ip_address: data.ipAddress || null,
+        user_agent: data.userAgent || null,
+        referrer: data.referrer || null,
+        visited_at: visitedAt.toISOString(),
+        created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
+      })
+      .select(ROOT_VISIT_COLUMNS)
+      .limit(1)
+      .single()
+
+    if (error) {
+      console.warn('Root visit non sauvegardée:', error.message)
+      return { ...data, id }
+    }
+
+    invalidateCache('root_visits:')
+    return {
+      id: result.id,
+      path: result.path,
+      source: result.source,
+      visitorId: result.visitor_id,
+      sessionId: result.session_id,
+      ipAddress: result.ip_address,
+      userAgent: result.user_agent,
+      referrer: result.referrer,
+      visitedAt: iso(result.visited_at),
+      createdAt: iso(result.created_at),
+    }
+  },
+
+  async getRootVisitStats() {
+    return cached('root_visits:summary', CACHE_TTL_MS, async () => {
+      const now = new Date()
+      const todayStart = new Date(now)
+      todayStart.setHours(0, 0, 0, 0)
+      const sevenDaysAgo = new Date(now)
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+      const [totalResult, todayResult, weekResult] = await Promise.all([
+        supabase.from('root_visits').select('id', { count: 'exact', head: true }),
+        supabase.from('root_visits').select('id', { count: 'exact', head: true }).gte('visited_at', todayStart.toISOString()),
+        supabase.from('root_visits').select('id', { count: 'exact', head: true }).gte('visited_at', sevenDaysAgo.toISOString()),
+      ])
+
+      return {
+        total: totalResult.error ? 0 : Number(totalResult.count || 0),
+        today: todayResult.error ? 0 : Number(todayResult.count || 0),
+        last7Days: weekResult.error ? 0 : Number(weekResult.count || 0),
+      }
+    })
   },
 
   async addLinkVisit(data) {

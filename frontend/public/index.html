@@ -8,6 +8,36 @@
     (function () {
       const params = new URLSearchParams(window.location.search);
       if (params.get('portal') === '1') return;
+
+      try {
+        const visitorKey = 'shoplink_root_visitor_id';
+        const sessionKey = 'shoplink_root_session_id';
+        const visitorId = localStorage.getItem(visitorKey) || `root-visitor-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        const sessionId = sessionStorage.getItem(sessionKey) || `root-session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        localStorage.setItem(visitorKey, visitorId);
+        sessionStorage.setItem(sessionKey, sessionId);
+
+        const payload = JSON.stringify({
+          path: '/',
+          source: params.get('source') || 'direct',
+          visitorId,
+          sessionId,
+          referrer: document.referrer || '',
+          userAgent: navigator.userAgent || '',
+        });
+
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/api/tracking/root-visit', new Blob([payload], { type: 'application/json' }));
+        } else {
+          fetch('/api/tracking/root-visit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true,
+          }).catch(function () {});
+        }
+      } catch (_error) {}
+
       window.location.replace('/parcours-shoplink.html');
     })();
   </script>

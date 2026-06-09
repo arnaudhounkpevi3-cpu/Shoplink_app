@@ -62,6 +62,27 @@ function clientIp(req) {
     .trim()
 }
 
+router.post('/root-visit', async (req, res) => {
+  try {
+    if (!repo().addRootVisit) return res.json({ success: true, skipped: true })
+    const body = parseTrackingBody(req)
+    await repo().addRootVisit({
+      path: body.path || '/',
+      source: normalizeTrafficSource(body.source || 'direct'),
+      visitorId: body.visitorId || null,
+      sessionId: body.sessionId || null,
+      referrer: body.referrer || req.get('referer') || null,
+      userAgent: body.userAgent || req.get('user-agent') || null,
+      ipAddress: clientIp(req) || null,
+      visitedAt: new Date().toISOString(),
+    })
+    return res.json({ success: true })
+  } catch (error) {
+    console.error('Error tracking root visit:', error)
+    return res.status(500).json({ success: false, message: error.message })
+  }
+})
+
 async function assertCanReadSite(req, res, siteId) {
   const site = await repo().findSiteById(siteId)
   if (!site) {
