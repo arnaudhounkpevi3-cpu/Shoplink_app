@@ -3219,6 +3219,18 @@
     });
 
     document.addEventListener('click', event => {
+      const deleteTarget = event.target.closest('[data-action="delete"], .fi-rr-trash');
+      if (!deleteTarget) return;
+
+      const row = deleteTarget.closest('.prod-row');
+      if (!row) return;
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      confirmProductDelete(row);
+    }, true);
+
+    document.addEventListener('click', event => {
       const target = event.target.closest('button, .iBtn, .upload-zone, .wa-btn, .subbar-link, .prod-thumb img, .fi-rr-trash, .fi-rr-pencil');
       if (!target) return;
       const text = target.textContent.trim();
