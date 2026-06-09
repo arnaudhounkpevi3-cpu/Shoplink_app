@@ -231,7 +231,7 @@
       <div class="pay-section">
         <div class="pay-section-header">
           <div class="pay-section-num">2</div>
-          <div class="pay-section-title">Choisissez votre moyen de paiement</div>
+          <div class="pay-section-title">Choisissez où envoyer l’argent</div>
         </div>
         <div class="pay-section-body">
           <div class="methods-grid">
@@ -240,15 +240,10 @@
               <div class="method-name">MTN Money</div>
               <div class="method-tag">Mobile Money</div>
             </div>
-            <div class="method-card" id="mc-moov" onclick="selectOp('moov')">
-              <div class="method-icon"><img src="images/moov-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Moov"></div>
-              <div class="method-name">Moov Money</div>
+            <div class="method-card" id="mc-celtiis" onclick="selectOp('celtiis')">
+              <div class="method-icon"><img src="images/celtiis-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Celtiis"></div>
+              <div class="method-name">Celtiis Cash</div>
               <div class="method-tag">Mobile Money</div>
-            </div>
-            <div class="method-card" id="mc-card" onclick="selectOp('card')">
-              <div class="method-icon">💳</div>
-              <div class="method-name">Carte bancaire</div>
-              <div class="method-tag">Manuel</div>
             </div>
           </div>
           <div class="active-op-badge" id="op-badge">MTN Mobile Money sélectionné</div>
@@ -269,10 +264,11 @@
             </div>
             <div class="owner-number-box">
               <div>
-                <div class="owner-number-label" id="op-label">Mode de validation</div>
-                <div class="owner-number" id="owner-number">Validation ShopLink</div>
-                <div class="owner-name">Votre demande sera enregistrée puis validée après contrôle du paiement.</div>
+                <div class="owner-number-label" id="op-label">Envoyez l’argent à ce numéro</div>
+                <div class="owner-number" id="owner-number">0167163481</div>
+                <div class="owner-name" id="owner-name">MTN Money — ShopLink</div>
               </div>
+              <button class="copy-btn" id="copy-btn" onclick="copyNumber()"><img class="copy-btn-icon" src="https://cdn-icons-png.flaticon.com/512/4922/4922982.png" alt=""> Copier</button>
             </div>
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">📋 Étapes :</div>
             <div class="payment-steps" id="steps-list"></div>
@@ -296,7 +292,7 @@
           <div class="recap-row"><span class="recap-label">Plan</span><span class="recap-val" id="r-plan">ShopLink Starter</span></div>
           <div class="recap-row" id="r-step-row" style="display:none;"><span class="recap-label">Étape</span><span class="recap-val" id="r-step">Acompte 50%</span></div>
           <div class="recap-row"><span class="recap-label">Paiement</span><span class="recap-val" id="r-op">MTN Mobile Money</span></div>
-          <div class="recap-row"><span class="recap-label">Méthode choisie</span><span class="recap-val" id="r-number" style="font-family:monospace;color:var(--amber);">MTN</span></div>
+          <div class="recap-row"><span class="recap-label">Numéro destinataire</span><span class="recap-val" id="r-number" style="font-family:monospace;color:var(--amber);">0167163481</span></div>
           <div class="recap-row"><span class="recap-label">Référence</span><span class="recap-val" id="r-reference" style="font-family:monospace;color:var(--green);">Générée après confirmation</span></div>
         </div>
         <div class="recap-total">
@@ -399,12 +395,16 @@
   }
 
   // CONFIG
+  const PAYMENT_NUMBERS = {
+    mtn: '0167163481',
+    celtiis: '0147000674',
+  };
+
   let paymentPollTimer = null;
 
   const OPS = {
-    mtn:  { label:'MTN Mobile Money', badge:'MTN Mobile Money sélectionné', opLabel:'Validation ShopLink', method:'MTN' },
-    moov: { label:'Moov Money', badge:'Moov Money sélectionné', opLabel:'Validation ShopLink', method:'Moov' },
-    card: { label:'Paiement manuel', badge:'Paiement manuel sélectionné', opLabel:'Validation manuelle ShopLink', method:'Manuel' }
+    mtn:  { label:'MTN Mobile Money', badge:'MTN Mobile Money sélectionné', opLabel:'Numéro MTN MoMo ShopLink', method:'MTN' },
+    celtiis: { label:'Celtiis Cash', badge:'Celtiis Cash sélectionné', opLabel:'Numéro Celtiis Cash ShopLink', method:'Celtiis' }
   };
 
   const STEPS = [
@@ -472,13 +472,16 @@
   }
 
   function selectOp(op) {
+    if (!OPS[op]) op = 'mtn';
     selOp = op;
-    ['mtn','moov','card'].forEach(o => document.getElementById('mc-'+o)?.classList.toggle('sel', o===op));
+    ['mtn','celtiis'].forEach(o => document.getElementById('mc-'+o)?.classList.toggle('sel', o===op));
+    const number = PAYMENT_NUMBERS[op] || PAYMENT_NUMBERS.mtn;
     document.getElementById('op-badge').textContent = OPS[op]?.badge || 'Paiement manuel sélectionné';
     document.getElementById('op-label').textContent = OPS[op]?.opLabel || 'Validation ShopLink';
     document.getElementById('r-op').textContent = OPS[op]?.label || 'Paiement manuel';
-    document.getElementById('owner-number').textContent = 'Validation ShopLink';
-    document.getElementById('r-number').textContent = OPS[op]?.method || 'Manuel';
+    document.getElementById('owner-number').textContent = number;
+    document.getElementById('r-number').textContent = number;
+    document.getElementById('owner-name').textContent = `${OPS[op]?.label || 'Paiement'} — ShopLink`;
     renderSteps(op);
   }
 
@@ -494,7 +497,29 @@
   }
 
   function copyNumber() {
-    document.getElementById('pay-btn').focus();
+    const number = PAYMENT_NUMBERS[selOp] || PAYMENT_NUMBERS.mtn;
+    const textArea = document.createElement('textarea');
+    textArea.value = number;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+
+    try {
+      document.execCommand('copy');
+      const button = document.getElementById('copy-btn');
+      const previous = button.innerHTML;
+      button.textContent = '✓ Copié';
+      button.classList.add('copied');
+      setTimeout(() => {
+        button.innerHTML = previous;
+        button.classList.remove('copied');
+      }, 2200);
+    } catch (_error) {
+      setE('err-ref', `Numéro à copier : ${number}`);
+    }
+
+    document.body.removeChild(textArea);
   }
 
   function startTimer(sec) {
