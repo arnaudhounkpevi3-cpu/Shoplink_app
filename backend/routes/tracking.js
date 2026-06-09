@@ -143,8 +143,11 @@ router.post('/whatsapp-click', async (req, res) => {
 router.get('/stats/:siteId', async (req, res) => {
   try {
     const { siteId } = req.params;
-    const tracking = await repo().getTrackingBySite(siteId);
-    const products = await repo().listProductsBySiteId(siteId);
+    const [tracking, products, orders] = await Promise.all([
+      repo().getTrackingBySite(siteId),
+      repo().listProductsBySiteId(siteId),
+      repo().listOrdersBySiteId ? repo().listOrdersBySiteId(siteId) : Promise.resolve([]),
+    ]);
     const productById = new Map(products.map(product => [String(product.id), product]));
     
     const visits = tracking.filter(t => t.type === 'visit').length;
@@ -157,10 +160,14 @@ router.get('/stats/:siteId', async (req, res) => {
       productViews[key] = (productViews[key] || 0) + 1;
     });
 
+    const validOrders = (orders || []).filter((order) => order.status !== 'cancelled');
     const productOrders = {};
-    tracking.filter(t => t.type === 'whatsapp_click' && t.productId).forEach(t => {
-      const key = String(t.productId);
-      productOrders[key] = (productOrders[key] || 0) + 1;
+    validOrders.forEach((order) => {
+      (order.items || []).forEach((item) => {
+        const key = String(item.productId || '');
+        if (!key) return;
+        productOrders[key] = (productOrders[key] || 0) + Number(item.quantity || 1);
+      });
     });
 
     const sourceClicks = {};
@@ -194,6 +201,7 @@ router.get('/stats/:siteId', async (req, res) => {
         whatsappClicks,
         productViews,
         productOrders,
+        ordersTotal: validOrders.length,
         topProduct,
         shares,
         sourceBreakdown: sourceClicks,

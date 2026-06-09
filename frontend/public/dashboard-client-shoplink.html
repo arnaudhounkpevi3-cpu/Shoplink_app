@@ -718,7 +718,7 @@
       const officialUniqueVisitors = Number(officialMetrics.uniqueVisitors || 0);
       const officialProductViewsTotal = Number(officialMetrics.productViewsTotal || 0);
       const officialAddToCartTotal = Number(officialMetrics.addToCartTotal || 0);
-      const officialOrdersTotal = Number(officialMetrics.ordersTotal || 0);
+      const officialOrdersTotal = Number(officialMetrics.ordersTotal ?? stats.ordersTotal ?? 0);
 
       setMetric('Vues du site', officialSiteViews);
       setMetric('Vues totales', officialSiteViews);
@@ -761,6 +761,7 @@
           stats.views = Number(data.stats.totalViews || 0);
         }
         stats.whatsappClicks = Number(data.stats.whatsappClicks || 0);
+        stats.ordersTotal = Number(data.stats.ordersTotal || 0);
         stats.topProduct = data.stats.topProduct || null;
         stats.productOrders = data.stats.productOrders || {};
         stats.sourceBreakdown = data.stats.sourceBreakdown || {};
@@ -812,6 +813,7 @@
         stats.productViews = data.productViews || {};
         stats.productOrders = data.productOrders || {};
         stats.whatsappClicks = Number(metrics.ordersTotal || 0);
+        stats.ordersTotal = Number(metrics.ordersTotal || stats.ordersTotal || 0);
         stats.topProduct = data.topProduct || null;
         stats.weeklyTopProducts = data.topProducts || [];
         stats.productViewsTotal = Number(metrics.productViewsTotal || 0);
