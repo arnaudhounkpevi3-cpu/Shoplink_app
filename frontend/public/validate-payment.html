@@ -99,6 +99,10 @@
         }
         status('Paiement confirmé. Redirection vers votre dashboard...')
         const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}')
+        if (user && Object.keys(user).length) {
+          localStorage.setItem('shoplink_user', JSON.stringify({ ...user, paiement: true }))
+        }
+        localStorage.removeItem('shoplink_pending')
         const account = user.email ? `?account=${encodeURIComponent(String(user.email).toLowerCase())}` : ''
         setTimeout(() => { window.location.href = `/dashboard-client-shoplink.html${account}` }, 1600)
       } catch (error) {
