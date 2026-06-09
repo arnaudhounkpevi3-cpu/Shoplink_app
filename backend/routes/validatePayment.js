@@ -6,6 +6,15 @@ const { activatePayment } = require('../services/paymentActivation')
 
 const router = express.Router()
 
+router.get('/', (_req, res) => {
+  return res.json({
+    success: true,
+    message: 'Endpoint validation paiement actif',
+    provider: 'OCR.space',
+    time: new Date().toISOString(),
+  })
+})
+
 function normalizeText(value = '') {
   return String(value || '').replace(/\s+/g, ' ').trim()
 }
@@ -173,18 +182,20 @@ router.post('/', requireAuth, async (req, res) => {
       return res.json({ success: false, reason: 'Cette capture a déjà été utilisée ou ne peut pas être enregistrée' })
     }
 
-    await repo().patchPayment(payment.id, {
-      status: 'paid',
+    const activation = await activatePayment(payment, {
+      operator: operator.toLowerCase(),
+      transactionCode,
       validationStatus: 'ocr_validated',
-      paymentStatus: 'paid',
-      mobileMoneyProvider: operator.toLowerCase(),
-      transactionId: transactionCode,
-      validatedAt: new Date().toISOString(),
     })
-    if (repo().updateUser) await repo().updateUser(req.user.id, { paiement: true })
     await logAttempt({ userId: req.user.id, paymentId: payment.id, amountExpected, amountDetected, operator, transactionCode, text, status: 'success', reason: 'Paiement validé' })
 
-    return res.json({ success: true, transactionId: tx.id, operator, amount: amountDetected })
+    return res.json({
+      success: true,
+      transactionId: tx.id,
+      operator,
+      amount: amountDetected,
+      siteSlug: activation.newSite?.slug || null,
+    })
   } catch (error) {
     await logAttempt({ userId: req.user?.id, paymentId, amountExpected, status: 'error', reason: error.message })
     return res.status(500).json({ success: false, reason: 'Erreur serveur — réessayez' })

@@ -231,27 +231,27 @@
       <div class="pay-section">
         <div class="pay-section-header">
           <div class="pay-section-num">2</div>
-          <div class="pay-section-title">Paiement sécurisé avec KKiaPay</div>
+          <div class="pay-section-title">Choisissez votre moyen de paiement</div>
         </div>
         <div class="pay-section-body">
           <div class="methods-grid">
             <div class="method-card sel" id="mc-mtn" onclick="selectOp('mtn')">
               <div class="method-icon"><img src="images/mtn-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="MTN"></div>
               <div class="method-name">MTN Money</div>
-              <div class="method-tag">KKiaPay</div>
+              <div class="method-tag">Mobile Money</div>
             </div>
             <div class="method-card" id="mc-moov" onclick="selectOp('moov')">
               <div class="method-icon"><img src="images/moov-logo.png" style="width:40px;height:40px;object-fit:contain;" alt="Moov"></div>
               <div class="method-name">Moov Money</div>
-              <div class="method-tag">KKiaPay</div>
+              <div class="method-tag">Mobile Money</div>
             </div>
             <div class="method-card" id="mc-card" onclick="selectOp('card')">
               <div class="method-icon">💳</div>
               <div class="method-name">Carte bancaire</div>
-              <div class="method-tag">KKiaPay</div>
+              <div class="method-tag">Manuel</div>
             </div>
           </div>
-          <div class="active-op-badge" id="op-badge">Paiement via le popup sécurisé KKiaPay</div>
+          <div class="active-op-badge" id="op-badge">MTN Mobile Money sélectionné</div>
         </div>
       </div>
 
@@ -259,7 +259,7 @@
       <div class="pay-section">
         <div class="pay-section-header">
           <div class="pay-section-num">3</div>
-          <div class="pay-section-title">Confirmez dans le popup KKiaPay</div>
+          <div class="pay-section-title">Finalisez votre demande de paiement</div>
         </div>
         <div class="pay-section-body">
           <div class="momo-instructions">
@@ -269,9 +269,9 @@
             </div>
             <div class="owner-number-box">
               <div>
-                <div class="owner-number-label" id="op-label">Fenêtre de paiement</div>
-                <div class="owner-number" id="owner-number">KKiaPay</div>
-                <div class="owner-name">MTN Money, Moov Money et carte bancaire</div>
+                <div class="owner-number-label" id="op-label">Mode de validation</div>
+                <div class="owner-number" id="owner-number">Validation ShopLink</div>
+                <div class="owner-name">Votre demande sera enregistrée puis validée après contrôle du paiement.</div>
               </div>
             </div>
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">📋 Étapes :</div>
@@ -295,9 +295,9 @@
           <div class="recap-row"><span class="recap-label">Service</span><span class="recap-val" id="r-service">Création autonome</span></div>
           <div class="recap-row"><span class="recap-label">Plan</span><span class="recap-val" id="r-plan">ShopLink Starter</span></div>
           <div class="recap-row" id="r-step-row" style="display:none;"><span class="recap-label">Étape</span><span class="recap-val" id="r-step">Acompte 50%</span></div>
-          <div class="recap-row"><span class="recap-label">Paiement</span><span class="recap-val" id="r-op">KKiaPay</span></div>
-          <div class="recap-row"><span class="recap-label">Méthodes disponibles</span><span class="recap-val" id="r-number" style="font-family:monospace;color:var(--amber);">MTN · Moov · Carte</span></div>
-          <div class="recap-row"><span class="recap-label">Référence</span><span class="recap-val" id="r-reference" style="font-family:monospace;color:var(--green);">Générée après paiement</span></div>
+          <div class="recap-row"><span class="recap-label">Paiement</span><span class="recap-val" id="r-op">MTN Mobile Money</span></div>
+          <div class="recap-row"><span class="recap-label">Méthode choisie</span><span class="recap-val" id="r-number" style="font-family:monospace;color:var(--amber);">MTN</span></div>
+          <div class="recap-row"><span class="recap-label">Référence</span><span class="recap-val" id="r-reference" style="font-family:monospace;color:var(--green);">Générée après confirmation</span></div>
         </div>
         <div class="recap-total">
           <div class="recap-total-label">À payer</div>
@@ -343,9 +343,9 @@
     <div class="detail-row"><span class="detail-label">Statut</span><span style="background:var(--amber-light);color:#854f0b;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:500;">En attente de validation</span></div>
   </div>
   <div style="background:var(--green-light);border:1px solid #9fe1cb;border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;text-align:left;font-size:13px;color:var(--green-mid);line-height:1.8;">
-    ✓ Confirmation email envoyée<br>
-    ✓ Validation sous <strong>15 min à 1 heure</strong> en heures ouvrées<br>
-    ✓ Activation automatique de votre site après validation
+    ✓ Effectuez votre paiement MTN ou Celtiis<br>
+    ✓ Cliquez sur <strong>Valider par capture</strong> après paiement<br>
+    ✓ Votre site sera activé automatiquement si la capture est validée
   </div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
     <a id="validate-capture-btn" href="/validate-payment.html" class="btn-main">📸 Valider par capture</a>
@@ -402,9 +402,9 @@
   let paymentPollTimer = null;
 
   const OPS = {
-    mtn:  { label:'MTN Mobile Money', badge:'MTN Mobile Money sélectionné', opLabel:'Numéro MTN MoMo ShopLink' },
-    moov: { label:'Moov Money', badge:'Moov Money sélectionné', opLabel:'Numéro Moov Money ShopLink' },
-    card: { label:'Paiement manuel', badge:'Paiement manuel sélectionné', opLabel:'Validation manuelle ShopLink' }
+    mtn:  { label:'MTN Mobile Money', badge:'MTN Mobile Money sélectionné', opLabel:'Validation ShopLink', method:'MTN' },
+    moov: { label:'Moov Money', badge:'Moov Money sélectionné', opLabel:'Validation ShopLink', method:'Moov' },
+    card: { label:'Paiement manuel', badge:'Paiement manuel sélectionné', opLabel:'Validation manuelle ShopLink', method:'Manuel' }
   };
 
   const STEPS = [
@@ -474,11 +474,11 @@
   function selectOp(op) {
     selOp = op;
     ['mtn','moov','card'].forEach(o => document.getElementById('mc-'+o)?.classList.toggle('sel', o===op));
-    document.getElementById('op-badge').textContent = OPS[op]?.badge || 'Paiement via le popup sécurisé KKiaPay';
-    document.getElementById('op-label').textContent = 'Fenêtre de paiement';
-    document.getElementById('r-op').textContent = 'KKiaPay';
-    document.getElementById('owner-number').textContent = 'KKiaPay';
-    document.getElementById('r-number').textContent = 'MTN · Moov · Carte';
+    document.getElementById('op-badge').textContent = OPS[op]?.badge || 'Paiement manuel sélectionné';
+    document.getElementById('op-label').textContent = OPS[op]?.opLabel || 'Validation ShopLink';
+    document.getElementById('r-op').textContent = OPS[op]?.label || 'Paiement manuel';
+    document.getElementById('owner-number').textContent = 'Validation ShopLink';
+    document.getElementById('r-number').textContent = OPS[op]?.method || 'Manuel';
     renderSteps(op);
   }
 
