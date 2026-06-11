@@ -7,7 +7,7 @@ const { initRepository, repo, isMongo, isSupabase } = require('./data/repository
 async function ensureAdminUser() {
   const bcrypt = require('bcryptjs')
   const adminEmail = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase()
-  const adminPassword = process.env.ADMIN_PASSWORD || '/Shoplink@2007'
+  const adminPassword = process.env.ADMIN_PASSWORD
   const existingAdmin = await repo().findUserByEmail(adminEmail)
   const legacyAdminEmail = 'arnaudhounkpevi3@gmail.com'
 
@@ -50,6 +50,60 @@ async function main() {
   const path = require('path')
   const http = require('http')
   const WebSocket = require('ws')
+  const helmet = require('helmet')
+  const rateLimit = require('express-rate-limit')
+  const cookieParser = require('cookie-parser')
+
+  // Middleware de validation basique des entrées (prévention injection)
+  function validateInput(req, res, next) {
+    const suspiciousPatterns = [
+      /<script[^>]*>/i,
+      /javascript:/i,
+      /on\w+\s*=/i,
+      /data:/i,
+      /vbscript:/i,
+      /expression\s*\(/i,
+      /@import/i,
+      /\/\*|\*\//i,
+      /\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b/i,
+    ]
+
+    const checkValue = (value, fieldName) => {
+      if (typeof value === 'string') {
+        for (const pattern of suspiciousPatterns) {
+          if (pattern.test(value)) {
+            return { field: fieldName, pattern: pattern.source }
+          }
+        }
+      }
+      if (Array.isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+          const result = checkValue(value[i], `${fieldName}[${i}]`)
+          if (result) return result
+        }
+      }
+      if (value && typeof value === 'object') {
+        for (const key of Object.keys(value)) {
+          const result = checkValue(value[key], `${fieldName}.${key}`)
+          if (result) return result
+        }
+      }
+      return null
+    }
+
+    const bodyKeys = Object.keys(req.body || {})
+    for (const key of bodyKeys) {
+      const result = checkValue(req.body[key], key)
+      if (result) {
+        return res.status(400).json({
+          success: false,
+          message: `Entrée invalide détectée dans le champ: ${result.field}`,
+        })
+      }
+    }
+
+    next()
+  }
 
   const authRoutes = require('./routes/auth')
   const siteRoutes = require('./routes/sites')
@@ -67,6 +121,13 @@ async function main() {
   const { requireAuth, requireAdmin } = require('./middleware/auth')
 
   const app = express()
+  app.use(cookieParser())
+
+  // Appliquer la validation sur toutes les routes API sauf auth
+  app.use('/api', (req, res, next) => {
+    if (req.path.startsWith('/auth')) return next()
+    return validateInput(req, res, next)
+  })
   const server = http.createServer(app)
   const wss = new WebSocket.Server({ server, path: '/ws/payments' })
 
@@ -96,13 +157,70 @@ async function main() {
         if (extraCorsOrigins.includes(origin)) {
           return callback(null, true)
         }
-        // Allow all origins for development
-        callback(null, true)
+        // Reject unknown origins in production
+        const isDev = process.env.NODE_ENV !== 'production'
+        if (isDev) {
+          return callback(null, true)
+        }
+        return callback(new Error('Origine non autorisée par CORS'), false)
       },
     }),
   )
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:", "blob:"],
+        connectSrc: ["'self'", "wss:", "https:"],
+        fontSrc: ["'self'", "data:"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }))
+
   app.use(express.json({ limit: '25mb' }))
   app.use(express.urlencoded({ extended: false, limit: '25mb' }))
+
+  // Rate limiting pour les endpoints sensibles
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { success: false, message: 'Trop de tentatives. Réessayez dans 15 minutes.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+
+  const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { success: false, message: 'Trop de requêtes. Réessayez dans 15 minutes.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+
+  app.use('/api/auth/login', authLimiter)
+  app.use('/api/auth/register', authLimiter)
+  app.use('/api/auth/forgot-password', authLimiter)
+  app.use('/api/auth/reset-password', authLimiter)
+  app.use('/api/auth/reset-password-form', authLimiter)
+
+  // Rate limiter strict pour le tracking (prévention flood/bot)
+  const trackingLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 30,
+    message: { success: false, message: 'Trop d\'événements de tracking. Réessayez dans 1 minute.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+
+  app.use('/api/tracking', trackingLimiter)
+  app.use('/api/payments', generalLimiter)
+  app.use('/api', generalLimiter)
 
   app.use((error, req, res, next) => {
     if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {

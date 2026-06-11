@@ -99,6 +99,12 @@ router.post('/premium-order', async (req, res) => {
     return res.status(400).json({ success: false, message: 'premiumOrder et amount sont obligatoires' })
   }
 
+  // Validation basique des montants
+  const numericAmount = Number(amount)
+  if (!Number.isFinite(numericAmount) || numericAmount <= 0 || numericAmount > 10000000) {
+    return res.status(400).json({ success: false, message: 'Montant invalide' })
+  }
+
   const payment = await repo().createPayment({
     userId: premiumOrder.userId || null,
     type: 'premium',
@@ -190,10 +196,18 @@ router.get('/user/:userId', async (req, res) => {
 router.post('/callback', async (req, res) => {
   const { reference, status, transactionId } = req.body
   if (!reference || !status) return res.status(400).json({ success: false, message: 'reference et status sont obligatoires' })
+
+  // Validation du statut pour prévenir les injections
+  const allowedStatuses = ['pending', 'paid', 'paye', 'failed', 'cancelled', 'refunded', 'manual_pending', 'validated']
+  const normalizedStatus = String(status).toLowerCase().trim()
+  if (!allowedStatuses.includes(normalizedStatus)) {
+    return res.status(400).json({ success: false, message: 'Statut de paiement invalide' })
+  }
+
   const payment = await repo().findPaymentByReference(reference)
   if (!payment) return res.status(404).json({ success: false, message: 'Paiement introuvable' })
 
-  await repo().patchPayment(payment.id, { status, transactionId: transactionId || payment.transactionId })
+  await repo().patchPayment(payment.id, { status: normalizedStatus, transactionId: transactionId || payment.transactionId })
   const updatedPayment = await repo().findPaymentById(payment.id)
   return res.json({ success: true, message: 'Paiement mis à jour', payment: updatedPayment })
 })

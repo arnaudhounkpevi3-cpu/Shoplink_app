@@ -25,7 +25,7 @@ let appPromise = null
 async function ensureAdminUser() {
   const bcrypt = require('bcryptjs')
   const adminEmail = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase()
-  const adminPassword = process.env.ADMIN_PASSWORD || '/Shoplink@2007'
+  const adminPassword = process.env.ADMIN_PASSWORD
   const existingAdmin = await repo().findUserByEmail(adminEmail)
   const legacyAdminEmail = 'arnaudhounkpevi3@gmail.com'
 

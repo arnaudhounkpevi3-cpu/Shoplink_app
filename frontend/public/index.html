@@ -1511,19 +1511,6 @@
       </div>
     </div>
 
-    <!-- Section Public -->
-    <div class="category">
-      <h2 class="category-title">Pages Publiques</h2>
-      <div class="grid">
-        <a href="#" class="card" id="public-site-card">
-          <div class="card-icon"></div>
-          <h3 class="card-title">Site Public</h3>
-          <p class="card-desc">Créez votre site et partagez vos produits avec vos clients.</p>
-          <span class="card-tag">À créer</span>
-        </a>
-      </div>
-    </div>
-
     <!-- Section Informations -->
     <div class="category">
       <h2 class="category-title">Informations</h2>
@@ -1611,58 +1598,6 @@
       return null;
     }
   }
-
-  function getPortalAccountId() {
-    const user = getStoredJson('shoplink_user', {}) || {};
-    return String(user.id || user.email || user.phone || 'guest')
-      .toLowerCase()
-      .replace(/[^a-z0-9_-]+/g, '-');
-  }
-
-  function getPortalSite() {
-    const accountId = getPortalAccountId();
-    return getStoredJson(`shoplink_site:${accountId}`, null)
-      || getStoredJson('shoplink_site', null)
-      || {};
-  }
-
-  function publicPreviewUrl(slug) {
-    const host = window.location.hostname;
-    const isLocalOrLan = /^(localhost|127\.0\.0\.1|10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(host);
-    return window.location.protocol === 'http:' && isLocalOrLan
-      ? `/site-public.html?slug=${encodeURIComponent(slug)}&preview=1`
-      : `/boutique/${encodeURIComponent(slug)}?preview=1`;
-  }
-
-  function applyPublicSiteCard() {
-    const card = document.getElementById('public-site-card');
-    if (!card) return;
-
-    const site = getPortalSite();
-    const title = card.querySelector('.card-title');
-    const desc = card.querySelector('.card-desc');
-    const tag = card.querySelector('.card-tag');
-
-    if (site && site.slug) {
-      card.href = publicPreviewUrl(site.slug);
-      if (title) title.textContent = site.name || site.siteName || 'Mon site public';
-      if (desc) desc.textContent = 'Prévisualisez ce que vos clients voient quand vous partagez votre lien.';
-      if (tag) tag.textContent = 'Aperçu client';
-      return;
-    }
-
-    card.href = '#';
-    if (title) title.textContent = 'Créer votre site public';
-    if (desc) desc.textContent = 'Ajoutez vos produits, créez votre site puis revenez ici pour voir l’aperçu client.';
-    if (tag) tag.textContent = 'À créer';
-  }
-
-  document.getElementById('public-site-card')?.addEventListener('click', function(event) {
-    const site = getPortalSite();
-    if (site && site.slug) return;
-    event.preventDefault();
-    showToast('Ajoutez vos produits, créez votre site puis revenez ici pour prévisualiser ce que les clients verront.', 'info');
-  });
 
   const hadVisitedIndexBeforeThisLoad = localStorage.getItem('shoplink_index_seen') === 'true';
   localStorage.setItem('shoplink_index_seen', 'true');

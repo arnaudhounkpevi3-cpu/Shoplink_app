@@ -112,10 +112,33 @@ function parseTrackingBody(req) {
 router.post('/visit', async (req, res) => {
   try {
     const { siteId, productId, sessionId, visitorId, referrer, userAgent, platform } = req.body;
-    
+
+    // Validation basique des entrées
+    if (siteId && typeof siteId !== 'string') {
+      return res.status(400).json({ success: false, message: 'siteId invalide' })
+    }
+    if (productId && typeof productId !== 'string') {
+      return res.status(400).json({ success: false, message: 'productId invalide' })
+    }
+    if (sessionId && typeof sessionId !== 'string') {
+      return res.status(400).json({ success: false, message: 'sessionId invalide' })
+    }
+    if (visitorId && typeof visitorId !== 'string') {
+      return res.status(400).json({ success: false, message: 'visitorId invalide' })
+    }
+    if (referrer && typeof referrer !== 'string') {
+      return res.status(400).json({ success: false, message: 'referrer invalide' })
+    }
+    if (userAgent && typeof userAgent !== 'string') {
+      return res.status(400).json({ success: false, message: 'userAgent invalide' })
+    }
+    if (platform && typeof platform !== 'string') {
+      return res.status(400).json({ success: false, message: 'platform invalide' })
+    }
+
     const trackingEvent = {
       id: trackingId(),
-      siteId,
+      siteId: siteId || null,
       productId: productId || null,
       sessionId: sessionId || null,
       visitorId: visitorId || null,
@@ -125,9 +148,9 @@ router.post('/visit', async (req, res) => {
       type: 'visit',
       timestamp: new Date().toISOString()
     };
-    
+
     await repo().addTracking(trackingEvent);
-    
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error tracking visit:', error);
@@ -139,10 +162,27 @@ router.post('/visit', async (req, res) => {
 router.post('/whatsapp-click', async (req, res) => {
   try {
     const { siteId, productId, sessionId, visitorId, platform } = req.body;
-    
+
+    // Validation basique des entrées
+    if (siteId && typeof siteId !== 'string') {
+      return res.status(400).json({ success: false, message: 'siteId invalide' })
+    }
+    if (productId && typeof productId !== 'string') {
+      return res.status(400).json({ success: false, message: 'productId invalide' })
+    }
+    if (sessionId && typeof sessionId !== 'string') {
+      return res.status(400).json({ success: false, message: 'sessionId invalide' })
+    }
+    if (visitorId && typeof visitorId !== 'string') {
+      return res.status(400).json({ success: false, message: 'visitorId invalide' })
+    }
+    if (platform && typeof platform !== 'string') {
+      return res.status(400).json({ success: false, message: 'platform invalide' })
+    }
+
     const trackingEvent = {
       id: trackingId(),
-      siteId,
+      siteId: siteId || null,
       productId: productId || null,
       sessionId: sessionId || null,
       visitorId: visitorId || null,
@@ -150,9 +190,9 @@ router.post('/whatsapp-click', async (req, res) => {
       type: 'whatsapp_click',
       timestamp: new Date().toISOString()
     };
-    
+
     await repo().addTracking(trackingEvent);
-    
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error tracking WhatsApp click:', error);
@@ -266,10 +306,27 @@ router.get('/activity/:siteId', async (req, res) => {
 router.post('/product-view', async (req, res) => {
   try {
     const { siteId, productId, sessionId, visitorId, platform } = req.body;
-    
+
+    // Validation basique des entrées
+    if (siteId && typeof siteId !== 'string') {
+      return res.status(400).json({ success: false, message: 'siteId invalide' })
+    }
+    if (productId && typeof productId !== 'string') {
+      return res.status(400).json({ success: false, message: 'productId invalide' })
+    }
+    if (sessionId && typeof sessionId !== 'string') {
+      return res.status(400).json({ success: false, message: 'sessionId invalide' })
+    }
+    if (visitorId && typeof visitorId !== 'string') {
+      return res.status(400).json({ success: false, message: 'visitorId invalide' })
+    }
+    if (platform && typeof platform !== 'string') {
+      return res.status(400).json({ success: false, message: 'platform invalide' })
+    }
+
     const trackingEvent = {
       id: trackingId(),
-      siteId,
+      siteId: siteId || null,
       productId: productId || null,
       sessionId: sessionId || null,
       visitorId: visitorId || null,
@@ -277,9 +334,9 @@ router.post('/product-view', async (req, res) => {
       type: 'product_view',
       timestamp: new Date().toISOString()
     };
-    
+
     await repo().addTracking(trackingEvent);
-    
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error tracking product view:', error);
@@ -291,10 +348,24 @@ router.post('/product-view', async (req, res) => {
 router.post('/link-share', async (req, res) => {
   try {
     const { siteId, platform, sessionId, visitorId } = req.body;
-    
+
+    // Validation basique des entrées
+    if (siteId && typeof siteId !== 'string') {
+      return res.status(400).json({ success: false, message: 'siteId invalide' })
+    }
+    if (platform && typeof platform !== 'string') {
+      return res.status(400).json({ success: false, message: 'platform invalide' })
+    }
+    if (sessionId && typeof sessionId !== 'string') {
+      return res.status(400).json({ success: false, message: 'sessionId invalide' })
+    }
+    if (visitorId && typeof visitorId !== 'string') {
+      return res.status(400).json({ success: false, message: 'visitorId invalide' })
+    }
+
     const trackingEvent = {
       id: trackingId(),
-      siteId,
+      siteId: siteId || null,
       platform: platform || null,
       sessionId: sessionId || null,
       visitorId: visitorId || null,

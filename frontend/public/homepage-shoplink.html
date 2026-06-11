@@ -1,2183 +1,329 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
-
-  :root {
-    --brand: #1a5c38;
-    --brand-light: #eef7f1;
-    --brand-mid: #0f6e56;
-    --accent: #E8620A;
-    --accent-light: #fff6e0;
-    --dark: #111111;
-    --gray: #6b7280;
-    --light: #F5F0E8;
-    --white: #ffffff;
-    --border: rgba(17,17,17,0.10);
-    --bg: #F5F0E8;
-    --radius: 12px;
-    --radius-lg: 20px;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html, body {
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background:
-      radial-gradient(circle at 50% -8%, rgba(245,156,26,0.16), transparent 32%),
-      radial-gradient(circle at 12% 12%, rgba(26,92,56,0.14), transparent 28%),
-      var(--bg);
-    color: #1a1a1a;
-    font-size: 15px;
-    line-height: 1.6;
-  }
-
-  h1, h2, h3, h4 {
-    font-family: 'Syne', sans-serif;
-    line-height: 1.2;
-  }
-
-  /* NAV */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: #ffffff;
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 8px 26px rgba(15,31,23,0.06);
-    padding: 12px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 22px;
-    color: var(--brand);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(26,92,56,0.08);
-    border: 1px solid rgba(26,92,56,0.12);
-    text-decoration: none;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
-    max-width: 100%;
-    min-width: 0;
-    white-space: nowrap;
-  }
-
-  .logo-dot {
-    width: 9px;
-    height: 9px;
-    background: linear-gradient(135deg, var(--brand), var(--brand-mid));
-    border-radius: 50%;
-    display: inline-block;
-    box-shadow: 0 0 0 3px rgba(26,92,56,0.16);
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 32px;
-    list-style: none;
-  }
-
-  .nav-links a {
-    text-decoration: none;
-    color: var(--gray);
-    font-size: 14px;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-
-  .nav-links a:hover { color: var(--brand); }
-
-  .nav-cta {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 11px 20px;
-    border-radius: 999px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    cursor: pointer;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-    border: none;
-    text-decoration: none;
-  }
-
-  .btn-outline {
-    background: transparent;
-    border: 1.5px solid var(--brand);
-    color: var(--brand);
-  }
-
-  .btn-outline:hover {
-    background: var(--brand-light);
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--brand), var(--brand-mid));
-    color: white;
-    border: 1px solid rgba(255,255,255,0.16);
-    box-shadow: 0 12px 28px rgba(26,92,56,0.24), inset 0 1px 0 rgba(255,255,255,0.22);
-  }
-
-  .btn-primary:hover {
-    background: linear-gradient(135deg, #164f31, var(--brand));
-    transform: translateY(-2px);
-    box-shadow: 0 16px 34px rgba(26,92,56,0.3), inset 0 1px 0 rgba(255,255,255,0.22);
-  }
-
-  .btn-primary:active,
-  .btn-accent:active {
-    transform: translateY(0) scale(0.98);
-  }
-
-  .btn-accent {
-    background: var(--accent);
-    color: white;
-  }
-
-  .btn-accent:hover {
-    background: #e08a10;
-    transform: translateY(-1px);
-  }
-
-  .btn-lg {
-    padding: 15px 28px;
-    font-size: 15px;
-    border-radius: 999px;
-  }
-
-  /* HERO */
-  .hero {
-    background: linear-gradient(160deg, #f0fbf5 0%, #fff 50%, #fff8ee 100%);
-    padding: 80px 40px 60px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--brand-light);
-    color: var(--brand);
-    border: 1px solid #c0e8d0;
-    border-radius: 100px;
-    padding: 5px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .hero h1 {
-    font-size: 46px;
-    font-weight: 800;
-    color: var(--dark);
-    margin-bottom: 20px;
-  }
-
-  .hero h1 span {
-    color: var(--brand);
-    position: relative;
-  }
-
-  .hero p {
-    color: var(--gray);
-    font-size: 17px;
-    margin-bottom: 32px;
-    line-height: 1.7;
-  }
-
-  .hero-btns {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-  }
-
-  .hero-stats {
-    display: flex;
-    gap: 28px;
-    margin-top: 36px;
-    padding-top: 28px;
-    border-top: 1px solid var(--border);
-  }
-
-  .stat-item { text-align: left; }
-  .stat-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--dark);
-  }
-  .stat-label { font-size: 12px; color: var(--gray); }
-
-  /* MOCKUP PHONE */
-  .hero-visual {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .phone-mockup {
-    width: 260px;
-    background: var(--dark);
-    border-radius: 36px;
-    padding: 12px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.05);
-    position: relative;
-  }
-
-  .phone-screen {
-    background: #fff;
-    border-radius: 26px;
-    overflow: hidden;
-    min-height: 480px;
-  }
-
-  .phone-bar {
-    background: var(--brand);
-    padding: 14px 16px 10px;
-    color: white;
-    display: grid;
-    grid-template-columns: 1fr 42px;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .phone-bar-copy {
-    min-width: 0;
-  }
-
-  .phone-bar-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-  }
-
-  .phone-bar-desc { font-size: 10px; opacity: 0.8; }
-
-  .phone-logo-placeholder {
-    width: 42px;
-    height: 42px;
-    background: #ffffff;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(26,92,56,0.08);
-  }
-
-  .phone-logo-img {
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-    display: block;
-  }
-
-  .phone-products {
-    padding: 10px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .phone-product {
-    background: var(--light);
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-
-  .phone-product-img {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-  }
-
-  .phone-product-info {
-    padding: 6px 8px 8px;
-  }
-
-  .phone-product-name {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--dark);
-  }
-
-  .phone-product-price {
-    font-size: 11px;
-    color: var(--brand);
-    font-weight: 700;
-  }
-
-  .phone-product-btn {
-    width: 100%;
-    margin-top: 4px;
-    background: var(--brand);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 4px;
-    font-size: 9px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-  }
-
-  /* TARGETS */
-  .targets-section {
-    background: var(--dark);
-    padding: 46px 32px;
-    text-align: center;
-  }
-
-  .targets-section h2 {
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.5);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 24px;
-  }
-
-  .targets-grid {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    max-width: 760px;
-    margin: 0 auto;
-  }
-
-  .target-pill {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 16px;
-    padding: 9px 16px;
-    color: white;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-    cursor: default;
-  }
-
-  .target-pill:hover {
-    background: rgba(46,153,103,0.25);
-    border-color: var(--brand-mid);
-  }
-
-  .target-icon { font-size: 18px; }
-
-  .target-icon-img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-    flex: 0 0 auto;
-    display: block;
-  }
-
-  /* HOW IT WORKS */
-  .how-section {
-    padding: 80px 40px;
-    max-width: 1000px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .section-label {
-    display: inline-block;
-    background: var(--brand-light);
-    color: var(--brand);
-    border-radius: 100px;
-    padding: 5px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 16px;
-  }
-
-  .section-title {
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--dark);
-    margin-bottom: 12px;
-  }
-
-  .section-sub {
-    color: var(--gray);
-    font-size: 16px;
-    margin-bottom: 52px;
-  }
-
-  .steps-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-    position: relative;
-  }
-
-  .steps-grid::before {
-    content: '';
-    position: absolute;
-    top: 32px;
-    left: 12.5%;
-    width: 75%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--brand-light), var(--brand-light));
-    background: repeating-linear-gradient(90deg, var(--brand) 0, var(--brand) 6px, transparent 6px, transparent 14px);
-    z-index: 0;
-  }
-
-  .step-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 20px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .step-circle {
-    width: 64px;
-    height: 64px;
-    background: var(--white);
-    border: 2px solid var(--brand);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 12px rgba(26,107,74,0.15);
-  }
-
-  .step-num {
-    position: absolute;
-    top: -6px;
-    right: calc(50% - 40px);
-    background: var(--accent);
-    color: white;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    font-size: 10px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Syne', sans-serif;
-  }
-
-  .step-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--dark);
-    margin-bottom: 6px;
-  }
-
-  .step-desc {
-    font-size: 13px;
-    color: var(--gray);
-    line-height: 1.5;
-  }
-
-  /* EXAMPLES */
-  .examples-section {
-    background: rgba(255,255,255,0.42);
-    padding: 58px 32px;
-  }
-
-  .examples-section .inner {
-    max-width: 960px;
-    margin: 0 auto;
-  }
-
-  .examples-header {
-    text-align: center;
-    margin-bottom: 32px;
-  }
-
-  .examples-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-
-  .example-card {
-    background: rgba(255,255,255,0.84);
-    border-radius: 18px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: 0 14px 38px rgba(17,17,17,0.045);
-    backdrop-filter: blur(14px);
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-  }
-
-  .example-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(26,92,56,0.18);
-    box-shadow: 0 18px 46px rgba(17,17,17,0.085);
-  }
-
-  .example-header {
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .example-logo {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-  }
-
-  .example-logo-img {
-    width: 21px;
-    height: 21px;
-    object-fit: contain;
-    display: block;
-  }
-
-  .example-logo.restaurant { background: #fef2e0; }
-  .example-logo.boutique { background: #e8f5ee; }
-  .example-logo.cosmetique { background: #fce8f0; }
-
-  .example-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--dark);
-  }
-
-  .example-type {
-    font-size: 12px;
-    color: var(--gray);
-  }
-
-  .example-products {
-    padding: 12px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .example-product-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 7px 10px;
-    background: var(--light);
-    border-radius: 8px;
-  }
-
-  .product-name-ex { font-size: 13px; font-weight: 500; }
-  .product-price-ex { font-size: 13px; color: var(--brand); font-weight: 700; }
-
-  .example-footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .example-link {
-    font-size: 12px;
-    color: var(--gray);
-    font-family: 'DM Sans', monospace;
-  }
-
-  .whatsapp-btn {
-    background: #25D366;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .whatsapp-icon-img {
-    width: 14px;
-    height: 14px;
-    object-fit: contain;
-    display: inline-block;
-    flex: 0 0 auto;
-  }
-
-  .phone-product-btn .whatsapp-icon-img {
-    width: 9px;
-    height: 9px;
-  }
-
-  /* PRICING */
-  .pricing-section {
-    padding: 58px 32px;
-    max-width: 860px;
-    margin: 0 auto;
-  }
-
-  .pricing-header {
-    text-align: center;
-    margin-bottom: 34px;
-  }
-
-  .pricing-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    align-items: start;
-  }
-
-  .pricing-card {
-    background: rgba(255,255,255,0.88);
-    border: 1.5px solid var(--border);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 16px 46px rgba(17,17,17,0.05);
-    backdrop-filter: blur(14px);
-    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
-  }
-
-  .pricing-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 22px 58px rgba(17,17,17,0.09);
-  }
-
-  .pricing-card.featured {
-    border-color: var(--brand);
-    border-width: 2px;
-    position: relative;
-  }
-
-  .pricing-badge {
-    position: absolute;
-    top: -1px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--brand);
-    color: white;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 16px;
-    border-radius: 0 0 10px 10px;
-    white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .pricing-card-header {
-    padding: 24px 24px 18px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .pricing-type {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--gray);
-    margin-bottom: 8px;
-  }
-
-  .pricing-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--dark);
-    margin-bottom: 12px;
-  }
-
-  .pricing-price-block {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    margin-bottom: 4px;
-  }
-
-  .promo-price {
-    font-family: 'Syne', sans-serif;
-    font-size: 34px;
-    font-weight: 800;
-    color: var(--brand);
-    line-height: 1;
-  }
-
-  .promo-currency {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--brand);
-    line-height: 2;
-  }
-
-  .old-price {
-    font-size: 15px;
-    color: var(--gray);
-    text-decoration: line-through;
-    line-height: 2.2;
-  }
-
-  .promo-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--accent-light);
-    color: #c47a0a;
-    border-radius: 100px;
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    margin-top: 8px;
-  }
-
-  .countdown-bar {
-    background: var(--brand-light);
-    border: 1px solid #c0e8d0;
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-top: 12px;
-    font-size: 12px;
-    color: var(--brand);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .places-left {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-  }
-
-  .place-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--brand);
-  }
-
-  .place-dot.empty {
-    background: #d1fae5;
-    border: 1px solid var(--brand);
-  }
-
-  .pricing-body {
-    padding: 18px 24px 24px;
-  }
-
-  .pricing-features {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    margin-bottom: 20px;
-  }
-
-  .pricing-features li {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 13px;
-    color: #374151;
-  }
-
-  .check {
-    width: 18px;
-    height: 18px;
-    background: var(--brand);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 11px;
-    color: #fff;
-    margin-top: 0;
-    font-weight: 800;
-  }
-
-  .pricing-note {
-    font-size: 12px;
-    color: var(--gray);
-    background: var(--light);
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 18px;
-    line-height: 1.5;
-  }
-
-  /* CTA Section */
-  .cta-section {
-    background: var(--dark);
-    padding: 58px 32px;
-    text-align: center;
-  }
-
-  .cta-section h2 {
-    font-size: 42px;
-    font-weight: 800;
-    color: white;
-    margin-bottom: 16px;
-  }
-
-  .cta-section p {
-    color: rgba(255,255,255,0.6);
-    font-size: 17px;
-    margin-bottom: 36px;
-  }
-
-  .cta-btns {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  /* FOOTER */
-  footer {
-    background: #0a1510;
-    padding: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  footer .logo { color: rgba(255,255,255,0.8); }
-  footer p { font-size: 13px; color: rgba(255,255,255,0.4); }
-
-  /* TAB SWITCH for paths */
-  .path-tabs {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin-bottom: 40px;
-  }
-
-  .path-tab {
-    padding: 10px 22px;
-    border-radius: 100px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1.5px solid var(--border);
-    background: var(--white);
-    color: var(--gray);
-    transition: all 0.2s;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .path-tab.active {
-    background: var(--brand);
-    color: white;
-    border-color: var(--brand);
-  }
-
-  .path-content { display: none; }
-  .path-content.active { display: block; }
-
-  .path-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .path-step {
-    text-align: center;
-    padding: 0 12px;
-    position: relative;
-  }
-
-  .path-step::after {
-    content: '→';
-    position: absolute;
-    right: -8px;
-    top: 16px;
-    color: var(--brand);
-    font-size: 18px;
-    font-weight: 300;
-  }
-
-  .path-step:last-child::after { display: none; }
-
-  .path-icon {
-    width: 48px;
-    height: 48px;
-    background: var(--brand-light);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin: 0 auto 10px;
-    border: 2px solid #c0e8d0;
-  }
-
-  .path-step-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--dark);
-    margin-bottom: 4px;
-  }
-
-  .path-step-desc {
-    font-size: 11px;
-    color: var(--gray);
-  }
-
-  .premium-path .path-icon {
-    background: var(--accent-light);
-    border-color: #fcd88a;
-  }
-
-  /* SCROLL indicator */
-  .section-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 0;
-    color: var(--gray);
-    font-size: 13px;
-    gap: 12px;
-  }
-
-  .section-divider::before, .section-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-    max-width: 200px;
-  }
-
-  /* MOBILE HOMEPAGE */
-  @media (max-width: 768px) {
-    html,body{width:100% !important;min-width:100% !important;max-width:100% !important;overflow-x:hidden !important;}
-
-    body,
-    section,
-    nav,
-    .hero,
-    .hero-content,
-    .hero-visual,
-    .targets-section,
-    .targets-grid,
-    .target-pill,
-    .path-grid,
-    .path-step,
-    .examples-section,
-    .examples-section .inner,
-    .examples-grid,
-    .example-card,
-    .pricing-section,
-    .pricing-grid,
-    .pricing-card,
-    .cta-section,
-    footer {
-      max-width: 100% !important;
-      min-width: 0 !important;
-      box-sizing: border-box !important;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tarifs ShopLink</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <style>
+    :root {
+      --green: #1a5c38;
+      --green-dark: #0f3f28;
+      --green-soft: #eaf7ef;
+      --amber: #e8620a;
+      --amber-soft: #fff0e5;
+      --cream: #f5f0e8;
+      --text: #111;
+      --muted: rgba(17,17,17,.58);
+      --border: rgba(17,17,17,.1);
     }
 
-    h1,
-    h2,
-    h3,
-    p,
-    a,
-    span,
-    button,
-    .section-title,
-    .section-sub,
-    .target-pill,
-    .target-pill span,
-    .stat-num,
-    .stat-label,
-    .example-name,
-    .example-type,
-    .product-name-ex,
-    .product-price-ex,
-    .pricing-name,
-    .pricing-features li,
-    .pricing-note {
-      overflow-wrap: anywhere;
-      word-break: normal;
-    }
-    
-    nav {
-      padding: 10px 14px !important;
-      min-height: 58px !important;
-      width:100% !important;
-      gap: 10px;
-      flex-wrap: nowrap !important;
-    }
-    .logo {
-      font-size: 16px !important;
-      flex: 0 1 auto;
-      max-width: 142px;
-      padding: 7px 10px !important;
-      overflow: visible;
-      text-overflow: clip;
-    }
-    .logo-dot {
-      width: 7px !important;
-      height: 7px !important;
-    }
-    .nav-links {
-      display: none !important;
-    }
-    .nav-cta {
-      gap: 8px !important;
-      margin-left: auto;
-      min-width: 0;
-      flex-shrink: 1;
-    }
-    .btn {
-      padding: 9px 12px !important;
-      font-size: 11.5px !important;
-      border-radius: 999px;
-      white-space: nowrap;
-      max-width: 100%;
-    }
-    .nav-cta .btn-outline { display: none !important; }
-    
-    .hero {
-      padding: 34px 18px 38px !important;
-      gap: 26px !important;
-      grid-template-columns: 1fr !important;
-      width:100% !important;
-      text-align: left;
-      align-items: start;
-      overflow: hidden;
-    }
-    
-    .hero-visual {
-      order: 2;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 14% 10%, rgba(232,98,10,.14), transparent 28%),
+        radial-gradient(circle at 88% 8%, rgba(26,92,56,.16), transparent 32%),
+        var(--cream);
+      padding: 20px;
     }
 
-    .hero-content {
-      order: 1;
-    }
-    
-    .hero h1 {
-      font-size: clamp(32px, 10vw, 42px) !important;
-      line-height: 1.03 !important;
-      letter-spacing: -0.04em;
-      margin-bottom: 16px !important;
-      max-width: 11ch;
-    }
-    
-    .hero p {
-      font-size: 15px !important;
-      line-height: 1.6 !important;
-      margin-bottom: 24px !important;
-      max-width: 34ch;
-    }
-    
-    .hero-btns {
-      flex-direction: column !important;
-      gap: 10px !important;
-    }
-    
-    .hero-btns .btn-lg {
-      width: 100%;
-      justify-content: center;
-      padding: 14px 18px !important;
-      font-size: 14px !important;
-    }
-    
-    .hero-stats {
-      display: grid !important;
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-      gap: 8px !important;
-      margin-top: 26px !important;
-      padding-top: 18px !important;
-      width: 100%;
-    }
-
-    .stat-item {
-      padding: 10px 8px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: rgba(255,255,255,0.74);
-      text-align: center;
-    }
-    
-    .stat-num {
-      font-size: 20px !important;
-      line-height: 1.05;
-    }
-    
-.phone-mockup {
-       width: min(230px, 76vw) !important;
-       margin: 0 auto;
-       border-radius: 30px !important;
-       padding: 10px !important;
-       box-shadow: 0 18px 48px rgba(0,0,0,0.16), 0 0 0 1px rgba(255,255,255,0.06) !important;
-      }
-
-    .phone-screen {
-      min-height: 405px !important;
-      border-radius: 22px !important;
-    }
-
-    .phone-bar {
-      padding: 11px 12px 9px !important;
-      grid-template-columns: 1fr 38px;
-      gap: 8px;
-    }
-
-    .phone-bar-name {
-      font-size: 12px !important;
-      line-height: 1.15;
-    }
-
-    .phone-bar-desc {
-      font-size: 9px !important;
-    }
-
-    .phone-logo-placeholder {
-      width: 38px !important;
-      height: 38px !important;
-      font-size: 14px !important;
-      background: #fff !important;
-      border-radius: 11px !important;
-    }
-
-    .phone-logo-img {
-      width: 28px;
-      height: 28px;
-    }
-
-    .phone-products {
-      padding: 7px !important;
-      gap: 6px !important;
-    }
-
-    .phone-product {
-      border-radius: 8px !important;
-    }
-
-    .phone-product-img {
-      height: 54px !important;
-      font-size: 21px !important;
-    }
-
-    .phone-product-info {
-      padding: 5px 6px 7px !important;
-    }
-
-    .phone-product-name,
-    .phone-product-price {
-      font-size: 9px !important;
-      line-height: 1.2;
-    }
-
-    .phone-product-btn {
-      min-height: 20px;
-      font-size: 7px !important;
-      padding: 3px !important;
-    }
-
-    .targets-section,
-    .how-section,
-    #how-it-works,
-    .pricing-section,
-    .examples-section .inner,
-    .cta-section {
-      padding-left: 18px !important;
-      padding-right: 18px !important;
-    }
-
-    #how-it-works,
-    .examples-section,
-    .pricing-section,
-    .cta-section {
-      padding-top: 54px !important;
-      padding-bottom: 54px !important;
-    }
-
-    .section-label {
-      font-size: 11px !important;
-      margin-bottom: 12px !important;
-    }
-
-    .section-title {
-      font-size: clamp(26px, 8vw, 34px) !important;
-      line-height: 1.08 !important;
-      max-width: 12ch;
-      margin-left: auto;
-      margin-right: auto;
-      text-wrap: balance;
-    }
-
-    .section-sub {
-      font-size: 14px !important;
-      line-height: 1.5 !important;
-      max-width: 30ch;
-      margin: 0 auto 28px !important;
-    }
-
-    .path-tabs {
-      display: grid !important;
-      grid-template-columns: 1fr;
-      gap: 8px !important;
-      margin-bottom: 28px !important;
-    }
-
-    .path-tab {
-      width: 100%;
-      min-height: 44px;
-      padding: 11px 14px !important;
-    }
-
-    .path-grid {
-      grid-template-columns: 1fr !important;
-      gap: 12px !important;
-      text-align: left;
-    }
-
-    .path-step {
-      display: grid;
-      grid-template-columns: 1fr;
-      justify-items: center;
-      row-gap: 6px;
-      padding: 11px 12px !important;
-      text-align: center;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-    }
-
-    .path-step::after {
-      display: none !important;
-    }
-
-    .path-icon {
-      width: 30px !important;
-      height: 30px !important;
-      margin: 0 !important;
-      border-width: 1px !important;
-    }
-
-    .path-step-title {
-      font-size: 13px !important;
-      line-height: 1.15;
-      margin-bottom: 0 !important;
-    }
-
-    .path-step-desc {
-      max-width: 24ch;
+    .wrap {
+      width: min(1040px, 100%);
       margin: 0 auto;
-      font-size: 11px !important;
-      line-height: 1.3;
+      min-height: calc(100vh - 40px);
+      display: grid;
+      align-content: center;
+      gap: 28px;
     }
 
-    .examples-header {
-      margin-bottom: 28px !important;
+    .topbar {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1040px, calc(100% - 28px));
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 14px 10px 18px;
+      border: 1px solid rgba(26,92,56,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 16px 42px rgba(15,31,23,.08);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 10;
     }
 
-    .examples-grid,
-    .pricing-grid {
-      grid-template-columns: 1fr !important;
-      gap: 16px !important;
-    }
-
-    .example-header,
-    .example-products,
-    .example-footer,
-    .pricing-card-header,
-    .pricing-body {
-      padding-left: 16px !important;
-      padding-right: 16px !important;
-    }
-
-    .example-footer {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .example-link {
-      max-width: 100%;
-      overflow-wrap: anywhere;
-    }
-
-    .whatsapp-btn {
-      width: 100%;
-      justify-content: center;
-      min-height: 38px;
-    }
-
-    .pricing-header {
-      margin-bottom: 30px !important;
-    }
-
-    .pricing-card-header {
-      padding-top: 26px !important;
-    }
-
-    .pricing-name {
-      font-size: 20px !important;
-    }
-
-    .promo-price {
-      font-size: 34px !important;
-    }
-
-    .countdown-bar {
-      flex-direction: column;
-      align-items: flex-start !important;
+    .brand {
+      display: inline-flex;
+      align-items: center;
       gap: 8px;
+      color: var(--green-dark);
+      text-decoration: none;
+      font: 800 18px 'Syne', sans-serif;
+      letter-spacing: -.035em;
     }
 
-    .pricing-features li {
-      font-size: 13px !important;
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+    }
+
+    .toplink {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .hero {
+      text-align: center;
+      padding-top: 76px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .kicker::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(34px, 7vw, 72px);
+      line-height: .95;
+      letter-spacing: -.07em;
+      color: var(--green-dark);
+      margin-bottom: 14px;
+    }
+
+    .subtitle {
+      max-width: 620px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .price-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+      background: rgba(255,255,255,.86);
+      border: 1px solid rgba(255,255,255,.78);
+      border-radius: 30px;
+      padding: 28px;
+      box-shadow: 0 24px 70px rgba(17,17,17,.1);
+    }
+
+    .price-card::after {
+      content: '';
+      position: absolute;
+      right: -52px;
+      bottom: -52px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(26,92,56,.08);
+    }
+
+    .price-card.premium::after { background: rgba(232,98,10,.1); }
+
+    .plan-tag {
+      width: max-content;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 14px;
+    }
+
+    .premium .plan-tag {
+      background: var(--amber-soft);
+      color: #9a4308;
+    }
+
+    .plan-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: -.055em;
+      color: var(--green-dark);
+      margin-bottom: 10px;
+    }
+
+    .plan-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .price {
+      display: flex;
+      align-items: end;
+      gap: 8px;
+      margin: 22px 0 18px;
+    }
+
+    .price strong {
+      font-family: 'Syne', sans-serif;
+      font-size: 48px;
+      line-height: .85;
+      letter-spacing: -.07em;
+      color: var(--green);
+    }
+
+    .premium .price strong { color: var(--amber); }
+    .price span { color: var(--muted); font-size: 13px; font-weight: 700; }
+
+    .features {
+      display: grid;
+      gap: 10px;
+      list-style: none;
+      color: rgba(17,17,17,.72);
+      font-size: 13px;
       line-height: 1.45;
     }
 
-    .cta-section h2 {
-      font-size: clamp(28px, 9vw, 36px) !important;
-      line-height: 1.08;
+    .features li {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
     }
 
-    .cta-section p {
-      max-width: 28ch;
-      margin-left: auto;
-      margin-right: auto;
-      font-size: 15px !important;
-      line-height: 1.5;
-    }
-
-    footer {
-      padding: 28px 18px !important;
-      flex-direction: column;
-      gap: 12px;
-      text-align: center;
-    }
-
-    .targets-grid {
-      display: grid !important;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px !important;
-      width: 100%;
-    }
-
-    .target-pill {
-      justify-content: flex-start;
-      text-align: left;
-      min-height: 54px;
-      height: 100%;
-      padding: 11px 12px !important;
-      border-radius: 16px !important;
-      gap: 8px !important;
-      line-height: 1.2;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .target-icon {
-      width: 24px;
-      min-width: 24px;
-      text-align: center;
-      font-size: 18px !important;
-    }
-
-    .target-icon-img {
+    .features li::before {
+      content: '✓';
+      flex: 0 0 auto;
       width: 20px;
       height: 20px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
     }
 
-    .target-pill span:last-child {
-      font-size: 13px;
-      font-weight: 600;
-      min-width: 0;
-    }
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: env(safe-area-inset-top, 0px);
-    background: #ffffff;
-    z-index: 101;
-    pointer-events: none;
-  }
-
-  @media (max-width: 480px) {
-    html,body{width:100% !important;min-width:100% !important;max-width:100% !important;overflow-x:hidden !important;}
-    
-    nav {
-      padding: 9px 12px !important;
-      min-height: 54px !important;
-      gap: 6px !important;
-    }
-    
-    .logo {
-      font-size: 14px !important;
-      max-width: 118px;
-      padding: 6px 8px !important;
+    .cta {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 900;
+      color: #fff;
+      background: var(--green);
+      position: relative;
+      z-index: 1;
     }
 
-    .nav-cta .btn-primary {
-      max-width: calc(100vw - 148px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    
-    .btn {
-      padding: 8px 9px !important;
-      font-size: 11px !important;
-    }
-    
-    .hero h1 {
-      font-size: clamp(30px, 10.5vw, 38px) !important;
-      max-width: 10.5ch;
-    }
-    
-    .hero p {
-      font-size: 13px !important;
-      max-width: 32ch;
-    }
-    
-    .hero-badge {
-      font-size: 10px !important;
-      padding: 6px 10px !important;
-      line-height: 1.25;
-    }
-    
-    .stat-num {
-      font-size: 18px !important;
-    }
-    
-    .stat-label {
-      font-size: 10px !important;
-      line-height: 1.25;
-    }
-    
-    .phone-mockup {
-      width: min(210px, 74vw) !important;
-    }
+    .premium .cta { background: var(--amber); color: #3d2104; }
 
-    .phone-screen {
-      min-height: 378px !important;
+    @media (max-width: 760px) {
+      body { padding: 14px; }
+      .topbar { top: 10px; border-radius: 20px; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .price-card { min-height: auto; padding: 22px; border-radius: 24px; }
+      .price strong { font-size: 40px; }
     }
-
-    .phone-product-img {
-      height: 46px !important;
-    }
-
-    .phone-products {
-      gap: 5px !important;
-    }
-
-    .targets-section h2 {
-      font-size: 13px !important;
-      line-height: 1.35;
-      margin-bottom: 18px !important;
-    }
-
-    .targets-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 8px !important;
-    }
-
-    .target-pill {
-      min-height: 50px;
-      height: 50px;
-      padding: 10px 8px !important;
-      gap: 6px !important;
-    }
-
-    .target-pill span:last-child {
-      font-size: 11.5px;
-      line-height: 1.2;
-    }
-
-    .hero-stats {
-      grid-template-columns: 1fr !important;
-    }
-
-    .path-grid {
-      gap: 8px !important;
-    }
-
-    .path-step {
-      padding: 10px !important;
-      border-radius: 13px;
-    }
-
-    .path-icon {
-      width: 28px !important;
-      height: 28px !important;
-    }
-
-    .path-step-title {
-      font-size: 12.5px !important;
-    }
-
-    .path-step-desc {
-      font-size: 10.5px !important;
-    }
-  }
-
-  @media (min-width: 901px) {
-    nav {
-      top: 0 !important;
-      width: 100% !important;
-      margin: 0 !important;
-      padding: 18px 48px !important;
-      border-radius: 0 !important;
-      background: rgba(245,240,232,0.36) !important;
-      border: 0 !important;
-      border-bottom: 1px solid rgba(17,17,17,0.06) !important;
-      box-shadow: none !important;
-      backdrop-filter: blur(6px) !important;
-      -webkit-backdrop-filter: blur(6px) !important;
-      transition: width .24s ease, margin .24s ease, top .24s ease, padding .24s ease, border-radius .24s ease, background .24s ease, box-shadow .24s ease, border-color .24s ease !important;
-    }
-
-    nav.is-scrolled {
-      top: 14px !important;
-      width: min(1080px, calc(100% - 56px)) !important;
-      margin: 0 auto !important;
-      padding: 10px 18px !important;
-      border-radius: 999px !important;
-      background: rgba(255,255,255,0.94) !important;
-      border: 1px solid rgba(17,17,17,0.10) !important;
-      box-shadow: 0 18px 54px rgba(17,17,17,0.16) !important;
-      backdrop-filter: blur(20px) saturate(1.25) !important;
-      -webkit-backdrop-filter: blur(20px) saturate(1.25) !important;
-    }
-
-    nav.is-scrolled .logo {
-      padding: 7px 11px !important;
-      font-size: 20px !important;
-      transform: scale(.96);
-    }
-
-    nav.is-scrolled .nav-links a {
-      padding: 8px 12px !important;
-      border-radius: 999px !important;
-      background: rgba(26,92,56,0.05) !important;
-    }
-
-    nav.is-scrolled .btn {
-      padding: 9px 16px !important;
-      border-radius: 999px !important;
-    }
-  }
-  @media (min-width: 901px) {
-    body {
-      padding-top: 82px;
-    }
-
-    nav {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      width: 100% !important;
-      margin: 0 !important;
-      padding: 18px 48px !important;
-      border-radius: 0 !important;
-      background: rgba(245,240,232,0.42) !important;
-      border: 0 !important;
-      border-bottom: 1px solid rgba(17,17,17,0.06) !important;
-      box-shadow: none !important;
-      backdrop-filter: blur(6px) !important;
-      -webkit-backdrop-filter: blur(6px) !important;
-      transform: translateY(0) !important;
-      transition: width .24s ease, left .24s ease, right .24s ease, top .24s ease, padding .24s ease, border-radius .24s ease, background .24s ease, box-shadow .24s ease, border-color .24s ease, transform .24s ease !important;
-    }
-
-    nav.is-scrolled {
-      top: 14px !important;
-      left: 50% !important;
-      right: auto !important;
-      width: min(1080px, calc(100% - 56px)) !important;
-      margin: 0 !important;
-      padding: 10px 18px !important;
-      border-radius: 999px !important;
-      background: rgba(255,255,255,0.96) !important;
-      border: 1px solid rgba(17,17,17,0.10) !important;
-      box-shadow: 0 20px 58px rgba(17,17,17,0.18) !important;
-      backdrop-filter: blur(22px) saturate(1.25) !important;
-      -webkit-backdrop-filter: blur(22px) saturate(1.25) !important;
-      transform: translateX(-50%) !important;
-    }
-
-    nav.is-scrolled .logo {
-      padding: 7px 11px !important;
-      font-size: 20px !important;
-      transform: scale(.96);
-    }
-
-    nav.is-scrolled .nav-links a {
-      padding: 8px 12px !important;
-      border-radius: 999px !important;
-      background: rgba(26,92,56,0.06) !important;
-    }
-
-    nav.is-scrolled .btn {
-      padding: 9px 16px !important;
-      border-radius: 999px !important;
-    }
-
-    section:first-of-type {
-      width: 100vw !important;
-      max-width: 100vw !important;
-      margin-left: calc(50% - 50vw) !important;
-      margin-right: calc(50% - 50vw) !important;
-      overflow: hidden !important;
-    }
-
-    .hero {
-      width: min(100%, 1320px) !important;
-      max-width: 1320px !important;
-      min-height: calc(100vh - 82px) !important;
-      margin: 0 auto !important;
-      padding: clamp(56px, 7vw, 96px) clamp(36px, 6vw, 72px) !important;
-      grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr) !important;
-      gap: clamp(36px, 6vw, 86px) !important;
-      align-items: center !important;
-      box-sizing: border-box !important;
-      overflow: visible !important;
-    }
-
-    .hero-content {
-      min-width: 0 !important;
-      max-width: 640px !important;
-    }
-
-    .hero h1 {
-      font-size: clamp(46px, 5.7vw, 76px) !important;
-      line-height: .98 !important;
-      letter-spacing: -0.055em !important;
-      max-width: 11ch !important;
-      text-wrap: balance;
-    }
-
-    .hero p {
-      max-width: 58ch !important;
-      font-size: clamp(16px, 1.35vw, 20px) !important;
-    }
-
-    .hero-visual {
-      min-width: 0 !important;
-      justify-content: center !important;
-    }
-
-    .phone-mockup {
-      width: clamp(230px, 20vw, 285px) !important;
-      max-width: 100% !important;
-    }
-
-    .phone-screen {
-      min-height: 420px !important;
-    }
-
-    .phone-products {
-      gap: 7px !important;
-      padding: 8px !important;
-    }
-
-    .phone-product-img {
-      height: 48px !important;
-    }
-  }
-</style>
-  <link rel="stylesheet" href="/css/responsive.css"/>
+  </style>
 </head>
 <body>
+  <nav class="topbar">
+    <a href="/?portal=1" class="brand"><span class="logo-dot"></span>ShopLink</a>
+    <a href="/exemples-sites.html" class="toplink">Voir exemples</a>
+  </nav>
 
-<!-- NAVIGATION -->
-<nav>
-  <div class="logo">
-    <span class="logo-dot"></span>
-    ShopLink
-  </div>
-  <ul class="nav-links">
-    <li><a href="#features">Fonctionnalités</a></li>
-    <li><a href="#how-it-works">Comment ça marche</a></li>
-    <li><a href="#examples">Exemples</a></li>
-    <li><a href="#pricing">Tarifs</a></li>
-    <li><a href="/faq.html">FAQ</a></li>
-  </ul>
-  <div class="nav-cta">
-    <a href="/login.html" class="btn btn-outline">Connexion</a>
-    <a href="/register.html" class="btn btn-primary">Créer mon site</a>
-  </div>
-</nav>
+  <main class="wrap">
+    <section class="hero">
+      <div class="kicker">Tarifs ShopLink</div>
+      <h1>Choisissez votre formule.</h1>
+      <p class="subtitle">Deux options simples pour créer votre présence en ligne : autonome si vous voulez configurer vous-même, premium si vous préférez être accompagné.</p>
+    </section>
 
-<!-- HERO -->
-<section style="background: transparent;">
-  <div class="hero">
-    <div class="hero-content">
-      <div class="hero-badge">
-        <span>Solution de digitalisation pour le Bénin</span>
-      </div>
-      <h1>
-        <span>Fais connaître ta boutique<br><span>en ligne en minutes</span></span>
-      </h1>
-      <p>
-        <span>Crée ton site vitrine, présente tes produits et reçois des commandes directement via WhatsApp — sans coder, sans technicien.</span>
-      </p>
-      <div class="hero-btns">
-        <a href="/register.html" class="btn btn-primary btn-lg">Créer mon site</a>
-        <a href="/premium.html" class="btn btn-accent btn-lg">Service Premium</a>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <div class="stat-num">5 min</div>
-          <div class="stat-label">Pour créer son site</div>
+    <section class="pricing-grid" aria-label="Cartes de prix ShopLink">
+      <article class="price-card">
+        <div>
+          <div class="plan-tag">Création autonome</div>
+          <h2 class="plan-title">Je crée mon site moi-même</h2>
+          <p class="plan-desc">Idéal pour lancer rapidement une boutique, ajouter ses produits et partager son lien public.</p>
+          <div class="price"><strong>4 000</strong><span>FCFA</span></div>
+          <ul class="features">
+            <li>Compte client et tableau de bord.</li>
+            <li>Site public partageable.</li>
+            <li>Catalogue produits et commandes WhatsApp.</li>
+            <li>Personnalisation logo, adresse, couleurs.</li>
+          </ul>
         </div>
-        <div class="stat-item">
-          <div class="stat-num">0 CFA</div>
-          <div class="stat-label">Pour démarrer</div>
+        <a class="cta" href="/register.html">Créer mon site</a>
+      </article>
+
+      <article class="price-card premium">
+        <div>
+          <div class="plan-tag">Service premium</div>
+          <h2 class="plan-title">ShopLink m’accompagne</h2>
+          <p class="plan-desc">Pour un site plus préparé, avec accompagnement et structuration de la boutique.</p>
+          <div class="price"><strong>10 000</strong><span>FCFA</span></div>
+          <ul class="features">
+            <li>Collecte des informations du projet.</li>
+            <li>Préparation du site par l’équipe.</li>
+            <li>Suivi de livraison dans le dashboard admin.</li>
+            <li>Acompte et solde selon le projet.</li>
+          </ul>
         </div>
-        <div class="stat-item">
-          <div class="stat-num">WhatsApp</div>
-          <div class="stat-label">Commandes directes</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PHONE MOCKUP -->
-    <div class="hero-visual">
-      <div class="phone-mockup" style="width: 220px;">
-        <div class="phone-screen">
-          <div class="phone-bar">
-            <div class="phone-bar-copy">
-              <div class="phone-bar-name" style="font-size: 12px;">Chez Maman Délices</div>
-              <div class="phone-bar-desc" style="font-size: 8px;">Fast-food • Cotonou</div>
-            </div>
-            <div class="phone-logo-placeholder"><img class="phone-logo-img" src="https://cdn-icons-png.flaticon.com/512/738/738079.png" alt="Fast-food"></div>
-          </div>
-          <div style="padding: 6px 8px 0; display: flex; gap: 4px; overflow: hidden;">
-            <div style="background: var(--brand); color: white; border-radius: 100px; padding: 2px 8px; font-size: 8px; font-weight: 600; white-space: nowrap;">Tout</div>
-            <div style="background: var(--light); border-radius: 100px; padding: 2px 6px; font-size: 8px; color: var(--gray); white-space: nowrap;">Plats</div>
-            <div style="background: var(--light); border-radius: 100px; padding: 2px 6px; font-size: 8px; color: var(--gray); white-space: nowrap;">Boissons</div>
-          </div>
-          <div class="phone-products" style="padding: 6px; gap: 4px;">
-            <div class="phone-product" style="border-radius: 6px;">
-              <div class="phone-product-img" style="height: 50px; font-size: 20px;">🍛</div>
-              <div class="phone-product-info" style="padding: 4px 6px 6px;">
-                <div class="phone-product-name" style="font-size: 9px;">Riz sauce arachide</div>
-                <div class="phone-product-price" style="font-size: 9px;">1 500 FCFA</div>
-                <button class="phone-product-btn" style="font-size: 7px; padding: 2px;"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> Commander</button>
-              </div>
-            </div>
-            <div class="phone-product" style="border-radius: 6px;">
-              <div class="phone-product-img" style="height: 50px; font-size: 20px;">🍗</div>
-              <div class="phone-product-info" style="padding: 4px 6px 6px;">
-                <div class="phone-product-name" style="font-size: 9px;">Poulet braisé</div>
-                <div class="phone-product-price" style="font-size: 9px;">2 000 FCFA</div>
-                <button class="phone-product-btn" style="font-size: 7px; padding: 2px;"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> Commander</button>
-              </div>
-            </div>
-            <div class="phone-product" style="border-radius: 6px;">
-              <div class="phone-product-img" style="height: 50px; font-size: 20px;">🥤</div>
-              <div class="phone-product-info" style="padding: 4px 6px 6px;">
-                <div class="phone-product-name" style="font-size: 9px;">Bissap glacé</div>
-                <div class="phone-product-price" style="font-size: 9px;">500 FCFA</div>
-                <button class="phone-product-btn" style="font-size: 7px; padding: 2px;"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> Commander</button>
-              </div>
-            </div>
-            <div class="phone-product" style="border-radius: 6px;">
-              <div class="phone-product-img" style="height: 50px; font-size: 20px;">🍲</div>
-              <div class="phone-product-info" style="padding: 4px 6px 6px;">
-                <div class="phone-product-name" style="font-size: 9px;">Gboma dessi</div>
-                <div class="phone-product-price" style="font-size: 9px;">1 800 FCFA</div>
-                <button class="phone-product-btn" style="font-size: 7px; padding: 2px;"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> Commander</button>
-              </div>
-            </div>
-          </div>
-          <div style="padding: 6px; text-align: center;">
-            <div style="font-size: 8px; color: var(--gray);">/boutique/chezmamamelices</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CIBLES -->
-<section id="features" class="targets-section">
-  <h2>Pour qui est ShopLink ?</h2>
-  <div class="targets-grid">
-    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/562/562678.png" alt="Restaurants"> <span>Restaurants</span></div>
-    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/738/738079.png" alt="Fast-food"> <span>Fast-food</span></div>
-    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/11746/11746073.png" alt="Boutiques"> <span>Boutiques</span></div>
-    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" alt="Commerçants"> <span>Commerçants</span></div>
-    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/8023/8023928.png" alt="Cosmétiques"> <span>Cosmétiques</span></div>
-    <div class="target-pill"><img class="target-icon target-icon-img" src="https://cdn-icons-png.flaticon.com/512/4121/4121823.png" alt="Vendeurs WhatsApp"> <span>Vendeurs WhatsApp</span></div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how-it-works" style="padding: 80px 40px; max-width: 1000px; margin: 0 auto; text-align: center;">
-  <div class="section-label">Parcours</div>
-  <h2 class="section-title">Comment ça marche ?</h2>
-  <p class="section-sub">Choisissez votre mode de création et lancez-vous</p>
-
-  <div class="path-tabs">
-    <button class="path-tab active" onclick="switchTab('autonome', this)">Création autonome</button>
-    <button class="path-tab" onclick="switchTab('premium', this)">Service Premium</button>
-  </div>
-
-  <div id="autonome" class="path-content active">
-    <div class="path-grid">
-      <div class="path-step">
-        <div class="path-icon">📝</div>
-        <div class="path-step-title">Inscription</div>
-        <div class="path-step-desc">Créez votre compte gratuitement</div>
-      </div>
-      <div class="path-step">
-        <div class="path-icon">🏪</div>
-        <div class="path-step-title">Configurez</div>
-        <div class="path-step-desc">Nom, logo, couleurs, description</div>
-      </div>
-      <div class="path-step">
-        <div class="path-icon">📦</div>
-        <div class="path-step-title">Ajoutez produits</div>
-        <div class="path-step-desc">Photos, prix, descriptions</div>
-      </div>
-      <div class="path-step">
-        <div class="path-icon">💳</div>
-        <div class="path-step-title">Payez</div>
-        <div class="path-step-desc">4 000 FCFA (offre lancement)</div>
-      </div>
-      <div class="path-step">
-        <div class="path-icon"></div>
-        <div class="path-step-title">En ligne !</div>
-        <div class="path-step-desc">Partagez votre lien unique</div>
-      </div>
-    </div>
-  </div>
-
-  <div id="premium" class="path-content premium-path">
-    <div class="path-grid">
-      <div class="path-step">
-        <div class="path-icon">📋</div>
-        <div class="path-step-title">Formulaire</div>
-        <div class="path-step-desc">Remplissez vos besoins détaillés</div>
-      </div>
-      <div class="path-step">
-        <div class="path-icon"></div>
-        <div class="path-step-title">Acompte 50%</div>
-        <div class="path-step-desc">5 000 FCFA pour démarrer</div>
-      </div>
-      <div class="path-step">
-        <div class="path-icon">🎨</div>
-        <div class="path-step-title">Création</div>
-        <div class="path-step-desc">Nous créons votre site pro</div>
-      </div>
-      <div class="path-step">
-        <div class="path-icon"></div>
-        <div class="path-step-title">Validation</div>
-        <div class="path-step-desc">Solde final + retouches</div>
-      </div>
-      <div class="path-step">
-        <div class="path-icon">🔗</div>
-        <div class="path-step-title">Livraison</div>
-        <div class="path-step-desc">Lien envoyé par email / WhatsApp</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- EXAMPLES -->
-<section id="examples" class="examples-section">
-  <div class="inner">
-    <div class="examples-header">
-      <div class="section-label">Exemples</div>
-      <h2 class="section-title">Des sites créés sur ShopLink</h2>
-      <p class="section-sub">Aperçu de ce que vous pouvez créer en quelques minutes</p>
-    </div>
-    <div class="examples-grid">
-      <!-- Restaurant -->
-      <div class="example-card">
-        <div class="example-header">
-          <div class="example-logo restaurant"><img class="example-logo-img" src="https://cdn-icons-png.flaticon.com/512/562/562678.png" alt="Restaurant"></div>
-          <div>
-            <div class="example-name">Le Jardin d'Akpakpa</div>
-            <div class="example-type">Restaurant — Cotonou</div>
-          </div>
-        </div>
-        <div class="example-products">
-          <div class="example-product-row">
-            <span class="product-name-ex">🍛 Riz sauce graine</span>
-            <span class="product-price-ex">1 200 F</span>
-          </div>
-          <div class="example-product-row">
-            <span class="product-name-ex">🍗 Poulet yassa</span>
-            <span class="product-price-ex">2 500 F</span>
-          </div>
-          <div class="example-product-row">
-            <span class="product-name-ex">🥤 Jus de gingembre</span>
-            <span class="product-price-ex">600 F</span>
-          </div>
-        </div>
-        <div class="example-footer">
-          <span class="example-link">/boutique/jardinakpakpa</span>
-          <button class="whatsapp-btn"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> WhatsApp</button>
-        </div>
-      </div>
-
-      <!-- Boutique -->
-      <div class="example-card">
-        <div class="example-header">
-          <div class="example-logo boutique"><img class="example-logo-img" src="https://cdn-icons-png.flaticon.com/512/11746/11746073.png" alt="Boutique"></div>
-          <div>
-            <div class="example-name">Boutique Grâce Mode</div>
-            <div class="example-type">Vêtements — Porto-Novo</div>
-          </div>
-        </div>
-        <div class="example-products">
-          <div class="example-product-row">
-            <span class="product-name-ex">👗 Robe pagne</span>
-            <span class="product-price-ex">8 500 F</span>
-          </div>
-          <div class="example-product-row">
-            <span class="product-name-ex">👒 Headband assorti</span>
-            <span class="product-price-ex">1 500 F</span>
-          </div>
-          <div class="example-product-row">
-            <span class="product-name-ex">👜 Sac wax</span>
-            <span class="product-price-ex">5 000 F</span>
-          </div>
-        </div>
-        <div class="example-footer">
-          <span class="example-link">/boutique/gracemode</span>
-          <button class="whatsapp-btn"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> WhatsApp</button>
-        </div>
-      </div>
-
-      <!-- Cosmétiques -->
-      <div class="example-card">
-        <div class="example-header">
-          <div class="example-logo cosmetique"><img class="example-logo-img" src="https://cdn-icons-png.flaticon.com/512/8023/8023928.png" alt="Cosmétiques"></div>
-          <div>
-            <div class="example-name">Beauty by Sèmè</div>
-            <div class="example-type">Cosmétiques — Sèmè-Kpodji</div>
-          </div>
-        </div>
-        <div class="example-products">
-          <div class="example-product-row">
-            <span class="product-name-ex">🧴 Crème karité naturelle</span>
-            <span class="product-price-ex">3 500 F</span>
-          </div>
-          <div class="example-product-row">
-            <span class="product-name-ex">💆 Huile de coco</span>
-            <span class="product-price-ex">2 000 F</span>
-          </div>
-          <div class="example-product-row">
-            <span class="product-name-ex">Savon au miel</span>
-            <span class="product-price-ex">1 000 F</span>
-          </div>
-        </div>
-        <div class="example-footer">
-          <span class="example-link">/boutique/beautyseme</span>
-          <button class="whatsapp-btn"><img class="whatsapp-icon-img" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="WhatsApp"> WhatsApp</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing" class="pricing-section">
-  <div class="pricing-header">
-    <div class="section-label">Tarifs</div>
-    <h2 class="section-title">Des prix accessibles</h2>
-    <p class="section-sub">Offre de lancement limitée aux 10 premiers utilisateurs</p>
-  </div>
-
-  <div class="pricing-grid">
-    <!-- Autonome -->
-    <div class="pricing-card featured">
-      <div class="pricing-badge">Offre de lancement</div>
-      <div class="pricing-card-header" style="padding-top: 36px;">
-        <div class="pricing-type">Création autonome</div>
-        <div class="pricing-name">ShopLink Starter</div>
-        <div class="pricing-price-block">
-          <span class="promo-currency">FCFA</span>
-          <span class="promo-price">4 000</span>
-          <span class="old-price">5 000</span>
-        </div>
-        <div class="promo-tag">Valable pour les 10 premiers</div>
-        <div class="countdown-bar">
-          <span>Places restantes</span>
-          <div class="places-left">
-            <div class="place-dot"></div>
-            <div class="place-dot"></div>
-            <div class="place-dot"></div>
-            <div class="place-dot empty"></div>
-            <div class="place-dot empty"></div>
-            <div class="place-dot empty"></div>
-            <div class="place-dot empty"></div>
-            <div class="place-dot empty"></div>
-            <div class="place-dot empty"></div>
-            <div class="place-dot empty"></div>
-            <span style="margin-left: 4px; font-size: 11px;">3/10</span>
-          </div>
-        </div>
-      </div>
-      <div class="pricing-body">
-        <ul class="pricing-features">
-          <li><div class="check">✓</div><span>Site vitrine en ligne instantanément</span></li>
-          <li><div class="check">✓</div><span>Jusqu'à 20+ produits avec photos</span></li>
-          <li><div class="check">✓</div><span>Lien unique personnalisé</span></li>
-          <li><div class="check">✓</div><span>Bouton Commander via WhatsApp</span></li>
-          <li><div class="check">✓</div><span>Catégories de produits</span></li>
-          <li><div class="check">✓</div><span>Gestion autonome des produits</span></li>
-          <li><div class="check">✓</div><span>Tableau de bord statistiques</span></li>
-        </ul>
-<button class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
-                          Payer et publier mon site
-                       </button>
-      </div>
-    </div>
-
-    <!-- Premium -->
-    <div class="pricing-card">
-      <div class="pricing-card-header">
-        <div class="pricing-type">Service premium</div>
-        <div class="pricing-name">ShopLink Pro</div>
-        <div class="pricing-price-block">
-          <span class="promo-currency">FCFA</span>
-          <span class="promo-price" style="color: var(--accent);">10 000</span>
-          <span class="old-price">12 000</span>
-        </div>
-        <div class="promo-tag" style="background: var(--accent-light); color: #9a5c00;">10 premiers clients</div>
-        <div class="countdown-bar" style="background: var(--accent-light); border-color: #fcd88a; color: #9a5c00;">
-          <span>Paiement en 2 étapes</span>
-          <span style="font-weight: 700;">50% acompte + 50% livraison</span>
-        </div>
-      </div>
-      <div class="pricing-body">
-        <div class="pricing-note">
-          <strong>Acompte :</strong> 5 000 FCFA pour démarrer<br>
-          <strong>Solde :</strong> 5 000 FCFA à la livraison du site<br>
-          <strong>Délai :</strong> 4 semaines (3 semaines en urgent)
-        </div>
-        <ul class="pricing-features">
-          <li><div class="check" style="background: var(--accent);">✓</div><span>Design professionnel sur mesure</span></li>
-          <li><div class="check" style="background: var(--accent);">✓</div><span>Organisation avancée des produits</span></li>
-          <li><div class="check" style="background: var(--accent);">✓</div><span>Section À propos, Contact, Accueil</span></li>
-          <li><div class="check" style="background: var(--accent);">✓</div><span>Intégration Google Maps</span></li>
-          <li><div class="check" style="background: var(--accent);">✓</div><span>Support et suivi personnalisé</span></li>
-          <li><div class="check" style="background: var(--accent);">✓</div><span>Livraison par email & WhatsApp</span></li>
-        </ul>
-        <button class="btn btn-accent btn-lg" style="width: 100%; justify-content: center;">
-          <span>Commander mon site</span>
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA FINAL -->
-<section class="cta-section">
-  <h2>Prêt à te lancer ?</h2>
-  <p>Rejoins les commerçants du Bénin qui vendent en ligne avec ShopLink</p>
-  <div class="cta-btns">
-    <a href="/register.html" class="btn btn-primary btn-lg" style="font-size: 16px; padding: 16px 32px;">Créer mon site maintenant</a>
-    <a href="/premium.html" class="btn btn-lg" style="background: rgba(255,255,255,0.1); color: white; border: 1.5px solid rgba(255,255,255,0.3); text-decoration: none;">Confier mon projet</a>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="logo" style="color: rgba(255,255,255,0.8);">
-    <span class="logo-dot"></span>
-    ShopLink
-  </div>
-  <p>© 2026 ShopLink — Digitaliser les entreprises du Bénin</p>
-</footer>
-
-<script>
-function initHomepageNavbarBehavior() {
-  const nav = document.querySelector('nav');
-  if (!nav) return;
-
-  const desktop = window.matchMedia('(min-width: 901px)');
-  const update = () => {
-    if (!desktop.matches) {
-      nav.classList.remove('is-scrolled');
-      return;
-    }
-    nav.classList.toggle('is-scrolled', window.scrollY > 4);
-  };
-
-  update();
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-}
-
-initHomepageNavbarBehavior();
-
-function switchTab(id, btn) {
-  document.querySelectorAll('.path-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.path-tab').forEach(el => el.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
-}
-</script>
+        <a class="cta" href="/premium.html">Commander premium</a>
+      </article>
+    </section>
+  </main>
 </body>
 </html>

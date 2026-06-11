@@ -3,7 +3,7 @@ const bcryptjs = require('bcryptjs');
 const { repo } = require('./data/repository');
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com';
-const ADMIN_PASSWORD = '/Shoplink@2007';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 async function seedAdmin() {
   try {
