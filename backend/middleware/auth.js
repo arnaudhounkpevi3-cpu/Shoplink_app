@@ -49,6 +49,7 @@ async function requireAuth(req, res, next) {
   const token = getBearerToken(req)
 
   if (!token) {
+    recordFailure(req.ip || 'unknown')
     return res.status(401).json({
       success: false,
       message: 'Authentification requise',
@@ -60,6 +61,7 @@ async function requireAuth(req, res, next) {
 
     // Vérifier si le token est blacklisté
     if (isBlacklisted(token)) {
+      recordFailure(req.ip || 'unknown')
       return res.status(401).json({
         success: false,
         message: 'Token révoqué. Veuillez vous reconnecter.',
@@ -69,6 +71,7 @@ async function requireAuth(req, res, next) {
     const user = await repo().findUserById(payload.sub)
 
     if (!user) {
+      recordFailure(req.ip || 'unknown')
       return res.status(401).json({
         success: false,
         message: 'Utilisateur introuvable',
@@ -78,6 +81,7 @@ async function requireAuth(req, res, next) {
     req.user = sanitizeUser(user)
     return next()
   } catch (_error) {
+    recordFailure(req.ip || 'unknown')
     return res.status(401).json({
       success: false,
       message: 'Token invalide ou expire',

@@ -119,9 +119,11 @@ async function main() {
   const pushRoutes = require('./routes/push')
   const validatePaymentRoutes = require('./routes/validatePayment')
   const { requireAuth, requireAdmin } = require('./middleware/auth')
+  const { securityMiddleware, recordFailure } = require('./middleware/security')
 
   const app = express()
   app.use(cookieParser())
+  app.use(securityMiddleware)
 
   // Appliquer la validation sur toutes les routes API sauf auth
   app.use('/api', (req, res, next) => {
