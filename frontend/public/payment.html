@@ -541,7 +541,10 @@
     const name  = document.getElementById('pay-name').value.trim();
     const phone = document.getElementById('pay-phone').value.trim();
     const email = document.getElementById('pay-email').value.trim();
-    const token = localStorage.getItem('shoplink_token');
+    const token = (() => {
+      const match = document.cookie.match(/(?:^|; )shoplink_token=([^;]*)/);
+      return match ? decodeURIComponent(match[1]) : null;
+    })();
     const user = JSON.parse(localStorage.getItem('shoplink_user') || '{}');
     const site = JSON.parse(localStorage.getItem('shoplink_site') || 'null');
     const premiumOrder = payType === 'premium'

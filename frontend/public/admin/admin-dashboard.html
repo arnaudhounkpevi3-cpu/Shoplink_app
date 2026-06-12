@@ -993,7 +993,7 @@
 
   async function apiFetch(path, options = {}) {
     const headers = new Headers(options.headers || {});
-    const token = localStorage.getItem('shoplink_token');
+    const token = getAdminToken();
 
     if (token && !headers.has('Authorization')) {
       headers.set('Authorization', 'Bearer ' + token);
@@ -1877,15 +1877,19 @@
   }
 
   // Admin logout
+  function getAdminToken() {
+    const match = document.cookie.match(/(?:^|; )shoplink_token=([^;]*)/);
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
   function adminLogout() {
-    localStorage.removeItem('shoplink_token');
     localStorage.removeItem('shoplink_user');
     localStorage.removeItem('admin_logged_in');
     window.location.href = '/admin/admin-login.html';
   }
 
   async function validateAdminSession() {
-    const token = localStorage.getItem('shoplink_token');
+    const token = getAdminToken();
     if (!token) return false;
 
     try {
@@ -1959,7 +1963,7 @@
 
   async function exportOverview() {
     try {
-      const token = localStorage.getItem('shoplink_token');
+      const token = getAdminToken();
       const summaryRes = await apiFetch('/admin/summary', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
@@ -1992,7 +1996,7 @@
 
   async function exportUsers() {
     try {
-      const token = localStorage.getItem('shoplink_token');
+      const token = getAdminToken();
       const usersRes = await apiFetch('/admin/users', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
@@ -2019,7 +2023,7 @@
 
   async function exportPayments() {
     try {
-      const token = localStorage.getItem('shoplink_token');
+      const token = getAdminToken();
       const paymentsRes = await apiFetch('/admin/payments', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
@@ -2046,7 +2050,7 @@
 
   async function fetchPremiumProjects() {
     try {
-      const token = localStorage.getItem('shoplink_token');
+      const token = getAdminToken();
       const res = await apiFetch('/admin/premium-projects', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -2276,7 +2280,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     // Check admin authentication
     const isAdminLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-    const token = localStorage.getItem('shoplink_token');
+    const token = getAdminToken();
 
     if (!isAdminLoggedIn || !token) {
       window.location.href = '/admin/admin-login.html';

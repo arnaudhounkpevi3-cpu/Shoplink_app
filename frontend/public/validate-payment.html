@@ -78,7 +78,10 @@
 
     async function validatePayment() {
       const file = document.getElementById('capture').files[0]
-      const token = localStorage.getItem('shoplink_token') || ''
+      const token = (() => {
+        const match = document.cookie.match(/(?:^|; )shoplink_token=([^;]*)/);
+        return match ? decodeURIComponent(match[1]) : null;
+      })() || ''
       if (!token) { status('Connectez-vous avant de valider le paiement.', true); return }
       if (!file) { status('Uploadez une capture d’écran.', true); return }
       const button = document.getElementById('validate-btn')

@@ -17,6 +17,7 @@ if (!JWT_SECRET) {
 
 const router = express.Router()
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'supportshoplink@gmail.com').toLowerCase()
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
 
 function createToken(user) {
   return jwt.sign(
@@ -314,6 +315,67 @@ router.post('/login', async (req, res) => {
   })
 })
 
+// Connexion admin dédiée — séparée du flux client
+router.post('/admin-login', async (req, res) => {
+  const { email, password } = req.body
+  const normalizedEmail = String(email || '').trim().toLowerCase()
+
+  if (!normalizedEmail || !password) {
+    return res.status(400).json({
+      success: false,
+      message: 'email et password sont obligatoires',
+    })
+  }
+
+  if (normalizedEmail !== ADMIN_EMAIL) {
+    return res.status(403).json({
+      success: false,
+      message: 'Accès admin refusé',
+    })
+  }
+
+  if (!ADMIN_PASSWORD) {
+    return res.status(500).json({
+      success: false,
+      message: 'Configuration serveur invalide',
+    })
+  }
+
+  const user = await repo().findUserByEmail(ADMIN_EMAIL)
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Identifiants invalides',
+    })
+  }
+
+  const isValid = await bcrypt.compare(password, user.passwordHash)
+
+  if (!isValid) {
+    return res.status(401).json({
+      success: false,
+      message: 'Identifiants invalides',
+    })
+  }
+
+  if (user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Accès admin refusé',
+    })
+  }
+
+  const token = createToken(user)
+  setAuthCookie(res, token)
+
+  return res.json({
+    success: true,
+    message: 'Connexion admin reussie',
+    user: sanitizeUser(user),
+  })
+})
+
 // Logout — blacklist le token et supprime le cookie
 router.post('/logout', (req, res) => {
   const token = (req.body && req.body.token) || req.cookies?.shoplink_token
@@ -374,7 +436,7 @@ router.get('/me', async (req, res) => {
   const authHeader = req.headers.authorization || ''
   const token = authHeader.startsWith('Bearer ')
     ? authHeader.slice(7)
-    : null
+    : req.cookies?.shoplink_token || null
 
   if (!token) {
     return res.status(401).json({

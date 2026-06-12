@@ -12,7 +12,7 @@ const seedState = {
       email: 'admin@myonlinestore.local',
       phone: '+22900000000',
       role: 'admin',
-      passwordHash: bcrypt.hashSync('admin12345', 10),
+      passwordHash: '$2b$10$9/diMcFEPFqzC1REIEOb5u/a2ythCgCTZZAqfTNXJHALEJpSFUgLK',
       createdAt: new Date().toISOString(),
     },
     {
@@ -21,7 +21,7 @@ const seedState = {
       email: 'clienttest@example.com',
       phone: '+22997000000',
       role: 'user',
-      passwordHash: bcrypt.hashSync('12345678', 10),
+      passwordHash: '$2b$10$4ZqTx1ApkVnvGFtqMJoate3RWRsc3zHv1ZEpZZvQ1wuVgMlS4tn9K',
       createdAt: new Date().toISOString(),
     },
   ],

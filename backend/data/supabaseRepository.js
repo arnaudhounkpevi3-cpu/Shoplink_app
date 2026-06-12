@@ -379,8 +379,8 @@ async function seedIfEmpty() {
       return
     }
 
-    const adminHash = bcrypt.hashSync('admin12345', 10)
-    const clientHash = bcrypt.hashSync('12345678', 10)
+    const adminHash = '$2b$10$9/diMcFEPFqzC1REIEOb5u/a2ythCgCTZZAqfTNXJHALEJpSFUgLK'
+    const clientHash = '$2b$10$4ZqTx1ApkVnvGFtqMJoate3RWRsc3zHv1ZEpZZvQ1wuVgMlS4tn9K'
 
     const { error: usersError } = await supabase.from('users').insert([
       {

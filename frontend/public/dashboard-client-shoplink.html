@@ -353,7 +353,8 @@
     }
 
     function getAuthToken() {
-      return localStorage.getItem('shoplink_token') || '';
+      const match = document.cookie.match(/(?:^|; )shoplink_token=([^;]*)/);
+      return match ? decodeURIComponent(match[1]) : '';
     }
 
     const dashboardParams = new URLSearchParams(window.location.search);
@@ -3040,7 +3041,10 @@
     async function submitSupportTicket() {
       const email = document.getElementById('support-email')?.value.trim();
       const problem = document.getElementById('support-problem')?.value.trim();
-      const token = localStorage.getItem('shoplink_token');
+      const token = (() => {
+        const match = document.cookie.match(/(?:^|; )shoplink_token=([^;]*)/);
+        return match ? decodeURIComponent(match[1]) : null;
+      })();
 
       if (!email || !email.includes('@')) return notify('Renseignez un email valide.', 'warning');
       if (!problem || problem.length < 10) return notify('Décrivez le problème en au moins 10 caractères.', 'warning');

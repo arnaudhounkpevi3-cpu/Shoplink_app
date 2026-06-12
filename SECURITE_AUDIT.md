@@ -42,7 +42,7 @@ JWT_SECRET=<votre_secret_généré_ici>
 
 ### 2. Changer le mot de passe administrateur (URGENT)
 
-Le mot de passe admin par défaut est `/Shoplink@2007`.
+Le mot de passe admin par défaut est `MonMotDePasseFort2024!@#`.
 
 **Action:** Définissez un mot de passe fort dans `backend/.env` :
 ```

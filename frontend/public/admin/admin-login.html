@@ -105,7 +105,10 @@
 
     // Check if already logged in (persistent session)
     const adminLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-    const adminToken = localStorage.getItem('shoplink_token');
+    const adminToken = (() => {
+      const match = document.cookie.match(/(?:^|; )shoplink_token=([^;]*)/);
+      return match ? decodeURIComponent(match[1]) : null;
+    })();
 
     if (adminLoggedIn && adminToken) {
       // Auto-redirect to dashboard if already logged in
@@ -132,7 +135,7 @@
       submitBtn.textContent = 'Connexion en cours...';
 
       try {
-        const res = await apiFetch('/auth/login', {
+        const res = await apiFetch('/auth/admin-login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -146,7 +149,6 @@
           return;
         }
 
-        localStorage.setItem('shoplink_token', data.token);
         localStorage.setItem('shoplink_user', JSON.stringify(data.user));
         localStorage.setItem('admin_logged_in', 'true');
       } catch (error) {

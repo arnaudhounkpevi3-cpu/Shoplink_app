@@ -1511,6 +1511,18 @@
       </div>
     </div>
 
+    <div class="category">
+      <h2 class="category-title">Pages Publiques</h2>
+      <div class="grid">
+        <a href="register.html" class="card" id="public-site-card">
+          <div class="card-icon"></div>
+          <h3 class="card-title">Site Public</h3>
+          <p class="card-desc">Créez votre site et partagez vos produits avec vos clients.</p>
+          <span class="card-tag">À créer</span>
+        </a>
+      </div>
+    </div>
+
     <!-- Section Informations -->
     <div class="category">
       <h2 class="category-title">Informations</h2>
@@ -1574,7 +1586,11 @@
   }
 
   async function getVerifiedClientUser() {
-    const token = localStorage.getItem('shoplink_token') || '';
+    const token = (() => {
+      const match = document.cookie.match(/(?:^|; )shoplink_token=([^;]*)/);
+      return match ? decodeURIComponent(match[1]) : null;
+    })() || '';
+
     if (!token || token.startsWith('demo-token')) {
       clearClientSession();
       return null;
